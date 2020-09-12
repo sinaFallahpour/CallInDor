@@ -61,7 +61,13 @@ namespace Domain.Migrations
                     b.Property<bool>("PhoneNumberConfirmed")
                         .HasColumnType("bit");
 
+                    b.Property<string>("Role")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("SecurityStamp")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("SerialNumber")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<bool>("TwoFactorEnabled")
@@ -70,6 +76,12 @@ namespace Domain.Migrations
                     b.Property<string>("UserName")
                         .HasColumnType("nvarchar(256)")
                         .HasMaxLength(256);
+
+                    b.Property<int?>("verificationCode")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("verificationCodeExpireTime")
+                        .HasColumnType("datetime2");
 
                     b.HasKey("Id");
 

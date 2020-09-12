@@ -20,6 +20,11 @@ using CallInDoor.Models;
 using CallInDoor.Config.Extentions;
 using CallInDoor.Config;
 using CallInDoor.Config.Middleware;
+using Domain.Utilities;
+using Service;
+using Service.Interfaces.JwtManager;
+using Service.Interfaces.Common;
+using Service.Interfaces.Account;
 
 namespace CallInDoor
 {
@@ -98,9 +103,20 @@ namespace CallInDoor
             services.AddRazorPages();
 
 
-            services.AddMvc(options => options.EnableEndpointRouting = false)
+            services.AddMvc(options =>
+            {
+                options.EnableEndpointRouting = false;
+                options.Filters.Add(new ModelStateCheckFilter());
+            })
                  .AddViewLocalization(LanguageViewLocationExpanderFormat.Suffix)
                 .AddDataAnnotationsLocalization();
+
+
+            services.AddScoped<IAccountService, AccountService>();
+            services.AddScoped<IJwtManager, JwtManager>();
+            services.AddScoped<ICommonService, CommonService>();
+
+
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -163,7 +179,7 @@ namespace CallInDoor
                     pattern: "{controller=Home}/{action=Index}/{id?}");
                 endpoints.MapRazorPages();
             });
-         
+
         }
     }
 }

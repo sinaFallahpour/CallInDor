@@ -29,7 +29,6 @@ namespace CallInDoor.Config.Middleware
             catch (Exception ex)
             {
                 //_logger.LogError(EventIds.GlobalException, ex, ex.Message);
-
                 context.Response.StatusCode = 500;
             }
 

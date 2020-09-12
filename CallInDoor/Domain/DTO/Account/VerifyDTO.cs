@@ -1,0 +1,22 @@
+﻿using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.Text;
+
+namespace Domain.DTO.Account
+{
+    public class VerifyDTO
+    {
+        [Required(ErrorMessage = "{0} is  Required")]
+        [MinLength(10, ErrorMessage = "The minimum {0} length is {1} characters")]
+        [MaxLength(10, ErrorMessage = "The maximum {0} length is {1} characters")]
+        [Display(Name = "PhoneNumber")]
+        public string PhoneNumber { get; set; }
+
+
+        [Required(ErrorMessage = "{0} is  Required")]
+        [Display(Name = "verifyCode")]
+        public int? VerifyCode { get; set; }
+
+    }
+}

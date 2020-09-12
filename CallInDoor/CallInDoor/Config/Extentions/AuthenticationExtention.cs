@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Domain.Utilities;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -23,7 +24,9 @@ namespace CallInDoor.Config.Extentions
             //});
 
             // JWT Authentication
-            var key = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(appSettings.Secret));
+            //var key = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(appSettings.Secret));
+            var key = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(PublicHelper.SECREKEY));
+
             services.AddAuthentication(options =>
                 {
                     options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;

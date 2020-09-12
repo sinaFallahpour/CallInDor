@@ -39,13 +39,11 @@ namespace CallInDoor.Controllers
 
 
         [HttpPost("testse")]
-
         public ActionResult testpost([FromBody] test test)
         {
             if (!ModelState.IsValid)
             {
                 //return NotFound(new ApiResponse(404, "product not found"));
-
 
                 var errors = new List<string>();
                 foreach (var item in ModelState.Values)
@@ -55,7 +53,8 @@ namespace CallInDoor.Controllers
                         errors.Add(err.ErrorMessage);
                     }
                 }
-                return BadRequest(new ApiBadRequestResponse(errors));
+                return NotFound(new ApiResponse(404,"sadsds"));
+                //return BadRequest(new ApiBadRequestResponse(errors));
             }
 
             var nn = new { Status = 1, message = "12121", data = test };
