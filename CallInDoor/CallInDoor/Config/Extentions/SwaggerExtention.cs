@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Domain.Utilities;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.Swagger;
@@ -18,19 +19,17 @@ namespace CallInDoor.Config.Extentions
             // Swagger service properties
             services.AddSwaggerGen(c =>
             {
-           
-
                 c.SwaggerDoc("v1", new OpenApiInfo
                 {
                     Version = "v1",
                     Title = "callInDoor API",
                     Description = "callIndoors api",
-                    TermsOfService = new Uri("https://localhost:44377"),
+                    TermsOfService = new Uri(PublicHelper.swaggerProductionUrl),
                     Contact = new OpenApiContact
                     {
                         Name = "Shayne Boyer",
                         Email = string.Empty,
-                        Url = new Uri("https://localhost:44377"),
+                        Url = new Uri(PublicHelper.swaggerProductionUrl),
                     },
                     //License = new OpenApiLicense
                     //{

@@ -1,0 +1,20 @@
+﻿ return Ok(new ApiOkResponse(new DataFormat()
+{
+    Status = 1,
+    data = userInfo,
+    Message = _localizerShared["SuccessMessage"].Value.ToString()
+},
+_localizerShared["SuccessMessage"].Value.ToString()
+));
+
+
+
+return Unauthorized(new ApiResponse(401, _localizerShared["UnauthorizedMessage"].Value.ToString()));
+
+
+ return NotFound(new ApiResponse(404, _localizerShared["NotFound"].Value.ToString()));
+
+ 
+ 
+ return StatusCode(StatusCodes.Status500InternalServerError,
+                         new ApiResponse(500, _localizerShared["InternalServerMessage"].Value.ToString()));

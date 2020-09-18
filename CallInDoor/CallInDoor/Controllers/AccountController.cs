@@ -29,97 +29,26 @@ namespace CallInDoor.Controllers
 
         private readonly DataContext _context;
         private readonly UserManager<AppUser> _userManager;
-        private readonly ICommonService _CommonService;
         private readonly IAccountService _accountService;
-
-        private readonly SignInManager<AppUser> _signInManager;
         private readonly IJwtManager _jwtGenerator;
-        private readonly IHttpContextAccessor _httpContextAccessor;
         private IStringLocalizer<AccountController> _localizer;
         private IStringLocalizer<ShareResource> _localizerShared;
 
         public AccountController(UserManager<AppUser> userManager,
-            SignInManager<AppUser> signInManager,
             DataContext context,
                IJwtManager jwtGenerator,
-               IHttpContextAccessor httpContextAccessor,
                IStringLocalizer<AccountController> localizer,
                 IStringLocalizer<ShareResource> localizerShared,
-                ICommonService commonService,
                 IAccountService accountService
             )
         {
             _context = context;
             _userManager = userManager;
-            _signInManager = signInManager;
-            _jwtGenerator = jwtGenerator;
-            _httpContextAccessor = httpContextAccessor;
             _localizer = localizer;
             _localizerShared = localizerShared;
-            _CommonService = commonService;
             _accountService = accountService;
+            _jwtGenerator = jwtGenerator;
         }
-
-
-
-
-
-        #region  login
-
-        //[AllowAnonymous]
-        //[HttpPost("login")]
-        //public async Task<ActionResult> Login(LoginDTO model)
-        //{
-        //    if (!ModelState.IsValid)
-        //    {
-        //        var errors = new List<string>();
-        //        foreach (var item in ModelState.Values)
-        //        {
-        //            foreach (var err in item.Errors)
-        //            {
-        //                errors.Add(err.ErrorMessage);
-        //            }
-        //        }
-        //        return BadRequest(new ApiBadRequestResponse(errors));
-
-        //        //return new JsonResult(new { Status = 0, Message = "bad request", Data = errors });
-        //    }
-
-
-        //    //var user = await _userManager.FindByNameAsync(model.UserName);
-        //    var user = await _context.Users.Where(c => c.UserName == model.UserName).FirstOrDefaultAsync();
-        //    if (user == null)
-        //    {
-        //        return new JsonResult(new { Status = 0, Message = " نام کاربری یا رمز عبور اشتباست " });
-        //    }
-
-        //    var result = await _signInManager
-        //        .CheckPasswordSignInAsync(user, model.Password, false);
-        //    if (result.Succeeded)
-        //    {
-        //        var SerialNumber = Guid.NewGuid().ToString().GetHash();
-
-        //        var userRoles = await _userManager.GetRolesAsync(user);
-        //        var role = userRoles?.First();
-        //        user.SerialNumber = SerialNumber;
-        //        await _context.SaveChangesAsync();
-
-        //        // TODO: generate token
-        //        var userInfo = new User
-        //        {
-        //            Id = user.Id,
-        //            Token = _jwtGenerator.CreateToken(user, role),
-        //            UserName = user.UserName,
-        //            Email = user.Email
-
-        //        };
-        //        return new JsonResult(new { Status = 1, Message = "ورود موفقیت آمیز", Data = userInfo });
-        //    }
-        //    return new JsonResult(new { Status = 0, Message = " نام کاربری یا رمز عبور اشتباست " });
-        //}
-
-        #endregion
-
 
 
 
@@ -131,25 +60,17 @@ namespace CallInDoor.Controllers
         [HttpPost("register")]
         public async Task<ActionResult> Register([FromBody] RegisterDTO model)
         {
-            if (!ModelState.IsValid)
-            {
-                var errors = new List<string>();
-                foreach (var item in ModelState.Values)
-                {
-                    foreach (var err in item.Errors)
-                    {
-                        errors.Add(err.ErrorMessage);
-                    }
-                }
-                return BadRequest(new ApiBadRequestResponse(errors));
-            }
 
-            var user = await _accountService.FindUserByPhonenumber(model.PhoneNumber);
+
+            var phonenumber = model.CountryCode.ToString().Trim() + model.PhoneNumber.Trim();
+            var user = await _accountService.FindUserByPhonenumber(phonenumber);
             //await _context.Users.Where(x => x.PhoneNumber == model.PhoneNumber).FirstOrDefaultAsync();
 
 
             var random = new Random();
-            var code = random.Next(100000, 999999);
+            //var code = random.Next(100000, 999999);
+            var code = 1111;
+
 
             if (user != null)
             {
@@ -188,7 +109,7 @@ namespace CallInDoor.Controllers
             {
                 UserName = model.CountryCode.ToString().Trim() + model.PhoneNumber.Trim(),
                 SerialNumber = SerialNumber,
-                PhoneNumber = model.PhoneNumber,
+                PhoneNumber = model.CountryCode.ToString() + model.PhoneNumber.Trim(),
                 Role = PublicHelper.USERROLE,
                 verificationCode = code,
                 verificationCodeExpireTime = DateTime.UtcNow.AddMinutes(3)
@@ -218,10 +139,6 @@ namespace CallInDoor.Controllers
 
         #endregion
 
-
-
-
-
         #region login
 
         [AllowAnonymous]
@@ -229,6 +146,7 @@ namespace CallInDoor.Controllers
         public async Task<IActionResult> Login([FromBody] LoginDTO model)
         {
 
+            model.PhoneNumber = model.CountryCode.ToString().Trim() + model.PhoneNumber.Trim();
             var user = await _accountService.FindUserByPhonenumber(model.PhoneNumber);
             if (user == null)
                 return Unauthorized(new ApiResponse(401, _localizerShared["InvalidPhoneNumber"].Value.ToString()));
@@ -259,9 +177,11 @@ namespace CallInDoor.Controllers
                 _localizerShared["SuccessMessage"].Value.ToString()
                ));
             }
-            //if (result.IsNotAllowed) { 
-            ////logic  تایید شمار ه تماس
-            //}
+            if (result.IsNotAllowed)
+            {
+                return Unauthorized(new ApiResponse(401, _localizerShared["ConfirmPhoneMessage"].Value.ToString()));
+
+            }
             return Unauthorized(new ApiResponse(401, _localizerShared["UnMathPhoneNumberPassword"].Value.ToString()));
         }
 
@@ -269,7 +189,60 @@ namespace CallInDoor.Controllers
         #endregion
 
 
+        #region AdminLogin
 
+        [AllowAnonymous]
+        [HttpPost("AdminLogin")]
+        public async Task<IActionResult> AdminLogin([FromBody] AdminLoginDTO model)
+        {
+            var user = await _context.Users.Where(c => c.PhoneNumber == model.PhoneNumber && c.PhoneNumberConfirmed == true).FirstOrDefaultAsync();
+            if (user == null)
+                return Unauthorized(new ApiResponse(401, PubicMessages.UnAuthorizeMessage));
+
+
+            if (user.Role != PublicHelper.ADMINROLE)
+                return Unauthorized(new ApiResponse(401, PubicMessages.UnAuthorizeMessage));
+
+            //model.PhoneNumber = model.CountryCode.ToString().Trim() + model.PhoneNumber.Trim();
+            //var user = await _accountService.FindUserByPhonenumber(model.PhoneNumber);
+
+            //if (user == null)
+            //    return Unauthorized(new ApiResponse(401, _localizerShared["InvalidPhoneNumber"].Value.ToString()));
+
+            var result = await _accountService.CheckPasswordAsync(user, model.Password);
+
+            if (result.Succeeded)
+            {
+                var SerialNumber = Guid.NewGuid().ToString().GetHash();
+                user.SerialNumber = SerialNumber;
+                await _context.SaveChangesAsync();
+
+                // TODO: generate token
+                var userInfo = new User
+                {
+                    Id = user.Id,
+                    Token = _jwtGenerator.CreateToken(user),
+                    UserName = user.UserName,
+                };
+
+                return Ok(new ApiOkResponse(new DataFormat()
+                {
+                    Status = 1,
+                    data = userInfo,
+                    Message = PubicMessages.SuccessMessage
+                },
+                PubicMessages.SuccessMessage
+               ));
+            }
+            if (result.IsNotAllowed)
+            {
+                return Unauthorized(new ApiResponse(401, "Invalid phone number or password."));
+            }
+            return Unauthorized(new ApiResponse(401, "Invalid phone number or password."));
+        }
+
+
+        #endregion
 
 
         #region  veryfication code
@@ -278,18 +251,7 @@ namespace CallInDoor.Controllers
         [HttpPost("VerifyCode")]
         public async Task<IActionResult> Verify([FromBody] VerifyDTO model)
         {
-            //if (!ModelState.IsValid)
-            //{
-            //    var errors = new List<string>();
-            //    foreach (var item in ModelState.Values)
-            //    {
-            //        foreach (var err in item.Errors)
-            //        {
-            //            errors.Add(err.ErrorMessage);
-            //        }
-            //    }
-            //    return BadRequest(new ApiBadRequestResponse(errors));
-            //}
+
             var res = await _accountService.CheckVeyficatioCode(model);
             if (res.status == 0)
             {
@@ -297,7 +259,9 @@ namespace CallInDoor.Controllers
             }
 
 
-            var user = await _context.Users.Where(c => c.PhoneNumber == model.PhoneNumber).FirstOrDefaultAsync();
+            var phoneNumber = model.CountryCode.ToString().Trim() + model.PhoneNumber.Trim();
+            var user = await _context.Users.Where(c => c.PhoneNumber == phoneNumber).FirstOrDefaultAsync();
+
             user.PhoneNumberConfirmed = true;
             var SerialNumber = Guid.NewGuid().ToString().GetHash();
 
@@ -327,24 +291,66 @@ namespace CallInDoor.Controllers
             //return new JsonResult(new { Status = 1, Message = "ورود موفقیت آمیز", Data = userInfo });
         }
 
+        #endregion
+
+
+        #region   RefreshToken  
+
+        [AllowAnonymous]
+        [HttpPost("RefreshToken")]
+        public async Task<IActionResult> RefreshToken([FromBody] RefreshDTO model)
+        {
+
+            var phoneNumber = model.CountryCode.ToString().Trim() + model.PhoneNumber.Trim();
+            var user = await _accountService.FindUserByPhonenumber(phoneNumber);
+
+            if (user == null)
+            {
+                return Unauthorized(new ApiResponse(401, _localizerShared["InvalidPhoneNumber"].Value.ToString()));
+            }
+
+            if (!user.PhoneNumberConfirmed)
+            {
+                return Unauthorized(new ApiResponse(401, _localizerShared["ConfirmPhoneMessage"].Value.ToString()));
+            }
+
+
+            var random = new Random();
+            //var code = random.Next(100000, 999999);
+            var code = 1111;
+
+            user.verificationCode = code;
+            user.verificationCodeExpireTime = DateTime.UtcNow.AddMinutes(3);
+
+            await _context.SaveChangesAsync();
+
+
+            return Ok(new ApiOkResponse(new DataFormat()
+            {
+                Status = 1,
+                //data = passwordResetLink,
+                data = { },
+                Message = _localizerShared["SuccessMessage"].Value.ToString()
+            },
+             _localizerShared["SuccessMessage"].Value.ToString()
+            ));
+
+
+
+        }
 
         #endregion
 
 
-
-
-
-
-
-
-        #region login
+        #region ForgetPasswod
 
         [AllowAnonymous]
         [HttpPost("ForgetPasswod")]
         public async Task<IActionResult> ForgetPasswod([FromBody] ForgetPasswordDTO model)
         {
+            var phoneNumber = model.CountryCode.ToString().Trim() + model.PhoneNumber.Trim();
 
-            var user = await _accountService.FindUserByPhonenumber(model.PhoneNumber);
+            var user = await _accountService.FindUserByPhonenumber(phoneNumber);
             if (user == null)
                 return Unauthorized(new ApiResponse(401, _localizerShared["InvalidPhoneNumber"].Value.ToString()));
 
@@ -355,9 +361,9 @@ namespace CallInDoor.Controllers
             }
 
 
-
             var random = new Random();
-            var code = random.Next(100000, 999999);
+            //var code = random.Next(100000, 999999);
+            var code = 1111;
 
             user.verificationCode = code;
             user.verificationCodeExpireTime = DateTime.UtcNow.AddMinutes(3);
@@ -386,6 +392,11 @@ namespace CallInDoor.Controllers
 
 
         #endregion
+
+
+
+
+
 
 
 

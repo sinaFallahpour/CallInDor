@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
-using Application.Errors;
+//using Application.Errors;
 using Domain.DTO.Response;
 using Domain.test;
 using Microsoft.AspNetCore.Authorization;
@@ -67,7 +67,10 @@ namespace CallInDoor.Controllers
         public ActionResult errors([FromBody] test test)
         {
             //return NotFound(new JsonResult(new { sss = "12" }));
-            throw new RestException(HttpStatusCode.BadRequest, new { Attendance = "You cannot remove yourself as host" });
+            //throw new RestException(HttpStatusCode.BadRequest, new { Attendance = "You cannot remove yourself as host" });
+
+
+            throw new Exception();
         }
 
 

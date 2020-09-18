@@ -25,5 +25,18 @@ namespace Service.Interfaces.Account
         Task<string> GeneratePasswordResetToken(AppUser user);
 
 
+
+
+
+        /// check Token paload(serialNUmber) Is valid
+        Task<bool> CheckTokenIsValid();
+        
+        Task<AppUser> CheckIsCurrentUserName(string Id);
+        
+        //Task<string> CheckTokenIsValid2();
+        Task<ProfileGetDTO> ProfileGet(string username);
+
+
+
     }
 }

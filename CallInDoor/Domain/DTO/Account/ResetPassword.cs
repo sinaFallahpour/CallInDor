@@ -20,5 +20,7 @@ namespace Domain.DTO.Account
         [Display(Name = "ConfirmPassword")]
         public string ConfirmPassword { get; set; }
 
+
+
     }
 }

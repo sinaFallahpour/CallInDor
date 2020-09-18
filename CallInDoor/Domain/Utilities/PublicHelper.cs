@@ -19,9 +19,32 @@ namespace Domain.Utilities
         public const string SerialNumberClaim = "serialNumber";
 
 
-
         public const string EngCultureName = "en-US";
         public const string persianCultureName = "fa-IR";
 
+        public const string swaggerProductionUrl = "https://api.callindoor.ir";
+        public const string swaggerdevelopmentUrl = "https://localhost:44377";
+
     }
+
+    public static class PubicMessages
+    {
+        public const string UnAuthorizeMessage = "You are  Unauthorized";
+        public const string NotFoundMessage = " Not Found";
+        public const string ForbidenMessage = "Forbidden";
+        public const string BadRequestMessage = "Bad Request";
+        public const string InternalServerMessage = "An unhandled error occurred";
+
+        public const string SuccessMessage = "Successful Submit";
+        public const string ErrorMessage = "Operation Failed";
+
+
+
+        //  public static void SetNotFound(str) { 
+        //NotFoundMessage= 
+        //  }
+
+    }
+
+
 }

@@ -15,8 +15,18 @@ namespace Domain.DTO.Account
 
 
         [Required(ErrorMessage = "{0} is  Required")]
-        [Display(Name = "verifyCode")]
+        [MaxLength(20, ErrorMessage = "The maximum {0} length is {1} characters")]
+        [Display(Name = "CountryCode")]
+        public string  CountryCode { get; set; }
+
+
+        [Required(ErrorMessage = "{0} is  Required")]
+
+        [Display(Name = "VerifyCode")]
         public int? VerifyCode { get; set; }
+
+
+
 
     }
 }

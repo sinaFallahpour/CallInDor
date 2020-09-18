@@ -25,6 +25,9 @@ using Service;
 using Service.Interfaces.JwtManager;
 using Service.Interfaces.Common;
 using Service.Interfaces.Account;
+using Service.Interfaces.ServiceType;
+using Service.Interfaces.Category;
+using AutoMapper;
 
 namespace CallInDoor
 {
@@ -47,6 +50,28 @@ namespace CallInDoor
             {
                 opt.UseSqlServer(Configuration.GetConnectionString("DefaultConnection"));
             });
+
+
+            //cors origin
+            services.AddCors(opt =>
+            {
+               
+
+                opt.AddPolicy("CorsPolicy", policy =>
+                {
+                    policy.AllowAnyHeader().AllowAnyMethod().WithOrigins(
+                               "http://localhost:4200",
+                               "http://localhost:443",
+                               "http://localhost:80",
+                                "https://localhost:4200",
+                               "https://localhost:443",
+                               "https://localhost:80"
+                               )
+                    .AllowCredentials();
+                });
+
+            });
+
 
 
             //setting  of identity
@@ -108,14 +133,22 @@ namespace CallInDoor
                 options.EnableEndpointRouting = false;
                 options.Filters.Add(new ModelStateCheckFilter());
             })
-                 .AddViewLocalization(LanguageViewLocationExpanderFormat.Suffix)
-                .AddDataAnnotationsLocalization();
+             .AddViewLocalization(LanguageViewLocationExpanderFormat.Suffix)
+            .AddDataAnnotationsLocalization();
+
+
+
+
+            //inject autoMapper
+            services.AddAutoMapper(typeof(AppUser).Assembly);
+
 
 
             services.AddScoped<IAccountService, AccountService>();
             services.AddScoped<IJwtManager, JwtManager>();
             services.AddScoped<ICommonService, CommonService>();
-
+            services.AddScoped<IServiceService, ServiceService>();
+            services.AddScoped<ICategoryService, CategoryService>();
 
         }
 
@@ -129,12 +162,6 @@ namespace CallInDoor
                 ////////////app.UseDeveloperExceptionPage();
                 ////////////app.UseDatabaseErrorPage();
 
-                /*.........................swagger..........................*/
-                app.UseSwagger();
-                app.UseSwaggerUI(c =>
-                {
-                    c.SwaggerEndpoint("v1/swagger.json", "v1");
-                });
             }
             else
             {
@@ -142,6 +169,16 @@ namespace CallInDoor
                 // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 ////////////app.UseHsts();
             }
+
+            /*.........................swagger..........................*/
+            app.UseSwagger();
+            app.UseSwaggerUI(c =>
+            {
+                c.SwaggerEndpoint("v1/swagger.json", "v1");
+            });
+
+
+
             app.UseHttpsRedirection();
             app.UseStaticFiles();
 
@@ -171,7 +208,7 @@ namespace CallInDoor
 
             app.UseAuthentication();
             app.UseAuthorization();
-
+            app.UseCors("CorsPolicy");
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllerRoute(

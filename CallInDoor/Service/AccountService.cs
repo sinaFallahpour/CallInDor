@@ -1,6 +1,8 @@
-﻿using Domain;
+﻿using AutoMapper;
+using Domain;
 using Domain.DTO.Account;
 using Domain.Entities;
+using Domain.Utilities;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -27,6 +29,8 @@ namespace Service
         private readonly IHttpContextAccessor _httpContextAccessor;
         //private IStringLocalizer<ShareResource> _localizerShared;
         private IStringLocalizer<AccountService> _localizerAccount;
+        private readonly IMapper _mapper;
+
 
         public AccountService(
             UserManager<AppUser> userManager,
@@ -35,7 +39,8 @@ namespace Service
                IJwtManager jwtGenerator,
                IHttpContextAccessor httpContextAccessor,
                 IStringLocalizer<AccountService> localizerAccount,
-                ICommonService commonService
+                ICommonService commonService,
+                IMapper mapper
                )
         {
             _context = context;
@@ -45,8 +50,57 @@ namespace Service
             _httpContextAccessor = httpContextAccessor;
             _localizerAccount = localizerAccount;
             _CommonService = commonService;
-
+            _mapper = mapper;
         }
+
+
+
+
+        /// check Token paload(serialNUmber) Is valid
+        public async Task<bool> CheckTokenIsValid()
+        {
+            //var currentUsername = _httpContextAccessor.HttpContext.User?.Claims?.FirstOrDefault(x => x.Type == ClaimTypes.NameIdentifier)?.Value;
+            var currentSerialNumber = _httpContextAccessor.HttpContext.User?.Claims?.FirstOrDefault(x => x.Type == PublicHelper.SerialNumberClaim)?.Value;
+
+            var username = await _context.Users.Where(x => x.SerialNumber == currentSerialNumber)
+                .Select(c => c.UserName)
+                .FirstOrDefaultAsync();
+
+            if (string.IsNullOrEmpty(username))
+                return false;
+            return true;
+        }
+
+
+
+
+        public async Task<AppUser> CheckIsCurrentUserName(string Id)
+        {
+            if (string.IsNullOrEmpty(Id))
+                return null;
+
+            var currentSerialNumber = _httpContextAccessor.HttpContext.User?.Claims?.FirstOrDefault(x => x.Type == PublicHelper.SerialNumberClaim)?.Value;
+
+            var user = await _context.Users.Where(x => x.SerialNumber == currentSerialNumber && x.Id == Id)
+                .Include(c => c.UsersDegrees)
+                .FirstOrDefaultAsync();
+
+            return user;
+        }
+
+
+
+        //public async Task<string> CheckTokenIsValid2()
+        //{
+        //    //var currentUsername = _httpContextAccessor.HttpContext.User?.Claims?.FirstOrDefault(x => x.Type == ClaimTypes.NameIdentifier)?.Value;
+        //    var currentSerialNumber = _httpContextAccessor.HttpContext.User?.Claims?.FirstOrDefault(x => x.Type == PublicHelper.SerialNumberClaim)?.Value;
+
+        //    var username = await _context.Users.Where(x => x.SerialNumber == currentSerialNumber)
+        //        .Select(c => c.UserName)
+        //        .FirstOrDefaultAsync();
+        //    return username;
+        //}
+
 
 
 
@@ -65,9 +119,10 @@ namespace Service
 
         public async Task<(int status, List<string> erros)> CheckVeyficatioCode(VerifyDTO model)
         {
+            var phoneNumber = model.CountryCode.ToString().Trim() + model.PhoneNumber.Trim();
             var errors = new List<string>();
 
-            var User = await _context.Users.Where(c => c.PhoneNumber == model.PhoneNumber).FirstOrDefaultAsync();
+            var User = await _context.Users.Where(c => c.PhoneNumber == phoneNumber).FirstOrDefaultAsync();
             if (User == null)
             {
                 //_localizer[string.Format("username  {0} Already Registered", model.Username)].Value.ToString()
@@ -112,6 +167,25 @@ namespace Service
         {
             return await _userManager.GeneratePasswordResetTokenAsync(user);
         }
+
+
+
+
+
+        public async Task<ProfileGetDTO> ProfileGet(string username)
+        {
+            if (string.IsNullOrEmpty(username))
+                return null;
+            var user = await _context
+                        .Users.Where(c => c.UserName == username)
+                        .Include(c => c.UsersDegrees)
+                        .FirstOrDefaultAsync();
+            var Profile = _mapper.Map<AppUser, ProfileGetDTO>(user);
+            return Profile;
+        }
+
+
+
 
 
     }
