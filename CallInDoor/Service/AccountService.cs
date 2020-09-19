@@ -171,7 +171,6 @@ namespace Service
 
 
 
-
         public async Task<ProfileGetDTO> ProfileGet(string username)
         {
             if (string.IsNullOrEmpty(username))

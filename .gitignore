@@ -1,5 +1,5 @@
 
-
+/client-app/node_modules
 *.suo
 *.user
 _ReSharper.*

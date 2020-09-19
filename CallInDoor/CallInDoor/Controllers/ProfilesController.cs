@@ -52,7 +52,6 @@ namespace CallInDoor.Controllers
 
 
 
-
         #region get Profile
 
 
@@ -64,13 +63,17 @@ namespace CallInDoor.Controllers
             //if (!result)
             //    return Unauthorized(new ApiResponse(401, _localizerShared["UnauthorizedMessage"].Value.ToString()));
 
-
             try
             {
-                var profile = await _accountService.CheckIsCurrentUserName(username);
-
+                var profile = await _accountService.ProfileGet(username);
                 if (profile == null)
                     return NotFound(new ApiResponse(404, _localizerShared["NotFound"].Value.ToString()));
+
+                //نیاز به چک نیست
+                //var profile = await _accountService.CheckIsCurrentUserName(username);
+
+                //if (profile == null)
+                //    return NotFound(new ApiResponse(404, _localizerShared["NotFound"].Value.ToString()));
 
                 return Ok(new ApiOkResponse(new DataFormat()
                 {
@@ -80,8 +83,8 @@ namespace CallInDoor.Controllers
                 },
                   _localizerShared["SuccessMessage"].Value.ToString()
                  ));
-
             }
+
             catch (Exception ex)
             {
                 return StatusCode(StatusCodes.Status500InternalServerError,
@@ -94,93 +97,84 @@ namespace CallInDoor.Controllers
 
 
 
-        //#region UpdateProfile
+        #region UpdateProfile
 
-        ////  /api/Profile/UpdateProfile
-        //[HttpPut("UpdateProfile")]
-        //[Authorize()]
-        //public async Task<ActionResult> UpdateProfile(UpdateProfileDTO model)
-        //{
+        //  /api/Profile/UpdateProfile
+        [HttpPut("UpdateProfile")]
+        [Authorize()]
+        public async Task<ActionResult> UpdateProfile([FromBody] UpdateProfileDTO model)
+        {
 
+            var currentSerialNumber = _httpContextAccessor.HttpContext.User?.Claims?.FirstOrDefault(x => x.Type == PublicHelper.SerialNumberClaim)?.Value;
 
+            var user = await _context.Users.Where(x => x.SerialNumber == currentSerialNumber && x.Id == model.Id)
+                .Include(c => c.UsersDegrees)
+                .FirstOrDefaultAsync();
 
-        //    var user = await _accountService.CheckIsCurrentUserName(model.Id);
-        //    if (user == null)
-        //        return Unauthorized(new ApiResponse(401, _localizerShared["UnauthorizedMessage"].Value.ToString()));
-
-        //    try
-        //    {
-        //        //Upload Photo
-
-        //        if (await _context.Users.Where(x => x.Email == model.Email && x.Email != user.Email).AnyAsync())
-        //            return new JsonResult(new { Status = 0, Message = "این ایمیل  موجود است" });
-
-        //        //var result = await _userManager.ChangePasswordAsync(user, model.OldPassword, model.NewPassword);
-
-        //        user.Email = model.Email;
-        //        user.Name = model.Name;
-        //        user.LastName = model.LastName;
-        //        user.Bio = model.Bio;
-            
-
-
-
-        //        //user.City = model.City;
-        //        //user.Phone = model.Phone;
-        //        //if (user.WorkExperience != null)
-        //        //{
-        //        //    user.WorkExperience.CompanyName = model.CompanyName;
-        //        //    user.WorkExperience.Descriptions = model.Descriptions;
-        //        //    user.WorkExperience.EnterDate = model.WorkEnterDate;
-        //        //    user.WorkExperience.ExitDate = model.WorkExitDate;
-        //        //    user.WorkExperience.Semat = model.Semat;
-        //        //}
-        //        //if (user.EducationHistry != null)
-        //        //{
-        //        //    user.EducationHistry.EnterDate = model.EduEnterDate;
-        //        //    user.EducationHistry.ExitDate = model.EduExitDate;
-        //        //    user.EducationHistry.MaghTa = model.MaghTa;
-        //        //    user.EducationHistry.UnivercityName = model.UnivercityName;
-        //        //}
-
-        //        ////اطلاعات ديگر
-        //        //user.Birthdate = model.Birthdate;
-        //        //user.Gender = model.Gender;
-        //        //user.MarriedType = model.MarriedType;
-        //        //user.LanguageKnowing = model.LanguageKnowing;
+            if (user == null)
+                return NotFound(new ApiResponse(404, _localizerShared["NotFound"].Value.ToString()));
 
 
 
 
-        //        var SerialNumber = Guid.NewGuid().ToString().GetHash();
-        //        user.SerialNumber = SerialNumber;
+            user.Bio = model.Bio;
+            user.Email = model.Email;
+            user.Name = model.Name;
+            user.LastName = model.LastName;
 
-        //        await _context.SaveChangesAsync();
+            var userDegress = new List<User_Degree_Field>();
+            foreach (var item in model.UsersDegrees)
+            {
+                userDegress.Add(new User_Degree_Field()
+                {
+                    DegreeId = item.DegreeId,
+                    DegreeName = item.DegreeName,
+                    DegreePersianName = item.DegreePersianName,
 
-        //        var userRoles = await _userManager.GetRolesAsync(user);
-        //        var role = userRoles.First();
-        //        var currentUser = new UserVM
-        //        {
-        //            Id = user.Id,
-        //            Email = user.Email,
-        //            Nickname = user.Nickname,
-        //            UserName = user.UserName,
-        //            PhotoAddress = user.PhotoAddress,
-        //            Token = _jwtGenerator.CreateToken(user, role),
-        //        };
-        //        var userInfo = _mapper.Map<ApplicationUser, ProfilesDTO>(user);
-        //        userInfo.CurrentUser = currentUser;
+                    FieldId = item.FieldId,
+                    FieldName = item.FieldName,
+                    FieldPersianName = item.FieldPersianName,
+                    //UserId = model.Id,
+                });
+            }
+            user.UsersDegrees = null;
+            user.UsersDegrees = userDegress;
 
-        //        return new JsonResult(new { Status = 1, Message = "", Data = userInfo });
+            ///upload File
 
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        return new JsonResult(new { Status = 0, Message = "خطایی رخ داده است", });
-        //    }
-        //}
 
-        //#endregion
+
+
+            try
+            {
+                //Upload Photo
+
+
+
+                //var SerialNumber = Guid.NewGuid().ToString().GetHash();
+                //user.SerialNumber = SerialNumber;
+
+                await _context.SaveChangesAsync();
+
+                return Ok(new ApiOkResponse(new DataFormat()
+                {
+                    Status = 1,
+                    data = user,
+                    Message = _localizerShared["SuccessMessage"].Value.ToString()
+                },
+                 _localizerShared["SuccessMessage"].Value.ToString()
+                ));
+
+
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError,
+                            new ApiResponse(500, _localizerShared["InternalServerMessage"].Value.ToString()));
+            }
+        }
+
+        #endregion
 
 
 

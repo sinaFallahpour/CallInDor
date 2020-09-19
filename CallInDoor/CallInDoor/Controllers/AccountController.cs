@@ -52,8 +52,6 @@ namespace CallInDoor.Controllers
 
 
 
-
-
         #region register
 
         [AllowAnonymous]
@@ -392,16 +390,6 @@ namespace CallInDoor.Controllers
 
 
         #endregion
-
-
-
-
-
-
-
-
-
-
 
 
     }

@@ -68,7 +68,10 @@ namespace Service
         /// </summary>
         public async Task<List<CategoryListDTO>> GetAllCateWithChildren()
         {
-            var cats = await _context.CategoryTBL.Where(c => c.IsEnabled == true).Include(c => c.Children).AsNoTracking().ToListAsync();
+            var cats = await _context.CategoryTBL.Where(c => c.IsEnabled == true)
+                .Include(c => c.Children)
+                .AsNoTracking()
+                .ToListAsync();
             var catList = _mapper.Map<List<CategoryTBL>, List<CategoryListDTO>>(cats);
             return catList;
         }

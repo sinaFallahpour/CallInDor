@@ -28,6 +28,7 @@ using Service.Interfaces.Account;
 using Service.Interfaces.ServiceType;
 using Service.Interfaces.Category;
 using AutoMapper;
+using Domain.DTO.Account;
 
 namespace CallInDoor
 {
@@ -55,7 +56,7 @@ namespace CallInDoor
             //cors origin
             services.AddCors(opt =>
             {
-               
+
 
                 opt.AddPolicy("CorsPolicy", policy =>
                 {
@@ -138,9 +139,13 @@ namespace CallInDoor
 
 
 
-
             //inject autoMapper
-            services.AddAutoMapper(typeof(AppUser).Assembly);
+            services.AddAutoMapper(typeof(LoginDTO));
+
+
+
+
+
 
 
 
@@ -161,7 +166,6 @@ namespace CallInDoor
             {
                 ////////////app.UseDeveloperExceptionPage();
                 ////////////app.UseDatabaseErrorPage();
-
             }
             else
             {
