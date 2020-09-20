@@ -66,7 +66,8 @@ namespace CallInDoor
                                "http://localhost:80",
                                 "https://localhost:4200",
                                "https://localhost:443",
-                               "https://localhost:80"
+                               "https://localhost:80",
+                               "http://localhost:3000"
                                )
                     .AllowCredentials();
                 });

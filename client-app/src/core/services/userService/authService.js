@@ -4,13 +4,16 @@ import jwtDecode from "jwt-decode";
 
 const tokenKey = "token";
 
-// export async function login(phoneNumber, password) {
-//   const { data: jwt } = await requests.post(apiEndpoint, {
-//     phoneNumber,
-//     password,
-//   });
-//   localStorage.setItem(tokenKey, jwt);
-// }
+export async function login(phoneNumber, password) {
+  const { data } = await requests.post("/Account/AdminLogin", {
+    phoneNumber,
+    password
+  });
+  console.log(data);
+  const jwt = data.result.data.token;
+  alert(jwt);
+  localStorage.setItem(tokenKey, jwt);
+}
 
 export async function loginWithJwt(jwt) {
   localStorage.setItem(tokenKey, jwt);
@@ -23,7 +26,6 @@ export async function logout() {
 export function getCurrentUser() {
   try {
     const jwt = localStorage.getItem(tokenKey);
-    console.log(jwt);
     return jwtDecode(jwt);
   } catch (error) {
     return null;
@@ -44,5 +46,5 @@ export default {
   logout,
   getCurrentUser,
   loginWithJwt,
-  getJwt,
+  getJwt
 };

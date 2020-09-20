@@ -49,7 +49,7 @@ namespace Domain.Utilities
         public static bool IsImage(this IFormFile file)
         {
             var extention = Path.GetExtension(file.FileName).ToLower();
-            return (extention == ".jpg" || extention == ".png" || extention == ".jpeg" || extention == ".bmp" ||extention==".svg"|| extention == ".gif" || extention == ".tiff");
+            return (extention == ".jpg" || extention == ".png" || extention == ".jpeg" || extention == ".bmp" || extention == ".svg" || extention == ".gif" || extention == ".tiff");
         }
 
 
@@ -80,7 +80,7 @@ namespace Domain.Utilities
         /// گرفتن خلاصه از متن با تعداد کاراکتر های دلخواه
         /// </summary>
         /// <returns></returns>
-        public static string GetSummary(this string Text , int Count)
+        public static string GetSummary(this string Text, int Count)
         {
             if (string.IsNullOrEmpty(Text)) return "";
             if (Text.Length >= Count)
@@ -119,7 +119,7 @@ namespace Domain.Utilities
             if (string.IsNullOrEmpty(price))
                 return null;
             int InPrice;
-            if(int.TryParse(price , out InPrice))
+            if (int.TryParse(price, out InPrice))
                 return String.Format("{0:n0}", InPrice);
             return null;
         }
@@ -144,7 +144,7 @@ namespace Domain.Utilities
         public static string GetToomanPriceFormat(this int Rialprice)
         {
             int InPrice = Rialprice / 10;
-            return String.Format("{0:n0}", InPrice);            
+            return String.Format("{0:n0}", InPrice);
         }
 
 
@@ -172,7 +172,7 @@ namespace Domain.Utilities
 
 
 
-        
+
         /// <summary>
         /// چک میکند که ایا دو تاریخ در یک روز هستند؟
         /// </summary>
@@ -276,7 +276,7 @@ namespace Domain.Utilities
         /// <returns></returns>
         public static string GetPersianFormat(this DateTime Date)
         {
-            PersianDateTime pd = new PersianDateTime(Date) { EnglishNumber = true};
+            PersianDateTime pd = new PersianDateTime(Date) { EnglishNumber = true };
             return pd.GetLongDayOfWeekName + "، " + pd.Day + " " + pd.MonthName + " " + pd.Year;
         }
 
@@ -289,7 +289,7 @@ namespace Domain.Utilities
         /// <returns></returns>
         public static PersianDateTime ToPersianDateTime(this DateTime Date)
         {
-            var pd = new PersianDateTime(Date) { EnglishNumber = true};
+            var pd = new PersianDateTime(Date) { EnglishNumber = true };
             return pd;
         }
 
@@ -339,14 +339,14 @@ namespace Domain.Utilities
             return null;
         }
 
-        
+
         /// <summary>
         /// نحوه استفاده 
         /// ExtentionMethods.ToEnumViewModel<EnumName>()
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <returns></returns>
-        public static List<EnumViewModel> ToEnumViewModel<T> ()
+        public static List<EnumViewModel> ToEnumViewModel<T>()
         {
             var model = Enum.GetValues(typeof(T)).Cast<int>()
                 .Select(id => new EnumViewModel
@@ -423,6 +423,25 @@ namespace Domain.Utilities
             dt = dt.AddDays(days);
             return dt.ToPersianDateString();
         }
+
+
+
+
+
+        /// <summary>
+        /// return random string less than 32
+        /// </summary>
+        /// <returns></returns>
+        public static string RandomString(this int lenght)
+        {
+            if (lenght > 32)
+                lenght = 32;
+            return Guid.NewGuid().ToString("n").Substring(0, lenght);
+        }
+
+
+
+
 
     }
 

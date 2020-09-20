@@ -8,7 +8,11 @@ import { store } from "./redux/storeConfig/store";
 import Spinner from "./components/@vuexy/spinner/Fallback-spinner";
 import "./index.scss";
 import "./@fake-db";
+// import "../../assets/scss/plugins/extensions/toastr.scss";
+import "./assets/scss/plugins/extensions/toastr.scss";
+import { ToastContainer } from "react-toastify";
 
+import "react-toastify/dist/ReactToastify.css";
 const LazyApp = lazy(() => import("./App"));
 
 // configureDatabase()
@@ -18,6 +22,7 @@ ReactDOM.render(
     <Suspense fallback={<Spinner />}>
       <Layout>
         <IntlProviderWrapper>
+          <ToastContainer />
           <LazyApp />
         </IntlProviderWrapper>
       </Layout>
@@ -25,7 +30,5 @@ ReactDOM.render(
   </Provider>,
   document.getElementById("root")
 );
-
-
 
 serviceWorker.unregister();

@@ -29,9 +29,6 @@
     <EmbeddedResource Update="DTO\Account\AdminLoginDTO.en-US.resx">
       <Generator>PublicResXFileCodeGenerator</Generator>
     </EmbeddedResource>
-    <EmbeddedResource Update="DTO\Account\AdminLoginDTO.fa-IR.resx">
-      <Generator>PublicResXFileCodeGenerator</Generator>
-    </EmbeddedResource>
     <EmbeddedResource Update="DTO\Account\RegisterDTO.en-US.resx">
       <Generator>PublicResXFileCodeGenerator</Generator>
     </EmbeddedResource>
@@ -90,9 +87,6 @@
       <HintPath>$(SSDTUnitTestPath)\Microsoft.Data.Tools.Schema.Sql.UnitTestingAdapter.dll</HintPath>
       <Private>True</Private>
     </Reference>
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="DTO\fuck\" />
   </ItemGroup>
   <PropertyGroup>
     <SsdtUnitTestVersion>3.1</SsdtUnitTestVersion>

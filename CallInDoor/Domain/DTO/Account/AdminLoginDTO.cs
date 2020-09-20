@@ -8,8 +8,8 @@ namespace Domain.DTO.Account
     public class AdminLoginDTO
     {
         [Required(ErrorMessage = "{0} is  Required")]
-        [MinLength(10, ErrorMessage = "The minimum {0} length is {1} characters")]
-        [MaxLength(10, ErrorMessage = "The maximum {0} length is {1} characters")]
+        [MinLength(8, ErrorMessage = "The minimum {0} length is {1} characters")]
+        [MaxLength(20, ErrorMessage = "The maximum {0} length is {1} characters")]
         [Display(Name = "PhoneNumber")]
         public string PhoneNumber { get; set; }
 

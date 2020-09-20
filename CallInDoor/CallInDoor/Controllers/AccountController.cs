@@ -26,6 +26,8 @@ namespace CallInDoor.Controllers
     {
 
 
+        #region ctor
+
 
         private readonly DataContext _context;
         private readonly UserManager<AppUser> _userManager;
@@ -50,7 +52,7 @@ namespace CallInDoor.Controllers
             _jwtGenerator = jwtGenerator;
         }
 
-
+        #endregion ctor
 
         #region register
 
@@ -195,11 +197,11 @@ namespace CallInDoor.Controllers
         {
             var user = await _context.Users.Where(c => c.PhoneNumber == model.PhoneNumber && c.PhoneNumberConfirmed == true).FirstOrDefaultAsync();
             if (user == null)
-                return Unauthorized(new ApiResponse(401, PubicMessages.UnAuthorizeMessage));
+                return Unauthorized(new ApiResponse(401, "Invalid phone number or password."));
 
 
             if (user.Role != PublicHelper.ADMINROLE)
-                return Unauthorized(new ApiResponse(401, PubicMessages.UnAuthorizeMessage));
+                return Unauthorized(new ApiResponse(401, "Inaccessibility"));
 
             //model.PhoneNumber = model.CountryCode.ToString().Trim() + model.PhoneNumber.Trim();
             //var user = await _accountService.FindUserByPhonenumber(model.PhoneNumber);
@@ -346,6 +348,7 @@ namespace CallInDoor.Controllers
         [HttpPost("ForgetPasswod")]
         public async Task<IActionResult> ForgetPasswod([FromBody] ForgetPasswordDTO model)
         {
+
             var phoneNumber = model.CountryCode.ToString().Trim() + model.PhoneNumber.Trim();
 
             var user = await _accountService.FindUserByPhonenumber(phoneNumber);
@@ -355,36 +358,45 @@ namespace CallInDoor.Controllers
             /*................................................. question.......................................*/
             if (!await _userManager.IsPhoneNumberConfirmedAsync(user))
             {
-                return Unauthorized(new ApiResponse(401, _localizerShared["InvalidPhoneNumber"].Value.ToString()));
+                return Unauthorized(new ApiResponse(401, _localizerShared["ConfirmPhoneMessage"].Value.ToString()));
+            }
+
+        
+            var newpass = 8.RandomString();
+
+            string resetToken = await _userManager.GeneratePasswordResetTokenAsync(user);
+            var passwordChangeResult = await _userManager.ResetPasswordAsync(user, resetToken, newpass);
+            if (passwordChangeResult.Succeeded)
+            {
+                //send Password to user
+               
+
+                return Ok(new ApiOkResponse(new DataFormat()
+                {
+                    Status = 1,
+                    //data = passwordResetLink,
+                    data = { },
+                    Message = _localizerShared["SuccessMessage"].Value.ToString()
+                },
+                 _localizerShared["SuccessMessage"].Value.ToString()
+                ));
+            }
+            else
+            {
+                return Ok(new ApiOkResponse(new DataFormat()
+                {
+                    Status = 0,
+                    //data = passwordResetLink,
+                    data = { },
+                    Message = _localizerShared["InternalServerMessage"].Value.ToString()
+                },
+                 _localizerShared["InternalServerMessage"].Value.ToString()
+              ));
+
             }
 
 
-            var random = new Random();
-            //var code = random.Next(100000, 999999);
-            var code = 1111;
 
-            user.verificationCode = code;
-            user.verificationCodeExpireTime = DateTime.UtcNow.AddMinutes(3);
-
-            await _context.SaveChangesAsync();
-
-            //send code
-
-
-            //var token = await _accountService.GeneratePasswordResetToken(user);
-
-            //var passwordResetLink = Url.Action("ResetPassword", "Account",
-            //    new { PhoneNumber = model.PhoneNumber, token = token }, Request.Scheme);
-
-            return Ok(new ApiOkResponse(new DataFormat()
-            {
-                Status = 1,
-                //data = passwordResetLink,
-                data = { },
-                Message = _localizerShared["SuccessMessage"].Value.ToString()
-            },
-            _localizerShared["SuccessMessage"].Value.ToString()
-           ));
 
         }
 

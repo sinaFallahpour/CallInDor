@@ -40,8 +40,8 @@ namespace Domain.DTO.Account
         public string ImageAddress { get; set; }
 
 
-        //[NotMapped]
-        //public IFormFile File { get; set; }
+        [NotMapped]
+        public IFormFile File { get; set; }
 
 
 

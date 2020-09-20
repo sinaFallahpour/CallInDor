@@ -103,7 +103,7 @@ namespace CallInDoor.Controllers
 
 
 
-       
+
         [HttpPut("Update")]
         [Authorize(Roles = PublicHelper.ADMINROLE)]
         public async Task<IActionResult> Update([FromBody] CreateCategoryDTO model)
@@ -116,7 +116,7 @@ namespace CallInDoor.Controllers
             var service = _categoryService.GetById(model.Id);
             if (service == null)
             {
-                return NotFound(new ApiResponse(404, "category " + PubicMessages.NotFoundMessage));
+                return NotFound(new ApiResponse(404, _localizerShared["NotFound"].Value.ToString()));
             }
 
             var result = await _categoryService.Update(service, model);
