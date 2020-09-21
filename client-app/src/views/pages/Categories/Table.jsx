@@ -16,12 +16,14 @@ import "../../../assets/scss/plugins/tables/_agGridStyleOverride.scss";
 import { toast } from "react-toastify";
 
 import ModalForm from "./ModalForm";
+// import ModalEditForm from "./ModalEditForm";
 
 import Spinner from "../../../components/@vuexy/spinner/Loading-spinner";
 import agent from "../../../core/services/agent";
 
 class Table extends React.Component {
   state = {
+    currentCategory: null,
     loading: true,
     rowData: [],
     paginationPageSize: 20,
@@ -61,6 +63,13 @@ class Table extends React.Component {
         field: "parentName",
         filter: true,
         width: 200,
+
+        cellRenderer: function (params) {
+          if (!params.data) return '';
+          if (!params.value)
+            return `_ `;
+          else return params.value
+        }
       },
       {
         headerName: "ServiceName",
@@ -68,12 +77,19 @@ class Table extends React.Component {
         filter: true,
         width: 200,
       },
-      // {
-      //   headerName: "ParentId",
-      //   field: "parentId",
-      //   filter: true,
-      //   width: 300,
-      // },
+      {
+        headerName: "",
+        field: "id",
+        filter: false,
+        width: 210,
+        cellStyle: { "border-width": "0px", outline: 'none' },
+        cellRenderer: function (params) {
+          console.log(params)
+          if (!params.data) return '';
+          return `<button class="btn btn-sm btn-success">Edit</button>`;
+        }
+      },
+
     ],
   };
 
@@ -91,49 +107,11 @@ class Table extends React.Component {
     });
   }
 
-  GetAllCategory = async () => {
-    const { data } = await agent.Category.list();
-
-    if (data?.result) {
-      setTimeout(() => {
-        this.setState({ rowData: data.result.data, loading: false });
-      }, 2000);
-      return;
-    }
-    toast.error(data.message, {
-      autoClose: 10000,
-    });
+  GetAllCategory = async (newCategory) => {
+    const rowData = [...this.state.rowData, newCategory];
+    this.setState({ rowData })
   };
 
-  // componentDidMount() {
-  //   // axios.get("/api/aggrid/data").then((response) => {
-  //   //   let rowData = response.data.data;
-  //   //   JSON.stringify(rowData);
-  //   //   this.setState({ rowData });
-  //   // });
-  //   setTimeout(() => {
-  //     this.setState({loading:false})
-  //   }, 2000);
-  //   const rowData = [
-  //     {
-  //       firstname: "Kristine",
-  //       lastname: "Paker",
-  //       company: "Chagrin Valley Massotherapy",
-  //       address: "301 N Pine St",
-  //       city: "Creston",
-  //       country: "Union",
-  //       state: "IA",
-  //       zip: "50801",
-  //       phone: "641-782-7169",
-  //       fax: "641-782-7962",
-  //       email: "kristine@paker.com",
-  //       web: "http://www.kristinepaker.com",
-  //       followers: 7977,
-  //     },
-  //   ];
-
-  //   this.setState({ rowData });
-  // }
 
   onGridReady = (params) => {
     this.gridApi = params.api;
@@ -163,6 +141,8 @@ class Table extends React.Component {
     const { rowData, columnDefs, defaultColDef } = this.state;
     return (
       <React.Fragment>
+        {/* {this.state.currentCategory!=null? <ModalEditForm /> :null  } */}
+        {/* <ModalEditForm/> */}
         <ModalForm GetAllCategory={this.GetAllCategory}></ModalForm>
         <Card className="overflow-hidden agGrid-card">
           <CardBody className="py-0">
@@ -175,11 +155,11 @@ class Table extends React.Component {
                         {this.gridApi
                           ? this.state.currenPageSize
                           : "" * this.state.getPageSize -
-                            (this.state.getPageSize - 1)}{" "}
+                          (this.state.getPageSize - 1)}{" "}
                         -{" "}
                         {this.state.rowData.length -
                           this.state.currenPageSize * this.state.getPageSize >
-                        0
+                          0
                           ? this.state.currenPageSize * this.state.getPageSize
                           : this.state.rowData.length}{" "}
                         of {this.state.rowData.length}
@@ -219,6 +199,7 @@ class Table extends React.Component {
                         placeholder="search..."
                         onChange={(e) => this.updateSearchQuery(e.target.value)}
                         value={this.state.value}
+                        disabled={this.state.loading}
                       />
                     </div>
                     {/* <div className="export-btn">
@@ -243,26 +224,27 @@ class Table extends React.Component {
                 {this.state.loading ? (
                   <Spinner></Spinner>
                 ) : (
-                  <ContextLayout.Consumer>
-                    {(context) => (
-                      <AgGridReact
-                        gridOptions={{}}
-                        rowSelection="multiple"
-                        defaultColDef={defaultColDef}
-                        columnDefs={columnDefs}
-                        rowData={rowData}
-                        onGridReady={this.onGridReady}
-                        colResizeDefault={"shift"}
-                        animateRows={true}
-                        floatingFilter={true}
-                        pagination={true}
-                        paginationPageSize={this.state.paginationPageSize}
-                        pivotPanelShow="always"
-                        enableRtl={context.state.direction === "rtl"}
-                      />
-                    )}
-                  </ContextLayout.Consumer>
-                )}
+                    <ContextLayout.Consumer>
+                      {(context) => (
+                        <AgGridReact
+                          gridOptions={{}}
+                          // rowSelection="multiple"
+                          defaultColDef={defaultColDef}
+                          columnDefs={columnDefs}
+                          rowData={rowData}
+                          onGridReady={this.onGridReady}
+                          colResizeDefault={"shift"}
+                          animateRows={true}
+                          floatingFilter={true}
+                          pagination={true}
+                          paginationPageSize={this.state.paginationPageSize}
+                          pivotPanelShow="always"
+                          enableRtl={context.state.direction === "rtl"}
+                        
+                        />
+                      )}
+                    </ContextLayout.Consumer>
+                  )}
               </div>
             )}
           </CardBody>

@@ -59,7 +59,7 @@ namespace CallInDoor.Controllers
         #region get Profile
 
 
-        //  /api/Profile/Profile?username=2Fsina
+        // /api/Profile/Profile?username=2Fsina
         [HttpGet("Profile")]
         public async Task<ActionResult> Profile(string username)
         {
@@ -103,7 +103,7 @@ namespace CallInDoor.Controllers
 
         #region UpdateProfile
 
-        //  /api/Profile/UpdateProfile
+         // /api/Profile/UpdateProfile
         [HttpPut("UpdateProfile")]
         [Authorize()]
         public async Task<ActionResult> UpdateProfile([FromBody] UpdateProfileDTO model)
@@ -199,15 +199,6 @@ namespace CallInDoor.Controllers
                     }
                 }
                 #endregion file validation
-
-
-
-
-
-
-
-
-
 
 
 

@@ -11,7 +11,8 @@ import knowledgeBaseQuestion from "./views/pages/knowledge-base/Questions";
 import { ContextLayout } from "./utility/context/Layout";
 
 // Route-based code splitting
-const categories = lazy(() => import("./views/pages/Categories/Categories"));
+const Categories = lazy(() => import("./views/pages/Categories/Categories"));
+const EditCategory = lazy(() => import("./views/pages/Categories/EditCategory"));
 
 const analyticsDashboard = lazy(() =>
   import("./views/dashboard/analytics/AnalyticsDashboard")
@@ -258,7 +259,9 @@ class AppRouter extends React.Component {
       <Router history={history}>
         <Switch>
           <Route path="/pages/login" component={Login} fullLayout />
-          <RouteConfig exact path="/pages/categories" component={categories} />
+          <RouteConfig exact path="/pages/categories" component={Categories} />
+          <RouteConfig exact path="/pages/category/:id" component={EditCategory} />
+
           <RouteConfig exact path="/" component={analyticsDashboard} />
           <RouteConfig
             path="/ecommerce-dashboard"
@@ -342,7 +345,7 @@ class AppRouter extends React.Component {
           <RouteConfig path="/forms/elements/pickers" component={pickers} />
           <RouteConfig path="/forms/elements/input-mask" component={inputMask} />
           <RouteConfig path="/forms/layout/form-layout" component={layout} />
-          <RouteConfig path="/forms/formik" component={formik} />{" "}
+          <RouteConfig path="/forms/formik" component={formik} />
           <RouteConfig path="/tables/reactstrap" component={tables} />
           <RouteConfig path="/tables/react-tables" component={ReactTables} />
           <RouteConfig path="/tables/agGrid" component={Aggrid} />

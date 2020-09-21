@@ -4,7 +4,7 @@ import jwtDecode from "jwt-decode";
 
 const tokenKey = "token";
 
-export async function login(phoneNumber, password) {
+export async function login (phoneNumber, password) {
   const { data } = await requests.post("/Account/AdminLogin", {
     phoneNumber,
     password

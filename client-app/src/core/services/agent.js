@@ -75,9 +75,9 @@ const User = {
 const Category = {
   // list: () => requests.get("/category/getAll"),
   list: () => requests.get("/Category/GetAllCateGoryForAdmin"),
-  // details: (id) => requests.get(`/activities/${id}`),
-  create: (category) => requests.post("/Category/Create", category)
-  // update: (activity) => requests.put(`/activities/${activity.id}`, activity),
+  details: (id) => requests.get(`/Category/GetByIdForAdmin/${id}`),
+  create: (category) => requests.post("/Category/Create", category),
+  update: (category) => requests.put("/Category/Update", category)
   // delete: (id) => requests.del(`/activities/${id}`)
 };
 

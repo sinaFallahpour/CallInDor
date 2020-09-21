@@ -40,6 +40,34 @@ namespace CallInDoor.Controllers
         }
 
 
+        [HttpGet("GetByIdForAdmin")]
+        [Authorize(Roles = PublicHelper.ADMINROLE)]
+        public async Task<ActionResult> GetById(int Id)
+        {
+            var checkToken = await _accountService.CheckTokenIsValid();
+            if (!checkToken)
+                return Unauthorized(new ApiResponse(401, PubicMessages.UnAuthorizeMessage));
+
+            var category = await _context.CategoryTBL.Where(c => c.Id == Id).Select(c => new
+            {
+                c.Id,
+                c.Title,
+                c.PersianTitle,
+                c.ParentId,
+                c.IsEnabled,
+                serviceName = c.Service.Name,
+            }).FirstOrDefaultAsync();
+
+            return Ok(new ApiOkResponse(new DataFormat()
+            {
+                Status = 1,
+                data = category,
+                Message = PubicMessages.SuccessMessage
+            },
+            PubicMessages.SuccessMessage
+           ));
+
+        }
 
 
 
@@ -71,6 +99,9 @@ namespace CallInDoor.Controllers
         [Authorize(Roles = PublicHelper.ADMINROLE)]
         public async Task<ActionResult> GetAllCateGoryForAdmin()
         {
+            var result = await _accountService.CheckTokenIsValid();
+            if (!result)
+                return Unauthorized(new ApiResponse(401, PubicMessages.UnAuthorizeMessage));
 
             var categories = await _context.CategoryTBL
                .AsNoTracking()
@@ -107,15 +138,17 @@ namespace CallInDoor.Controllers
         [Authorize(Roles = PublicHelper.ADMINROLE)]
         public async Task<ActionResult> Create([FromBody] CreateCategoryDTO model)
         {
+            var checkToken = await _accountService.CheckTokenIsValid();
+            if (!checkToken)
+                return Unauthorized(new ApiResponse(401, PubicMessages.UnAuthorizeMessage));
+
             if (model.ServiceId == null)
             {
                 var errors = new List<string>();
                 errors.Add("service Is required");
                 return BadRequest(new ApiBadRequestResponse(errors));
             }
-            var checkToken = await _accountService.CheckTokenIsValid();
-            if (!checkToken)
-                return Unauthorized(new ApiResponse(401, PubicMessages.UnAuthorizeMessage));
+
 
             var result = await _categoryService.Create(model);
             if (result)

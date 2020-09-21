@@ -16,10 +16,10 @@ namespace Domain
 
         }
 
-
-
-        //public DataContext(DbContextOptions options) : base(options)
+        //protected override void OnModelCreating(ModelBuilder builder)
         //{
+        //    base.OnModelCreating(builder);
+        //    builder.Entity<AppUser>().HasIndex(u => u.UserName).IsUnique(true);
         //}
 
 
@@ -53,6 +53,7 @@ namespace Domain
         ///کاربر مدرک رشته تحصیلی
         /// </summary>
         public DbSet<User_Degree_Field> UserDegreeField { get; set; }
+
 
 
     }

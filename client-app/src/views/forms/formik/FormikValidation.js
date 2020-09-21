@@ -22,9 +22,6 @@ const formSchema = Yup.object().shape({
 });
 
 class FormValidation extends React.Component {
-
-
-
   render() {
     return (
       <Card>
@@ -44,7 +41,7 @@ class FormValidation extends React.Component {
               number: "",
               date: "",
               minlength: "",
-              maxlength: "",
+              maxlength: ""
             }}
             validationSchema={formSchema}
           >
@@ -55,9 +52,8 @@ class FormValidation extends React.Component {
                   <Field
                     name="required"
                     id="required"
-                    className={`form-control ${
-                      errors.required && touched.required && "is-invalid"
-                    }`}
+                    className={`form-control ${errors.required && touched.required && "is-invalid"
+                      }`}
                   />
                   {errors.required && touched.required ? (
                     <div className="invalid-tooltip mt-25 ml-2">
@@ -71,9 +67,8 @@ class FormValidation extends React.Component {
                     type="email"
                     name="email"
                     id="email"
-                    className={`form-control ${
-                      errors.email && touched.email && "is-invalid"
-                    }`}
+                    className={`form-control ${errors.email && touched.email && "is-invalid"
+                      }`}
                   />
                   {errors.email && touched.email ? (
                     <div className="invalid-tooltip mt-25  ml-2">
@@ -86,9 +81,8 @@ class FormValidation extends React.Component {
                   <Field
                     name="url"
                     id="url"
-                    className={`form-control ${
-                      errors.url && touched.url && "is-invalid"
-                    }`}
+                    className={`form-control ${errors.url && touched.url && "is-invalid"
+                      }`}
                   />
                   {errors.url && touched.url ? (
                     <div className="invalid-tooltip mt-25  ml-2">
@@ -101,9 +95,8 @@ class FormValidation extends React.Component {
                   <Field
                     name="number"
                     id="number"
-                    className={`form-control ${
-                      errors.number && touched.number && "is-invalid"
-                    }`}
+                    className={`form-control ${errors.number && touched.number && "is-invalid"
+                      }`}
                   />
                   {errors.number && touched.number ? (
                     <div className="invalid-tooltip mt-25  ml-2">
@@ -117,9 +110,8 @@ class FormValidation extends React.Component {
                     type="date"
                     name="date"
                     id="date"
-                    className={`form-control ${
-                      errors.date && touched.date && "is-invalid"
-                    }`}
+                    className={`form-control ${errors.date && touched.date && "is-invalid"
+                      }`}
                   />
                   {errors.date && touched.date ? (
                     <div className="invalid-tooltip mt-25  ml-2">
@@ -134,9 +126,8 @@ class FormValidation extends React.Component {
                   <Field
                     name="minlength"
                     id="minlength"
-                    className={`form-control ${
-                      errors.minlength && touched.minlength && "is-invalid"
-                    }`}
+                    className={`form-control ${errors.minlength && touched.minlength && "is-invalid"
+                      }`}
                   />
                   {errors.minlength && touched.minlength ? (
                     <div className="invalid-tooltip mt-25  ml-2">
@@ -151,9 +142,8 @@ class FormValidation extends React.Component {
                   <Field
                     name="maxlength"
                     id="maxlength"
-                    className={`form-control ${
-                      errors.maxlength && touched.maxlength && "is-invalid"
-                    }`}
+                    className={`form-control ${errors.maxlength && touched.maxlength && "is-invalid"
+                      }`}
                   />
                   {errors.maxlength && touched.maxlength ? (
                     <div className="invalid-tooltip mt-25  ml-2">

@@ -96,8 +96,8 @@ class ModalForm extends React.Component {
         this.props.GetAllCategory(obj)
       }
       setTimeout(() => {
-        this.setState({ modal:false, Loading: false, title: '', persianTitle: '', serviceId: null, parentId: null });
-        // this.toggleModal()
+        this.setState({ Loading: false, title: '', persianTitle: '', serviceId: null, parentId: null });
+        this.toggleModal()
       }, 2000);
     } catch (ex) {
       console.log(ex);

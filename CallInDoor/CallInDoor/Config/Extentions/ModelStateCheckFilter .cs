@@ -12,9 +12,11 @@ namespace CallInDoor.Config.Extentions
     public class ModelStateCheckFilter : IActionFilter
     {
 
+     
         public void OnActionExecuted(ActionExecutedContext context) { }
         public void OnActionExecuting(ActionExecutingContext context)
         {
+            
             if (!context.ModelState.IsValid)
             {
                 var modelState = context.ModelState;
