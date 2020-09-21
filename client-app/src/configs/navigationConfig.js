@@ -7,52 +7,13 @@ const navigationConfig = [
   },
   {
     id: "category & service Management",
-    title: "Category & service Management",
-    type: "collapse",
+    title: "Categories",
+    type: "item",
     icon: <Icon.Home size={20} />,
-    children: [
-      {
-        id: "categories",
-        title: "categories",
-        type: "item",
-        icon: <Icon.Circle size={12} />,
-        permissions: ["admin", "editor"],
-        navLink: "/pages/categories"
-      },
-      {
-        id: "serviceTypes",
-        title: "serviceTypes",
-        type: "item",
-        icon: <Icon.Circle size={12} />,
-        permissions: ["admin","editor"],
-        navLink: "/pages/service-type"
-      }
-    ]
-  },
-  {
-    id: "dashboard",
-    title: "Dashboard",
-    type: "collapse",
-    icon: <Icon.Home size={20} />,
-    badge: "warning",
-    badgeText: "2",
-    children: [
-      {
-        id: "analyticsDash",
-        title: "Analytics",
-        type: "item",
-        icon: <Icon.Circle size={12} />,
-        permissions: ["admin", "editor"],
-        navLink: "/"
-      },
-      {
-        id: "eCommerceDash",
-        title: "eCommerce",
-        type: "item",
-        icon: <Icon.Circle size={12} />,
-        permissions: ["admin"],
-        navLink: "/ecommerce-dashboard"
-      }
+    navLink: "/pages/categories",
+    parentOf: [
+      "pages/category/:id",
+      "/pages/categories"
     ]
   },
   {
@@ -84,24 +45,6 @@ const navigationConfig = [
     icon: <Icon.Calendar size={20} />,
     permissions: ["admin", "editor"],
     navLink: "/calendar"
-  },
-  {
-    id: "eCommerce",
-    title: "Ecommerce",
-    type: "collapse",
-    icon: <Icon.ShoppingCart size={20} />,
-    children: [
-    
-      {
-        id: "detail",
-        title: "Product Detail",
-        type: "item",
-        icon: <Icon.Circle size={12} />,
-        permissions: ["admin", "editor"],
-        navLink: "/ecommerce/product-detail"
-      }
-    
-    ]
   },
   {
     id: "users",
@@ -796,44 +739,6 @@ const navigationConfig = [
     ]
   },
   {
-    type: "groupHeader",
-    groupTitle: "CHARTS & MAPS"
-  },
-  {
-    id: "charts",
-    title: "Charts",
-    type: "collapse",
-    badge: "success",
-    badgeText: "3",
-    icon: <Icon.PieChart size={20} />,
-    children: [
-      {
-        id: "apex",
-        title: "Apex",
-        type: "item",
-        icon: <Icon.Circle size={12} />,
-        permissions: ["admin", "editor"],
-        navLink: "/charts/apex"
-      },
-      {
-        id: "chartJs",
-        title: "ChartJS",
-        type: "item",
-        icon: <Icon.Circle size={12} />,
-        permissions: ["admin", "editor"],
-        navLink: "/charts/chartjs"
-      },
-      {
-        id: "recharts",
-        title: "Recharts",
-        type: "item",
-        icon: <Icon.Circle size={12} />,
-        permissions: ["admin", "editor"],
-        navLink: "/charts/recharts"
-      }
-    ]
-  },
-  {
     id: "leafletMaps",
     title: "Leaflet Maps",
     icon: <Icon.Map size={20} />,
@@ -860,46 +765,6 @@ const navigationConfig = [
     type: "item",
     permissions: ["admin", "editor"],
     navLink: "/extensions/toastr"
-  },
-  {
-    id: "rcSlider",
-    title: "Rc Slider",
-    icon: <Icon.Sliders size={20} />,
-    type: "item",
-    permissions: ["admin", "editor"],
-    navLink: "/extensions/slider"
-  },
-  {
-    id: "fileUploader",
-    title: "File Uploader",
-    icon: <Icon.UploadCloud size={20} />,
-    type: "item",
-    permissions: ["admin", "editor"],
-    navLink: "/extensions/file-uploader"
-  },
-  {
-    id: "wysiwygEditor",
-    title: "Wysiwyg Editor",
-    icon: <Icon.Edit size={20} />,
-    type: "item",
-    permissions: ["admin", "editor"],
-    navLink: "/extensions/wysiwyg-editor"
-  },
-  {
-    id: "drag_&_drop",
-    title: "Drag & Drop",
-    icon: <Icon.Droplet size={20} />,
-    type: "item",
-    permissions: ["admin", "editor"],
-    navLink: "/extensions/drag-and-drop"
-  },
-  {
-    id: "tour",
-    title: "Tour",
-    icon: <Icon.Info size={20} />,
-    type: "item",
-    permissions: ["admin", "editor"],
-    navLink: "/extensions/tour"
   },
   {
     id: "clipBoard",

@@ -17,9 +17,7 @@ const EditCategory = lazy(() => import("./views/pages/Categories/EditCategory"))
 const analyticsDashboard = lazy(() =>
   import("./views/dashboard/analytics/AnalyticsDashboard")
 );
-const ecommerceDashboard = lazy(() =>
-  import("./views/dashboard/ecommerce/EcommerceDashboard")
-);
+
 const email = lazy(() => import("./views/apps/email/Email"));
 const todo = lazy(() => import("./views/apps/todo/Todo"));
 const calendar = lazy(() => import("./views/apps/calendar/Calendar"));
@@ -154,17 +152,12 @@ const error404 = lazy(() => import("./views/pages/misc/error/404"));
 const error500 = lazy(() => import("./views/pages/misc/error/500"));
 const authorized = lazy(() => import("./views/pages/misc/NotAuthorized"));
 const maintenance = lazy(() => import("./views/pages/misc/Maintenance"));
-const apex = lazy(() => import("./views/charts/apex/ApexCharts"));
-const chartjs = lazy(() => import("./views/charts/chart-js/ChartJS"));
-const extreme = lazy(() => import("./views/charts/recharts/Recharts"));
+
 const leafletMaps = lazy(() => import("./views/maps/Maps"));
 const toastr = lazy(() => import("./extensions/toastify/Toastify"));
 const sweetAlert = lazy(() => import("./extensions/sweet-alert/SweetAlert"));
-const rcSlider = lazy(() => import("./extensions/rc-slider/Slider"));
-const uploader = lazy(() => import("./extensions/dropzone/Dropzone"));
-const editor = lazy(() => import("./extensions/editor/Editor"));
-const drop = lazy(() => import("./extensions/drag-and-drop/DragAndDrop"));
-const tour = lazy(() => import("./extensions/tour/Tour"));
+
+ 
 const clipboard = lazy(() =>
   import("./extensions/copy-to-clipboard/CopyToClipboard")
 );
@@ -264,10 +257,6 @@ class AppRouter extends React.Component {
 
           <RouteConfig exact path="/" component={analyticsDashboard} />
           <RouteConfig
-            path="/ecommerce-dashboard"
-            component={ecommerceDashboard}
-          />
-          <RouteConfig
             path="/email"
             exact
             component={() => <Redirect to="/email/inbox" />}
@@ -280,10 +269,6 @@ class AppRouter extends React.Component {
           />
           <RouteConfig path="/todo/:filter" component={todo} />
           <RouteConfig path="/calendar" component={calendar} />
-          <RouteConfig
-            path="/ecommerce/product-detail"
-            component={productDetail}
-          />
           <RouteConfig path="/data-list/list-view" component={listView} />
           <RouteConfig path="/data-list/thumb-view" component={thumbView} />
           <RouteConfig path="/ui-element/grid" component={grid} />
@@ -403,17 +388,18 @@ class AppRouter extends React.Component {
           <RouteConfig path="/app/user/list" component={userList} />
           <RouteConfig path="/app/user/edit" component={userEdit} />
           <RouteConfig path="/app/user/view" component={userView} />
-          <RouteConfig path="/charts/apex" component={apex} />
-          <RouteConfig path="/charts/chartjs" component={chartjs} />
-          <RouteConfig path="/charts/recharts" component={extreme} />
+          
+          
+          
+         
+          
+          
+          
           <RouteConfig path="/maps/leaflet" component={leafletMaps} />
           <RouteConfig path="/extensions/sweet-alert" component={sweetAlert} />
           <RouteConfig path="/extensions/toastr" component={toastr} />
-          <RouteConfig path="/extensions/slider" component={rcSlider} />
-          <RouteConfig path="/extensions/file-uploader" component={uploader} />
-          <RouteConfig path="/extensions/wysiwyg-editor" component={editor} />
-          <RouteConfig path="/extensions/drag-and-drop" component={drop} />
-          <RouteConfig path="/extensions/tour" component={tour} />
+
+ 
           <RouteConfig path="/extensions/clipboard" component={clipboard} />
           <RouteConfig component={error404} fullLayout />
         </Switch>

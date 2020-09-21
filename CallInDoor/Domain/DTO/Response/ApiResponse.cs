@@ -24,11 +24,11 @@ namespace Domain.DTO.Response
             switch (statusCode)
             {
                 case 404:
-                    return "Resource not found";
+                    return "Not Found";
                 case 401:
-                    return "unAuthorize";
+                    return "UnAuthorize";
                 case 403:
-                    return "forbidden";
+                    return "Forbidden";
                 case 500:
                     return "An unhandled error occurred";
                 default:

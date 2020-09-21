@@ -58,6 +58,9 @@ namespace CallInDoor.Controllers
                 serviceName = c.Service.Name,
             }).FirstOrDefaultAsync();
 
+            if (category == null)
+                return NotFound(new ApiResponse(404, PubicMessages.NotFoundMessage));
+
             return Ok(new ApiOkResponse(new DataFormat()
             {
                 Status = 1,

@@ -10,7 +10,7 @@ export const searchResult = [
         title: "categories",
         target: "categories",
         link: "/pages/categories",
-        icon: "Circle",
+        icon: "Circle"
       },
       {
         id: 109,
@@ -559,41 +559,6 @@ export const searchResult = [
         icon: "CreditCard"
       },
       {
-        id: 83,
-        target: "RcSlider",
-        title: "Rc Slider",
-        link: "/extensions/slider",
-        icon: "Sliders"
-      },
-      {
-        id: 84,
-        target: "FileUploader",
-        title: "File Uploader",
-        link: "/extensions/file-uploader",
-        icon: "Upload"
-      },
-      {
-        id: 85,
-        target: "wysiwyg-editor",
-        title: "Wysiwyg Editor",
-        link: "/extensions/wysiwyg-editor",
-        icon: "Edit"
-      },
-      {
-        id: 86,
-        target: "DragDrop",
-        title: "Drag & Drop",
-        link: "/extensions/drag-and-drop",
-        icon: "Move"
-      },
-      {
-        id: 87,
-        target: "Tour",
-        title: "Tour",
-        link: "/extensions/tour",
-        icon: "Airplay"
-      },
-      {
         id: 88,
         target: "AutoComplete",
         title: "Auto Complete",
@@ -641,13 +606,6 @@ export const searchResult = [
         title: "User Edit",
         link: "/app/user/edit",
         icon: "Edit"
-      },
-      {
-        id: 100,
-        target: "E-commerceProductDetail",
-        title: "Product Detail",
-        link: "/ecommerce/product-detail",
-        icon: "Info"
       },
       {
         id: 101,

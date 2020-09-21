@@ -21,6 +21,8 @@ import ModalForm from "./ModalForm";
 import Spinner from "../../../components/@vuexy/spinner/Loading-spinner";
 import agent from "../../../core/services/agent";
 
+
+
 class Table extends React.Component {
   state = {
     currentCategory: null,
@@ -86,7 +88,8 @@ class Table extends React.Component {
         cellRenderer: function (params) {
           console.log(params)
           if (!params.data) return '';
-          return `<button class="btn btn-sm btn-success">Edit</button>`;
+          return  `<a class="btn btn-success " href="/pages/category/${params.value}">Edit</a>`
+          // `<button class="btn btn-sm btn-success">Edit</button>`;
         }
       },
 
@@ -140,7 +143,7 @@ class Table extends React.Component {
   render() {
     const { rowData, columnDefs, defaultColDef } = this.state;
     return (
-      <React.Fragment>
+      <React.Fragment> 
         {/* {this.state.currentCategory!=null? <ModalEditForm /> :null  } */}
         {/* <ModalEditForm/> */}
         <ModalForm GetAllCategory={this.GetAllCategory}></ModalForm>
