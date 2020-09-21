@@ -1,7 +1,7 @@
 import React from "react"
 import { Row, Col } from "reactstrap"
 import Breadcrumbs from "../../../components/@vuexy/breadCrumbs/BreadCrumb"
-import ThumbViewConfig from "./DataListConfig"
+import ThumbViewConfig from "./DataListConfig";
 import queryString from "query-string"
 class ThumbView extends React.Component {
   render() {

@@ -11,7 +11,7 @@ namespace Service.Interfaces.ServiceType
     public interface IServiceService
     {
         ServiceTBL GetById(int Id);
-        Task<List<ListServiceDTO>> GetAll();
+        Task<List<ListServiceDTO>> GetAllActive();
         Task<bool> Create(CreateServiceDTO model);
         //Task<bool> Update(ServiceTBL model);
         Task<bool> Update(ServiceTBL serviceFromDB, CreateServiceDTO model);

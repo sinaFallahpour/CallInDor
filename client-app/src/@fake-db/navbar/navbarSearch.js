@@ -9,15 +9,15 @@ export const searchResult = [
         id: 108,
         title: "categories",
         target: "categories",
-        link: "/categories",
-        icon:  "Circle",
+        link: "/pages/categories",
+        icon: "Circle",
       },
       {
         id: 109,
         title: "serviceTypes",
         target: "serviceTypes",
         link: "/service-type",
-        icon:  "Circle",
+        icon: "Circle"
       },
       {
         id: 1,
@@ -228,13 +228,6 @@ export const searchResult = [
         title: "Modal Component",
         link: "/components/modals",
         icon: "Maximize2"
-      },
-      {
-        id: 33,
-        target: "Pagination",
-        title: "Pagination Component",
-        link: "/components/pagination",
-        icon: "ChevronsRight"
       },
       {
         id: 34,
@@ -615,13 +608,6 @@ export const searchResult = [
         icon: "Clipboard"
       },
       {
-        id: 90,
-        target: "ContextMenu",
-        title: "Context Menu",
-        link: "/extensions/context-menu",
-        icon: "Menu"
-      },
-      {
         id: 91,
         target: "Internationalization",
         title: "Internationalization",
@@ -655,29 +641,6 @@ export const searchResult = [
         title: "User Edit",
         link: "/app/user/edit",
         icon: "Edit"
-      },
-      {
-        id: 96,
-        target: "swiper",
-        title: "Swiper",
-        link: "/extensions/swiper",
-        icon: "Map"
-      },
-    
-      
-      {
-        id: 98,
-        target: "tree",
-        title: "Tree",
-        link: "/extensions/tree",
-        icon: "GitMerge"
-      },
-      {
-        id: 99,
-        target: "paginationExt",
-        title: "Pagination Extension",
-        link: "/extensions/pagination",
-        icon: "ChevronsRight"
       },
       {
         id: 100,

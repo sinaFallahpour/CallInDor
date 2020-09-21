@@ -21,7 +21,7 @@ class CheckboxBasic extends React.Component {
           <Form>
             <FormGroup check inline>
               <Label check>
-                <Input type="checkbox" defaultChecked /> Active
+                <Input type="checkbox" name="asa" defaultChecked /> Active
               </Label>
             </FormGroup>
             <FormGroup check inline>

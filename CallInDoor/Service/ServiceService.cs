@@ -43,12 +43,13 @@ namespace Service
 
 
         /// <summary>
-        /// get   All services
+        /// get All services
         /// </summary>
-        public Task<List<ListServiceDTO>> GetAll()
+        public Task<List<ListServiceDTO>> GetAllActive()
         {
-            return _context.ServiceTBL.AsNoTracking().Select(c => new ListServiceDTO
+            return _context.ServiceTBL.Where(c=>c.IsEnabled).AsNoTracking().Select(c => new ListServiceDTO
             {
+                Id = c.Id,
                 Color = c.Color,
                 IsEnabled = c.IsEnabled,
                 Name = c.Name,
@@ -153,7 +154,7 @@ namespace Service
 
 
 
-       
+
 
     }
 }

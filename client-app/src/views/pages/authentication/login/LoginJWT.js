@@ -1,7 +1,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import { Redirect } from 'react-router-dom'
-import auth from '../../../../core/services/userService/authService'
+import { Redirect } from "react-router-dom";
+import auth from "../../../../core/services/userService/authService";
 
 import {
   CardBody,
@@ -17,7 +17,8 @@ import { Mail, Lock, Check, Phone } from "react-feather";
 // import { loginWithJWT } from "../../../../redux/actions/auth/loginActions";
 // import { connect } from "react-redux";
 // import { history } from "../../../../history";
-import { toast } from "react-toastify"
+import { toast } from "react-toastify";
+import Spinner from "../../../../components/@vuexy/spinner/Loading-spinner";
 
 class LoginJWT extends React.Component {
   state = {
@@ -25,24 +26,25 @@ class LoginJWT extends React.Component {
     password: "",
     errors: [],
     errorMessage: "",
+    Loading: false,
   };
 
-
   doSubmit = async (e) => {
-
+    this.setState({ Loading: true });
     e.preventDefault();
     const errorMessage = "";
     const errors = [];
-    this.setState({ errorMessage, errors })
+    this.setState({ errorMessage, errors });
     try {
       const { phone, password } = this.state;
       const res = await auth.login(phone, password);
-      // console.log(this.props)
-      const state = this.props?.location?.state;
-      window.location = state ? state.from.pathName : "/";
-      // this.props.history.push("/")
+      setTimeout(() => {
+        const state = this.props?.location?.state;
+        window.location = state ? state.from.pathName : "/";
+        this.setState({ Loading: false });
+      }, 1000);
     } catch (ex) {
-      console.log(ex)
+      console.log(ex);
       if (ex?.response?.status == 400) {
         const errors = ex?.response?.data?.errors;
         this.setState({ errors });
@@ -50,18 +52,13 @@ class LoginJWT extends React.Component {
         const errorMessage = ex?.response?.data?.message;
         this.setState({ errorMessage });
         toast.error(errorMessage, {
-          autoClose: 10000
-        })
+          autoClose: 10000,
+        });
       }
-
+      setTimeout(() => {
+        this.setState({ Loading: false });
+      }, 1000);
     }
-
-
-
-
-
-
-
 
     // e.preventDefault();
     // const errorMessage = "";
@@ -105,29 +102,29 @@ class LoginJWT extends React.Component {
   };
 
   render() {
-
-   if (auth.getCurrentUser()) return <Redirect to="/" />
+    if (this.state.Loading) {
+      return <Spinner />;
+    }
+    if (auth.getCurrentUser()) return <Redirect to="/" />;
 
     const { errorMessage, errors } = this.state;
     return (
       <React.Fragment>
         <CardBody className="pt-1">
-
-
           {errors &&
             errors.map((err, index) => {
-
               return (
-                <Alert key={index} color="danger"> {err}</Alert>
-              )
-            })
-          }
+                <Alert key={index} color="danger">
+                  {" "}
+                  {err}
+                </Alert>
+              );
+            })}
           {/* // errors.map((err, index) => { */}
           {/* //   return (
           //   <Alert key={index} color="danger"> {err}</Alert>
           //   )
           // }) */}
-
 
           {/* < Alert color="danger">Password is Required</Alert>
           <Alert color="danger">
@@ -174,13 +171,13 @@ class LoginJWT extends React.Component {
               </div>
             </FormGroup>
             <div className="d-flex justify-content-between">
-              <Button.Ripple color="primary" type="submit">
+              <Button.Ripple  color="primary" type="submit" >
                 Login
               </Button.Ripple>
             </div>
           </Form>
         </CardBody>
-      </React.Fragment >
+      </React.Fragment>
     );
   }
 }

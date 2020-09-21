@@ -12,146 +12,128 @@ import {
 import { AgGridReact } from "ag-grid-react";
 import { ContextLayout } from "../../../utility/context/Layout";
 import { ChevronDown } from "react-feather";
-// import axios from "axios";
-
 import "../../../assets/scss/plugins/tables/_agGridStyleOverride.scss";
+import { toast } from "react-toastify";
 
-import Breadcrumbs from "../../../components/@vuexy/breadCrumbs/BreadCrumb";
+import ModalForm from "./ModalForm";
 
-class AggridTable extends React.Component {
+import Spinner from "../../../components/@vuexy/spinner/Loading-spinner";
+import agent from "../../../core/services/agent";
+
+class Table extends React.Component {
   state = {
-    rowData: null,
+    loading: true,
+    rowData: [],
     paginationPageSize: 20,
     currenPageSize: "",
     getPageSize: "",
     defaultColDef: {
       sortable: true,
-      editable: true,
+      editable: false,
       resizable: true,
       suppressMenu: true,
     },
     columnDefs: [
+      // {
+      //   headerName: "First Name",
+      //   field: "isEnabled",
+      //   sortable: false,
+      //   width: 300,
+      //   filter: false,
+      //   checkboxSelection: true,
+      //   headerCheckboxSelectionFilteredOnly: true,
+      //   headerCheckboxSelection: true,
+      // },
       {
-        headerName: "First Name",
-        field: "firstname",
-        sortable: false,
-        width: 175,
-        filter: false,
-        pinned: window.innerWidth > 992 ? "left" : false,
-        checkboxSelection: true,
-        headerCheckboxSelectionFilteredOnly: true,
-        headerCheckboxSelection: true,
-      },
-      {
-        headerName: "Last Name",
-        field: "lastname",
+        headerName: "Title",
+        field: "title",
         filter: true,
-        width: 175,
+        width: 200,
       },
       {
-        headerName: "Email",
-        field: "email",
+        headerName: "PersianTitle",
+        field: "persianTitle",
         filter: true,
-        width: 250,
-        pinned: window.innerWidth > 992 ? "left" : false,
+        width: 200,
       },
       {
-        headerName: "Company",
-        field: "company",
+        headerName: "Parent Name ",
+        field: "parentName",
         filter: true,
-        width: 250,
+        width: 200,
       },
       {
-        headerName: "City",
-        field: "city",
+        headerName: "ServiceName",
+        field: "serviceName",
         filter: true,
-        width: 150,
+        width: 200,
       },
-      {
-        headerName: "Country",
-        field: "country",
-        filter: true,
-        width: 150,
-      },
-      {
-        headerName: "State",
-        field: "state",
-        filter: true,
-        width: 125
-      },
-      {
-        headerName: "Zip",
-        field: "zip",
-        filter: "agNumberColumnFilter",
-        width: 140,
-      },
-      {
-        headerName: "Followers",
-        field: "followers",
-        filter: "agNumberColumnFilter",
-        width: 140,
-      },
+      // {
+      //   headerName: "ParentId",
+      //   field: "parentId",
+      //   filter: true,
+      //   width: 300,
+      // },
     ],
   };
 
-  componentDidMount() {
-    // axios.get("/api/aggrid/data").then((response) => {
-    //   let rowData = response.data.data;
-    //   JSON.stringify(rowData);
-    //   this.setState({ rowData });
-    // });
+  async componentDidMount() {
+    const { data } = await agent.Category.list();
 
-    const rowData = [
-      {
-        firstname: "Lana",
-        lastname: "Garrigus",
-        company: "Russell Builders & Hardware",
-        address: "118 Ne 3rd St",
-        city: "McMinnville",
-        country: "Yamhill",
-        state: "OR",
-        zip: "97128",
-        phone: "503-434-2642",
-        fax: "503-434-8121",
-        email: "lana@garrigus.com",
-        web: "http://www.lanagarrigus.com",
-        followers: 3048,
-      },
-      {
-        firstname: "Jonathon",
-        lastname: "Waldall",
-        company: "Mission Hills Escrow",
-        address: "300 Hampton St",
-        city: "Walterboro",
-        country: "Colleton",
-        state: "SC",
-        zip: "29488",
-        phone: "843-549-9461",
-        fax: "843-549-0125",
-        email: "jonathon@waldall.com",
-        web: "http://www.jonathonwaldall.com",
-        followers: 8039,
-      },
-      {
-        firstname: "Kristine",
-        lastname: "Paker",
-        company: "Chagrin Valley Massotherapy",
-        address: "301 N Pine St",
-        city: "Creston",
-        country: "Union",
-        state: "IA",
-        zip: "50801",
-        phone: "641-782-7169",
-        fax: "641-782-7962",
-        email: "kristine@paker.com",
-        web: "http://www.kristinepaker.com",
-        followers: 7977,
-      },
-    ];
-
-
-    this.setState({rowData})
+    if (data?.result) {
+      setTimeout(() => {
+        this.setState({ rowData: data.result.data, loading: false });
+      }, 2000);
+      return;
+    }
+    toast.error(data.message, {
+      autoClose: 10000,
+    });
   }
+
+  GetAllCategory = async () => {
+    const { data } = await agent.Category.list();
+
+    if (data?.result) {
+      setTimeout(() => {
+        this.setState({ rowData: data.result.data, loading: false });
+      }, 2000);
+      return;
+    }
+    toast.error(data.message, {
+      autoClose: 10000,
+    });
+  };
+
+  // componentDidMount() {
+  //   // axios.get("/api/aggrid/data").then((response) => {
+  //   //   let rowData = response.data.data;
+  //   //   JSON.stringify(rowData);
+  //   //   this.setState({ rowData });
+  //   // });
+  //   setTimeout(() => {
+  //     this.setState({loading:false})
+  //   }, 2000);
+  //   const rowData = [
+  //     {
+  //       firstname: "Kristine",
+  //       lastname: "Paker",
+  //       company: "Chagrin Valley Massotherapy",
+  //       address: "301 N Pine St",
+  //       city: "Creston",
+  //       country: "Union",
+  //       state: "IA",
+  //       zip: "50801",
+  //       phone: "641-782-7169",
+  //       fax: "641-782-7962",
+  //       email: "kristine@paker.com",
+  //       web: "http://www.kristinepaker.com",
+  //       followers: 7977,
+  //     },
+  //   ];
+
+  //   this.setState({ rowData });
+  // }
 
   onGridReady = (params) => {
     this.gridApi = params.api;
@@ -181,12 +163,7 @@ class AggridTable extends React.Component {
     const { rowData, columnDefs, defaultColDef } = this.state;
     return (
       <React.Fragment>
-        <Breadcrumbs
-          breadCrumbTitle="Aggrid Table"
-          breadCrumbParent="Forms & Tables"
-          breadCrumbActive="Aggrid Table"
-        />
-
+        <ModalForm GetAllCategory={this.GetAllCategory}></ModalForm>
         <Card className="overflow-hidden agGrid-card">
           <CardBody className="py-0">
             {this.state.rowData === null ? null : (
@@ -244,35 +221,48 @@ class AggridTable extends React.Component {
                         value={this.state.value}
                       />
                     </div>
-                    <div className="export-btn">
+                    {/* <div className="export-btn">
                       <Button.Ripple
                         color="primary"
                         onClick={() => this.gridApi.exportDataAsCsv()}
                       >
                         Export as CSV
                       </Button.Ripple>
-                    </div>
+                    </div> */}
+
+                    {/* <div className="export-btn">
+                      <Button.Ripple
+                        color="primary"
+                        // onClick={() => this.gridApi.exportDataAsCsv()}
+                      >
+                      Add New Category
+                      </Button.Ripple>
+                    </div> */}
                   </div>
                 </div>
-                <ContextLayout.Consumer>
-                  {(context) => (
-                    <AgGridReact
-                      gridOptions={{}}
-                      rowSelection="multiple"
-                      defaultColDef={defaultColDef}
-                      columnDefs={columnDefs}
-                      rowData={rowData}
-                      onGridReady={this.onGridReady}
-                      colResizeDefault={"shift"}
-                      animateRows={true}
-                      floatingFilter={true}
-                      pagination={true}
-                      paginationPageSize={this.state.paginationPageSize}
-                      pivotPanelShow="always"
-                      enableRtl={context.state.direction === "rtl"}
-                    />
-                  )}
-                </ContextLayout.Consumer>
+                {this.state.loading ? (
+                  <Spinner></Spinner>
+                ) : (
+                  <ContextLayout.Consumer>
+                    {(context) => (
+                      <AgGridReact
+                        gridOptions={{}}
+                        rowSelection="multiple"
+                        defaultColDef={defaultColDef}
+                        columnDefs={columnDefs}
+                        rowData={rowData}
+                        onGridReady={this.onGridReady}
+                        colResizeDefault={"shift"}
+                        animateRows={true}
+                        floatingFilter={true}
+                        pagination={true}
+                        paginationPageSize={this.state.paginationPageSize}
+                        pivotPanelShow="always"
+                        enableRtl={context.state.direction === "rtl"}
+                      />
+                    )}
+                  </ContextLayout.Consumer>
+                )}
               </div>
             )}
           </CardBody>
@@ -281,4 +271,4 @@ class AggridTable extends React.Component {
     );
   }
 }
-export default AggridTable;
+export default Table;

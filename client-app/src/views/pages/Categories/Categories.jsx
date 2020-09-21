@@ -1,20 +1,20 @@
 import React from "react";
 import { Row, Col } from "reactstrap";
 import Breadcrumbs from "../../../components/@vuexy/breadCrumbs/BreadCrumb";
-import DataTableCustom from "./DataTableCustom";
+import Table from "./Table";
 
 class DataTables extends React.Component {
   render() {
     return (
       <React.Fragment>
         <Breadcrumbs
-          breadCrumbTitle="Categories"
+          breadCrumbTitle="Categories Table"
           breadCrumbParent="Forms & Tables"
-          breadCrumbActive="DataTables"
+          breadCrumbActive="Aggrid Table"
         />
         <Row>
           <Col sm="12">
-            <DataTableCustom />
+            <Table />
           </Col>
         </Row>
       </React.Fragment>

@@ -67,6 +67,37 @@ namespace CallInDoor.Controllers
 
 
 
+        [HttpGet("GetAllCateGoryForAdmin")]
+        [Authorize(Roles = PublicHelper.ADMINROLE)]
+        public async Task<ActionResult> GetAllCateGoryForAdmin()
+        {
+
+            var categories = await _context.CategoryTBL
+               .AsNoTracking()
+               .Select(c => new
+               {
+                   c.Id,
+                   c.IsEnabled,
+                   c.Title,
+                   c.PersianTitle,
+                   serviceName = c.Service.Name,
+                   parentName = c.Parent.Title,
+               }).ToListAsync();
+
+            return Ok(new ApiOkResponse(new DataFormat()
+            {
+                Status = 1,
+                data = categories,
+                Message = PubicMessages.SuccessMessage
+            },
+               PubicMessages.SuccessMessage
+              ));
+        }
+
+
+
+
+
         /// <summary>
         /// ایجاد   دسته بندی
         /// </summary>
@@ -76,7 +107,12 @@ namespace CallInDoor.Controllers
         [Authorize(Roles = PublicHelper.ADMINROLE)]
         public async Task<ActionResult> Create([FromBody] CreateCategoryDTO model)
         {
-
+            if (model.ServiceId == null)
+            {
+                var errors = new List<string>();
+                errors.Add("service Is required");
+                return BadRequest(new ApiBadRequestResponse(errors));
+            }
             var checkToken = await _accountService.CheckTokenIsValid();
             if (!checkToken)
                 return Unauthorized(new ApiResponse(401, PubicMessages.UnAuthorizeMessage));

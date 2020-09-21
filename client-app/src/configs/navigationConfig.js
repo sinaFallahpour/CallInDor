@@ -17,7 +17,7 @@ const navigationConfig = [
         type: "item",
         icon: <Icon.Circle size={12} />,
         permissions: ["admin", "editor"],
-        navLink: "/categories"
+        navLink: "/pages/categories"
       },
       {
         id: "serviceTypes",
@@ -25,7 +25,7 @@ const navigationConfig = [
         type: "item",
         icon: <Icon.Circle size={12} />,
         permissions: ["admin","editor"],
-        navLink: "/service-type"
+        navLink: "/pages/service-type"
       }
     ]
   },
@@ -908,46 +908,6 @@ const navigationConfig = [
     type: "item",
     permissions: ["admin", "editor"],
     navLink: "/extensions/clipboard"
-  },
-  {
-    id: "contentMenu",
-    title: "Context Menu",
-    icon: <Icon.Menu size={20} />,
-    type: "item",
-    permissions: ["admin", "editor"],
-    navLink: "/extensions/context-menu"
-  },
-  {
-    id: "swiper",
-    title: "Swiper",
-    icon: <Icon.Smartphone size={20} />,
-    type: "item",
-    permissions: ["admin", "editor"],
-    navLink: "/extensions/swiper"
-  },
-  {
-    id: "i18n",
-    title: "I18n",
-    icon: <Icon.Globe size={20} />,
-    type: "item",
-    permissions: ["admin", "editor"],
-    navLink: "/extensions/i18n"
-  },
-  {
-    id: "treeView",
-    title: "Tree",
-    icon: <Icon.GitPullRequest size={20} />,
-    type: "item",
-    permissions: ["admin", "editor"],
-    navLink: "/extensions/tree"
-  },
-  {
-    id: "extPagination",
-    title: "Pagination",
-    icon: <Icon.MoreHorizontal size={20} />,
-    type: "item",
-    permissions: ["admin", "editor"],
-    navLink: "/extensions/pagination"
   }
 
   // {

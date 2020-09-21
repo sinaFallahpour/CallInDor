@@ -4,15 +4,18 @@ import { toast } from "react-toastify";
 
 axios.defaults.baseURL = "https://localhost:44377/api";
 
+// const token = window.localStorage.getItem("jwt");
+// axios.config.headers.Authorization = `Bearer ${token}`;
+
 axios.interceptors.request.use(
   (config) => {
-    const token = window.localStorage.getItem("jwt");
+    const token = window.localStorage.getItem("token");
     if (token) config.headers.Authorization = `Bearer ${token}`;
     return config;
   },
-  (error) => {
-    return Promise.reject(error);
-  }
+  // (error) => {
+  //   return Promise.reject(error);
+  // }
 );
 
 axios.interceptors.response.use(undefined, (error) => {
@@ -20,7 +23,7 @@ axios.interceptors.response.use(undefined, (error) => {
     toast.error("Network error - make sure API is running!");
   }
 
-  const { status, data, config } = error.response;
+  const { status, data, config } = error?.response;
   //   if (status === 404) {
   //     history.push("/notfound");
   //   }
@@ -56,13 +59,12 @@ export const requests = {
 };
 
 const ServiceTypes = {
-  list: () => requests.get("/activities"),
-  details: (id) => requests.get(`/activities/${id}`),
-  create: (activity) => requests.post("/activities", activity),
-  update: (activity) => requests.put(`/activities/${activity.id}`, activity),
-  delete: (id) => requests.del(`/activities/${id}`)
+  list: () => requests.get("/Service/GetAllActive"),
+  // details: (id) => requests.get(`/activities/${id}`),
+  // create: (activity) => requests.post("/activities", activity),
+  // update: (activity) => requests.put(`/activities/${activity.id}`, activity),
+  // delete: (id) => requests.del(`/activities/${id}`)
 };
-
 
 const User = {
   // current: () => requests.get("/user"),
@@ -71,11 +73,12 @@ const User = {
 };
 
 const Category = {
-  list: () => requests.get("/category/getAll"),
-  details: (id) => requests.get(`/activities/${id}`),
-  create: (activity) => requests.post("/activities", activity),
-  update: (activity) => requests.put(`/activities/${activity.id}`, activity),
-  delete: (id) => requests.del(`/activities/${id}`)
+  // list: () => requests.get("/category/getAll"),
+  list: () => requests.get("/Category/GetAllCateGoryForAdmin"),
+  // details: (id) => requests.get(`/activities/${id}`),
+  create: (category) => requests.post("/Category/Create", category)
+  // update: (activity) => requests.put(`/activities/${activity.id}`, activity),
+  // delete: (id) => requests.del(`/activities/${id}`)
 };
 
 export default {

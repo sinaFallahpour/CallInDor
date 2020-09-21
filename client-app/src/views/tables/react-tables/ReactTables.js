@@ -21,6 +21,7 @@ class ReactTables extends React.Component {
         />
         <Row>
           <Col sm="12">
+        
             <SimpleTable />
           </Col>
           <Col sm="12">
@@ -33,6 +34,7 @@ class ReactTables extends React.Component {
             <NestedTable />
           </Col>
           <Col sm="12">
+          ssss
             <ControlledTable />
           </Col>
         </Row>

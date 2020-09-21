@@ -45,15 +45,15 @@ namespace CallInDoor.Controllers
 
 
         // GET: api/GetAllService
-        [HttpGet("GetAll")]
+        [HttpGet("GetAllActive")]
         [AllowAnonymous]
-        public async Task<ActionResult> GetAllService()
+        public async Task<ActionResult> GetAllActive()
         {
             //var checkToken = await _accountService.CheckTokenIsValid();
             //if (!checkToken)
             //    return Unauthorized(new ApiResponse(401, PubicMessages.UnAuthorizeMessage));
            
-            var services = await _servicetypeService.GetAll();
+            var services = await _servicetypeService.GetAllActive();
             return Ok(new ApiOkResponse(new DataFormat()
             {
                 Status = 1,

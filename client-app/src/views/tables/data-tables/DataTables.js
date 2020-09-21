@@ -1,16 +1,16 @@
-import React from "react"
-import { Row, Col } from "reactstrap"
-import Breadcrumbs from "../../../components/@vuexy/breadCrumbs/BreadCrumb"
-import DataTableBasic from "./DataTableBasic"
-import DataTableFixedHeader from "./DataTableFixedHeader"
-import DataTablePagination from "./DataTablePagination"
-import DataTableSelectable from "./DataTableSelectable"
-import DataTableExpandableRows from "./DataTableExpandable"
-import DataTableFilter from "./DataTableFilter"
-import DataTableCustom from "./DataTableCustom"
+import React from "react";
+import { Row, Col } from "reactstrap";
+import Breadcrumbs from "../../../components/@vuexy/breadCrumbs/BreadCrumb";
+import DataTableBasic from "./DataTableBasic";
+import DataTableFixedHeader from "./DataTableFixedHeader";
+import DataTablePagination from "./DataTablePagination";
+import DataTableSelectable from "./DataTableSelectable";
+import DataTableExpandableRows from "./DataTableExpandable";
+import DataTableFilter from "./DataTableFilter";
+import DataTableCustom from "./DataTableCustom";
 
 class DataTables extends React.Component {
-  render() {
+  render () {
     return (
       <React.Fragment>
         <Breadcrumbs

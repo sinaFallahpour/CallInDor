@@ -11,7 +11,6 @@ export async function login(phoneNumber, password) {
   });
   console.log(data);
   const jwt = data.result.data.token;
-  alert(jwt);
   localStorage.setItem(tokenKey, jwt);
 }
 

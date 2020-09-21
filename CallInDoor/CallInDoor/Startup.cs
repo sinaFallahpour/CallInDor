@@ -57,7 +57,6 @@ namespace CallInDoor
             services.AddCors(opt =>
             {
 
-
                 opt.AddPolicy("CorsPolicy", policy =>
                 {
                     policy.AllowAnyHeader().AllowAnyMethod().WithOrigins(
@@ -67,7 +66,8 @@ namespace CallInDoor
                                 "https://localhost:4200",
                                "https://localhost:443",
                                "https://localhost:80",
-                               "http://localhost:3000"
+                               "http://localhost:3000",
+                               "http://localhost:4321"
                                )
                     .AllowCredentials();
                 });
@@ -136,8 +136,10 @@ namespace CallInDoor
                 options.Filters.Add(new ModelStateCheckFilter());
             })
              .AddViewLocalization(LanguageViewLocationExpanderFormat.Suffix)
-            .AddDataAnnotationsLocalization();
+            .AddDataAnnotationsLocalization().AddNewtonsoftJson();
 
+
+            //services.AddControllers().AddNewtonsoftJson();
 
 
             //inject autoMapper

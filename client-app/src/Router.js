@@ -1,7 +1,7 @@
 import React, { Suspense, lazy } from "react";
 import { Router, Switch, Route, Redirect } from "react-router-dom";
 import { history } from "./history";
-import { connect } from "react-redux";
+// import { connect } from "react-redux";
 // import PropTypes from 'prop-types';
 import auth from "./core/services/userService/authService";
 
@@ -11,7 +11,7 @@ import knowledgeBaseQuestion from "./views/pages/knowledge-base/Questions";
 import { ContextLayout } from "./utility/context/Layout";
 
 // Route-based code splitting
-const categories = lazy(() => import("./views/Categories/List/Categories"));
+const categories = lazy(() => import("./views/pages/Categories/Categories"));
 
 const analyticsDashboard = lazy(() =>
   import("./views/dashboard/analytics/AnalyticsDashboard")
@@ -167,11 +167,8 @@ const tour = lazy(() => import("./extensions/tour/Tour"));
 const clipboard = lazy(() =>
   import("./extensions/copy-to-clipboard/CopyToClipboard")
 );
-const menu = lazy(() => import("./extensions/contexify/Contexify"));
-const swiper = lazy(() => import("./extensions/swiper/Swiper"));
-const i18n = lazy(() => import("./extensions/i18n/I18n"));
-const reactPaginate = lazy(() => import("./extensions/pagination/Pagination"));
-const tree = lazy(() => import("./extensions/treeview/TreeView"));
+
+const swiper = lazy(() => import("./extensions/swiper/Swiper")); 
 
 const userList = lazy(() => import("./views/apps/user/list/List"));
 const userEdit = lazy(() => import("./views/apps/user/edit/Edit"));
@@ -261,7 +258,7 @@ class AppRouter extends React.Component {
       <Router history={history}>
         <Switch>
           <Route path="/pages/login" component={Login} fullLayout />
-          <RouteConfig exact path="/categories" component={categories} />
+          <RouteConfig exact path="/pages/categories" component={categories} />
           <RouteConfig exact path="/" component={analyticsDashboard} />
           <RouteConfig
             path="/ecommerce-dashboard"
@@ -415,11 +412,6 @@ class AppRouter extends React.Component {
           <RouteConfig path="/extensions/drag-and-drop" component={drop} />
           <RouteConfig path="/extensions/tour" component={tour} />
           <RouteConfig path="/extensions/clipboard" component={clipboard} />
-          <RouteConfig path="/extensions/context-menu" component={menu} />
-          <RouteConfig path="/extensions/swiper" component={swiper} />
-          <RouteConfig path="/extensions/i18n" component={i18n} />
-          <RouteConfig path="/extensions/tree" component={tree} />
-          <RouteConfig path="/extensions/pagination" component={reactPaginate} />
           <RouteConfig component={error404} fullLayout />
         </Switch>
       </Router>
