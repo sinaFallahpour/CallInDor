@@ -13,10 +13,17 @@ export const searchResult = [
         icon: "Circle"
       },
       {
-        id: 109,
-        title: "serviceTypes",
-        target: "serviceTypes",
-        link: "/service-type",
+        id: 108,
+        title: "services",
+        target: "services",
+        link: "/pages/Services",
+        icon: "Circle"
+      },
+      {
+        id: 108,
+        title: "createservices",
+        target: "createservices",
+        link: "/pages/Services/Create",
         icon: "Circle"
       },
       {
@@ -715,4 +722,4 @@ export const searchResult = [
 
 mock.onGet("/api/main-search/data").reply(200, {
   searchResult
-})
+});

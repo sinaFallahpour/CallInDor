@@ -29,6 +29,14 @@ namespace Domain
         /// </summary>
         public DbSet<ServiceTBL> ServiceTBL { get; set; }
 
+        /// <summary>
+        ///   تگ های  یک سرویس(حوضه کاری) س  
+        /// </summary>
+        public DbSet<ServiceTags> ServiceTags { get; set; }
+
+
+
+
 
         /// <summary>
         ///دسته هایی که هر حوضه میتونن داشته باشن 

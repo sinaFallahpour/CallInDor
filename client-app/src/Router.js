@@ -14,6 +14,10 @@ import { ContextLayout } from "./utility/context/Layout";
 const Categories = lazy(() => import("./views/pages/Categories/Categories"));
 const EditCategory = lazy(() => import("./views/pages/Categories/EditCategory"));
 
+const Services = lazy(() => import("./views/pages/_Serices/Services"));
+const CreateService = lazy(() => import("./views/pages/_Serices/Create"));
+const EditService = lazy(() => import("./views/pages/_Serices/EditService"));
+
 const analyticsDashboard = lazy(() =>
   import("./views/dashboard/analytics/AnalyticsDashboard")
 );
@@ -22,9 +26,6 @@ const email = lazy(() => import("./views/apps/email/Email"));
 const todo = lazy(() => import("./views/apps/todo/Todo"));
 const calendar = lazy(() => import("./views/apps/calendar/Calendar"));
 
-const productDetail = lazy(() =>
-  import("./views/apps/ecommerce/detail/Detail")
-);
 const grid = lazy(() => import("./views/ui-elements/grid/Grid"));
 const typography = lazy(() =>
   import("./views/ui-elements/typography/Typography")
@@ -254,6 +255,12 @@ class AppRouter extends React.Component {
           <Route path="/pages/login" component={Login} fullLayout />
           <RouteConfig exact path="/pages/categories" component={Categories} />
           <RouteConfig exact path="/pages/category/:id" component={EditCategory} />
+
+          <RouteConfig exact path="/pages/Services" component={Services} />
+          <RouteConfig exact path="/pages/Services/Create" component={CreateService} />
+          <RouteConfig exact path="/pages/Services/:id" component={EditService} />
+
+
 
           <RouteConfig exact path="/" component={analyticsDashboard} />
           <RouteConfig

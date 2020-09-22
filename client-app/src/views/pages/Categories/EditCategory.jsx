@@ -11,7 +11,7 @@ import {
   Col
 } from "reactstrap";
 
-import Joi, { validate } from "joi-browser";
+import Joi from "joi-browser";
 import Form from "../../../components/common/form";
 
 
@@ -153,15 +153,15 @@ class EditCategory extends Form {
   doSubmit = async () => {
     this.setState({ Loading: true });
     const errorMessage = "";
-    const errors = [];
-    this.setState({ errorMessage, errors });
+    const errorscustom = [];
+    this.setState({ errorMessage, errorscustom });
     try {
       const obj = { ...this.state.data, isEnabled: this.state.isEnabled };
       const { data } = await agent.Category.update(obj);
 
-      if (data.result.status)
+      if (data.result.status){
         toast.success(data.result.message)
-
+      }
     } catch (ex) {
       console.log(ex);
       if (ex?.response?.status == 400) {
@@ -174,21 +174,11 @@ class EditCategory extends Form {
           autoClose: 10000,
         });
       }
-
-      setTimeout(() => {
-        this.setState({ Loading: false });
-      }, 800);
     }
 
-
-
-
-
-
-
-
-    // await saveMovie(this.state.data);
-    // this.props.history.push("/movies");
+    setTimeout(() => {
+      this.setState({ Loading: false });
+    }, 800);
   };
 
 
@@ -200,42 +190,7 @@ class EditCategory extends Form {
 
 
 
-
-  // doSubmit = async (e) => {
-
-  //   this.setState({ Loading: true });
-  //   e.preventDefault();
-  //   const errorMessage = "";
-  //   const errors = [];
-  //   this.setState({ errorMessage, errors });
-  //   try {
-  //     const { title, persianTitle, isEnabled, serviceId, parentId, } = this.state;
-
-  //     const obj = { title, persianTitle, isEnabled, serviceId, parentId };
-  //     const { data } = await agent.Category.update(obj);
-  //     if (data.result.status) {
-  //       toast.success(data.result.message)
-  //     }
-  //     setTimeout(() => {
-  //       this.setState({ Loading: false });
-  //     }, 2000);
-  //   } catch (ex) {
-  //     console.log(ex);
-  //     if (ex?.response?.status == 400) {
-  //       const errors = ex?.response?.data?.errors;
-  //       this.setState({ errors });
-  //     } else if (ex?.response) {
-  //       const errorMessage = ex?.response?.data?.message;
-  //       this.setState({ errorMessage });
-  //       toast.error(errorMessage, {
-  //         autoClose: 10000,
-  //       });
-  //     }
-  //     setTimeout(() => {
-  //       this.setState({ Loading: false });
-  //     }, 1000);
-  //   }
-  // };
+ 
 
 
   render() {

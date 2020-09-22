@@ -6,14 +6,26 @@ const navigationConfig = [
     groupTitle: "APPS"
   },
   {
-    id: "category & service Management",
+    id: "Categories",
     title: "Categories",
     type: "item",
     icon: <Icon.Home size={20} />,
     navLink: "/pages/categories",
     parentOf: [
-      "pages/category/:id",
-      "/pages/categories"
+      "/pages/categories",
+      "pages/category/:id"
+    ]
+  },
+  {
+    id: "Services",
+    title: "Services",
+    type: "item",
+    icon: <Icon.Home size={20} />,
+    navLink: "/pages/Services",
+    parentOf: [
+      "/pages/Services",
+      "/pages/Services/Create",
+      "pages/Service/:id"
     ]
   },
   {

@@ -3,12 +3,12 @@ import { Row, Col } from "reactstrap";
 import Breadcrumbs from "../../../components/@vuexy/breadCrumbs/BreadCrumb";
 import Table from "./Table";
 
-class DataTables extends React.Component {
-  render() {
+class Services extends React.Component {
+  render () {
     return (
       <React.Fragment>
         <Breadcrumbs
-          breadCrumbTitle="Categories "
+          breadCrumbTitle="Services "
           breadCrumbParent="Forms & Tables"
           breadCrumbActive="Aggrid Table"
         />
@@ -22,4 +22,4 @@ class DataTables extends React.Component {
   }
 }
 
-export default DataTables;
+export default Services;

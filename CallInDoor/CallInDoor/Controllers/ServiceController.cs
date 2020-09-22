@@ -41,6 +41,74 @@ namespace CallInDoor.Controllers
 
 
 
+        [HttpGet("GetServiceByIdForAdmin")]
+        [Authorize(Roles = PublicHelper.ADMINROLE)]
+        public async Task<ActionResult> GetServiceByIdForAdmin(int Id)
+        {
+            var checkToken = await _accountService.CheckTokenIsValid();
+            if (!checkToken)
+                return Unauthorized(new ApiResponse(401, PubicMessages.UnAuthorizeMessage));
+
+            var Service = await _context.ServiceTBL.Where(c => c.Id == Id).Select(c => new
+            {
+                c.Id,
+                c.Name,
+                c.PersianName,
+                c.IsEnabled,
+                c.Color,
+            }).FirstOrDefaultAsync();
+
+            if (Service == null)
+                return NotFound(new ApiResponse(404, PubicMessages.NotFoundMessage));
+
+            return Ok(new ApiOkResponse(new DataFormat()
+            {
+                Status = 1,
+                data = Service,
+                Message = PubicMessages.SuccessMessage
+            },
+            PubicMessages.SuccessMessage
+           ));
+
+        }
+
+
+
+
+
+
+        // GET: api/GetAllForAdmin
+        [HttpGet("GetAllForAdmin")]
+        [Authorize(Roles = PublicHelper.ADMINROLE)]
+        public async Task<ActionResult> GetAllForAdmin()
+        {
+            var checkToken = await _accountService.CheckTokenIsValid();
+            if (!checkToken)
+                return Unauthorized(new ApiResponse(401, PubicMessages.UnAuthorizeMessage));
+
+            var AllServices = await _context
+                  .ServiceTBL
+                  .Select(c => new
+                  {
+                      c.Id,
+                      c.IsEnabled,
+                      c.Name,
+                      c.PersianName,
+                      c.Color,
+                  }).ToListAsync();
+
+            return Ok(new ApiOkResponse(new DataFormat()
+            {
+                Status = 1,
+                data = AllServices,
+                Message = PubicMessages.SuccessMessage
+            },
+          PubicMessages.SuccessMessage
+         ));
+
+        }
+
+
 
 
 
@@ -49,10 +117,6 @@ namespace CallInDoor.Controllers
         [AllowAnonymous]
         public async Task<ActionResult> GetAllActive()
         {
-            //var checkToken = await _accountService.CheckTokenIsValid();
-            //if (!checkToken)
-            //    return Unauthorized(new ApiResponse(401, PubicMessages.UnAuthorizeMessage));
-           
             var services = await _servicetypeService.GetAllActive();
             return Ok(new ApiOkResponse(new DataFormat()
             {
@@ -62,8 +126,6 @@ namespace CallInDoor.Controllers
             },
            PubicMessages.SuccessMessage
           ));
-
-
         }
 
 
@@ -97,7 +159,6 @@ namespace CallInDoor.Controllers
                   ));
             }
 
-
             return StatusCode(StatusCodes.Status500InternalServerError,
               new ApiResponse(500, PubicMessages.InternalServerMessage)
             );
@@ -112,9 +173,9 @@ namespace CallInDoor.Controllers
 
 
 
-        [HttpPut("Update")]
+        [HttpPut("UpdateServiceForAdmin")]
         [Authorize(Roles = PublicHelper.ADMINROLE)]
-        public async Task<IActionResult> Update([FromBody] CreateServiceDTO model)
+        public async Task<IActionResult> UpdateServiceForAdmin([FromBody] CreateServiceDTO model)
         {
             var checkToken = await _accountService.CheckTokenIsValid();
             if (!checkToken)

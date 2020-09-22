@@ -60,9 +60,10 @@ export const requests = {
 
 const ServiceTypes = {
   list: () => requests.get("/Service/GetAllActive"),
-  // details: (id) => requests.get(`/activities/${id}`),
-  // create: (activity) => requests.post("/activities", activity),
-  // update: (activity) => requests.put(`/activities/${activity.id}`, activity),
+  GetAll: () => requests.get("/Service/GetAllForAdmin"),
+  details: (id) => requests.get(`/Service/GetServiceByIdForAdmin?id=${id}`),
+  create: (service) => requests.post("/Service/Create", service),
+  update: (activity) => requests.put("/Service/UpdateServiceForAdmin", activity),
   // delete: (id) => requests.del(`/activities/${id}`)
 };
 

@@ -32,6 +32,8 @@ namespace Domain.Entities
         public string Color { get; set; }
 
 
+
+
         /// <summary>
         /// آیا فعال است
         /// </summary>

@@ -41,13 +41,16 @@ namespace Domain.DTO.Account
 
 
 
-
         /// <summary>
         /// آیا فعال است
         /// </summary>
         public bool IsEnabled { get; set; }
 
 
+    
+        [MinLength(1, ErrorMessage = "The minimum {0} length is {1} characters")]
+        [MaxLength(2000, ErrorMessage = "The maximum {0} length is {1} characters")]
+        public string  Tags { get; set; }
 
     }
 }
