@@ -56,6 +56,7 @@ namespace CallInDoor.Controllers
                 c.ParentId,
                 c.IsEnabled,
                 serviceName = c.Service.Name,
+                serviceId=c.Service.Id
             }).FirstOrDefaultAsync();
 
             if (category == null)

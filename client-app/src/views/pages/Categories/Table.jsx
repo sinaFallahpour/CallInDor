@@ -102,7 +102,7 @@ class Table extends React.Component {
     if (data?.result) {
       setTimeout(() => {
         this.setState({ rowData: data.result.data, loading: false });
-      }, 2000);
+      }, 600);
       return;
     }
     toast.error(data.message, {
