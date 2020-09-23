@@ -35,6 +35,23 @@ namespace Domain.Entities
 
 
         /// <summary>
+        /// /حداقل فیمت برای برای  سرویس  تایپ هایی  از نوع سرویس
+        /// </summary>
+        public double MinPriceForService { get; set; }
+
+
+
+
+        /// <summary>
+        /// حداقل زمان برای سرویس های Voice//VideCall//voiceCall
+        /// </summary>
+        public double MinSessionTime { get; set; }
+
+
+
+
+
+        /// <summary>
         /// آیا فعال است
         /// </summary>
         public bool IsEnabled { get; set; }
@@ -47,6 +64,7 @@ namespace Domain.Entities
 
         public virtual ICollection<CategoryTBL> Categories { get; set; }
 
+        public virtual ICollection<ServiceTags> Tags { get; set; }
         #endregion 
     }
 }

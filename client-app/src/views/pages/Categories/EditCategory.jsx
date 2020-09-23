@@ -181,15 +181,6 @@ class EditCategory extends Form {
     }, 800);
   };
 
-
-
-
-
-
-
-
-
-
  
 
 

@@ -19,7 +19,7 @@ import { toast } from "react-toastify";
 import { NavLink } from 'react-router-dom';
 import Spinner from "../../../components/@vuexy/spinner/Loading-spinner";
 import agent from "../../../core/services/agent";
-import {history}  from "../../../history"
+import { history } from "../../../history"
 
 class Table extends React.Component {
   state = {
@@ -40,19 +40,42 @@ class Table extends React.Component {
         headerName: "Name",
         field: "name",
         filter: true,
-        width: 240,
+        width: 220,
       },
       {
         headerName: "PersianName",
         field: "persianName",
         filter: true,
-        width: 240,
+        width: 220,
+      },
+      {
+        headerName: "Minimm Price For Service($)",
+        field: "minPriceForService",
+        filter: true,
+        width: 220,
+      },
+      {
+        headerName: "Minimm Session Time(minutes)",
+        field: "minSessionTime",
+        filter: true,
+        width: 220,
       },
       {
         headerName: "Color",
         field: "color",
         filter: true,
-        width: 240
+        width: 220
+      },
+      {
+        headerName: "status",
+        field: "isEnabled",
+        filter: true,
+        width: 220,
+        cellRenderer: function (params) {
+          console.log(params)
+          if (!params.data) return 'Disable';
+          return 'Enable'
+        }
       },
       {
         headerName: "",
@@ -124,7 +147,7 @@ class Table extends React.Component {
               color="primary"
               onClick={() => history.push("/pages/Services/Create")}
             >
-            Create New Service
+              Create New Service
             </Button.Ripple>
 
           </CardHeader>

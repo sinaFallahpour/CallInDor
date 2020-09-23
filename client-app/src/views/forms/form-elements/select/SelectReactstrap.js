@@ -9,10 +9,10 @@ import {
   CustomInput,
   Row,
   Col
-} from "reactstrap"
+} from "reactstrap";
 
 class SelectReactstrap extends React.Component {
-  render() {
+  render () {
     return (
       <Card>
         <CardHeader>

@@ -11,10 +11,12 @@ namespace Domain.Entities
     {
 
         public string  TagName { get; set; }
-        
+
+        public string PersianTagName { get; set; }
 
 
-        
+        public bool IsEnglisTags { get; set; }
+
         #region relation
 
         /// <summary>

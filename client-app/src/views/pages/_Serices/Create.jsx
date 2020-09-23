@@ -23,10 +23,15 @@ import {
   Col
 } from "reactstrap";
 
-
 // import { modalForm } from "./ModalSourceCode"
 import { toast } from "react-toastify";
+import ReactTagInput from "@pathofdev/react-tag-input";
+import "@pathofdev/react-tag-input/build/index.css";
+
+
 import agent from "../../../core/services/agent";
+
+
 
 import Joi from "joi-browser";
 import Form from "../../../components/common/form";
@@ -36,9 +41,12 @@ class ModalForm extends Form {
     data: {
       name: "",
       persianName: "",
-      color: ""
+      color: "",
+      minPriceForService: "",
+      minSessionTime: ""
     },
-
+    tags: [],
+    persinaTags: [],
     isEnabled: true,
     errors: {},
     errorscustom: [],
@@ -57,9 +65,19 @@ class ModalForm extends Form {
     color: Joi.string()
       .required()
       .label("color"),
+      
+    minPriceForService: Joi.number()
+      .required()
+      .min(1)
+      .max(10000000000000)
+      .label("min Price"),
+
+    minSessionTime: Joi.number()
+      .required()
+      .min(1)
+      .max(10000000)
+      .label("min Session Time"),
   };
-
-
 
 
   async componentDidMount() {
@@ -74,8 +92,9 @@ class ModalForm extends Form {
     const errorscustom = [];
     this.setState({ errorMessage, errorscustom });
     try {
-      const obj =    { ...this.state.data, isEnabled: this.state.isEnabled }
-      // const obj = { name, persianName, color, isEnabled };
+      const { isEnabled, tags, persinaTags } = this.state
+      const obj = { ...this.state.data, isEnabled, tags: tags.join(), persinaTags: persinaTags.join() }
+
       const { data } = await agent.ServiceTypes.create(obj);
       if (data.result.status)
         toast.success(data.result.message)
@@ -92,14 +111,10 @@ class ModalForm extends Form {
         });
       }
     }
-
-
     setTimeout(() => {
       this.setState({ Loading: false });
     }, 200);
   };
-
-
 
 
   render() {
@@ -127,9 +142,65 @@ class ModalForm extends Form {
                 })}
 
               <form onSubmit={this.handleSubmit}>
-                {this.renderInput("name", "Name" )}
+                {this.renderInput("name", "Name")}
                 {this.renderInput("persianName", "PersianName")}
                 {this.renderInput("color", "Color")}
+                {this.renderInput("minPriceForService", "Minimm Price (For Service)$")}
+                {this.renderInput("minSessionTime", "Min Session Time (For Chat, Chat Voice,...)")}
+
+                <div className="form-group">
+                  <label>Tags</label>
+                  <ReactTagInput
+                    tags={this.state.tags}
+                    placeholder="Type and press enter"
+                    maxTags={60}
+                    editable={true}
+                    readOnly={false}
+                    removeOnBackspace={true}
+                    onChange={(newTags) => this.setState({ tags: newTags })}
+                    validator={(value) => {
+                      let isvalid = !!value.trim();
+                      if (!isvalid) {
+                        alert("tag cant be empty");
+                        return isvalid
+                      }
+                      isvalid = value.length < 100
+                      if (!isvalid) {
+                        alert("please enter less than 100 character")
+                      }
+                      // Return boolean to indicate validity
+                      return isvalid;
+                    }}
+                  />
+                </div>
+
+                <div className="form-group">
+
+
+                  <label>Persian Tags</label>
+                  <ReactTagInput
+                    tags={this.state.persinaTags}
+                    placeholder="Type and press enter"
+                    maxTags={60}
+                    editable={true}
+                    readOnly={false}
+                    removeOnBackspace={true}
+                    onChange={(newTags) => this.setState({ persinaTags: newTags })}
+                    validator={(value) => {
+                      let isvalid = !!value.trim();
+                      if (!isvalid) {
+                        alert("tag cant be empty");
+                        return isvalid
+                      }
+                      isvalid = value.length < 100
+                      if (!isvalid) {
+                        alert("please enter less than 100 character")
+                      }
+                      // Return boolean to indicate validity
+                      return isvalid;
+                    }}
+                  />
+                </div>
 
                 <div className="form-group">
                   <label htmlFor="isEnabled">Is Enabled</label>

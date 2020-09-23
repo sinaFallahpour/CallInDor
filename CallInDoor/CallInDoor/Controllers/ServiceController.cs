@@ -56,6 +56,10 @@ namespace CallInDoor.Controllers
                 c.PersianName,
                 c.IsEnabled,
                 c.Color,
+                c.MinPriceForService,
+                c.MinSessionTime,
+                tags = c.Tags.Where(c => c.IsEnglisTags && !string.IsNullOrEmpty(c.TagName)).Select(s => s.TagName).ToList(),
+                persinaTags = c.Tags.Where(c => c.IsEnglisTags == false && !string.IsNullOrEmpty(c.PersianTagName)).Select(s => s.PersianTagName).ToList()
             }).FirstOrDefaultAsync();
 
             if (Service == null)
@@ -95,6 +99,8 @@ namespace CallInDoor.Controllers
                       c.Name,
                       c.PersianName,
                       c.Color,
+                      c.MinSessionTime,
+                      c.MinPriceForService
                   }).ToListAsync();
 
             return Ok(new ApiOkResponse(new DataFormat()
@@ -182,7 +188,7 @@ namespace CallInDoor.Controllers
                 return Unauthorized(new ApiResponse(401, PubicMessages.UnAuthorizeMessage));
 
 
-            var service = _servicetypeService.GetById(model.Id);
+            var service = await _servicetypeService.GetByIdWithJoin(model.Id);
             if (service == null)
             {
                 return NotFound(new ApiResponse(404, "service " + PubicMessages.NotFoundMessage));
@@ -206,6 +212,46 @@ namespace CallInDoor.Controllers
             return StatusCode(StatusCodes.Status500InternalServerError,
               new ApiResponse(500, PubicMessages.InternalServerMessage)
             );
+
+        }
+
+
+
+
+
+
+
+        [HttpGet("GetTagsForService")]
+        [Authorize]
+        public async Task<ActionResult> GetTagsForService(int? Id)
+        {
+            var checkToken = await _accountService.CheckTokenIsValid();
+            if (!checkToken)
+                return Unauthorized(new ApiResponse(401, PubicMessages.UnAuthorizeMessage));
+
+
+            if (Id == null)
+                return NotFound(new ApiResponse(404, _localizerShared["NotFound"].Value.ToString()));
+
+            var tags = _context.ServiceTags.Where(c => c.ServiceId == Id).Select(c => new
+            {
+                c.Id,
+                c.IsEnglisTags,
+                c.PersianTagName,
+                c.TagName,
+
+            }).ToList();
+
+
+
+            return Ok(new ApiOkResponse(new DataFormat()
+            {
+                Status = 1,
+                data = tags,
+                Message = PubicMessages.SuccessMessage
+            },
+            PubicMessages.SuccessMessage
+           ));
 
         }
 
