@@ -6,7 +6,7 @@ using System.Text;
 namespace Domain.Entities
 {
     [Table("User_Degree_Field")]
-    public class User_Degree_Field : BaseEntity<int>
+    public class User_Degree_FieldTBL : BaseEntity<int>
     {
 
 

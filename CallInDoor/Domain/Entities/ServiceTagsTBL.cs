@@ -7,7 +7,7 @@ using System.Text;
 namespace Domain.Entities
 {
     [Table("ServiceTags")]
-    public class ServiceTags : BaseEntity<int>
+    public class ServiceTagsTBL : BaseEntity<int>
     {
 
         public string  TagName { get; set; }

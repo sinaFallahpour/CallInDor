@@ -32,7 +32,7 @@ namespace Domain
         /// <summary>
         ///   تگ های  یک سرویس(حوضه کاری) س  
         /// </summary>
-        public DbSet<ServiceTags> ServiceTags { get; set; }
+        public DbSet<ServiceTagsTBL> ServiceTags { get; set; }
 
 
 
@@ -60,7 +60,13 @@ namespace Domain
         /// <summary>
         ///کاربر مدرک رشته تحصیلی
         /// </summary>
-        public DbSet<User_Degree_Field> UserDegreeField { get; set; }
+        public DbSet<User_Degree_FieldTBL> UserDegreeField { get; set; }
+
+
+
+        public DbSet<MyChatServiceTBL> MyChatServiceTBL { get; set; }
+
+
 
 
 

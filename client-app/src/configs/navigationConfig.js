@@ -13,7 +13,7 @@ const navigationConfig = [
     navLink: "/pages/categories",
     parentOf: [
       "/pages/categories",
-      "pages/category/:id"
+      "/pages/category/:id"
     ]
   },
   {
@@ -25,7 +25,7 @@ const navigationConfig = [
     parentOf: [
       "/pages/Services",
       "/pages/Services/Create",
-      "pages/Service/:id"
+      "/pages/Services/:id"
     ]
   },
   {

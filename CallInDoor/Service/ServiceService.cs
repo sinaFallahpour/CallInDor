@@ -2,6 +2,7 @@
 using Domain.DTO.Account;
 using Domain.DTO.Service;
 using Domain.Entities;
+using Domain.Enums;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Localization;
 using Service.Interfaces.ServiceType;
@@ -91,7 +92,7 @@ namespace Service
                 MinSessionTime = model.MinSessionTime,
             };
 
-            var servicetags = new List<ServiceTags>();
+            var servicetags = new List<ServiceTagsTBL>();
             var tags = model?.Tags?.Split(",").ToList();
 
 
@@ -99,7 +100,7 @@ namespace Service
             {
                 if (!string.IsNullOrEmpty(item))
                 {
-                    var tag = new ServiceTags()
+                    var tag = new ServiceTagsTBL()
                     {
                         IsEnglisTags = true,
                         TagName = item.Trim(),
@@ -120,7 +121,7 @@ namespace Service
                 {
                     if (!string.IsNullOrEmpty(item))
                     {
-                        var tag = new ServiceTags()
+                        var tag = new ServiceTagsTBL()
                         {
                             IsEnglisTags = false,
                             PersianTagName = item.Trim(),
@@ -168,7 +169,7 @@ namespace Service
 
                 //serviceFromDB.Tags.Clear();
 
-                var servicetags = new List<ServiceTags>();
+                var servicetags = new List<ServiceTagsTBL>();
                 List<string> tags = null;
                 if (model.Tags != null)
                 {
@@ -179,7 +180,7 @@ namespace Service
                     {
                         if (!string.IsNullOrEmpty(item))
                         {
-                            var tag = new ServiceTags()
+                            var tag = new ServiceTagsTBL()
                             {
                                 IsEnglisTags = true,
                                 TagName = item.Trim(),
@@ -199,7 +200,7 @@ namespace Service
                     {
                         if (!string.IsNullOrEmpty(item))
                         {
-                            var tag = new ServiceTags()
+                            var tag = new ServiceTagsTBL()
                             {
                                 IsEnglisTags = false,
                                 PersianTagName = item.Trim(),
@@ -225,7 +226,7 @@ namespace Service
                 var result = await _context.SaveChangesAsync();
                 return true;
             }
-            catch (Exception ex)
+            catch
             {
                 return false;
             }
@@ -235,38 +236,115 @@ namespace Service
 
 
 
+        ///// <summary>
+        /////Update
+        ///// </summary>
+        ///// <param name="Service"></param>
+        ///// <returns></returns>
+        //public async (bool succsseded, string result) Task<(int statusCode, string message, bool result)> Update(int Id)
+        //{
+        //    try
+        //    {
+        //        var service = await _context.ServiceTBL.Where(c => c.Id == Id).FirstOrDefaultAsync();
+        //        if (service == null) return (404, "Service Not Found", false);
+
+        //        service.PersianName = service.PersianName;
+        //        service.Name = service.Name;
+        //        service.IsEnabled = service.IsEnabled;
+        //        service.Color = service.Color;
+        //        service.MinPriceForService = service.MinPriceForService;
+        //        service.MinSessionTime = service.MinSessionTime;
+
+        //        var result = await _context.SaveChangesAsync();
+        //        return (200, "Successful registration", true);
+        //    }
+        //    catch
+        //    {
+        //        return (500, "Fail registration", false);
+        //    }
+
+        //}
+
+
+
         /// <summary>
-        ///Update
+        /// ولیدیت کردن آبجکت اسلاید
         /// </summary>
-        /// <param name="Service"></param>
+        /// <param name="model"></param>
         /// <returns></returns>
-        public async Task<(int statusCode, string message, bool result)> Update(int Id)
+        public async Task<(bool succsseded, List<string> result)> ValidateChatService(AddChatServiceForUserDTO model)
         {
-            try
+            bool IsValid = true;
+            List<string> Errors = new List<string>();
+
+            var IsInPackage = Enum.IsDefined(typeof(PackageType), model.PackageType);
+            if (!IsInPackage)
             {
-                var service = await _context.ServiceTBL.Where(c => c.Id == Id).FirstOrDefaultAsync();
-                if (service == null) return (404, "Service Not Found", false);
-
-                service.PersianName = service.PersianName;
-                service.Name = service.Name;
-                service.IsEnabled = service.IsEnabled;
-                service.Color = service.Color;
-                service.MinPriceForService = service.MinPriceForService;
-                service.MinSessionTime = service.MinSessionTime;
-
-                var result = await _context.SaveChangesAsync();
-                return (200, "Successful registration", true);
+                IsValid = false;
+                Errors.Add($"package Type Not Exist");
             }
-            catch
+            var IsInServiceType = Enum.IsDefined(typeof(ServiceType), model.ServiceType);
+            if (!IsInServiceType )
             {
-                return (500, "Fail registration", false);
+                IsValid = false;
+                Errors.Add($"service Type Not Exist");
+            }
+            if (model.ServiceType == ServiceType.Service || model.ServiceType == ServiceType.Course)
+            {
+                IsValid = false;
+                Errors.Add($"Invalid ServiceType Type");
             }
 
+            var isUserExist = await _context.Users.AnyAsync(c => c.UserName == model.UserName);
+            if (!isUserExist)
+            {
+                IsValid = false;
+                Errors.Add($"No user with the name {model.UserName} was found");
+            }
+            if (model.CatId != null)
+            {
+                var cats = await _context.CategoryTBL
+                    .AsNoTracking()
+                    .Where(c => c.Id == model.CatId)
+                    .Select(c => new
+                    {
+                        c.Id,
+                        SubCatIds = c.Children.Select(r => r.Id).ToList()
+                    }).FirstOrDefaultAsync();
+
+
+                if (cats == null)
+                {
+                    //return (false, fileName)
+                    IsValid = false;
+                    Errors.Add($"category with id {model.CatId} Not Found");
+                }
+                else
+                {
+                    if (model.SubCatId != null)
+                    {
+                        var ds = cats.SubCatIds?.Contains((int)model.SubCatId);
+                        if (ds == null || (ds != null && !(bool)ds))
+                        {
+                            IsValid = false;
+                            Errors.Add($"Sub Category with id {model.SubCatId} Not Found");
+                        }
+                    }
+                }
+            }
+
+            if (model.CatId == null)
+            {
+                IsValid = false;
+                Errors.Add($"Please Select Category");
+            }
+            return (IsValid, Errors);
         }
 
-
-
-
+        //public Task<(int statusCode, string message, bool result)> Update(int Id)
+        //{
+        //    throw new NotImplementedException();
+        //}
 
 
     }

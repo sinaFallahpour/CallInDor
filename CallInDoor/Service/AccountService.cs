@@ -12,7 +12,9 @@ using Service.Interfaces.Common;
 using Service.Interfaces.JwtManager;
 using System;
 using System.Collections.Generic;
+using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
+using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -22,7 +24,7 @@ namespace Service
     {
         private readonly DataContext _context;
         private readonly UserManager<AppUser> _userManager;
-        private readonly ICommonService _CommonService;
+        //private readonly ICommonService _CommonService;
 
         private readonly SignInManager<AppUser> _signInManager;
         private readonly IJwtManager _jwtGenerator;
@@ -39,7 +41,7 @@ namespace Service
                IJwtManager jwtGenerator,
                IHttpContextAccessor httpContextAccessor,
                 IStringLocalizer<AccountService> localizerAccount,
-                ICommonService commonService,
+                //ICommonService commonService,
                 IMapper mapper
                )
         {
@@ -49,9 +51,10 @@ namespace Service
             _jwtGenerator = jwtGenerator;
             _httpContextAccessor = httpContextAccessor;
             _localizerAccount = localizerAccount;
-            _CommonService = commonService;
+            //_CommonService = commonService;
             _mapper = mapper;
         }
+
 
 
 
@@ -59,16 +62,24 @@ namespace Service
         /// check Token paload(serialNUmber) Is valid
         public async Task<bool> CheckTokenIsValid()
         {
+            var ser = _httpContextAccessor.HttpContext.User.Claims;
             //var currentUsername = _httpContextAccessor.HttpContext.User?.Claims?.FirstOrDefault(x => x.Type == ClaimTypes.NameIdentifier)?.Value;
             var currentSerialNumber = _httpContextAccessor.HttpContext.User?.Claims?.FirstOrDefault(x => x.Type == PublicHelper.SerialNumberClaim)?.Value;
+            var currentUserName = _httpContextAccessor.HttpContext.User?.Claims?.FirstOrDefault(x => x.Type == ClaimTypes.Name)?.Value;
 
-            var username = await _context.Users.Where(x => x.SerialNumber == currentSerialNumber)
-                .Select(c => c.UserName)
-                .FirstOrDefaultAsync();
-
-            if (string.IsNullOrEmpty(username))
+            var IsExist = await _context.Users
+                    .AnyAsync(x => x.SerialNumber == currentSerialNumber && x.UserName == currentUserName);
+                //.Where(x => x.SerialNumber == currentSerialNumber && x.UserName == currentUserName)
+                //.AnyAsync();
+            //.Select(c => c.UserName)
+            //.FirstOrDefaultAsync();
+            if (!IsExist)
                 return false;
             return true;
+
+            //if (string.IsNullOrEmpty(username))
+            //    return false;
+            //return true;
         }
 
 

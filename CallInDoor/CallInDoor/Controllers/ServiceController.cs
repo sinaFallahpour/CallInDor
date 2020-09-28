@@ -14,6 +14,8 @@ using Service.Interfaces.Account;
 using Domain.DTO.Response;
 using Microsoft.Extensions.Localization;
 using Service.Interfaces.ServiceType;
+using Domain.DTO.Service;
+using Domain.Enums;
 
 namespace CallInDoor.Controllers
 {
@@ -21,6 +23,7 @@ namespace CallInDoor.Controllers
     //[ApiController]
     public class ServiceController : BaseControlle
     {
+        #region ctor
         private readonly DataContext _context;
         private readonly IAccountService _accountService;
         private readonly IServiceService _servicetypeService;
@@ -38,6 +41,9 @@ namespace CallInDoor.Controllers
             _localizerShared = localizerShared;
             _servicetypeService = servicetypeService;
         }
+
+        #endregion 
+
 
 
         /// <summary>
@@ -184,12 +190,6 @@ namespace CallInDoor.Controllers
 
 
 
-
-
-
-
-
-
         /// <summary>
         /// قیمت هر حوضه وزمان جلسه
         /// </summary>
@@ -316,6 +316,9 @@ namespace CallInDoor.Controllers
                 return Unauthorized(new ApiResponse(401, PubicMessages.UnAuthorizeMessage));
 
 
+
+
+
             var service = await _servicetypeService.GetByIdWithJoin(model.Id);
             if (service == null)
             {
@@ -342,6 +345,161 @@ namespace CallInDoor.Controllers
             );
 
         }
+
+
+
+
+
+
+
+
+        #region  MyService
+
+
+
+        /// <summary>
+        /// ایجاد  سرویس chat or voice or video  برای یک کاربر 
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns></returns>
+        [HttpPost("/userService/AddChatServiceForUser")]
+        [Authorize]
+        public async Task<ActionResult> AddChatServiceForUser([FromBody] AddChatServiceForUserDTO model)
+        {
+
+            var checkToken = await _accountService.CheckTokenIsValid();
+            if (!checkToken)
+                return Unauthorized(new ApiResponse(401, _localizerShared["UnauthorizedMessage"].Value.ToString()));
+
+
+            var res = await _servicetypeService.ValidateChatService(model);
+            if (!res.succsseded)
+                return BadRequest(new ApiBadRequestResponse(res.result));
+
+            var MyChatService = new MyChatServiceTBL()
+            {
+                UserName = model.UserName,
+                ServiceName = model.ServiceName,
+                PackageType = model.PackageType,
+                BeTranslate = model.BeTranslate,
+                FreeMessageCount = model.FreeMessageCount,
+                IsServiceReverse = model.IsServiceReverse,
+                PriceForNativeCustomer = model.PriceForNativeCustomer,
+                PriceForNonNativeCustomer = model.PriceForNonNativeCustomer,
+                CreateDate = DateTime.Now,
+                IsCheckedByAdmin = false,
+                ConfirmedServiceType = ConfirmedServiceType.Rejected,
+                CatId = model.CatId,
+                SubCatId = model.SubCatId,
+            };
+
+            try
+            {
+                await _context.MyChatServiceTBL.AddAsync(MyChatService);
+
+                await _context.SaveChangesAsync();
+                return Ok(new ApiOkResponse(new DataFormat()
+                {
+                    Status = 1,
+                    data = { },
+                    Message = _localizerShared["SuccessMessage"].Value.ToString()
+                },
+                 _localizerShared["SuccessMessage"].Value.ToString()
+            ));
+            }
+            catch(Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError,
+                                new ApiResponse(500, _localizerShared["InternalServerMessage"].Value.ToString()));
+            }
+           
+
+        }
+
+
+
+
+
+
+        /// <summary>
+        /// ایجاد  سرویس chat or voice or video  برای یک کاربر 
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns></returns>
+        [HttpPost("/userService/UpdateChatServiceForUser")]
+        [Authorize]
+        public async Task<ActionResult> UpdateChatServiceForUser([FromBody] AddChatServiceForUserDTO model)
+        {
+
+            var checkToken = await _accountService.CheckTokenIsValid();
+            if (!checkToken)
+                return Unauthorized(new ApiResponse(401, _localizerShared["UnauthorizedMessage"].Value.ToString()));
+
+           
+
+            var res = await _servicetypeService.ValidateChatService(model);
+            if (!res.succsseded)
+                return BadRequest(new ApiBadRequestResponse(res.result));
+
+            var MyChatService = new MyChatServiceTBL()
+            {
+                UserName = model.UserName,
+                ServiceName = model.ServiceName,
+                PackageType = model.PackageType,
+                BeTranslate = model.BeTranslate,
+                FreeMessageCount = model.FreeMessageCount,
+                IsServiceReverse = model.IsServiceReverse,
+                PriceForNativeCustomer = model.PriceForNativeCustomer,
+                PriceForNonNativeCustomer = model.PriceForNonNativeCustomer,
+                CreateDate = DateTime.Now,
+                IsCheckedByAdmin = false,
+                ConfirmedServiceType = ConfirmedServiceType.Rejected,
+                CatId = model.CatId,
+                SubCatId = model.SubCatId,
+            };
+
+            try
+            {
+                await _context.MyChatServiceTBL.AddAsync(MyChatService);
+
+                await _context.SaveChangesAsync();
+                return Ok(new ApiOkResponse(new DataFormat()
+                {
+                    Status = 1,
+                    data = { },
+                    Message = _localizerShared["SuccessMessage"].Value.ToString()
+                },
+                 _localizerShared["SuccessMessage"].Value.ToString()
+            ));
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError,
+                                new ApiResponse(500, _localizerShared["InternalServerMessage"].Value.ToString()));
+            }
+
+
+        }
+
+
+
+
+
+
+        #endregion 
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

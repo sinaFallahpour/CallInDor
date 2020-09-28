@@ -4,14 +4,16 @@ using Domain;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace Domain.Migrations
 {
     [DbContext(typeof(DataContext))]
-    partial class DataContextModelSnapshot : ModelSnapshot
+    [Migration("20200928103157_modefyServicTable")]
+    partial class modefyServicTable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -187,9 +189,6 @@ namespace Domain.Migrations
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<string>("AppUserId")
-                        .HasColumnType("nvarchar(450)");
-
                     b.Property<bool>("BeTranslate")
                         .HasColumnType("bit");
 
@@ -231,15 +230,15 @@ namespace Domain.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("UserName")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(450)");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("AppUserId");
 
                     b.HasIndex("CatId");
 
                     b.HasIndex("SubCatId");
+
+                    b.HasIndex("UserName");
 
                     b.ToTable("MyChatService");
                 });
@@ -496,10 +495,6 @@ namespace Domain.Migrations
 
             modelBuilder.Entity("Domain.Entities.MyChatServiceTBL", b =>
                 {
-                    b.HasOne("Domain.Entities.AppUser", null)
-                        .WithMany("MyChatServices")
-                        .HasForeignKey("AppUserId");
-
                     b.HasOne("Domain.Entities.CategoryTBL", "CategoryTBL")
                         .WithMany()
                         .HasForeignKey("CatId");
@@ -507,6 +502,10 @@ namespace Domain.Migrations
                     b.HasOne("Domain.Entities.CategoryTBL", "SubCategoryTBL")
                         .WithMany()
                         .HasForeignKey("SubCatId");
+
+                    b.HasOne("Domain.Entities.AppUser", "User")
+                        .WithMany("MyChatServices")
+                        .HasForeignKey("UserName");
                 });
 
             modelBuilder.Entity("Domain.Entities.ServiceTagsTBL", b =>

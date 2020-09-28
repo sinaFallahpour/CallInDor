@@ -16,9 +16,9 @@ namespace Service.Interfaces.ServiceType
         Task<bool> Create(CreateServiceDTO model);
         //Task<bool> Update(ServiceTBL model);
         Task<bool> Update(ServiceTBL serviceFromDB, CreateServiceDTO model);
-        Task<(int statusCode, string message, bool result)> Update(int Id);
+        //Task<(int statusCode, string message, bool result)> Update(int Id);
 
-
+        Task<(bool succsseded, List<string> result)> ValidateChatService(AddChatServiceForUserDTO model);
 
     }
 }

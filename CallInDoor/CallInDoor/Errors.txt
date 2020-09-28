@@ -18,3 +18,5 @@ return Unauthorized(new ApiResponse(401, _localizerShared["UnauthorizedMessage"]
  
  return StatusCode(StatusCodes.Status500InternalServerError,
                          new ApiResponse(500, _localizerShared["InternalServerMessage"].Value.ToString()));
+
+return BadRequest(new ApiBadRequestResponse(err));

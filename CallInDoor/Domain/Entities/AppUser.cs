@@ -42,7 +42,18 @@ namespace Domain.Entities
 
         #region  Relation
 
-        public virtual ICollection<User_Degree_Field> UsersDegrees { get; set; }
+        public virtual ICollection<User_Degree_FieldTBL> UsersDegrees { get; set; }
+
+
+
+
+        /// <summary>
+        /// سرویس های من از نوع پت یا وویس  یا ویدیو
+        /// </summary>
+        public virtual ICollection<MyChatServiceTBL> MyChatServices { get; set; }
+
+
+
 
         #endregion 
     }
