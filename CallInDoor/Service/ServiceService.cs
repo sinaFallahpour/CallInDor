@@ -54,16 +54,18 @@ namespace Service
         /// <summary>
         /// get All services
         /// </summary>
-        public Task<List<ListServiceDTO>> GetAllActive()
+        public Task<List<ListServiceDTO>> GetAllActiveService()
         {
-            return _context.ServiceTBL.Where(c => c.IsEnabled).AsNoTracking().Select(c => new ListServiceDTO
-            {
-                Id = c.Id,
-                Color = c.Color,
-                IsEnabled = c.IsEnabled,
-                Name = c.Name,
-                PersianName = c.PersianName,
-            }).ToListAsync();
+            return _context.ServiceTBL.Where(c => c.IsEnabled)
+                .AsNoTracking()
+                .Select(c => new ListServiceDTO
+                {
+                    Id = c.Id,
+                    Color = c.Color,
+                    IsEnabled = c.IsEnabled,
+                    Name = c.Name,
+                    PersianName = c.PersianName,
+                }).ToListAsync();
         }
 
 

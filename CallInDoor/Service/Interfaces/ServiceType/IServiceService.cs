@@ -12,7 +12,7 @@ namespace Service.Interfaces.ServiceType
     {
         ServiceTBL GetById(int Id);
         Task<ServiceTBL> GetByIdWithJoin(int Id);
-        Task<List<ListServiceDTO>> GetAllActive();
+        Task<List<ListServiceDTO>> GetAllActiveService();
         Task<bool> Create(CreateServiceDTO model);
         //Task<bool> Update(ServiceTBL model);
         Task<bool> Update(ServiceTBL serviceFromDB, CreateServiceDTO model);

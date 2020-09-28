@@ -436,6 +436,8 @@ class DataListConfig extends Component {
             size: "sm"
           }}
         />
+
+        
         <Sidebar
           show={sidebar}
           data={currentData}

@@ -1,4 +1,5 @@
 import React from "react";
+import { NavLink } from "react-router-dom";
 import {
   Card,
   CardBody,
@@ -11,7 +12,12 @@ import {
 } from "reactstrap";
 import { AgGridReact } from "ag-grid-react";
 import { ContextLayout } from "../../../utility/context/Layout";
-import { ChevronDown } from "react-feather";
+
+import {
+  Edit,
+  Trash2,
+  ChevronDown,
+} from "react-feather"
 import "../../../assets/scss/plugins/tables/_agGridStyleOverride.scss";
 import { toast } from "react-toastify";
 
@@ -21,7 +27,7 @@ import ModalForm from "./ModalForm";
 import Spinner from "../../../components/@vuexy/spinner/Loading-spinner";
 import agent from "../../../core/services/agent";
 
-
+import { history } from "../../../history";
 
 class Table extends React.Component {
   state = {
@@ -67,11 +73,10 @@ class Table extends React.Component {
         width: 200,
 
         cellRenderer: function (params) {
-          if (!params.data) return '';
-          if (!params.value)
-            return `_ `;
-          else return params.value
-        }
+          if (!params.data) return "";
+          if (!params.value) return `_ `;
+          else return params.value;
+        },
       },
       {
         headerName: "ServiceName",
@@ -84,15 +89,24 @@ class Table extends React.Component {
         field: "id",
         filter: false,
         width: 210,
-        cellStyle: { "border-width": "0px", outline: 'none' },
-        cellRenderer: function (params) {
-          console.log(params)
-          if (!params.data) return '';
-          return  `<a class="btn btn-success " href="/pages/category/${params.value}">Edit</a>`
-          // `<button class="btn btn-sm btn-success">Edit</button>`;
-        }
-      },
+        cellStyle: { "border-width": "0px", outline: "none" },
+        cellRendererFramework: (params) => {
+          return (
+            <Edit
+              className="mr-50"
+              size={15}
+              onClick={() => history.push(`/pages/category/${params.value}`)}
+            />
+          );
+        },
 
+        // cellRenderer: function (params) {
+        //   console.log(params)
+        //   if (!params.data) return '';
+        //   return  `<a class="btn btn-success " href="/pages/category/${params.value}">Edit</a>`
+        //   // `<button class="btn btn-sm btn-success">Edit</button>`;
+        // }
+      },
     ],
   };
 
@@ -112,9 +126,8 @@ class Table extends React.Component {
 
   GetAllCategory = async (newCategory) => {
     const rowData = [...this.state.rowData, newCategory];
-    this.setState({ rowData })
+    this.setState({ rowData });
   };
-
 
   onGridReady = (params) => {
     this.gridApi = params.api;
@@ -143,7 +156,7 @@ class Table extends React.Component {
   render() {
     const { rowData, columnDefs, defaultColDef } = this.state;
     return (
-      <React.Fragment> 
+      <React.Fragment>
         {/* {this.state.currentCategory!=null? <ModalEditForm /> :null  } */}
         {/* <ModalEditForm/> */}
         <ModalForm GetAllCategory={this.GetAllCategory}></ModalForm>
@@ -158,11 +171,11 @@ class Table extends React.Component {
                         {this.gridApi
                           ? this.state.currenPageSize
                           : "" * this.state.getPageSize -
-                          (this.state.getPageSize - 1)}{" "}
+                            (this.state.getPageSize - 1)}{" "}
                         -{" "}
                         {this.state.rowData.length -
                           this.state.currenPageSize * this.state.getPageSize >
-                          0
+                        0
                           ? this.state.currenPageSize * this.state.getPageSize
                           : this.state.rowData.length}{" "}
                         of {this.state.rowData.length}
@@ -227,27 +240,26 @@ class Table extends React.Component {
                 {this.state.loading ? (
                   <Spinner></Spinner>
                 ) : (
-                    <ContextLayout.Consumer>
-                      {(context) => (
-                        <AgGridReact
-                          gridOptions={{}}
-                          // rowSelection="multiple"
-                          defaultColDef={defaultColDef}
-                          columnDefs={columnDefs}
-                          rowData={rowData}
-                          onGridReady={this.onGridReady}
-                          colResizeDefault={"shift"}
-                          animateRows={true}
-                          floatingFilter={true}
-                          pagination={true}
-                          paginationPageSize={this.state.paginationPageSize}
-                          pivotPanelShow="always"
-                          enableRtl={context.state.direction === "rtl"}
-                        
-                        />
-                      )}
-                    </ContextLayout.Consumer>
-                  )}
+                  <ContextLayout.Consumer>
+                    {(context) => (
+                      <AgGridReact
+                        gridOptions={{}}
+                        // rowSelection="multiple"
+                        defaultColDef={defaultColDef}
+                        columnDefs={columnDefs}
+                        rowData={rowData}
+                        onGridReady={this.onGridReady}
+                        colResizeDefault={"shift"}
+                        animateRows={true}
+                        floatingFilter={true}
+                        pagination={true}
+                        paginationPageSize={this.state.paginationPageSize}
+                        pivotPanelShow="always"
+                        enableRtl={context.state.direction === "rtl"}
+                      />
+                    )}
+                  </ContextLayout.Consumer>
+                )}
               </div>
             )}
           </CardBody>

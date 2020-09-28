@@ -126,8 +126,7 @@ class ModalForm extends React.Component {
             <TabContent activeTab={this.state.activeTab}>
               <TabPane tabId="1">
                 <Button.Ripple
-                  color="success"
-                  outline
+                  color="primary"
                   onClick={this.toggleModal}
                 >
                   Create New Category

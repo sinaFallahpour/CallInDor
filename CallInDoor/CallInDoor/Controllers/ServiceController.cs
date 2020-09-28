@@ -40,7 +40,11 @@ namespace CallInDoor.Controllers
         }
 
 
-
+        /// <summary>
+        /// گرفتن یک سرویس تایپ مثل Translate
+        /// </summary>
+        /// <param name="Id"></param>
+        /// <returns></returns>
         [HttpGet("GetServiceByIdForAdmin")]
         [Authorize(Roles = PublicHelper.ADMINROLE)]
         public async Task<ActionResult> GetServiceByIdForAdmin(int Id)
@@ -49,18 +53,21 @@ namespace CallInDoor.Controllers
             if (!checkToken)
                 return Unauthorized(new ApiResponse(401, PubicMessages.UnAuthorizeMessage));
 
-            var Service = await _context.ServiceTBL.Where(c => c.Id == Id).Select(c => new
-            {
-                c.Id,
-                c.Name,
-                c.PersianName,
-                c.IsEnabled,
-                c.Color,
-                c.MinPriceForService,
-                c.MinSessionTime,
-                tags = c.Tags.Where(c => c.IsEnglisTags && !string.IsNullOrEmpty(c.TagName)).Select(s => s.TagName).ToList(),
-                persinaTags = c.Tags.Where(c => c.IsEnglisTags == false && !string.IsNullOrEmpty(c.PersianTagName)).Select(s => s.PersianTagName).ToList()
-            }).FirstOrDefaultAsync();
+            var Service = await _context.ServiceTBL
+               .AsNoTracking()
+               .Where(c => c.Id == Id)
+               .Select(c => new
+               {
+                   c.Id,
+                   c.Name,
+                   c.PersianName,
+                   c.IsEnabled,
+                   c.Color,
+                   c.MinPriceForService,
+                   c.MinSessionTime,
+                   tags = c.Tags.Where(p => p.IsEnglisTags && !string.IsNullOrEmpty(p.TagName)).Select(s => s.TagName).ToList(),
+                   persinaTags = c.Tags.Where(p => p.IsEnglisTags == false && !string.IsNullOrEmpty(p.PersianTagName)).Select(s => s.PersianTagName).ToList()
+               }).FirstOrDefaultAsync();
 
             if (Service == null)
                 return NotFound(new ApiResponse(404, PubicMessages.NotFoundMessage));
@@ -81,10 +88,10 @@ namespace CallInDoor.Controllers
 
 
 
-        // GET: api/GetAllForAdmin
-        [HttpGet("GetAllForAdmin")]
+        // GET: api/GetAllServiceForAdmin
+        [HttpGet("GetAllServiceForAdmin")]
         [Authorize(Roles = PublicHelper.ADMINROLE)]
-        public async Task<ActionResult> GetAllForAdmin()
+        public async Task<ActionResult> GetAllServiceForAdmin()
         {
             var checkToken = await _accountService.CheckTokenIsValid();
             if (!checkToken)
@@ -92,6 +99,7 @@ namespace CallInDoor.Controllers
 
             var AllServices = await _context
                   .ServiceTBL
+                  .AsNoTracking()
                   .Select(c => new
                   {
                       c.Id,
@@ -119,11 +127,11 @@ namespace CallInDoor.Controllers
 
 
         // GET: api/GetAllService
-        [HttpGet("GetAllActive")]
+        [HttpGet("GetAllActiveService")]
         [AllowAnonymous]
-        public async Task<ActionResult> GetAllActive()
+        public async Task<ActionResult> GetAllActiveService()
         {
-            var services = await _servicetypeService.GetAllActive();
+            var services = await _servicetypeService.GetAllActiveService();
             return Ok(new ApiOkResponse(new DataFormat()
             {
                 Status = 1,
@@ -132,6 +140,128 @@ namespace CallInDoor.Controllers
             },
            PubicMessages.SuccessMessage
           ));
+        }
+
+
+
+
+
+        [HttpGet("GetTagsForService")]
+        [Authorize]
+        public async Task<ActionResult> GetTagsForService(int? Id)
+        {
+            var checkToken = await _accountService.CheckTokenIsValid();
+            if (!checkToken)
+                return Unauthorized(new ApiResponse(401, PubicMessages.UnAuthorizeMessage));
+
+            if (Id == null)
+                return NotFound(new ApiResponse(404, _localizerShared["NotFound"].Value.ToString()));
+
+            var tags = _context.ServiceTags
+                .AsNoTracking()
+                .Where(c => c.ServiceId == Id)
+                .Select(c => new
+                {
+                    c.Id,
+                    c.IsEnglisTags,
+                    c.PersianTagName,
+                    c.TagName,
+
+                }).ToList();
+
+            return Ok(new ApiOkResponse(new DataFormat()
+            {
+                Status = 1,
+                data = tags,
+                Message = _localizerShared["SuccessMessage"].Value.ToString()
+            },
+           _localizerShared["SuccessMessage"].Value.ToString()
+           ));
+
+        }
+
+
+
+
+
+
+
+
+
+
+
+        /// <summary>
+        /// قیمت هر حوضه وزمان جلسه
+        /// </summary>
+        /// <param name="Id"></param>
+        /// <returns></returns>
+        [HttpGet("GetTimeAndPriceForService/{Id}")]
+        [Authorize]
+        public async Task<ActionResult> GetTimeAndPriceForService(int? Id)
+        {
+            var checkToken = await _accountService.CheckTokenIsValid();
+            if (!checkToken)
+                return Unauthorized(new ApiResponse(401, _localizerShared["UnauthorizedMessage"].Value.ToString()));
+
+            if (Id == null)
+                return NotFound(new ApiResponse(404, _localizerShared["NotFound"].Value.ToString()));
+
+            var serviceTimsandProice = _context
+                .ServiceTBL
+                .AsNoTracking()
+                .Where(c => c.Id == Id)
+                .Select(c => new
+                {
+                    c.MinPriceForService,
+                    c.MinSessionTime
+                }).ToList();
+
+            return Ok(new ApiOkResponse(new DataFormat()
+            {
+                Status = 1,
+                data = serviceTimsandProice,
+                Message = _localizerShared["SuccessMessage"].Value.ToString()
+            },
+           _localizerShared["SuccessMessage"].Value.ToString()
+           ));
+
+        }
+
+
+
+
+
+        /// <summary>
+        /// قیمت هر حوضه وزمان جلسه
+        /// </summary>
+        /// <param name="Id"></param>
+        /// <returns></returns>
+        [HttpGet("GetTimeAndPriceForService")]
+        [Authorize]
+        public async Task<ActionResult> GetTimeAndPriceForService()
+        {
+            var checkToken = await _accountService.CheckTokenIsValid();
+            if (!checkToken)
+                return Unauthorized(new ApiResponse(401, _localizerShared["UnauthorizedMessage"].Value.ToString()));
+
+            var serviceTimsandProice = _context
+                .ServiceTBL
+                .AsNoTracking()
+                .Select(c => new
+                {
+                    c.MinPriceForService,
+                    c.MinSessionTime
+                }).ToList();
+
+            return Ok(new ApiOkResponse(new DataFormat()
+            {
+                Status = 1,
+                data = serviceTimsandProice,
+                Message = _localizerShared["SuccessMessage"].Value.ToString()
+            },
+           _localizerShared["SuccessMessage"].Value.ToString()
+           ));
+
         }
 
 
@@ -172,8 +302,6 @@ namespace CallInDoor.Controllers
             //return badrequest(new ApiResponse(401, _localizerShared["InvalidPhoneNumber"].Value.ToString()));
 
         }
-
-
 
 
 
@@ -221,39 +349,12 @@ namespace CallInDoor.Controllers
 
 
 
-        [HttpGet("GetTagsForService")]
-        [Authorize]
-        public async Task<ActionResult> GetTagsForService(int? Id)
-        {
-            var checkToken = await _accountService.CheckTokenIsValid();
-            if (!checkToken)
-                return Unauthorized(new ApiResponse(401, PubicMessages.UnAuthorizeMessage));
-
-
-            if (Id == null)
-                return NotFound(new ApiResponse(404, _localizerShared["NotFound"].Value.ToString()));
-
-            var tags = _context.ServiceTags.Where(c => c.ServiceId == Id).Select(c => new
-            {
-                c.Id,
-                c.IsEnglisTags,
-                c.PersianTagName,
-                c.TagName,
-
-            }).ToList();
 
 
 
-            return Ok(new ApiOkResponse(new DataFormat()
-            {
-                Status = 1,
-                data = tags,
-                Message = PubicMessages.SuccessMessage
-            },
-            PubicMessages.SuccessMessage
-           ));
 
-        }
+
+
 
 
     }
