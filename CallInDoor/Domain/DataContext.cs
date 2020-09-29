@@ -29,21 +29,19 @@ namespace Domain
         {
             base.OnModelCreating(builder);
 
-            //builder.Entity<MyChatServiceTBL>()
-            //  .HasOne(m => m.BaseMyChatTBL)
-            //  .WithOne(c => c.MyChatServiceTBL)
-            //  .HasForeignKey<BaseMyServiceTBL>(x => x.MyChatId);
+        
 
             builder.Entity<MyChatServiceTBL>()
                 .HasOne(c => c.BaseMyChatTBL)
                 .WithOne(c => c.MyChatsService)
                 .HasForeignKey<MyChatServiceTBL>(c => c.BaseId);
-                
 
-           
-            //.HasOne(u => u.AppUser)
-            //.WithMany(a => a.UserActivities)
-            //.HasForeignKey(u => u.AppUserId);
+            builder.Entity<MyServiceServiceTBL>()
+                          .HasOne(c => c.BaseMyChatTBL)
+                          .WithOne(c => c.MyServicesService)
+                          .HasForeignKey<MyServiceServiceTBL>(c => c.BaseId);
+
+ 
         }
 
 

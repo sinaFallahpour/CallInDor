@@ -44,9 +44,14 @@ namespace Domain.Entities
         /// <summary>
         /// 1 به 1 لا جدول MyChatService
         /// </summary>
-        //public virtual MyChatServiceTBL MyChatServiceTBL { get; set; }
 
-        public MyChatServiceTBL MyChatsService { get; set; }
+        public virtual MyChatServiceTBL MyChatsService { get; set; }
+
+
+        /// <summary>
+        /// رابطه 1 به 1 با حدول سرویس هایی از نوع سرویس
+        /// </summary>
+        public virtual MyServiceServiceTBL MyServicesService { get; set; }
 
 
 
@@ -54,6 +59,10 @@ namespace Domain.Entities
 
         [ForeignKey("ServiceTbl")]
         public int? ServiceId { get; set; }
+
+
+
+
 
         #endregion
 
