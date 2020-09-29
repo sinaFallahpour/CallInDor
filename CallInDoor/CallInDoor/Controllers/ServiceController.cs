@@ -381,6 +381,7 @@ namespace CallInDoor.Controllers
                 ServiceName = model.ServiceName,
                 ServiceType = (ServiceType)model.ServiceType,
                 UserName = model.UserName,
+                ServiceId=model.ServiceId
             };
 
 
@@ -454,7 +455,6 @@ namespace CallInDoor.Controllers
 
             var serviceFromDB = await _context
                 .BaseMyServiceTBL
-                .AsNoTracking()
                 .Where(c => c.Id == model.Id)
                 .Include(c => c.MyChatsService)
                 .FirstOrDefaultAsync();
@@ -466,7 +466,7 @@ namespace CallInDoor.Controllers
                 return Unauthorized(new ApiResponse(401, _localizerShared["UnauthorizedMessage"].Value.ToString()));
 
 
-            if (serviceFromDB.ConfirmedServiceType == ConfirmedServiceType.Pending)
+            if (serviceFromDB.ConfirmedServiceType != ConfirmedServiceType.Pending)
             {
                 var errors = new List<string>() {
                       _locaLizer["AfterAdminConfirmMessage"].Value.ToString()
@@ -490,15 +490,15 @@ namespace CallInDoor.Controllers
 
             serviceFromDB.ServiceName = model.ServiceName;
             serviceFromDB.ServiceType = (ServiceType)model.ServiceType;
-            var dsd = serviceFromDB.MyChatsService.Where(c => c.BaseId == model.Id).FirstOrDefault();
-            dsd.PackageType = model.PackageType;
-            dsd.BeTranslate = model.BeTranslate;
-            dsd.FreeMessageCount = (int)model.FreeMessageCount;
-            dsd.IsServiceReverse = model.IsServiceReverse;
-            dsd.PriceForNativeCustomer = (int)model.PriceForNativeCustomer;
-            dsd.PriceForNonNativeCustomer = (int)model.PriceForNonNativeCustomer;
-            dsd.CatId = model.CatId;
-            dsd.SubCatId = model.SubCatId;
+
+            serviceFromDB.MyChatsService.PackageType= model.PackageType;
+            serviceFromDB.MyChatsService.BeTranslate = model.BeTranslate;
+            serviceFromDB.MyChatsService.FreeMessageCount = (int)model.FreeMessageCount;
+            serviceFromDB.MyChatsService.IsServiceReverse = model.IsServiceReverse;
+            serviceFromDB.MyChatsService.PriceForNativeCustomer = (int)model.PriceForNativeCustomer;
+            serviceFromDB.MyChatsService.PriceForNonNativeCustomer = (int)model.PriceForNonNativeCustomer;
+            serviceFromDB.MyChatsService.CatId = model.CatId;
+            serviceFromDB.MyChatsService.SubCatId = model.SubCatId;
 
 
 
@@ -531,9 +531,9 @@ namespace CallInDoor.Controllers
                 {
                     Status = 1,
                     data = { },
-                    Message = _localizerShared["SuccessMessage"].Value.ToString()
+                    Message = _localizerShared["SuccesfullAddServiceMessage"].Value.ToString()
                 },
-                 _localizerShared["SuccessMessage"].Value.ToString()
+                 _localizerShared["SuccesfullAddServiceMessage"].Value.ToString()
                 ));
             }
             catch
@@ -544,25 +544,6 @@ namespace CallInDoor.Controllers
 
 
         }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -638,29 +619,6 @@ namespace CallInDoor.Controllers
 
 
         #endregion 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 

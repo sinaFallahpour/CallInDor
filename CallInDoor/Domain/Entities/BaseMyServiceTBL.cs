@@ -53,10 +53,10 @@ namespace Domain.Entities
         public virtual ServiceTBL ServiceTbl { get; set; }
 
         [ForeignKey("ServiceTbl")]
-        public int?  ServiceId{ get; set; }
+        public int? ServiceId { get; set; }
 
-    #endregion
+        #endregion
 
 
-}
+    }
 }

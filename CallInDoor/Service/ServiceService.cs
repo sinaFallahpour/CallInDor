@@ -234,7 +234,7 @@ namespace Service
 
 
 
- 
+
 
 
         /// <summary>
@@ -254,7 +254,7 @@ namespace Service
                 Errors.Add($"package Type Not Exist");
             }
             var IsInServiceType = Enum.IsDefined(typeof(ServiceType), model.ServiceType);
-            if (!IsInServiceType )
+            if (!IsInServiceType)
             {
                 IsValid = false;
                 Errors.Add($"service Type Not Exist");
@@ -265,12 +265,7 @@ namespace Service
                 Errors.Add($"Invalid ServiceType Type");
             }
 
-            var isUserExist = await _context.Users.AnyAsync(c => c.UserName == model.UserName);
-            if (!isUserExist)
-            {
-                IsValid = false;
-                Errors.Add($"No user with the name {model.UserName} was found");
-            }
+
             if (model.CatId != null)
             {
                 var cats = await _context.CategoryTBL
@@ -308,10 +303,27 @@ namespace Service
                 IsValid = false;
                 Errors.Add($"Please Select Category");
             }
+
+
+
+            var IsServiceExist = _context.ServiceTBL.Any(c => c.Id == model.ServiceId);
+            if (!IsServiceExist)
+            {
+                IsValid = false;
+                Errors.Add($"service Not Exist");
+            }
+
+            var isUserExist = await _context.Users.AnyAsync(c => c.UserName == model.UserName);
+            if (!isUserExist)
+            {
+                IsValid = false;
+                Errors.Add($"No user with the name {model.UserName} was found");
+            }
+
             return (IsValid, Errors);
         }
 
-        
+
 
 
 

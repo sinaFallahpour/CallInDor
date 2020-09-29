@@ -50,7 +50,7 @@ namespace Domain.Entities
         /// <summary>
         /// سرویس های من از نوع پت یا وویس  یا ویدیو
         /// </summary>
-        public virtual ICollection<MyChatServiceTBL> MyChatServices { get; set; }
+        //public virtual ICollection<BaseMyServiceTBL> MyChatServices { get; set; }
 
 
 

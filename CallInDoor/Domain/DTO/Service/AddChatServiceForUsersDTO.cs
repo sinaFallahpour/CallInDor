@@ -76,10 +76,7 @@ namespace Domain.DTO.Service
         #region  دیفالت بین همشونه
 
 
-        /// <summary>
-        ///  تاریخ درج
-        /// </summary>
-        public DateTime CreateDate { get; set; }
+     
 
         /// <summary>
         /// vide or chat or seice or course ,...

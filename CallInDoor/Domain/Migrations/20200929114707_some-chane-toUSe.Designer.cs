@@ -4,14 +4,16 @@ using Domain;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace Domain.Migrations
 {
     [DbContext(typeof(DataContext))]
-    partial class DataContextModelSnapshot : ModelSnapshot
+    [Migration("20200929114707_some-chane-toUSe")]
+    partial class somechanetoUSe
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -115,6 +117,9 @@ namespace Domain.Migrations
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
+                    b.Property<string>("AppUserId")
+                        .HasColumnType("nvarchar(450)");
+
                     b.Property<int>("ConfirmedServiceType")
                         .HasColumnType("int");
 
@@ -136,6 +141,8 @@ namespace Domain.Migrations
                         .HasMaxLength(100);
 
                     b.HasKey("Id");
+
+                    b.HasIndex("AppUserId");
 
                     b.HasIndex("ServiceId");
 
@@ -495,6 +502,10 @@ namespace Domain.Migrations
 
             modelBuilder.Entity("Domain.Entities.BaseMyServiceTBL", b =>
                 {
+                    b.HasOne("Domain.Entities.AppUser", null)
+                        .WithMany("MyChatServices")
+                        .HasForeignKey("AppUserId");
+
                     b.HasOne("Domain.Entities.ServiceTBL", "ServiceTbl")
                         .WithMany("BaseMyServices")
                         .HasForeignKey("ServiceId");

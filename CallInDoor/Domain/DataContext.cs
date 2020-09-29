@@ -34,7 +34,11 @@ namespace Domain
             //  .WithOne(c => c.MyChatServiceTBL)
             //  .HasForeignKey<BaseMyServiceTBL>(x => x.MyChatId);
 
-
+            builder.Entity<MyChatServiceTBL>()
+                .HasOne(c => c.BaseMyChatTBL)
+                .WithOne(c => c.MyChatsService)
+                .HasForeignKey<MyChatServiceTBL>(c => c.BaseId);
+                
 
            
             //.HasOne(u => u.AppUser)
