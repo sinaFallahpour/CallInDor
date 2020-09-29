@@ -24,6 +24,24 @@ namespace Domain
 
 
 
+
+        //protected override void OnModelCreating(ModelBuilder builder)
+        //{
+        //    base.OnModelCreating(builder);
+
+
+        //    builder.Entity<BaseMyServiceTBL>()
+        //        .HasOne(b => b.MyChatServiceTBL)
+        //        .WithOne(v => v.BaseMyChatTBL)
+        //        .HasForeignKey<MyChatServiceTBL>(x => x.BaseId);
+
+        //    //.HasOne(u => u.AppUser)
+        //    //.WithMany(a => a.UserActivities)
+        //    //.HasForeignKey(u => u.AppUserId);
+        //}
+
+
+
         /// <summary>
         ///  سرویس(حوضه کاری)یه جورایی
         /// </summary>
@@ -64,8 +82,19 @@ namespace Domain
 
 
 
-        public DbSet<MyChatServiceTBL> MyChatServiceTBL { get; set; }
 
+        /// <summary>
+        ///  این جدول پدر مشترک های بین سرویس ها توی این قرار میگیرد
+        /// </summary>
+        public DbSet<BaseMyServiceTBL> BaseMyServiceTBL { get; set; }
+
+
+
+
+        /// <summary>
+        /// این جدول سرویس های که فقط از جنس چت و وویس و ویدیو هستند
+        /// </summary>
+        public DbSet<MyChatServiceTBL> MyChatServiceTBL { get; set; }
 
 
 

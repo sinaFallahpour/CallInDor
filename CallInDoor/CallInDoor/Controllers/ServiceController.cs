@@ -378,17 +378,17 @@ namespace CallInDoor.Controllers
 
             var MyChatService = new MyChatServiceTBL()
             {
-                UserName = model.UserName,
-                ServiceName = model.ServiceName,
+                //UserName = model.UserName,
+                //ServiceName = model.ServiceName,
                 PackageType = model.PackageType,
                 BeTranslate = model.BeTranslate,
                 FreeMessageCount = model.FreeMessageCount,
                 IsServiceReverse = model.IsServiceReverse,
                 PriceForNativeCustomer = model.PriceForNativeCustomer,
                 PriceForNonNativeCustomer = model.PriceForNonNativeCustomer,
-                CreateDate = DateTime.Now,
-                IsCheckedByAdmin = false,
-                ConfirmedServiceType = ConfirmedServiceType.Rejected,
+                //CreateDate = DateTime.Now,
+                //IsCheckedByAdmin = false,
+                //ConfirmedServiceType = ConfirmedServiceType.Rejected,
                 CatId = model.CatId,
                 SubCatId = model.SubCatId,
             };
@@ -443,17 +443,17 @@ namespace CallInDoor.Controllers
 
             var MyChatService = new MyChatServiceTBL()
             {
-                UserName = model.UserName,
-                ServiceName = model.ServiceName,
+                //UserName = model.UserName,
+                //ServiceName = model.ServiceName,
                 PackageType = model.PackageType,
                 BeTranslate = model.BeTranslate,
                 FreeMessageCount = model.FreeMessageCount,
                 IsServiceReverse = model.IsServiceReverse,
                 PriceForNativeCustomer = model.PriceForNativeCustomer,
                 PriceForNonNativeCustomer = model.PriceForNonNativeCustomer,
-                CreateDate = DateTime.Now,
-                IsCheckedByAdmin = false,
-                ConfirmedServiceType = ConfirmedServiceType.Rejected,
+                //CreateDate = DateTime.Now,
+                //IsCheckedByAdmin = false,
+                //ConfirmedServiceType = ConfirmedServiceType.Rejected,
                 CatId = model.CatId,
                 SubCatId = model.SubCatId,
             };

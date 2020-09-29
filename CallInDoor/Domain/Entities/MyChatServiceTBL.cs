@@ -14,8 +14,11 @@ namespace Domain.Entities
     public class MyChatServiceTBL : BaseEntity<int>
     {
 
-        [MaxLength(200)]
-        public string ServiceName { get; set; }
+        ////[Key]
+        ////[DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        ////public int Id { get; set; }
+
+
 
         /// <summary>
         ///   نوع  چت  و پولی که با ازای زمان از حسابش کم میشه   با این معلوم میشه
@@ -23,7 +26,7 @@ namespace Domain.Entities
         public PackageType PackageType { get; set; }
 
 
-        public string  UserName { get; set; }
+
 
         /// <summary>
         /// این فیلد فقط و فقط مخصوص سرویس هایی است که از نوع ترنسلیت هستند
@@ -60,36 +63,6 @@ namespace Domain.Entities
 
 
 
-
-        #region  دیفالت بین همشونه
-
-
-        /// <summary>
-        ///  تاریخ درج
-        /// </summary>
-        public DateTime CreateDate { get; set; }
-
-        /// <summary>
-        /// vide or chat or seice or course ,...
-        /// </summary>
-        public ServiceType ServiceType { get; set; }
-
-
-
-        /// <summary>
-        ///آیا ادمین چک کرده
-        /// </summary>
-        public bool IsCheckedByAdmin { get; set; }
-
-
-        /// <summary>
-        /// وضعیت تایید سرویس بوسیله ادمین
-        /// </summary>
-        public ConfirmedServiceType ConfirmedServiceType { get; set; }
-
-
-        #endregion  
-
         #region Relation
 
         //[ForeignKey("UserName")]
@@ -108,6 +81,13 @@ namespace Domain.Entities
         public virtual CategoryTBL SubCategoryTBL { get; set; }
 
         public int? SubCatId { get; set; }
+
+
+        // relation With BaseMyChatTBL
+        //public virtual BaseMyServiceTBL BaseMyChatTBL { get; set; }
+        
+        //[Key, ForeignKey("BaseMyChatTBL")]
+        //public int BaseId { get; set; }
 
 
         #endregion 
