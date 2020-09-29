@@ -8,7 +8,6 @@ using System.Text;
 namespace Domain.Entities
 {
     [Table("BaseMyService")]
-
     public class BaseMyServiceTBL : BaseEntity<int>
     {
 
@@ -24,13 +23,6 @@ namespace Domain.Entities
 
         [MaxLength(100)]
         public string UserName { get; set; }
-
-
-        /// <summary>
-        ///آیا ادمین چک کرده
-        /// </summary>
-        public bool IsCheckedByAdmin { get; set; }
-
 
 
 
@@ -54,9 +46,17 @@ namespace Domain.Entities
         /// </summary>
         //public virtual MyChatServiceTBL MyChatServiceTBL { get; set; }
 
+        public MyChatServiceTBL MyChatsService { get; set; }
 
-        #endregion
 
 
-    }
+        public virtual ServiceTBL ServiceTbl { get; set; }
+
+        [ForeignKey("ServiceTbl")]
+        public int?  ServiceId{ get; set; }
+
+    #endregion
+
+
+}
 }

@@ -102,7 +102,7 @@ namespace Service
                 await _context.SaveChangesAsync();
                 return true;
             }
-            catch (Exception ex)
+            catch  
             {
                 return false;
             }

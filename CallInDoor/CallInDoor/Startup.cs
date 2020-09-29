@@ -136,7 +136,8 @@ namespace CallInDoor
                 options.Filters.Add(new ModelStateCheckFilter());
             })
              .AddViewLocalization(LanguageViewLocationExpanderFormat.Suffix)
-            .AddDataAnnotationsLocalization().AddNewtonsoftJson();
+            .AddDataAnnotationsLocalization()
+            .AddNewtonsoftJson();
 
 
             //services.AddControllers().AddNewtonsoftJson();

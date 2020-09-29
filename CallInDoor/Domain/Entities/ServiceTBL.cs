@@ -65,6 +65,9 @@ namespace Domain.Entities
         public virtual ICollection<CategoryTBL> Categories { get; set; }
 
         public virtual ICollection<ServiceTagsTBL> Tags { get; set; }
+
+
+        public virtual ICollection<BaseMyServiceTBL> BaseMyServices { get; set; }
         #endregion 
     }
 }

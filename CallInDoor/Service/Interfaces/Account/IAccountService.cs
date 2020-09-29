@@ -10,6 +10,8 @@ namespace Service.Interfaces.Account
 {
     public interface IAccountService
     {
+        string GetCurrentUserName();
+
         Task<AppUser> FindUserByPhonenumber(string PhoneNumber);
 
 

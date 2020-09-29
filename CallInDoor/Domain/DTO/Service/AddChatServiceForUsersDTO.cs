@@ -6,25 +6,18 @@ using System.Text;
 
 namespace Domain.DTO.Service
 {
-    public class AddChatServiceForUserDTO
+    public class AddChatServiceForUsersDTO
     {
 
-        public int Id { get; set; }
-
+        public int? Id { get; set; }
 
         [Required(ErrorMessage = "{0} is  Required")]
-        //[MinLength(10, ErrorMessage = "The minimum {0} length is {1} characters")]
-        //[MaxLength(10, ErrorMessage = "The maximum {0} length is {1} characters")]
+        [MaxLength(30, ErrorMessage = "The maximum {0} length is {1} characters")]
         [Display(Name = "UserName")]
         public string UserName { get; set; }
 
 
-
-
-
-
         [Required(ErrorMessage = "{0} is  Required")]
-        [MinLength(1, ErrorMessage = "The minimum {0} length is {1} characters")]
         [MaxLength(200, ErrorMessage = "The maximum {0} length is {1} characters")]
         [Display(Name = "ServiceName")]
         public string ServiceName { get; set; }
@@ -35,13 +28,12 @@ namespace Domain.DTO.Service
         /// </summary>
         [Required(ErrorMessage = "{0} is  Required")]
         [Display(Name = "PackageType")]
-        public PackageType PackageType { get; set; }
+        public PackageType? PackageType { get; set; }
 
 
         /// <summary>
         /// این فیلد فقط و فقط مخصوص سرویس هایی است که از نوع ترنسلیت هستند
         /// </summary>
-        //[Required(ErrorMessage = "{0} is  Required")]
         public bool BeTranslate { get; set; }
 
 
@@ -49,34 +41,36 @@ namespace Domain.DTO.Service
         /// <summary>
         /// تعداد مسیج هایی  رایگانی که برای مشتری در نظر میگیرد
         /// </summary>
-        //////////[Required(ErrorMessage = "{0} is  Required")]
-        //////////[Display(Name = "FreeMessageCount")]
-
-        public int FreeMessageCount { get; set; }
+        [Required(ErrorMessage = "{0} is  Required")]
+        [Range(0, int.MaxValue, ErrorMessage = "The  {0} should be between {1} and {2}")]
+        [Display(Name = "FreeMessageCount")]
+        public int? FreeMessageCount { get; set; }
 
 
         /// <summary>
         /// اگر  این را تیک زد باید تا 8 ساعت بعد از درخواست کاربر 
         /// به او پاسخ دهد در غیر این صورت جریمه میشود
         /// </summary>
-        //[Required(ErrorMessage = "{0} is  Required")]
+        [Required(ErrorMessage = "{0} is  Required")]
+        //[Display(Name = "IsServiceReverse")]
         public bool IsServiceReverse { get; set; }
 
 
         /// <summary>
         /// قیمت برای کاربران محلی یا هم کشور
         /// </summary>
-        //////[Required(ErrorMessage = "{0} is  Required")]
-        //////[Display(Name = "PriceForNativeCustomer")]
-        public double PriceForNativeCustomer { get; set; }
+        [Required(ErrorMessage = "{0} is  Required")]
+        [Display(Name = "PriceForNativeCustomer")]
+        public double? PriceForNativeCustomer { get; set; }
 
 
         /// <summary>
         /// قیمت برای کاربران غیر محلی یاغیر  هم کشور
         /// </summary>
-        ////////////[Required(ErrorMessage = "{0} is  Required")]
-        ////////////[Display(Name = "PriceForNonNativeCustomer")]
-        public double PriceForNonNativeCustomer { get; set; }
+        [Required(ErrorMessage = "{0} is  Required")]
+        [Range(0, int.MaxValue, ErrorMessage = "")]
+        [Display(Name = "PriceForNonNativeCustomer")]
+        public double? PriceForNonNativeCustomer { get; set; }
 
 
         #region  دیفالت بین همشونه
@@ -90,9 +84,9 @@ namespace Domain.DTO.Service
         /// <summary>
         /// vide or chat or seice or course ,...
         /// </summary>
-        //////////[Required(ErrorMessage = "{0} is  Required")]
-        //////////[Display(Name = "ServiceType")]
-        public ServiceType ServiceType { get; set; }
+        [Required(ErrorMessage = "{0} is  Required")]
+        [Display(Name = "ServiceType")]
+        public ServiceType? ServiceType { get; set; }
 
 
 
@@ -111,20 +105,16 @@ namespace Domain.DTO.Service
         #endregion
 
 
-
-        #region  Relation 
-
         //public string UserId { get; set; }
 
         public int? CatId { get; set; }
 
         public int? SubCatId { get; set; }
 
-        #endregion
 
-
-
-
+        [Required(ErrorMessage = "{0} is  Required")]
+        [Display(Name ="Service")]
+        public int? ServiceId { get; set; }
 
 
 

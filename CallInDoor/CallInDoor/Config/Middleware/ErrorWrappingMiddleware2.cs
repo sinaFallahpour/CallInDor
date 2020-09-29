@@ -26,7 +26,7 @@ namespace CallInDoor.Config.Middleware
             {
                 await _next.Invoke(context);
             }
-            catch (Exception ex)
+            catch  
             {
                 //_logger.LogError(EventIds.GlobalException, ex, ex.Message);
                 context.Response.StatusCode = 500;

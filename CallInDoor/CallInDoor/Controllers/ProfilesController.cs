@@ -23,17 +23,15 @@ namespace CallInDoor.Controllers
     public class ProfilesController : BaseControlle
     {
         private readonly DataContext _context;
-        private readonly UserManager<AppUser> _userManager;
-
-        private readonly SignInManager<AppUser> _signInManager;
+        //private readonly UserManager<AppUser> _userManager;
+        //private readonly SignInManager<AppUser> _signInManager;
         private readonly IAccountService _accountService;
 
         private readonly IHttpContextAccessor _httpContextAccessor;
         private IStringLocalizer<ProfilesController> _localizer;
         private IStringLocalizer<ShareResource> _localizerShared;
         private readonly IWebHostEnvironment _hostingEnvironment;
-        public ProfilesController(UserManager<AppUser> userManager,
-                SignInManager<AppUser> signInManager,
+        public ProfilesController(
                 DataContext context,
                 IHttpContextAccessor httpContextAccessor,
                 IStringLocalizer<ProfilesController> localizer,
@@ -43,8 +41,6 @@ namespace CallInDoor.Controllers
             )
         {
             _context = context;
-            _userManager = userManager;
-            _signInManager = signInManager;
             _httpContextAccessor = httpContextAccessor;
             _localizer = localizer;
             _localizerShared = localizerShared;
@@ -89,7 +85,7 @@ namespace CallInDoor.Controllers
                  ));
             }
 
-            catch (Exception ex)
+            catch  
             {
                 return StatusCode(StatusCodes.Status500InternalServerError,
                              new ApiResponse(500, _localizerShared["InternalServerMessage"].Value.ToString()));
@@ -220,7 +216,7 @@ namespace CallInDoor.Controllers
 
 
             }
-            catch (Exception ex)
+            catch  
             {
                 return StatusCode(StatusCodes.Status500InternalServerError,
                             new ApiResponse(500, _localizerShared["InternalServerMessage"].Value.ToString()));

@@ -25,20 +25,22 @@ namespace Domain
 
 
 
-        //protected override void OnModelCreating(ModelBuilder builder)
-        //{
-        //    base.OnModelCreating(builder);
+        protected override void OnModelCreating(ModelBuilder builder)
+        {
+            base.OnModelCreating(builder);
+
+            //builder.Entity<MyChatServiceTBL>()
+            //  .HasOne(m => m.BaseMyChatTBL)
+            //  .WithOne(c => c.MyChatServiceTBL)
+            //  .HasForeignKey<BaseMyServiceTBL>(x => x.MyChatId);
 
 
-        //    builder.Entity<BaseMyServiceTBL>()
-        //        .HasOne(b => b.MyChatServiceTBL)
-        //        .WithOne(v => v.BaseMyChatTBL)
-        //        .HasForeignKey<MyChatServiceTBL>(x => x.BaseId);
 
-        //    //.HasOne(u => u.AppUser)
-        //    //.WithMany(a => a.UserActivities)
-        //    //.HasForeignKey(u => u.AppUserId);
-        //}
+           
+            //.HasOne(u => u.AppUser)
+            //.WithMany(a => a.UserActivities)
+            //.HasForeignKey(u => u.AppUserId);
+        }
 
 
 

@@ -59,6 +59,20 @@ namespace Service
 
 
 
+        /// <summary>
+        ///  گرفتن نام کاربری کاربر فعلی
+        /// </summary>
+        /// <returns></returns>
+        public string GetCurrentUserName()
+        {
+            var currentUserName = _httpContextAccessor.HttpContext.User?.Claims?.FirstOrDefault(x => x.Type == ClaimTypes.Name)?.Value;
+            return currentUserName;
+        }
+
+
+
+
+
         /// check Token paload(serialNUmber) Is valid
         public async Task<bool> CheckTokenIsValid()
         {
@@ -69,8 +83,8 @@ namespace Service
 
             var IsExist = await _context.Users
                     .AnyAsync(x => x.SerialNumber == currentSerialNumber && x.UserName == currentUserName);
-                //.Where(x => x.SerialNumber == currentSerialNumber && x.UserName == currentUserName)
-                //.AnyAsync();
+            //.Where(x => x.SerialNumber == currentSerialNumber && x.UserName == currentUserName)
+            //.AnyAsync();
             //.Select(c => c.UserName)
             //.FirstOrDefaultAsync();
             if (!IsExist)
@@ -98,6 +112,9 @@ namespace Service
 
             return user;
         }
+
+
+
 
 
 

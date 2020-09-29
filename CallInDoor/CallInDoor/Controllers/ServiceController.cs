@@ -29,9 +29,10 @@ namespace CallInDoor.Controllers
         private readonly IServiceService _servicetypeService;
 
         private IStringLocalizer<ShareResource> _localizerShared;
-
+        private IStringLocalizer<ServiceController> _locaLizer;
         public ServiceController(DataContext context,
              IStringLocalizer<ShareResource> localizerShared,
+              IStringLocalizer<ServiceController> locaLizer,
              IAccountService accountService,
               IServiceService servicetypeService
             )
@@ -39,6 +40,7 @@ namespace CallInDoor.Controllers
             _context = context;
             _accountService = accountService;
             _localizerShared = localizerShared;
+            _locaLizer = locaLizer;
             _servicetypeService = servicetypeService;
         }
 
@@ -348,11 +350,6 @@ namespace CallInDoor.Controllers
 
 
 
-
-
-
-
-
         #region  MyService
 
 
@@ -364,7 +361,7 @@ namespace CallInDoor.Controllers
         /// <returns></returns>
         [HttpPost("/userService/AddChatServiceForUser")]
         [Authorize]
-        public async Task<ActionResult> AddChatServiceForUser([FromBody] AddChatServiceForUserDTO model)
+        public async Task<ActionResult> AddChatServiceForUser([FromBody] AddChatServiceForUsersDTO model)
         {
 
             var checkToken = await _accountService.CheckTokenIsValid();
@@ -376,25 +373,38 @@ namespace CallInDoor.Controllers
             if (!res.succsseded)
                 return BadRequest(new ApiBadRequestResponse(res.result));
 
+
+            var BaseMyService = new BaseMyServiceTBL()
+            {
+                ConfirmedServiceType = ConfirmedServiceType.Pending,
+                CreateDate = DateTime.Now,
+                ServiceName = model.ServiceName,
+                ServiceType = (ServiceType)model.ServiceType,
+                UserName = model.UserName,
+            };
+
+
             var MyChatService = new MyChatServiceTBL()
             {
                 //UserName = model.UserName,
                 //ServiceName = model.ServiceName,
                 PackageType = model.PackageType,
                 BeTranslate = model.BeTranslate,
-                FreeMessageCount = model.FreeMessageCount,
+                FreeMessageCount = (int)model.FreeMessageCount,
                 IsServiceReverse = model.IsServiceReverse,
-                PriceForNativeCustomer = model.PriceForNativeCustomer,
-                PriceForNonNativeCustomer = model.PriceForNonNativeCustomer,
+                PriceForNativeCustomer = (int)model.PriceForNativeCustomer,
+                PriceForNonNativeCustomer = (int)model.PriceForNonNativeCustomer,
                 //CreateDate = DateTime.Now,
                 //IsCheckedByAdmin = false,
                 //ConfirmedServiceType = ConfirmedServiceType.Rejected,
                 CatId = model.CatId,
                 SubCatId = model.SubCatId,
+                BaseMyChatTBL = BaseMyService,
             };
 
             try
             {
+                //await _context.BaseMyServiceTBL.AddAsync(BaseMyService);
                 await _context.MyChatServiceTBL.AddAsync(MyChatService);
 
                 await _context.SaveChangesAsync();
@@ -402,20 +412,19 @@ namespace CallInDoor.Controllers
                 {
                     Status = 1,
                     data = { },
-                    Message = _localizerShared["SuccessMessage"].Value.ToString()
+                    Message = _locaLizer["SuccesfullAddServiceMessage"].Value.ToString()
                 },
-                 _localizerShared["SuccessMessage"].Value.ToString()
-            ));
+                 _locaLizer["SuccesfullAddServiceMessage"].Value.ToString()
+                ));
             }
-            catch(Exception ex)
+            catch
             {
                 return StatusCode(StatusCodes.Status500InternalServerError,
                                 new ApiResponse(500, _localizerShared["InternalServerMessage"].Value.ToString()));
             }
-           
+
 
         }
-
 
 
 
@@ -428,39 +437,94 @@ namespace CallInDoor.Controllers
         /// <returns></returns>
         [HttpPost("/userService/UpdateChatServiceForUser")]
         [Authorize]
-        public async Task<ActionResult> UpdateChatServiceForUser([FromBody] AddChatServiceForUserDTO model)
+        public async Task<ActionResult> UpdateChatServiceForUser([FromBody] AddChatServiceForUsersDTO model)
         {
 
             var checkToken = await _accountService.CheckTokenIsValid();
             if (!checkToken)
                 return Unauthorized(new ApiResponse(401, _localizerShared["UnauthorizedMessage"].Value.ToString()));
 
-           
-
             var res = await _servicetypeService.ValidateChatService(model);
             if (!res.succsseded)
                 return BadRequest(new ApiBadRequestResponse(res.result));
 
-            var MyChatService = new MyChatServiceTBL()
+
+
+            var currentUsername = _accountService.GetCurrentUserName();
+
+            var serviceFromDB = await _context
+                .BaseMyServiceTBL
+                .AsNoTracking()
+                .Where(c => c.Id == model.Id)
+                .Include(c => c.MyChatsService)
+                .FirstOrDefaultAsync();
+
+            if (serviceFromDB == null)
+                return NotFound(new ApiResponse(404, _localizerShared["NotFound"].Value.ToString()));
+
+            if (serviceFromDB.UserName != currentUsername)
+                return Unauthorized(new ApiResponse(401, _localizerShared["UnauthorizedMessage"].Value.ToString()));
+
+
+            if (serviceFromDB.ConfirmedServiceType == ConfirmedServiceType.Pending)
             {
-                //UserName = model.UserName,
-                //ServiceName = model.ServiceName,
-                PackageType = model.PackageType,
-                BeTranslate = model.BeTranslate,
-                FreeMessageCount = model.FreeMessageCount,
-                IsServiceReverse = model.IsServiceReverse,
-                PriceForNativeCustomer = model.PriceForNativeCustomer,
-                PriceForNonNativeCustomer = model.PriceForNonNativeCustomer,
-                //CreateDate = DateTime.Now,
-                //IsCheckedByAdmin = false,
-                //ConfirmedServiceType = ConfirmedServiceType.Rejected,
-                CatId = model.CatId,
-                SubCatId = model.SubCatId,
-            };
+                var errors = new List<string>() {
+                      _locaLizer["AfterAdminConfirmMessage"].Value.ToString()
+               };
+                return BadRequest(new ApiBadRequestResponse(errors));
+            }
+
+
+
+
+            //var BaseMyService = new BaseMyServiceTBL()
+            //{
+            //    ConfirmedServiceType = ConfirmedServiceType.Rejected,
+
+            //    CreateDate = DateTime.Now,
+            //    ServiceName = model.ServiceName,
+            //    ServiceType = (ServiceType)model.ServiceType,
+            //    UserName = model.UserName,
+            //};
+
+
+            serviceFromDB.ServiceName = model.ServiceName;
+            serviceFromDB.ServiceType = (ServiceType)model.ServiceType;
+            var dsd = serviceFromDB.MyChatsService.Where(c => c.BaseId == model.Id).FirstOrDefault();
+            dsd.PackageType = model.PackageType;
+            dsd.BeTranslate = model.BeTranslate;
+            dsd.FreeMessageCount = (int)model.FreeMessageCount;
+            dsd.IsServiceReverse = model.IsServiceReverse;
+            dsd.PriceForNativeCustomer = (int)model.PriceForNativeCustomer;
+            dsd.PriceForNonNativeCustomer = (int)model.PriceForNonNativeCustomer;
+            dsd.CatId = model.CatId;
+            dsd.SubCatId = model.SubCatId;
+
+
+
+
+            //var MyChatService = new MyChatServiceTBL()
+            //{
+            //    //UserName = model.UserName,
+            //    //ServiceName = model.ServiceName,
+            //    PackageType = model.PackageType,
+            //    BeTranslate = model.BeTranslate,
+            //    FreeMessageCount = (int)model.FreeMessageCount,
+            //    IsServiceReverse = model.IsServiceReverse,
+            //    PriceForNativeCustomer = (int)model.PriceForNativeCustomer,
+            //    PriceForNonNativeCustomer = (int)model.PriceForNonNativeCustomer,
+            //    //CreateDate = DateTime.Now,
+            //    //IsCheckedByAdmin = false,
+            //    //ConfirmedServiceType = ConfirmedServiceType.Rejected,
+            //    CatId = model.CatId,
+            //    SubCatId = model.SubCatId,
+            //    BaseMyChatTBL = BaseMyService,
+            //};
 
             try
             {
-                await _context.MyChatServiceTBL.AddAsync(MyChatService);
+                //await _context.BaseMyServiceTBL.AddAsync(BaseMyService);
+                //await _context.MyChatServiceTBL.AddAsync(MyChatService);
 
                 await _context.SaveChangesAsync();
                 return Ok(new ApiOkResponse(new DataFormat()
@@ -470,9 +534,9 @@ namespace CallInDoor.Controllers
                     Message = _localizerShared["SuccessMessage"].Value.ToString()
                 },
                  _localizerShared["SuccessMessage"].Value.ToString()
-            ));
+                ));
             }
-            catch (Exception ex)
+            catch
             {
                 return StatusCode(StatusCodes.Status500InternalServerError,
                                 new ApiResponse(500, _localizerShared["InternalServerMessage"].Value.ToString()));
@@ -480,6 +544,93 @@ namespace CallInDoor.Controllers
 
 
         }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        ///// <summary>
+        ///// ایجاد  سرویس chat or voice or video  برای یک کاربر 
+        ///// </summary>
+        ///// <param name="model"></param>
+        ///// <returns></returns>
+        //[HttpPost("/userService/UpdateChatServiceForUser")]
+        //[Authorize]
+        //public async Task<ActionResult> UpdateChatServiceForUser([FromBody] AddChatServiceForUsersDTO model)
+        //{
+
+        //    var checkToken = await _accountService.CheckTokenIsValid();
+        //    if (!checkToken)
+        //        return Unauthorized(new ApiResponse(401, _localizerShared["UnauthorizedMessage"].Value.ToString()));
+
+
+
+        //    var res = await _servicetypeService.ValidateChatService(model);
+        //    if (!res.succsseded)
+        //        return BadRequest(new ApiBadRequestResponse(res.result));
+
+        //    var MyChatService = new MyChatServiceTBL()
+        //    {
+        //        ////UserName = model.UserName,
+        //        ////ServiceName = model.ServiceName,
+        //        //PackageType = model.PackageType,
+        //        //BeTranslate = model.BeTranslate,
+        //        //FreeMessageCount = model.FreeMessageCount,
+        //        //IsServiceReverse = model.IsServiceReverse,
+        //        //PriceForNativeCustomer = model.PriceForNativeCustomer,
+        //        //PriceForNonNativeCustomer = model.PriceForNonNativeCustomer,
+        //        ////CreateDate = DateTime.Now,
+        //        ////IsCheckedByAdmin = false,
+        //        ////ConfirmedServiceType = ConfirmedServiceType.Rejected,
+        //        //CatId = model.CatId,
+        //        //SubCatId = model.SubCatId,
+        //    };
+
+        //    try
+        //    {
+        //        await _context.MyChatServiceTBL.AddAsync(MyChatService);
+
+        //        await _context.SaveChangesAsync();
+        //        return Ok(new ApiOkResponse(new DataFormat()
+        //        {
+        //            Status = 1,
+        //            data = { },
+        //            Message = _localizerShared["SuccessMessage"].Value.ToString()
+        //        },
+        //         _localizerShared["SuccessMessage"].Value.ToString()
+        //    ));
+        //    }
+        //    catch
+        //    {
+        //        return StatusCode(StatusCodes.Status500InternalServerError,
+        //                        new ApiResponse(500, _localizerShared["InternalServerMessage"].Value.ToString()));
+        //    }
+
+
+        //}
 
 
 

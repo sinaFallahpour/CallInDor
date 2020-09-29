@@ -11,8 +11,14 @@ namespace Domain.Enums
         [Description("تایید شده")]
         [Display(Name = "تایید شده")]
         Confirmed,
+
         [Description("رد شده")]
         [Display(Name = "رد شده")]
         Rejected,
+
+        [Description("درحال بررسی")]
+        [Display(Name = "در حال بررسی")]
+        Pending
+
     }
 }

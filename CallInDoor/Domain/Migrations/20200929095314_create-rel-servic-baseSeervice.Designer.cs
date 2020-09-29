@@ -10,8 +10,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Domain.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20200929063619_new database")]
-    partial class newdatabase
+    [Migration("20200929095314_create-rel-servic-baseSeervice")]
+    partial class createrelservicbaseSeervice
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -126,6 +126,9 @@ namespace Domain.Migrations
                     b.Property<bool>("IsCheckedByAdmin")
                         .HasColumnType("bit");
 
+                    b.Property<int?>("ServiceId")
+                        .HasColumnType("int");
+
                     b.Property<string>("ServiceName")
                         .HasColumnType("nvarchar(200)")
                         .HasMaxLength(200);
@@ -138,6 +141,8 @@ namespace Domain.Migrations
                         .HasMaxLength(100);
 
                     b.HasKey("Id");
+
+                    b.HasIndex("ServiceId");
 
                     b.ToTable("BaseMyService");
                 });
@@ -224,6 +229,9 @@ namespace Domain.Migrations
                     b.Property<string>("AppUserId")
                         .HasColumnType("nvarchar(450)");
 
+                    b.Property<int?>("BaseId")
+                        .HasColumnType("int");
+
                     b.Property<bool>("BeTranslate")
                         .HasColumnType("bit");
 
@@ -236,7 +244,7 @@ namespace Domain.Migrations
                     b.Property<bool>("IsServiceReverse")
                         .HasColumnType("bit");
 
-                    b.Property<int>("PackageType")
+                    b.Property<int?>("PackageType")
                         .HasColumnType("int");
 
                     b.Property<double>("PriceForNativeCustomer")
@@ -251,6 +259,8 @@ namespace Domain.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("AppUserId");
+
+                    b.HasIndex("BaseId");
 
                     b.HasIndex("CatId");
 
@@ -491,6 +501,13 @@ namespace Domain.Migrations
                     b.ToTable("AspNetUserTokens");
                 });
 
+            modelBuilder.Entity("Domain.Entities.BaseMyServiceTBL", b =>
+                {
+                    b.HasOne("Domain.Entities.ServiceTBL", "ServiceTbl")
+                        .WithMany("BaseMyServices")
+                        .HasForeignKey("ServiceId");
+                });
+
             modelBuilder.Entity("Domain.Entities.CategoryTBL", b =>
                 {
                     b.HasOne("Domain.Entities.CategoryTBL", "Parent")
@@ -514,6 +531,10 @@ namespace Domain.Migrations
                     b.HasOne("Domain.Entities.AppUser", null)
                         .WithMany("MyChatServices")
                         .HasForeignKey("AppUserId");
+
+                    b.HasOne("Domain.Entities.BaseMyServiceTBL", "BaseMyChatTBL")
+                        .WithMany()
+                        .HasForeignKey("BaseId");
 
                     b.HasOne("Domain.Entities.CategoryTBL", "CategoryTBL")
                         .WithMany()

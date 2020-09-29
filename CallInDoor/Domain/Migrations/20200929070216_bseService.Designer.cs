@@ -4,14 +4,16 @@ using Domain;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace Domain.Migrations
 {
     [DbContext(typeof(DataContext))]
-    partial class DataContextModelSnapshot : ModelSnapshot
+    [Migration("20200929070216_bseService")]
+    partial class bseService
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -121,8 +123,8 @@ namespace Domain.Migrations
                     b.Property<DateTime>("CreateDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<int?>("ServiceId")
-                        .HasColumnType("int");
+                    b.Property<bool>("IsCheckedByAdmin")
+                        .HasColumnType("bit");
 
                     b.Property<string>("ServiceName")
                         .HasColumnType("nvarchar(200)")
@@ -136,8 +138,6 @@ namespace Domain.Migrations
                         .HasMaxLength(100);
 
                     b.HasKey("Id");
-
-                    b.HasIndex("ServiceId");
 
                     b.ToTable("BaseMyService");
                 });
@@ -239,7 +239,7 @@ namespace Domain.Migrations
                     b.Property<bool>("IsServiceReverse")
                         .HasColumnType("bit");
 
-                    b.Property<int?>("PackageType")
+                    b.Property<int>("PackageType")
                         .HasColumnType("int");
 
                     b.Property<double>("PriceForNativeCustomer")
@@ -496,13 +496,6 @@ namespace Domain.Migrations
                     b.ToTable("AspNetUserTokens");
                 });
 
-            modelBuilder.Entity("Domain.Entities.BaseMyServiceTBL", b =>
-                {
-                    b.HasOne("Domain.Entities.ServiceTBL", "ServiceTbl")
-                        .WithMany("BaseMyServices")
-                        .HasForeignKey("ServiceId");
-                });
-
             modelBuilder.Entity("Domain.Entities.CategoryTBL", b =>
                 {
                     b.HasOne("Domain.Entities.CategoryTBL", "Parent")
@@ -528,7 +521,7 @@ namespace Domain.Migrations
                         .HasForeignKey("AppUserId");
 
                     b.HasOne("Domain.Entities.BaseMyServiceTBL", "BaseMyChatTBL")
-                        .WithMany("MyChatsService")
+                        .WithMany()
                         .HasForeignKey("BaseId");
 
                     b.HasOne("Domain.Entities.CategoryTBL", "CategoryTBL")

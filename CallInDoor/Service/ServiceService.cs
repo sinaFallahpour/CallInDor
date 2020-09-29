@@ -230,41 +230,11 @@ namespace Service
             {
                 return false;
             }
-
         }
 
 
 
-
-        ///// <summary>
-        /////Update
-        ///// </summary>
-        ///// <param name="Service"></param>
-        ///// <returns></returns>
-        //public async (bool succsseded, string result) Task<(int statusCode, string message, bool result)> Update(int Id)
-        //{
-        //    try
-        //    {
-        //        var service = await _context.ServiceTBL.Where(c => c.Id == Id).FirstOrDefaultAsync();
-        //        if (service == null) return (404, "Service Not Found", false);
-
-        //        service.PersianName = service.PersianName;
-        //        service.Name = service.Name;
-        //        service.IsEnabled = service.IsEnabled;
-        //        service.Color = service.Color;
-        //        service.MinPriceForService = service.MinPriceForService;
-        //        service.MinSessionTime = service.MinSessionTime;
-
-        //        var result = await _context.SaveChangesAsync();
-        //        return (200, "Successful registration", true);
-        //    }
-        //    catch
-        //    {
-        //        return (500, "Fail registration", false);
-        //    }
-
-        //}
-
+ 
 
 
         /// <summary>
@@ -272,7 +242,7 @@ namespace Service
         /// </summary>
         /// <param name="model"></param>
         /// <returns></returns>
-        public async Task<(bool succsseded, List<string> result)> ValidateChatService(AddChatServiceForUserDTO model)
+        public async Task<(bool succsseded, List<string> result)> ValidateChatService(AddChatServiceForUsersDTO model)
         {
             bool IsValid = true;
             List<string> Errors = new List<string>();
@@ -341,10 +311,10 @@ namespace Service
             return (IsValid, Errors);
         }
 
-        //public Task<(int statusCode, string message, bool result)> Update(int Id)
-        //{
-        //    throw new NotImplementedException();
-        //}
+        
+
+
+
 
 
     }

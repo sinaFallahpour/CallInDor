@@ -23,7 +23,7 @@ namespace Domain.Entities
         /// <summary>
         ///   نوع  چت  و پولی که با ازای زمان از حسابش کم میشه   با این معلوم میشه
         /// </summary>
-        public PackageType PackageType { get; set; }
+        public PackageType? PackageType { get; set; }
 
 
 
@@ -51,12 +51,15 @@ namespace Domain.Entities
         /// <summary>
         /// قیمت برای کاربران محلی یا هم کشور
         /// </summary>
+        /// 
+        [Range(0, double.MaxValue)]
         public double PriceForNativeCustomer { get; set; }
 
 
         /// <summary>
         /// قیمت برای کاربران غیر محلی یاغیر  هم کشور
         /// </summary>
+        [Range(0, double.MaxValue)]
         public double PriceForNonNativeCustomer { get; set; }
 
 
@@ -84,10 +87,10 @@ namespace Domain.Entities
 
 
         // relation With BaseMyChatTBL
-        //public virtual BaseMyServiceTBL BaseMyChatTBL { get; set; }
-        
-        //[Key, ForeignKey("BaseMyChatTBL")]
-        //public int BaseId { get; set; }
+        public virtual BaseMyServiceTBL BaseMyChatTBL { get; set; }
+
+        [ForeignKey("BaseMyChatTBL")]
+        public int? BaseId { get; set; }
 
 
         #endregion 

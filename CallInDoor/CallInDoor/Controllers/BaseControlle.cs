@@ -11,5 +11,7 @@ namespace CallInDoor.Controllers
     //[ApiController]
     public class BaseControlle : ControllerBase
     {
+
+
     }
 }
