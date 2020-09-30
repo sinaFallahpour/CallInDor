@@ -29,7 +29,7 @@ namespace Domain
         {
             base.OnModelCreating(builder);
 
-        
+
 
             builder.Entity<MyChatServiceTBL>()
                 .HasOne(c => c.BaseMyChatTBL)
@@ -41,7 +41,7 @@ namespace Domain
                           .WithOne(c => c.MyServicesService)
                           .HasForeignKey<MyServiceServiceTBL>(c => c.BaseId);
 
- 
+
         }
 
 
@@ -55,8 +55,6 @@ namespace Domain
         ///   تگ های  یک سرویس(حوضه کاری) س  
         /// </summary>
         public DbSet<ServiceTagsTBL> ServiceTags { get; set; }
-
-
 
 
 
@@ -99,6 +97,13 @@ namespace Domain
         /// این جدول سرویس های که فقط از جنس چت و وویس و ویدیو هستند
         /// </summary>
         public DbSet<MyChatServiceTBL> MyChatServiceTBL { get; set; }
+
+
+
+        /// <summary>
+        /// این جدول سرویس های که فقط از جنس  سرویس هستند
+        /// </summary>
+        public DbSet<MyServiceServiceTBL> MyServiceServiceTBL { get; set; }
 
 
 
