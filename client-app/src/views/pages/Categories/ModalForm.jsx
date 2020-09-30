@@ -89,14 +89,19 @@ class ModalForm extends React.Component {
         serviceId,
         parentId,
       } = this.state;
-      const obj = { title, persianTitle, isEnabled, serviceId, parentId };
+
+    const serviceName =  this.state.services.find(c => c.id == serviceId).name
+    const parentName =  this.state.categories.find(c => c.id == parentId).persianTitle
+
+      const obj = { title, persianTitle, isEnabled, serviceId, parentId,serviceName,parentName };
       const { data } = await agent.Category.create(obj);
       if (data.result.status) {
+        console.log(this.state.categories)
         toast.success(data.result.message)
         this.props.GetAllCategory(obj)
       }
       setTimeout(() => {
-        this.setState({ modal:false, Loading: false, title: '', persianTitle: '', serviceId: null, parentId: null });
+        this.setState({ modal: false, Loading: false, title: '', persianTitle: '', serviceId: null, parentId: null });
         // this.toggleModal()
       }, 2000);
     } catch (ex) {
