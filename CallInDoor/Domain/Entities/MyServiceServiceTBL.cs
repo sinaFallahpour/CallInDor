@@ -33,7 +33,7 @@ namespace Domain.Entities
 
 
         [MaxLength(600)]
-        public string FilrDescription { get; set; }
+        public string FileDescription { get; set; }
 
 
         [Range(0, double.MaxValue)]

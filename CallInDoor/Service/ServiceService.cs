@@ -17,12 +17,15 @@ namespace Service
     public class ServiceService : IServiceService
     {
         private readonly DataContext _context;
+        private IStringLocalizer<ServiceService> _localizer;
 
         public ServiceService(
-            DataContext context
+            DataContext context,
+            IStringLocalizer<ServiceService> localizer
                )
         {
             _context = context;
+            _localizer = localizer;
         }
 
 
@@ -238,7 +241,7 @@ namespace Service
 
 
         /// <summary>
-        /// ولیدیت کردن آبجکت اسلاید
+        /// ولیدیت کردن آبجکت  چت سرویس
         /// </summary>
         /// <param name="model"></param>
         /// <returns></returns>
@@ -327,6 +330,118 @@ namespace Service
 
 
 
+
+
+        /// <summary>
+        /// ولیدیت کردن آبجکت   سرویس سرویس
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns></returns>
+        public async Task<(bool succsseded, List<string> result)> ValidateServiceService(AddServiceServiceForUsersDTO model)
+        {
+            bool IsValid = true;
+            List<string> Errors = new List<string>();
+
+
+
+            /////////Area   
+            //////Speciality
+
+
+
+            var IsInServiceType = Enum.IsDefined(typeof(ServiceType), model.ServiceType);
+            if (!IsInServiceType)
+            {
+                IsValid = false;
+                Errors.Add($"service Type Not Exist");
+            }
+            if (model.ServiceType != ServiceType.Service)
+            {
+                IsValid = false;
+                Errors.Add($"Invalid ServiceType Type");
+            }
+
+
+            //validate serviceTypes
+            var serviceFromDb = await _context
+            .ServiceTBL
+            .Where(c => c.Id == model.ServiceId)
+            .Select(c => new { c.Id, c.MinPriceForService, c.Name })
+            .FirstOrDefaultAsync();
+
+            if (serviceFromDb == null)
+            {
+                IsValid = false;
+                Errors.Add($"service Not Exist");
+            }
+            else if (model.Price < serviceFromDb.MinPriceForService)
+            {
+                var err = _localizer[string.Format("{0} must be more than {1}", "price", serviceFromDb.MinPriceForService)].Value.ToString();
+
+                IsValid = false;
+                Errors.Add(err);
+            }
+         
+
+            if (model.CatId != null)
+            {
+                var cats = await _context.CategoryTBL
+                    .AsNoTracking()
+                    .Where(c => c.Id == model.CatId)
+                    .Select(c => new
+                    {
+                        c.Id,
+                        c.ServiceId,
+                        SubCatIds = c.Children.Select(r => r.Id).ToList()
+                    }).FirstOrDefaultAsync();
+
+                if (cats == null)
+                {
+                    //return (false, fileName)
+                    IsValid = false;
+                    Errors.Add($"category with id {model.CatId} Not Found");
+                }
+                else
+                {
+                    if (serviceFromDb != null)
+                    {
+                        if (cats.ServiceId != serviceFromDb.Id)
+                        {
+                            IsValid = false;
+                            Errors.Add($"Category {cats.Id} is not specific to {serviceFromDb.Id} ");
+                        }
+                    }
+
+                    if (model.SubCatId != null)
+                    {
+                        var ds = cats.SubCatIds?.Contains((int)model.SubCatId);
+                        if (ds == null || (ds != null && !(bool)ds))
+                        {
+                            IsValid = false;
+                            Errors.Add($"Sub Category with id {model.SubCatId} Not Found");
+                        }
+                    }
+                }
+            }
+
+            if (model.CatId == null)
+            {
+                IsValid = false;
+                Errors.Add($"Please Select Category");
+            }
+
+
+
+
+            var isUserExist = await _context.Users.AnyAsync(c => c.UserName == model.UserName);
+            if (!isUserExist)
+            {
+                IsValid = false;
+                Errors.Add($"No user with the name {model.UserName} was found");
+            }
+
+            return (IsValid, Errors);
+        }
 
 
     }

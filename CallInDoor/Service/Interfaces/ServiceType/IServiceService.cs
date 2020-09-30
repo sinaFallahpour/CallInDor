@@ -19,6 +19,7 @@ namespace Service.Interfaces.ServiceType
         //Task<(int statusCode, string message, bool result)> Update(int Id);
 
         Task<(bool succsseded, List<string> result)> ValidateChatService(AddChatServiceForUsersDTO model);
+        Task<(bool succsseded, List<string> result)> ValidateServiceService(AddServiceServiceForUsersDTO model);
 
     }
 }

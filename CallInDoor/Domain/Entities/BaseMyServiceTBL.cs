@@ -58,7 +58,7 @@ namespace Domain.Entities
         public virtual ServiceTBL ServiceTbl { get; set; }
 
         [ForeignKey("ServiceTbl")]
-        public int? ServiceId { get; set; }
+        public int? ServiceTypeId { get; set; }
 
 
 

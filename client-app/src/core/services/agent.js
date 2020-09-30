@@ -59,11 +59,11 @@ export const requests = {
 };
 
 const ServiceTypes = {
-  list: () => requests.get("/Service/GetAllActiveService"),
-  GetAll: () => requests.get("/Service/GetAllServiceForAdmin"),
-  details: (id) => requests.get(`/Service/GetServiceByIdForAdmin?id=${id}`),
-  create: (service) => requests.post("/Service/Create", service),
-  update: (activity) => requests.put("/Service/UpdateServiceForAdmin", activity),
+  list: () => requests.get("/ServiceType/GetAllActiveService"),
+  GetAll: () => requests.get("/ServiceType/GetAllServiceForAdmin"),
+  details: (id) => requests.get(`/ServiceType/GetServiceByIdForAdmin?id=${id}`),
+  create: (service) => requests.post("/ServiceType/CreateForAdmin", service),
+  update: (activity) => requests.put("/ServiceType/UpdateServiceForAdmin", activity),
   // delete: (id) => requests.del(`/activities/${id}`)
 };
 

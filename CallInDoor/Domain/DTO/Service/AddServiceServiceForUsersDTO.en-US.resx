@@ -117,17 +117,50 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="CountryCode" xml:space="preserve">
-    <value>Country Code</value>
+  <data name="CustomTags" xml:space="preserve">
+    <value>Custom Tags</value>
   </data>
-  <data name="PhoneNumber" xml:space="preserve">
-    <value>PhoneNumber</value>
+  <data name="DeliveryItems" xml:space="preserve">
+    <value>Delivery Items</value>
+  </data>
+  <data name="Description" xml:space="preserve">
+    <value>Description</value>
+  </data>
+  <data name="FileDescription" xml:space="preserve">
+    <value>File Description</value>
+  </data>
+  <data name="HowWorkConducts" xml:space="preserve">
+    <value>How Work Conducts</value>
+  </data>
+  <data name="Price" xml:space="preserve">
+    <value>Price</value>
+  </data>
+  <data name="Service" xml:space="preserve">
+    <value>Service</value>
+  </data>
+  <data name="ServiceName" xml:space="preserve">
+    <value>Service Name</value>
+  </data>
+  <data name="ServiceType" xml:space="preserve">
+    <value>Service Type</value>
+  </data>
+  <data name="Tags" xml:space="preserve">
+    <value>Tags</value>
+  </data>
+  <data name="The  {0} should be between {1} and {2}" xml:space="preserve">
+    <value>The  {0} should be between {1} and {2}</value>
   </data>
   <data name="The maximum {0} length is {1} characters" xml:space="preserve">
     <value>The maximum {0} length is {1} characters</value>
   </data>
   <data name="The minimum {0} length is {1} characters" xml:space="preserve">
     <value>The minimum {0} length is {1} characters</value>
+  </data>
+  <data name="UserName" xml:space="preserve">
+    <value>User Name</value>
+  </data>
+  <data name="WorkDeliveryTimeEstimation" xml:space="preserve">
+    <value>Work Delivery Time Estimation</value>
   </data>
   <data name="{0} is  Required" xml:space="preserve">
     <value>{0} is  Required</value>

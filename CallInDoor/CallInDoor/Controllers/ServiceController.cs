@@ -19,7 +19,7 @@ using Domain.Enums;
 
 namespace CallInDoor.Controllers
 {
-    //[Route("api/[controller]")]
+    [Route("api/ServiceType")]
     //[ApiController]
     public class ServiceController : BaseControlle
     {
@@ -275,9 +275,9 @@ namespace CallInDoor.Controllers
         /// </summary>
         /// <param name="CreateServiceDTO"></param>
         /// <returns></returns>
-        [HttpPost("Create")]
+        [HttpPost("CreateForAdmin")]
         [Authorize(Roles = PublicHelper.ADMINROLE)]
-        public async Task<ActionResult> Create([FromBody] CreateServiceDTO model)
+        public async Task<ActionResult> CreateForAdmin([FromBody] CreateServiceDTO model)
         {
 
             var checkToken = await _accountService.CheckTokenIsValid();
@@ -359,7 +359,7 @@ namespace CallInDoor.Controllers
         /// </summary>
         /// <param name="model"></param>
         /// <returns></returns>
-        [HttpPost("/userService/AddChatServiceForUser")]
+        [HttpPost("/api/userService/AddChatServiceForUser")]
         [Authorize]
         public async Task<ActionResult> AddChatServiceForUser([FromBody] AddChatServiceForUsersDTO model)
         {
@@ -381,7 +381,7 @@ namespace CallInDoor.Controllers
                 ServiceName = model.ServiceName,
                 ServiceType = (ServiceType)model.ServiceType,
                 UserName = model.UserName,
-                ServiceId=model.ServiceId
+                ServiceId = model.ServiceId
             };
 
 
@@ -432,11 +432,71 @@ namespace CallInDoor.Controllers
 
 
         /// <summary>
+        ///گرفتن یک سرویس از نوع چت و وویس و.. برای یک کاربر
+        /// </summary>
+        /// <param name="Id"></param>
+        /// <returns></returns>
+        [HttpGet("/api/userService/GetChatServiceForUser")]
+        [Authorize]
+        public async Task<ActionResult> GetChatServiceForUser(int Id)
+        {
+            var checkToken = await _accountService.CheckTokenIsValid();
+            if (!checkToken)
+                return Unauthorized(new ApiResponse(401, PubicMessages.UnAuthorizeMessage));
+
+            var serviceFromDB = await _context
+                .MyChatServiceTBL
+               .AsNoTracking()
+               .Where(c => c.Id == Id)
+               .Select(c => new
+               {
+                   c.Id,
+                   c.PackageType,
+                   c.BeTranslate,
+                   c.FreeMessageCount,
+                   c.IsServiceReverse,
+                   c.PriceForNativeCustomer,
+                   c.PriceForNonNativeCustomer,
+                   c.CatId,
+                   c.SubCatId,
+                   c.BaseMyChatTBL.ServiceName,
+                   c.BaseMyChatTBL.ServiceType,
+                   c.BaseMyChatTBL.UserName,
+                   c.BaseMyChatTBL.ConfirmedServiceType,
+               }).FirstOrDefaultAsync();
+
+
+            var currentUsername = _accountService.GetCurrentUserName();
+
+            if (serviceFromDB == null)
+                return NotFound(new ApiResponse(404, _localizerShared["NotFound"].Value.ToString()));
+
+            if (serviceFromDB.UserName != currentUsername)
+                return Unauthorized(new ApiResponse(401, _localizerShared["UnauthorizedMessage"].Value.ToString()));
+
+            return Ok(new ApiOkResponse(new DataFormat()
+            {
+                Status = 1,
+                data = serviceFromDB,
+                Message = _localizerShared["SuccessMessage"].Value.ToString()
+            },
+        _localizerShared["SuccessMessage"].Value.ToString()
+        ));
+
+
+        }
+
+
+
+
+
+
+        /// <summary>
         /// ایجاد  سرویس chat or voice or video  برای یک کاربر 
         /// </summary>
         /// <param name="model"></param>
         /// <returns></returns>
-        [HttpPost("/userService/UpdateChatServiceForUser")]
+        [HttpPost("/api/userService/UpdateChatServiceForUser")]
         [Authorize]
         public async Task<ActionResult> UpdateChatServiceForUser([FromBody] AddChatServiceForUsersDTO model)
         {
@@ -448,7 +508,6 @@ namespace CallInDoor.Controllers
             var res = await _servicetypeService.ValidateChatService(model);
             if (!res.succsseded)
                 return BadRequest(new ApiBadRequestResponse(res.result));
-
 
 
             var currentUsername = _accountService.GetCurrentUserName();
@@ -475,23 +534,10 @@ namespace CallInDoor.Controllers
             }
 
 
-
-
-            //var BaseMyService = new BaseMyServiceTBL()
-            //{
-            //    ConfirmedServiceType = ConfirmedServiceType.Rejected,
-
-            //    CreateDate = DateTime.Now,
-            //    ServiceName = model.ServiceName,
-            //    ServiceType = (ServiceType)model.ServiceType,
-            //    UserName = model.UserName,
-            //};
-
-
             serviceFromDB.ServiceName = model.ServiceName;
             serviceFromDB.ServiceType = (ServiceType)model.ServiceType;
 
-            serviceFromDB.MyChatsService.PackageType= model.PackageType;
+            serviceFromDB.MyChatsService.PackageType = model.PackageType;
             serviceFromDB.MyChatsService.BeTranslate = model.BeTranslate;
             serviceFromDB.MyChatsService.FreeMessageCount = (int)model.FreeMessageCount;
             serviceFromDB.MyChatsService.IsServiceReverse = model.IsServiceReverse;
@@ -503,23 +549,6 @@ namespace CallInDoor.Controllers
 
 
 
-            //var MyChatService = new MyChatServiceTBL()
-            //{
-            //    //UserName = model.UserName,
-            //    //ServiceName = model.ServiceName,
-            //    PackageType = model.PackageType,
-            //    BeTranslate = model.BeTranslate,
-            //    FreeMessageCount = (int)model.FreeMessageCount,
-            //    IsServiceReverse = model.IsServiceReverse,
-            //    PriceForNativeCustomer = (int)model.PriceForNativeCustomer,
-            //    PriceForNonNativeCustomer = (int)model.PriceForNonNativeCustomer,
-            //    //CreateDate = DateTime.Now,
-            //    //IsCheckedByAdmin = false,
-            //    //ConfirmedServiceType = ConfirmedServiceType.Rejected,
-            //    CatId = model.CatId,
-            //    SubCatId = model.SubCatId,
-            //    BaseMyChatTBL = BaseMyService,
-            //};
 
             try
             {
@@ -553,72 +582,253 @@ namespace CallInDoor.Controllers
 
 
 
-        ///// <summary>
-        ///// ایجاد  سرویس chat or voice or video  برای یک کاربر 
-        ///// </summary>
-        ///// <param name="model"></param>
-        ///// <returns></returns>
-        //[HttpPost("/userService/UpdateChatServiceForUser")]
-        //[Authorize]
-        //public async Task<ActionResult> UpdateChatServiceForUser([FromBody] AddChatServiceForUsersDTO model)
-        //{
-
-        //    var checkToken = await _accountService.CheckTokenIsValid();
-        //    if (!checkToken)
-        //        return Unauthorized(new ApiResponse(401, _localizerShared["UnauthorizedMessage"].Value.ToString()));
-
-
-
-        //    var res = await _servicetypeService.ValidateChatService(model);
-        //    if (!res.succsseded)
-        //        return BadRequest(new ApiBadRequestResponse(res.result));
-
-        //    var MyChatService = new MyChatServiceTBL()
-        //    {
-        //        ////UserName = model.UserName,
-        //        ////ServiceName = model.ServiceName,
-        //        //PackageType = model.PackageType,
-        //        //BeTranslate = model.BeTranslate,
-        //        //FreeMessageCount = model.FreeMessageCount,
-        //        //IsServiceReverse = model.IsServiceReverse,
-        //        //PriceForNativeCustomer = model.PriceForNativeCustomer,
-        //        //PriceForNonNativeCustomer = model.PriceForNonNativeCustomer,
-        //        ////CreateDate = DateTime.Now,
-        //        ////IsCheckedByAdmin = false,
-        //        ////ConfirmedServiceType = ConfirmedServiceType.Rejected,
-        //        //CatId = model.CatId,
-        //        //SubCatId = model.SubCatId,
-        //    };
-
-        //    try
-        //    {
-        //        await _context.MyChatServiceTBL.AddAsync(MyChatService);
-
-        //        await _context.SaveChangesAsync();
-        //        return Ok(new ApiOkResponse(new DataFormat()
-        //        {
-        //            Status = 1,
-        //            data = { },
-        //            Message = _localizerShared["SuccessMessage"].Value.ToString()
-        //        },
-        //         _localizerShared["SuccessMessage"].Value.ToString()
-        //    ));
-        //    }
-        //    catch
-        //    {
-        //        return StatusCode(StatusCodes.Status500InternalServerError,
-        //                        new ApiResponse(500, _localizerShared["InternalServerMessage"].Value.ToString()));
-        //    }
-
-
-        //}
 
 
 
 
 
 
-        #endregion 
+       
+
+
+        /// <summary>
+        /// ایجاد  سرویس  service برای یک کاربر 
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns></returns>
+        [HttpPost("/api/userService/AddServiceServiceForUser")]
+        [Authorize]
+        public async Task<ActionResult> AddServiceServiceForUser([FromBody] AddServiceServiceForUsersDTO model)
+        {
+
+            var checkToken = await _accountService.CheckTokenIsValid();
+            if (!checkToken)
+                return Unauthorized(new ApiResponse(401, _localizerShared["UnauthorizedMessage"].Value.ToString()));
+
+
+            var res = await _servicetypeService.ValidateServiceService(model);
+            if (!res.succsseded)
+                return BadRequest(new ApiBadRequestResponse(res.result));
+
+
+            var BaseMyService = new BaseMyServiceTBL()
+            {
+                ConfirmedServiceType = ConfirmedServiceType.Pending,
+                CreateDate = DateTime.Now,
+                ServiceName = model.ServiceName,
+                ServiceType = (ServiceType)model.ServiceType,
+                UserName = model.UserName,
+                ServiceId = model.ServiceId
+            };
+
+
+            var tags = model.Tags + "," + model.CustomTags;
+
+            var MyChatService = new MyServiceServiceTBL()
+            {
+                Description = model.Description,
+                DeliveryItems = model.DeliveryItems,
+                FileNeeded = model.FileNeeded,
+                FileDescription = model.FileDescription,
+                HowWorkConducts = model.HowWorkConducts,
+                BeTranslate = model.BeTranslate,
+                Price = (double)model.Price,
+                WorkDeliveryTimeEstimation = model.WorkDeliveryTimeEstimation,
+                Tags = tags,
+                CatId = model.CatId,
+                SubCatId = model.SubCatId,
+                BaseMyChatTBL = BaseMyService,
+            };
+
+            try
+            {
+                //await _context.BaseMyServiceTBL.AddAsync(BaseMyService);
+                await _context.MyServiceServiceTBL.AddAsync(MyChatService);
+
+                await _context.SaveChangesAsync();
+                return Ok(new ApiOkResponse(new DataFormat()
+                {
+                    Status = 1,
+                    data = { },
+                    Message = _locaLizer["SuccesfullAddServiceMessage"].Value.ToString()
+                },
+                 _locaLizer["SuccesfullAddServiceMessage"].Value.ToString()
+                ));
+            }
+            catch
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError,
+                                new ApiResponse(500, _localizerShared["InternalServerMessage"].Value.ToString()));
+            }
+
+
+        }
+
+
+
+
+
+
+
+
+        /// <summary>
+        ///گرفتن یک سرویس از نوع چت و وویس و.. برای یک کاربر
+        /// </summary>
+        /// <param name="Id"></param>
+        /// <returns></returns>
+        [HttpGet("/api/userService/GetServiceServiceForUser")]
+        [Authorize]
+        public async Task<ActionResult> GetServiceServiceForUser(int Id)
+        {
+            var checkToken = await _accountService.CheckTokenIsValid();
+            if (!checkToken)
+                return Unauthorized(new ApiResponse(401, PubicMessages.UnAuthorizeMessage));
+
+            var serviceFromDB = await _context
+                .MyServiceServiceTBL
+               .AsNoTracking()
+               .Where(c => c.Id == Id)
+               .Select(c => new
+               {
+                   c.Id,
+                   c.Description,
+                   c.BeTranslate,
+                   c.FileNeeded,
+                   c.FileDescription,
+                   c.Price,
+                   c.WorkDeliveryTimeEstimation,
+                   c.HowWorkConducts,
+                   c.DeliveryItems,
+                   c.Tags,
+                   c.CatId,
+                   c.SubCatId,
+                   //Speciality
+                   //Area
+                   c.BaseMyChatTBL.ServiceName,
+                   c.BaseMyChatTBL.ServiceType,
+                   c.BaseMyChatTBL.ServiceId,
+                   c.BaseMyChatTBL.UserName,
+                   c.BaseMyChatTBL.ConfirmedServiceType,
+               }).FirstOrDefaultAsync();
+
+
+            //public string Speciality { get; set; }
+            //public string Area { get; set; }
+
+          
+
+            if (serviceFromDB == null)
+                return NotFound(new ApiResponse(404, _localizerShared["NotFound"].Value.ToString()));
+
+            var currentUsername = _accountService.GetCurrentUserName();
+            if (serviceFromDB.UserName != currentUsername)
+                return Unauthorized(new ApiResponse(401, _localizerShared["UnauthorizedMessage"].Value.ToString()));
+
+            return Ok(new ApiOkResponse(new DataFormat()
+            {
+                Status = 1,
+                data = serviceFromDB,
+                Message = _localizerShared["SuccessMessage"].Value.ToString()
+            },
+             _localizerShared["SuccessMessage"].Value.ToString()
+            ));
+        }
+
+
+
+
+
+        /// <summary>
+        /// ایجاد  سرویس chat or voice or video  برای یک کاربر 
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns></returns>
+        [HttpPost("/api/userService/UpdateServiceServiceForUser")]
+        [Authorize]
+        public async Task<ActionResult> UpdateServiceServiceForUser([FromBody] AddServiceServiceForUsersDTO model)
+        {
+
+            var checkToken = await _accountService.CheckTokenIsValid();
+            if (!checkToken)
+                return Unauthorized(new ApiResponse(401, _localizerShared["UnauthorizedMessage"].Value.ToString()));
+
+            var res = await _servicetypeService.ValidateServiceService(model);
+            if (!res.succsseded)
+                return BadRequest(new ApiBadRequestResponse(res.result));
+
+
+            var currentUsername = _accountService.GetCurrentUserName();
+
+            var serviceFromDB = await _context
+                .BaseMyServiceTBL
+                .Where(c => c.Id == model.Id)
+                .Include(c => c.MyServicesService)
+                .FirstOrDefaultAsync();
+
+            if (serviceFromDB == null)
+                return NotFound(new ApiResponse(404, _localizerShared["NotFound"].Value.ToString()));
+
+            if (serviceFromDB.UserName != currentUsername)
+                return Unauthorized(new ApiResponse(401, _localizerShared["UnauthorizedMessage"].Value.ToString()));
+
+            if (serviceFromDB.ConfirmedServiceType != ConfirmedServiceType.Pending)
+            {
+                var errors = new List<string>() {
+                      _locaLizer["AfterAdminConfirmMessage"].Value.ToString()
+               };
+                return BadRequest(new ApiBadRequestResponse(errors));
+            }
+
+
+            serviceFromDB.ServiceName = model.ServiceName;
+            serviceFromDB.ServiceType = (ServiceType)model.ServiceType;
+
+            serviceFromDB.MyServicesService.Description = model.Description;
+            serviceFromDB.MyServicesService.BeTranslate = model.BeTranslate;
+            serviceFromDB.MyServicesService.FileNeeded = model.FileNeeded;
+            serviceFromDB.MyServicesService.FileDescription = model.FileDescription;
+            serviceFromDB.MyServicesService.Price = (double)model.Price;
+            serviceFromDB.MyServicesService.WorkDeliveryTimeEstimation = model.WorkDeliveryTimeEstimation;
+            serviceFromDB.MyServicesService.HowWorkConducts = model.HowWorkConducts;
+            serviceFromDB.MyServicesService.HowWorkConducts = model.HowWorkConducts;
+            serviceFromDB.MyServicesService.Tags = model.Tags + "," + model.CustomTags;
+            serviceFromDB.MyServicesService.CatId = model.CatId;
+            serviceFromDB.MyServicesService.SubCatId = model.SubCatId;
+
+            //public string Speciality { get; set; }
+            //public string Area { get; set; }
+
+
+
+            try
+            {
+
+                await _context.SaveChangesAsync();
+                return Ok(new ApiOkResponse(new DataFormat()
+                {
+                    Status = 1,
+                    data = { },
+                    Message = _localizerShared["SuccesfullAddServiceMessage"].Value.ToString()
+                },
+                 _localizerShared["SuccesfullAddServiceMessage"].Value.ToString()
+                ));
+            }
+            catch
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError,
+                                new ApiResponse(500, _localizerShared["InternalServerMessage"].Value.ToString()));
+            }
+
+        }
+
+
+
+
+
+
+
+
+        #endregion
 
 
 
