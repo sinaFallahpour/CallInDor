@@ -74,16 +74,16 @@ namespace Domain.Entities
         //public string UserId { get; set; }
 
 
-        [ForeignKey("CatId")]
-        public virtual CategoryTBL CategoryTBL { get; set; }
+        //[ForeignKey("CatId")]
+        //public virtual CategoryTBL CategoryTBL { get; set; }
 
-        public int? CatId { get; set; }
+        //public int? CatId { get; set; }
 
 
-        [ForeignKey("SubCatId")]
-        public virtual CategoryTBL SubCategoryTBL { get; set; }
+        //[ForeignKey("SubCatId")]
+        //public virtual CategoryTBL SubCategoryTBL { get; set; }
 
-        public int? SubCatId { get; set; }
+        //public int? SubCatId { get; set; }
 
 
         // relation With BaseMyChatTBL

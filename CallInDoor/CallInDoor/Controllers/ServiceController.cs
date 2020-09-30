@@ -46,7 +46,6 @@ namespace CallInDoor.Controllers
 
         #endregion
 
-
         #region ServiceType
 
 
@@ -355,14 +354,7 @@ namespace CallInDoor.Controllers
         #endregion 
 
 
-
-
-
-
-
         #region  MyService
-
-
 
         /// <summary>
         /// ایجاد  سرویس chat or voice or video  برای یک کاربر 
@@ -391,7 +383,9 @@ namespace CallInDoor.Controllers
                 ServiceName = model.ServiceName,
                 ServiceType = (ServiceType)model.ServiceType,
                 UserName = model.UserName,
-                ServiceId = model.ServiceId
+                ServiceId = model.ServiceId,
+                CatId = model.CatId,
+                SubCatId = model.SubCatId,
             };
 
 
@@ -408,8 +402,7 @@ namespace CallInDoor.Controllers
                 //CreateDate = DateTime.Now,
                 //IsCheckedByAdmin = false,
                 //ConfirmedServiceType = ConfirmedServiceType.Rejected,
-                CatId = model.CatId,
-                SubCatId = model.SubCatId,
+
                 BaseMyChatTBL = BaseMyService,
             };
 
@@ -467,8 +460,8 @@ namespace CallInDoor.Controllers
                    c.IsServiceReverse,
                    c.PriceForNativeCustomer,
                    c.PriceForNonNativeCustomer,
-                   c.CatId,
-                   c.SubCatId,
+                   c.BaseMyChatTBL.CatId,
+                   c.BaseMyChatTBL.SubCatId,
                    c.BaseMyChatTBL.ServiceName,
                    c.BaseMyChatTBL.ServiceType,
                    c.BaseMyChatTBL.UserName,
@@ -543,6 +536,8 @@ namespace CallInDoor.Controllers
 
             serviceFromDB.BaseMyChatTBL.ServiceName = model.ServiceName;
             serviceFromDB.BaseMyChatTBL.ServiceType = (ServiceType)model.ServiceType;
+            serviceFromDB.BaseMyChatTBL.CatId = model.CatId;
+            serviceFromDB.BaseMyChatTBL.SubCatId = model.SubCatId;
 
             serviceFromDB.PackageType = model.PackageType;
             serviceFromDB.BeTranslate = model.BeTranslate;
@@ -550,8 +545,7 @@ namespace CallInDoor.Controllers
             serviceFromDB.IsServiceReverse = model.IsServiceReverse;
             serviceFromDB.PriceForNativeCustomer = (int)model.PriceForNativeCustomer;
             serviceFromDB.PriceForNonNativeCustomer = (int)model.PriceForNonNativeCustomer;
-            serviceFromDB.CatId = model.CatId;
-            serviceFromDB.SubCatId = model.SubCatId;
+
 
             try
             {
@@ -577,7 +571,7 @@ namespace CallInDoor.Controllers
 
         }
 
-       
+
 
 
         /// <summary>
@@ -607,7 +601,9 @@ namespace CallInDoor.Controllers
                 ServiceName = model.ServiceName,
                 ServiceType = (ServiceType)model.ServiceType,
                 UserName = model.UserName,
-                ServiceId = model.ServiceId
+                ServiceId = model.ServiceId,
+                CatId = model.CatId,
+                SubCatId = model.SubCatId,
             };
 
 
@@ -624,8 +620,7 @@ namespace CallInDoor.Controllers
                 Price = (double)model.Price,
                 WorkDeliveryTimeEstimation = model.WorkDeliveryTimeEstimation,
                 Tags = tags,
-                CatId = model.CatId,
-                SubCatId = model.SubCatId,
+
                 BaseMyChatTBL = BaseMyService,
             };
 
@@ -684,10 +679,10 @@ namespace CallInDoor.Controllers
                    c.HowWorkConducts,
                    c.DeliveryItems,
                    c.Tags,
-                   c.CatId,
-                   c.SubCatId,
                    //Speciality
                    //Area
+                   c.BaseMyChatTBL.CatId,
+                   c.BaseMyChatTBL.SubCatId,
                    c.BaseMyChatTBL.ServiceName,
                    c.BaseMyChatTBL.ServiceType,
                    c.BaseMyChatTBL.ServiceId,
@@ -699,7 +694,7 @@ namespace CallInDoor.Controllers
             //public string Speciality { get; set; }
             //public string Area { get; set; }
 
-          
+
 
             if (serviceFromDB == null)
                 return NotFound(new ApiResponse(404, _localizerShared["NotFound"].Value.ToString()));
@@ -717,7 +712,6 @@ namespace CallInDoor.Controllers
              _localizerShared["SuccessMessage"].Value.ToString()
             ));
         }
-
 
 
 
@@ -747,7 +741,7 @@ namespace CallInDoor.Controllers
 
             if (serviceFromDB == null)
                 return NotFound(new ApiResponse(404, _localizerShared["NotFound"].Value.ToString()));
-          
+
             var currentUsername = _accountService.GetCurrentUserName();
             if (serviceFromDB.BaseMyChatTBL.UserName != currentUsername)
                 return Unauthorized(new ApiResponse(401, _localizerShared["UnauthorizedMessage"].Value.ToString()));
@@ -762,18 +756,19 @@ namespace CallInDoor.Controllers
 
             serviceFromDB.BaseMyChatTBL.ServiceName = model.ServiceName;
             serviceFromDB.BaseMyChatTBL.ServiceType = (ServiceType)model.ServiceType;
+            serviceFromDB.BaseMyChatTBL.CatId = model.CatId;
+            serviceFromDB.BaseMyChatTBL.SubCatId = model.SubCatId;
 
             serviceFromDB.Description = model.Description;
             serviceFromDB.BeTranslate = model.BeTranslate;
-            serviceFromDB .FileNeeded = model.FileNeeded;
+            serviceFromDB.FileNeeded = model.FileNeeded;
             serviceFromDB.FileDescription = model.FileDescription;
             serviceFromDB.Price = (double)model.Price;
             serviceFromDB.WorkDeliveryTimeEstimation = model.WorkDeliveryTimeEstimation;
             serviceFromDB.HowWorkConducts = model.HowWorkConducts;
             serviceFromDB.DeliveryItems = model.DeliveryItems;
             serviceFromDB.Tags = model.Tags + "," + model.CustomTags;
-            serviceFromDB.CatId = model.CatId;
-            serviceFromDB.SubCatId = model.SubCatId;
+          
 
             //public string Speciality { get; set; }
             //public string Area { get; set; }
@@ -798,8 +793,6 @@ namespace CallInDoor.Controllers
             }
 
         }
-
-
 
 
 

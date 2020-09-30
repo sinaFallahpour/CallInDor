@@ -41,10 +41,23 @@ namespace Domain.Entities
 
         #region  Relation
 
+        [ForeignKey("CatId")]
+        public virtual CategoryTBL CategoryTBL { get; set; }
+
+        public int? CatId { get; set; }
+
+
+        [ForeignKey("SubCatId")]
+        public virtual CategoryTBL SubCategoryTBL { get; set; }
+
+        public int? SubCatId { get; set; }
+
+
+
+
         /// <summary>
         /// 1 به 1 لا جدول MyChatService
         /// </summary>
-
         public virtual MyChatServiceTBL MyChatsService { get; set; }
 
 
