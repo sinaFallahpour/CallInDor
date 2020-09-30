@@ -655,9 +655,6 @@ namespace CallInDoor.Controllers
 
 
 
-
-
-
         /// <summary>
         ///گرفتن یک سرویس از نوع چت و وویس و.. برای یک کاربر
         /// </summary>
@@ -720,7 +717,6 @@ namespace CallInDoor.Controllers
              _localizerShared["SuccessMessage"].Value.ToString()
             ));
         }
-
 
 
 
@@ -802,6 +798,11 @@ namespace CallInDoor.Controllers
             }
 
         }
+
+
+
+
+
 
 
 
