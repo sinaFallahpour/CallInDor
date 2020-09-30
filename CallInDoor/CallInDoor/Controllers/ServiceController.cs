@@ -44,8 +44,10 @@ namespace CallInDoor.Controllers
             _servicetypeService = servicetypeService;
         }
 
-        #endregion 
+        #endregion
 
+
+        #region ServiceType
 
 
         /// <summary>
@@ -350,6 +352,14 @@ namespace CallInDoor.Controllers
 
 
 
+        #endregion 
+
+
+
+
+
+
+
         #region  MyService
 
 
@@ -496,7 +506,7 @@ namespace CallInDoor.Controllers
         /// </summary>
         /// <param name="model"></param>
         /// <returns></returns>
-        [HttpPost("/api/userService/UpdateChatServiceForUser")]
+        [HttpPut("/api/userService/UpdateChatServiceForUser")]
         [Authorize]
         public async Task<ActionResult> UpdateChatServiceForUser([FromBody] AddChatServiceForUsersDTO model)
         {
@@ -509,23 +519,21 @@ namespace CallInDoor.Controllers
             if (!res.succsseded)
                 return BadRequest(new ApiBadRequestResponse(res.result));
 
-
             var currentUsername = _accountService.GetCurrentUserName();
 
             var serviceFromDB = await _context
-                .BaseMyServiceTBL
+                .MyChatServiceTBL
                 .Where(c => c.Id == model.Id)
-                .Include(c => c.MyChatsService)
+                .Include(c => c.BaseMyChatTBL)
                 .FirstOrDefaultAsync();
 
             if (serviceFromDB == null)
                 return NotFound(new ApiResponse(404, _localizerShared["NotFound"].Value.ToString()));
 
-            if (serviceFromDB.UserName != currentUsername)
+            if (serviceFromDB.BaseMyChatTBL.UserName != currentUsername)
                 return Unauthorized(new ApiResponse(401, _localizerShared["UnauthorizedMessage"].Value.ToString()));
 
-
-            if (serviceFromDB.ConfirmedServiceType != ConfirmedServiceType.Pending)
+            if (serviceFromDB.BaseMyChatTBL.ConfirmedServiceType != ConfirmedServiceType.Pending)
             {
                 var errors = new List<string>() {
                       _locaLizer["AfterAdminConfirmMessage"].Value.ToString()
@@ -533,22 +541,17 @@ namespace CallInDoor.Controllers
                 return BadRequest(new ApiBadRequestResponse(errors));
             }
 
+            serviceFromDB.BaseMyChatTBL.ServiceName = model.ServiceName;
+            serviceFromDB.BaseMyChatTBL.ServiceType = (ServiceType)model.ServiceType;
 
-            serviceFromDB.ServiceName = model.ServiceName;
-            serviceFromDB.ServiceType = (ServiceType)model.ServiceType;
-
-            serviceFromDB.MyChatsService.PackageType = model.PackageType;
-            serviceFromDB.MyChatsService.BeTranslate = model.BeTranslate;
-            serviceFromDB.MyChatsService.FreeMessageCount = (int)model.FreeMessageCount;
-            serviceFromDB.MyChatsService.IsServiceReverse = model.IsServiceReverse;
-            serviceFromDB.MyChatsService.PriceForNativeCustomer = (int)model.PriceForNativeCustomer;
-            serviceFromDB.MyChatsService.PriceForNonNativeCustomer = (int)model.PriceForNonNativeCustomer;
-            serviceFromDB.MyChatsService.CatId = model.CatId;
-            serviceFromDB.MyChatsService.SubCatId = model.SubCatId;
-
-
-
-
+            serviceFromDB.PackageType = model.PackageType;
+            serviceFromDB.BeTranslate = model.BeTranslate;
+            serviceFromDB.FreeMessageCount = (int)model.FreeMessageCount;
+            serviceFromDB.IsServiceReverse = model.IsServiceReverse;
+            serviceFromDB.PriceForNativeCustomer = (int)model.PriceForNativeCustomer;
+            serviceFromDB.PriceForNonNativeCustomer = (int)model.PriceForNonNativeCustomer;
+            serviceFromDB.CatId = model.CatId;
+            serviceFromDB.SubCatId = model.SubCatId;
 
             try
             {
@@ -560,9 +563,9 @@ namespace CallInDoor.Controllers
                 {
                     Status = 1,
                     data = { },
-                    Message = _localizerShared["SuccesfullAddServiceMessage"].Value.ToString()
+                    Message = _locaLizer["SuccesfullAddServiceMessage"].Value.ToString()
                 },
-                 _localizerShared["SuccesfullAddServiceMessage"].Value.ToString()
+                 _locaLizer["SuccesfullAddServiceMessage"].Value.ToString()
                 ));
             }
             catch
@@ -573,20 +576,6 @@ namespace CallInDoor.Controllers
 
 
         }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
        
 
@@ -669,8 +658,6 @@ namespace CallInDoor.Controllers
 
 
 
-
-
         /// <summary>
         ///گرفتن یک سرویس از نوع چت و وویس و.. برای یک کاربر
         /// </summary>
@@ -743,7 +730,7 @@ namespace CallInDoor.Controllers
         /// </summary>
         /// <param name="model"></param>
         /// <returns></returns>
-        [HttpPost("/api/userService/UpdateServiceServiceForUser")]
+        [HttpPut("/api/userService/UpdateServiceServiceForUser")]
         [Authorize]
         public async Task<ActionResult> UpdateServiceServiceForUser([FromBody] AddServiceServiceForUsersDTO model)
         {
@@ -756,22 +743,20 @@ namespace CallInDoor.Controllers
             if (!res.succsseded)
                 return BadRequest(new ApiBadRequestResponse(res.result));
 
-
-            var currentUsername = _accountService.GetCurrentUserName();
-
             var serviceFromDB = await _context
-                .BaseMyServiceTBL
+                .MyServiceServiceTBL
                 .Where(c => c.Id == model.Id)
-                .Include(c => c.MyServicesService)
+                .Include(c => c.BaseMyChatTBL)
                 .FirstOrDefaultAsync();
 
             if (serviceFromDB == null)
                 return NotFound(new ApiResponse(404, _localizerShared["NotFound"].Value.ToString()));
-
-            if (serviceFromDB.UserName != currentUsername)
+          
+            var currentUsername = _accountService.GetCurrentUserName();
+            if (serviceFromDB.BaseMyChatTBL.UserName != currentUsername)
                 return Unauthorized(new ApiResponse(401, _localizerShared["UnauthorizedMessage"].Value.ToString()));
 
-            if (serviceFromDB.ConfirmedServiceType != ConfirmedServiceType.Pending)
+            if (serviceFromDB.BaseMyChatTBL.ConfirmedServiceType != ConfirmedServiceType.Pending)
             {
                 var errors = new List<string>() {
                       _locaLizer["AfterAdminConfirmMessage"].Value.ToString()
@@ -779,38 +764,35 @@ namespace CallInDoor.Controllers
                 return BadRequest(new ApiBadRequestResponse(errors));
             }
 
+            serviceFromDB.BaseMyChatTBL.ServiceName = model.ServiceName;
+            serviceFromDB.BaseMyChatTBL.ServiceType = (ServiceType)model.ServiceType;
 
-            serviceFromDB.ServiceName = model.ServiceName;
-            serviceFromDB.ServiceType = (ServiceType)model.ServiceType;
-
-            serviceFromDB.MyServicesService.Description = model.Description;
-            serviceFromDB.MyServicesService.BeTranslate = model.BeTranslate;
-            serviceFromDB.MyServicesService.FileNeeded = model.FileNeeded;
-            serviceFromDB.MyServicesService.FileDescription = model.FileDescription;
-            serviceFromDB.MyServicesService.Price = (double)model.Price;
-            serviceFromDB.MyServicesService.WorkDeliveryTimeEstimation = model.WorkDeliveryTimeEstimation;
-            serviceFromDB.MyServicesService.HowWorkConducts = model.HowWorkConducts;
-            serviceFromDB.MyServicesService.HowWorkConducts = model.HowWorkConducts;
-            serviceFromDB.MyServicesService.Tags = model.Tags + "," + model.CustomTags;
-            serviceFromDB.MyServicesService.CatId = model.CatId;
-            serviceFromDB.MyServicesService.SubCatId = model.SubCatId;
+            serviceFromDB.Description = model.Description;
+            serviceFromDB.BeTranslate = model.BeTranslate;
+            serviceFromDB .FileNeeded = model.FileNeeded;
+            serviceFromDB.FileDescription = model.FileDescription;
+            serviceFromDB.Price = (double)model.Price;
+            serviceFromDB.WorkDeliveryTimeEstimation = model.WorkDeliveryTimeEstimation;
+            serviceFromDB.HowWorkConducts = model.HowWorkConducts;
+            serviceFromDB.DeliveryItems = model.DeliveryItems;
+            serviceFromDB.Tags = model.Tags + "," + model.CustomTags;
+            serviceFromDB.CatId = model.CatId;
+            serviceFromDB.SubCatId = model.SubCatId;
 
             //public string Speciality { get; set; }
             //public string Area { get; set; }
 
 
-
             try
             {
-
                 await _context.SaveChangesAsync();
                 return Ok(new ApiOkResponse(new DataFormat()
                 {
                     Status = 1,
                     data = { },
-                    Message = _localizerShared["SuccesfullAddServiceMessage"].Value.ToString()
+                    Message = _locaLizer["SuccesfullAddServiceMessage"].Value.ToString()
                 },
-                 _localizerShared["SuccesfullAddServiceMessage"].Value.ToString()
+                 _locaLizer["SuccesfullAddServiceMessage"].Value.ToString()
                 ));
             }
             catch
@@ -823,14 +805,7 @@ namespace CallInDoor.Controllers
 
 
 
-
-
-
-
-
         #endregion
-
-
 
 
 

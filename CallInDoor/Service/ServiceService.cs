@@ -328,10 +328,6 @@ namespace Service
 
 
 
-
-
-
-
         /// <summary>
         /// ولیدیت کردن آبجکت   سرویس سرویس
         /// </summary>
@@ -341,7 +337,6 @@ namespace Service
         {
             bool IsValid = true;
             List<string> Errors = new List<string>();
-
 
 
             /////////Area   
