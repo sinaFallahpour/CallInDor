@@ -117,6 +117,9 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="Duration" xml:space="preserve">
+    <value>زمان جلسه</value>
+  </data>
   <data name="FreeMessageCount" xml:space="preserve">
     <value>تعداد پیام های رایگان</value>
   </data>
@@ -138,14 +141,14 @@
   <data name="ServiceType" xml:space="preserve">
     <value>تایپ سرویس</value>
   </data>
-  <data name="The  {0} should be between {1} and {2}" xml:space="preserve">
-    <value>مقدار {0} باید بین{1} و {2} باشد</value>
-  </data>
   <data name="The maximum {0} length is {1} characters" xml:space="preserve">
     <value> حدا کثر تعداد کاراکتر برای {0} {1} میباشد</value>
   </data>
   <data name="The minimum {0} length is {1} characters" xml:space="preserve">
     <value>حداقل تعداد کاراکتر برای {0} {1} میباشد</value>
+  </data>
+  <data name="The {0} should be between {1} and {2}" xml:space="preserve">
+    <value>مقدار {0} باید بین {1} و {2} باشد</value>
   </data>
   <data name="UserName" xml:space="preserve">
     <value>نام کاربری</value>

@@ -9,10 +9,10 @@ namespace Domain.DTO.Account
 {
     public class UpdateProfileDTO
     {
-        public string Id { get; set; }
+        public string Username { get; set; }
 
 
-        [MaxLength(20, ErrorMessage = "The maximum {0} length is {1} characters")]
+        [MaxLength(80, ErrorMessage = "The maximum {0} length is {1} characters")]
         [EmailAddress(ErrorMessage = "Invalid email address.")]
         [Display(Name = "Email")]
         public string Email { get; set; }
@@ -45,8 +45,8 @@ namespace Domain.DTO.Account
 
 
 
-        public List<UserDegreeDTO> UsersDegrees { get; set; }
-
+        //public List<UserFiledsDTO> UsersDegrees { get; set; }
+        public List<int> FieldsId { get; set; }
 
     }
 

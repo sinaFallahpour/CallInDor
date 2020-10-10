@@ -159,8 +159,8 @@ class HorizontalSidebar extends React.Component {
                     child.filterBase
                       ? child.filterBase
                       : child.navLink && child.type === "item"
-                      ? child.navLink
-                      : "#"
+                        ? child.navLink
+                        : "#"
                   }
                   href={
                     child.type === "external-link" ? child.navLink : undefined
@@ -199,15 +199,15 @@ class HorizontalSidebar extends React.Component {
                         : null}
                     </Dropdown>
                   ) : (
-                    <div className="item-content">
-                      <span className="menu-icon align-top mr-1">
-                        {child.icon}
-                      </span>
-                      <span className="menu-title align-middle">
-                        <FormattedMessage id={child.title} />
-                      </span>
-                    </div>
-                  )}
+                      <div className="item-content">
+                        <span className="menu-icon align-top mr-1">
+                          {child.icon}
+                        </span>
+                        <span className="menu-title align-middle">
+                          <FormattedMessage id={child.title} />
+                        </span>
+                      </div>
+                    )}
                 </DropdownItem>
               </li>
             </React.Fragment>
@@ -215,17 +215,13 @@ class HorizontalSidebar extends React.Component {
 
           if (
             child.type === "external-link" ||
-            (child.type === "item" &&
-              child.permissions &&
-              child.permissions.includes(this.props.currentUser)) ||
+            (child.type === "item") ||
             child.type === "dropdown" ||
             child.permissions === undefined
           ) {
             return renderChildItems
           } else if (
-            child.navLink === this.props.activePath &&
-            !child.permissions.includes(this.props.currentUser)
-          ) {
+            child.navLink === this.props.activePath) {
             return this.redirectUnauthorized()
           } else {
             return null
@@ -292,31 +288,31 @@ class HorizontalSidebar extends React.Component {
                   : null}
               </Dropdown>
             ) : (
-              <CustomAnchorTag
-                className={classnames({
-                  "nav-link": item.type === "item",
-                  hover: this.state.parentHover === item.id
-                })}
-                to={
-                  item.filterBase
-                    ? item.filterBase
-                    : item.navLink && item.type === "item"
-                    ? item.navLink
-                    : "#"
-                }
-                href={item.type === "external-link" ? item.navLink : undefined}
-                target={item.newTab ? "_blank" : undefined}>
-                <span className="menu-icon align-middle mr-75">
-                  {item.icon}
-                </span>
-                <span className="menu-title align-middle">
-                  <FormattedMessage
-                    className="menu-title align-middle"
-                    id={item.title}
-                  />
-                </span>
-              </CustomAnchorTag>
-            )}
+                <CustomAnchorTag
+                  className={classnames({
+                    "nav-link": item.type === "item",
+                    hover: this.state.parentHover === item.id
+                  })}
+                  to={
+                    item.filterBase
+                      ? item.filterBase
+                      : item.navLink && item.type === "item"
+                        ? item.navLink
+                        : "#"
+                  }
+                  href={item.type === "external-link" ? item.navLink : undefined}
+                  target={item.newTab ? "_blank" : undefined}>
+                  <span className="menu-icon align-middle mr-75">
+                    {item.icon}
+                  </span>
+                  <span className="menu-title align-middle">
+                    <FormattedMessage
+                      className="menu-title align-middle"
+                      id={item.title}
+                    />
+                  </span>
+                </CustomAnchorTag>
+              )}
           </div>
         </li>
       )

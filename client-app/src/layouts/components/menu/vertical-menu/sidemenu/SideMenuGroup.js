@@ -156,8 +156,7 @@ class SideMenuGroup extends React.Component {
                   </li>
                 )
               } else if (
-                child.navLink === this.props.activePath &&
-                !child.permissions.includes(this.props.currentUser)
+                child.navLink === this.props.activePath  
               ) {
                 return this.props.redirectUnauthorized()
               } else {

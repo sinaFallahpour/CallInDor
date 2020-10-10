@@ -16,7 +16,7 @@ namespace Domain.Entities
 
         #region Relation
 
-        public ICollection<FieldTBL> Fields { get; set; }
+        //public ICollection<FieldTBL> Fields { get; set; }
        
         #endregion
     }

@@ -121,6 +121,6 @@
     <value>عدم ثبت تغییرات. این سرویس توسط ادمین تایید شده</value>
   </data>
   <data name="SuccesfullAddServiceMessage" xml:space="preserve">
-    <value>سرویس شما با موفقیت ثبت شد . بعد از تایید آدمین در سایت نمایش داده خواهد شد</value>
+    <value>سرویس شما با موفقیت ثبت شد . بعد از تایید ادمین در سایت نمایش داده خواهد شد</value>
   </data>
 </root>

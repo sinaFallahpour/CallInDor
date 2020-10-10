@@ -29,6 +29,10 @@ namespace Service
         }
 
 
+
+
+        #region  Category
+
         /// <summary>
         /// get by Id
         /// </summary>
@@ -85,9 +89,9 @@ namespace Service
         /// </summary>
         /// <param name=""></param>
         /// <returns></returns>
-        public async Task<bool> Create(CreateCategoryDTO model)
+        public async Task<CategoryTBL> Create(CreateCategoryDTO model)
         {
-            if (model == null) return false;
+            if (model == null) return null;
             var Category = new CategoryTBL()
             {
                 Title = model.Title,
@@ -98,13 +102,13 @@ namespace Service
             };
             try
             {
-                await _context.CategoryTBL.AddAsync(Category);
+                var category = _context.CategoryTBL.AddAsync(Category);
                 await _context.SaveChangesAsync();
-                return true;
+                return Category;
             }
-            catch  
+            catch
             {
-                return false;
+                return null;
             }
         }
 
@@ -145,6 +149,120 @@ namespace Service
 
 
 
+
+        #endregion
+
+
+
+        #region  Area
+
+        /// <summary>
+        /// CreateArea
+        /// </summary>
+        /// <param name=""></param>
+        /// <returns></returns>
+        public async Task<AreaTBL> CreateArea(CreateAreaDTO model)
+        {
+            if (model == null) return null;
+
+            var Area = new AreaTBL()
+            {
+                Title = model.Title,
+                PersianTitle = model.PersianTitle,
+                IsProfessional = model.IsProfessional,
+                //Specialities = model.Specialities,
+                ServiceId = model.ServiceId,
+                IsEnabled = model.IsEnabled,
+            };
+
+            Area.Specialities = new List<SpecialityTBL>();
+            if (model.Specialities != null)
+            {
+                foreach (var item in model.Specialities)
+                {
+                    var speciality = new SpecialityTBL()
+                    {
+                        Area = Area,
+                        PersianName = item.PersianName,
+                        EnglishName = item.EnglishName,
+                    };
+                    Area.Specialities.Add(speciality);
+                }
+            }
+            try
+            {
+                var area = await _context.AreaTBL.AddAsync(Area);
+                await _context.SaveChangesAsync();
+                return Area;
+            }
+            catch
+            {
+                return null;
+            }
+        }
+
+
+
+
+
+        /// <summary>
+        /// ولیدیت کردن آبجکت  چت سرویس
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns></returns>
+        public async Task<(bool succsseded, List<string> result)> ValidateArea(CreateAreaDTO model)
+        {
+            bool IsValid = true;
+            List<string> Errors = new List<string>();
+
+
+
+            var isTittleExist = await _context.AreaTBL.AnyAsync(c => c.Title == model.Title);
+            if (isTittleExist)
+            {
+                IsValid = false;
+                Errors.Add($"{model.Title} already exist.");
+            }
+
+            var isPersianTittleExist = await _context.AreaTBL.AnyAsync(c => c.PersianTitle == model.PersianTitle);
+            if (isPersianTittleExist)
+            {
+                IsValid = false;
+                Errors.Add($"{model.PersianTitle} already exist.");
+            }
+
+            if (model.IsProfessional)
+                if (model.Specialities == null)
+                {
+                    IsValid = false;
+                    Errors.Add("Specialities is Required");
+                }
+
+            if (model.ServiceId == null)
+            {
+                IsValid = false;
+                var errors = new List<string>();
+                Errors.Add("service Is required");
+            }
+
+
+            //validate serviceTypes
+            var serviceFromDb = await _context
+            .ServiceTBL
+            .Where(c => c.Id == model.ServiceId)
+            .FirstOrDefaultAsync();
+
+            if (serviceFromDb == null)
+            {
+                IsValid = false;
+                Errors.Add("service Not Exist");
+            }
+
+            return (IsValid, Errors);
+        }
+
+
+        #endregion
 
     }
 }

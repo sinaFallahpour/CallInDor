@@ -12,7 +12,7 @@ namespace Domain.DTO.Account
         public MappingProfile()
         {
             CreateMap<AppUser, ProfileGetDTO>();
-            CreateMap<User_Degree_FieldTBL, UserDegreeDTO>();
+            CreateMap<User_FieldTBL, UserFiledsDTO>();
         }
     }
 }

@@ -38,6 +38,8 @@ namespace Domain.Entities
         public ServiceType ServiceType { get; set; }
 
 
+        public bool  IsActive { get; set; }
+
 
         #region  Relation
 

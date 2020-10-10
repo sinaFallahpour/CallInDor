@@ -34,6 +34,9 @@ namespace Domain.Migrations
                         .IsConcurrencyToken()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("CountryCode")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("Email")
                         .HasColumnType("nvarchar(256)")
                         .HasMaxLength(256);
@@ -108,6 +111,36 @@ namespace Domain.Migrations
                     b.ToTable("AspNetUsers");
                 });
 
+            modelBuilder.Entity("Domain.Entities.AreaTBL", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<bool>("IsEnabled")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsProfessional")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("PersianTitle")
+                        .HasColumnType("nvarchar(120)")
+                        .HasMaxLength(120);
+
+                    b.Property<int?>("ServiceId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Title")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ServiceId");
+
+                    b.ToTable("Area");
+                });
+
             modelBuilder.Entity("Domain.Entities.BaseMyServiceTBL", b =>
                 {
                     b.Property<int>("Id")
@@ -123,6 +156,9 @@ namespace Domain.Migrations
 
                     b.Property<DateTime>("CreateDate")
                         .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
 
                     b.Property<int?>("ServiceId")
                         .HasColumnType("int");
@@ -183,24 +219,6 @@ namespace Domain.Migrations
                     b.ToTable("Category");
                 });
 
-            modelBuilder.Entity("Domain.Entities.DegreeTBL", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<string>("PersianTitle")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Title")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Degree");
-                });
-
             modelBuilder.Entity("Domain.Entities.FieldTBL", b =>
                 {
                     b.Property<int>("Id")
@@ -208,7 +226,7 @@ namespace Domain.Migrations
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<int?>("DegreeId")
+                    b.Property<int>("DegreeType")
                         .HasColumnType("int");
 
                     b.Property<string>("PersianTitle")
@@ -218,8 +236,6 @@ namespace Domain.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("DegreeId");
 
                     b.ToTable("Field");
                 });
@@ -236,6 +252,9 @@ namespace Domain.Migrations
 
                     b.Property<bool>("BeTranslate")
                         .HasColumnType("bit");
+
+                    b.Property<int>("Duration")
+                        .HasColumnType("int");
 
                     b.Property<int>("FreeMessageCount")
                         .HasColumnType("int");
@@ -320,6 +339,12 @@ namespace Domain.Migrations
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
+                    b.Property<double>("AcceptedMinPriceForNative")
+                        .HasColumnType("float");
+
+                    b.Property<double>("AcceptedMinPriceForNonNative")
+                        .HasColumnType("float");
+
                     b.Property<string>("Color")
                         .IsRequired()
                         .HasColumnType("nvarchar(100)")
@@ -375,43 +400,79 @@ namespace Domain.Migrations
                     b.ToTable("ServiceTags");
                 });
 
-            modelBuilder.Entity("Domain.Entities.User_Degree_FieldTBL", b =>
+            modelBuilder.Entity("Domain.Entities.SpecialityTBL", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<int?>("DegreeId")
+                    b.Property<int?>("AreatId")
                         .HasColumnType("int");
 
-                    b.Property<string>("DegreeName")
+                    b.Property<string>("EnglishName")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("DegreePersianName")
+                    b.Property<string>("PersianName")
                         .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AreatId");
+
+                    b.ToTable("Speciality");
+                });
+
+            modelBuilder.Entity("Domain.Entities.Test", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("Category")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Image")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Name")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("order_status")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("popularity")
+                        .HasColumnType("int");
+
+                    b.Property<double>("price")
+                        .HasColumnType("float");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Tests");
+                });
+
+            modelBuilder.Entity("Domain.Entities.User_FieldTBL", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
                     b.Property<int?>("FieldId")
                         .HasColumnType("int");
-
-                    b.Property<string>("FieldName")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("FieldPersianName")
-                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("UserId")
                         .HasColumnType("nvarchar(450)");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("DegreeId");
-
                     b.HasIndex("FieldId");
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("User_Degree_Field");
+                    b.ToTable("User_Field");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
@@ -545,6 +606,13 @@ namespace Domain.Migrations
                     b.ToTable("AspNetUserTokens");
                 });
 
+            modelBuilder.Entity("Domain.Entities.AreaTBL", b =>
+                {
+                    b.HasOne("Domain.Entities.ServiceTBL", "Service")
+                        .WithMany()
+                        .HasForeignKey("ServiceId");
+                });
+
             modelBuilder.Entity("Domain.Entities.BaseMyServiceTBL", b =>
                 {
                     b.HasOne("Domain.Entities.CategoryTBL", "CategoryTBL")
@@ -571,13 +639,6 @@ namespace Domain.Migrations
                         .HasForeignKey("ServiceId");
                 });
 
-            modelBuilder.Entity("Domain.Entities.FieldTBL", b =>
-                {
-                    b.HasOne("Domain.Entities.DegreeTBL", "DegreeTBL")
-                        .WithMany("Fields")
-                        .HasForeignKey("DegreeId");
-                });
-
             modelBuilder.Entity("Domain.Entities.MyChatServiceTBL", b =>
                 {
                     b.HasOne("Domain.Entities.BaseMyServiceTBL", "BaseMyChatTBL")
@@ -599,18 +660,21 @@ namespace Domain.Migrations
                         .HasForeignKey("ServiceId");
                 });
 
-            modelBuilder.Entity("Domain.Entities.User_Degree_FieldTBL", b =>
+            modelBuilder.Entity("Domain.Entities.SpecialityTBL", b =>
                 {
-                    b.HasOne("Domain.Entities.DegreeTBL", "DegreeTBL")
-                        .WithMany()
-                        .HasForeignKey("DegreeId");
+                    b.HasOne("Domain.Entities.AreaTBL", "Area")
+                        .WithMany("Specialities")
+                        .HasForeignKey("AreatId");
+                });
 
+            modelBuilder.Entity("Domain.Entities.User_FieldTBL", b =>
+                {
                     b.HasOne("Domain.Entities.FieldTBL", "FieldTBL")
                         .WithMany()
                         .HasForeignKey("FieldId");
 
                     b.HasOne("Domain.Entities.AppUser", "User")
-                        .WithMany("UsersDegrees")
+                        .WithMany("UsersFields")
                         .HasForeignKey("UserId");
                 });
 

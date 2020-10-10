@@ -3,6 +3,7 @@ using Domain;
 using Domain.DTO.Account;
 using Domain.Entities;
 using Domain.Utilities;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -13,6 +14,7 @@ using Service.Interfaces.JwtManager;
 using System;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
+using System.IO;
 using System.Linq;
 using System.Security.Claims;
 using System.Text;
@@ -29,6 +31,9 @@ namespace Service
         private readonly SignInManager<AppUser> _signInManager;
         private readonly IJwtManager _jwtGenerator;
         private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly IHostingEnvironment _hostingEnvironment;
+
+
         //private IStringLocalizer<ShareResource> _localizerShared;
         private IStringLocalizer<AccountService> _localizerAccount;
         private readonly IMapper _mapper;
@@ -39,6 +44,7 @@ namespace Service
             SignInManager<AppUser> signInManager,
             DataContext context,
                IJwtManager jwtGenerator,
+               IHostingEnvironment hostingEnvironment,
                IHttpContextAccessor httpContextAccessor,
                 IStringLocalizer<AccountService> localizerAccount,
                 //ICommonService commonService,
@@ -49,11 +55,13 @@ namespace Service
             _userManager = userManager;
             _signInManager = signInManager;
             _jwtGenerator = jwtGenerator;
+            _hostingEnvironment = hostingEnvironment;
             _httpContextAccessor = httpContextAccessor;
             _localizerAccount = localizerAccount;
             //_CommonService = commonService;
             _mapper = mapper;
         }
+
 
 
 
@@ -70,13 +78,21 @@ namespace Service
         }
 
 
+        /// <summary>
+        ///  گرفتن نام کاربری کاربر فعلی
+        /// </summary>
+        /// <returns></returns>
+        public string GetcurrentSerialNumber()
+        {
+            var currentSerialNumber = _httpContextAccessor.HttpContext.User?.Claims?.FirstOrDefault(x => x.Type == PublicHelper.SerialNumberClaim)?.Value;
+            return currentSerialNumber;
+        }
 
 
 
         /// check Token paload(serialNUmber) Is valid
         public async Task<bool> CheckTokenIsValid()
         {
-            var ser = _httpContextAccessor.HttpContext.User.Claims;
             //var currentUsername = _httpContextAccessor.HttpContext.User?.Claims?.FirstOrDefault(x => x.Type == ClaimTypes.NameIdentifier)?.Value;
             var currentSerialNumber = _httpContextAccessor.HttpContext.User?.Claims?.FirstOrDefault(x => x.Type == PublicHelper.SerialNumberClaim)?.Value;
             var currentUserName = _httpContextAccessor.HttpContext.User?.Claims?.FirstOrDefault(x => x.Type == ClaimTypes.Name)?.Value;
@@ -98,6 +114,26 @@ namespace Service
 
 
 
+        /// check Token paload(serialNUmber) Is valid
+        public async Task<(bool status, string username)> CheckTokenIsValidForAdminRole()
+        {
+            //var currentUsername = _httpContextAccessor.HttpContext.User?.Claims?.FirstOrDefault(x => x.Type == ClaimTypes.NameIdentifier)?.Value;
+            var currentSerialNumber = _httpContextAccessor.HttpContext.User?.Claims?.FirstOrDefault(x => x.Type == PublicHelper.SerialNumberClaim)?.Value;
+            var currentUserName = _httpContextAccessor.HttpContext.User?.Claims?.FirstOrDefault(x => x.Type == ClaimTypes.Name)?.Value;
+            var currentUserRole = _httpContextAccessor.HttpContext.User?.Claims?.FirstOrDefault(x => x.Type == ClaimTypes.Role)?.Value;
+
+            var username = await _context.Users
+                    .Where(x => x.SerialNumber == currentSerialNumber && x.UserName == currentUserName
+                    && x.Role == currentUserRole)
+                    .Select(c => c.UserName).FirstOrDefaultAsync();
+
+            if (string.IsNullOrEmpty(username))
+                return (false, username);
+
+            return (true, username);
+        }
+
+
 
         public async Task<AppUser> CheckIsCurrentUserName(string Id)
         {
@@ -107,7 +143,7 @@ namespace Service
             var currentSerialNumber = _httpContextAccessor.HttpContext.User?.Claims?.FirstOrDefault(x => x.Type == PublicHelper.SerialNumberClaim)?.Value;
 
             var user = await _context.Users.Where(x => x.SerialNumber == currentSerialNumber && x.Id == Id)
-                .Include(c => c.UsersDegrees)
+                .Include(c => c.UsersFields)
                 .FirstOrDefaultAsync();
 
             return user;
@@ -198,17 +234,92 @@ namespace Service
 
 
 
-
-        public async Task<ProfileGetDTO> ProfileGet(string username)
+        /// <summary>
+        /// get current user username
+        /// </summary>
+        /// <returns></returns>
+        public async Task<ProfileGetDTO> ProfileGet()
         {
-            if (string.IsNullOrEmpty(username))
+            var currentusername = GetCurrentUserName();
+            if (string.IsNullOrEmpty(currentusername))
                 return null;
             var user = await _context
-                        .Users.Where(c => c.UserName == username)
-                        .Include(c => c.UsersDegrees)
+                        .Users.Where(c => c.UserName == currentusername)
+                        .Include(c => c.UsersFields)
                         .FirstOrDefaultAsync();
             var Profile = _mapper.Map<AppUser, ProfileGetDTO>(user);
             return Profile;
+        }
+
+
+
+
+
+
+
+        /// <summary>
+        /// ولیدیت کردن آبجکت آپدیت پروفابل
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns></returns>
+        public async Task<(bool succsseded, List<string> result)> ValidateUpdateProfile(UpdateProfileDTO model)
+        {
+            bool IsValid = true;
+            List<string> Errors = new List<string>();
+
+            if (model.File != null)
+            {
+                //string uniqueFileName = null;
+                if (!model.File.IsImage())
+                {
+                    IsValid = false;
+                    Errors.Add(_localizerAccount["InValidImageFormat"].Value.ToString());
+                }
+                if (model.File.Length > 5000000)
+                {
+                    IsValid = false;
+                    Errors.Add(_localizerAccount["FileIsTooLarge"].Value.ToString());
+                }
+                //if (model.File.Length > 0)
+                //{
+
+                //    var uploadsFolder = Path.Combine(_hostingEnvironment.WebRootPath, "Upload/User");
+                //    uniqueFileName = (Guid.NewGuid().ToString().GetImgUrlFriendly() + "_" + model.File.FileName);
+                //    string filePath = Path.Combine(uploadsFolder, uniqueFileName);
+
+                //    using (var stream = new FileStream(filePath, FileMode.Create))
+                //    {
+                //        await model.File.CopyToAsync(stream);
+                //    }
+
+                //    //model.Photo.CopyTo(new FileStream(filePath, FileMode.Create));
+
+                //    //Delete LastImage Image
+                //    if (!string.IsNullOrEmpty(model.ImageAddress))
+                //    {
+                //        var LastImagePath = model.ImageAddress.Substring(1);
+                //        LastImagePath = Path.Combine(_hostingEnvironment.WebRootPath, LastImagePath);
+                //        if (System.IO.File.Exists(LastImagePath))
+                //        {
+                //            System.IO.File.Delete(LastImagePath);
+                //        }
+                //    }
+                //    //update Newe Pic Address To database
+                //    model.ImageAddress = "/Upload/User/" + uniqueFileName;
+                //}
+            }
+
+
+            if (model.FieldsId != null)
+            {
+                var res = await _context.FieldTBL.AnyAsync(c => model.FieldsId.Contains(c.Id));
+                if (!res)
+                {
+                    IsValid = false;
+                    Errors.Add($"Some Fields were not found");
+                }
+            }
+            return (IsValid, Errors);
         }
 
 

@@ -7,7 +7,9 @@ import { IntlProviderWrapper } from "./utility/context/Internationalization";
 import { Layout } from "./utility/context/Layout";
 import * as serviceWorker from "./serviceWorker";
 import { store } from "./redux/storeConfig/store";
-import Spinner from "./components/@vuexy/spinner/Fallback-spinner";
+// import Spinner from "./components/@vuexy/spinner/Fallback-spinner";
+import CustomLoader from "./components/@vuexy/spinner/FullPageLoading";
+
 import "./index.scss";
 import "./@fake-db";
 // import "../../assets/scss/plugins/extensions/toastr.scss";
@@ -16,13 +18,12 @@ import { ToastContainer } from "react-toastify";
 
 import "react-toastify/dist/ReactToastify.css";
 const LazyApp = lazy(() => import("./App"));
- 
 
 // configureDatabase()
 
 ReactDOM.render(
   <Provider store={store}>
-    <Suspense fallback={<Spinner />}>
+    <Suspense fallback={<CustomLoader />}>
       <Layout>
         <IntlProviderWrapper>
           <ToastContainer />

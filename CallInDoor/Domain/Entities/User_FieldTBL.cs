@@ -5,8 +5,8 @@ using System.Text;
 
 namespace Domain.Entities
 {
-    [Table("User_Degree_Field")]
-    public class User_Degree_FieldTBL : BaseEntity<int>
+    [Table("User_Field")]
+    public class User_FieldTBL : BaseEntity<int>
     {
 
 
@@ -22,20 +22,20 @@ namespace Domain.Entities
 
 
 
-        public string DegreeName { get; set; }
-        public string DegreePersianName { get; set; }
+        //public string DegreeName { get; set; }
+        //public string DegreePersianName { get; set; }
 
-        public int? DegreeId { get; set; }
+        //public int? DegreeId { get; set; }
 
-        [ForeignKey("DegreeId")]
-        public virtual DegreeTBL DegreeTBL { get; set; }
-
-
+        //[ForeignKey("DegreeId")]
+        //public virtual DegreeTBL DegreeTBL { get; set; }
 
 
 
-        public string FieldName { get; set; }
-        public string FieldPersianName { get; set; }
+
+
+        //public string FieldName { get; set; }
+        //public string FieldPersianName { get; set; }
 
         public int? FieldId { get; set; }
 

@@ -8,18 +8,22 @@ import {
   DropdownMenu,
   DropdownItem,
   DropdownToggle,
-  CardHeader
+  CardHeader,
 } from "reactstrap";
-import { AgGridReact } from "ag-grid-react";
 import { ContextLayout } from "../../../utility/context/Layout";
 import { ChevronDown } from "react-feather";
+
+import { AgGridReact } from "ag-grid-react";
 import "../../../assets/scss/plugins/tables/_agGridStyleOverride.scss";
+
 import { toast } from "react-toastify";
 
-import { NavLink } from 'react-router-dom';
+import { Edit } from "react-feather";
+
+import { NavLink } from "react-router-dom";
 import Spinner from "../../../components/@vuexy/spinner/Loading-spinner";
 import agent from "../../../core/services/agent";
-import { history } from "../../../history"
+import { history } from "../../../history";
 
 class Table extends React.Component {
   state = {
@@ -40,54 +44,69 @@ class Table extends React.Component {
         headerName: "Name",
         field: "name",
         filter: true,
-        width: 220,
       },
       {
         headerName: "PersianName",
         field: "persianName",
         filter: true,
-        width: 220,
       },
       {
         headerName: "Minimm Price For Service($)",
         field: "minPriceForService",
         filter: true,
-        width: 220,
       },
       {
         headerName: "Minimm Session Time(minutes)",
         field: "minSessionTime",
         filter: true,
-        width: 220,
+      },
+      {
+        headerName: "Minimm Price For Native User (For Chat,Voice,video)$ ",
+        field: "acceptedMinPriceForNative",
+        filter: true,
+      },
+      {
+        headerName: "Minimm Price For Non Native User (For Chat,Voice,video)$",
+        field: "acceptedMinPriceForNonNative",
+        filter: true,
       },
       {
         headerName: "Color",
         field: "color",
         filter: true,
-        width: 220
       },
+
       {
         headerName: "status",
         field: "isEnabled",
         filter: true,
-        width: 220,
-        cellRenderer: function (params) {
-          console.log(params)
-          if (!params.data) return 'Disable';
-          return 'Enable'
-        }
+
+        cellRendererFramework: (params) => {
+          console.log(params);
+          return params.value === true ? (
+            <div className="badge badge-pill badge-light-success">Active</div>
+          ) : (
+            <div className="badge badge-pill badge-light-warning">
+              DeActivated
+            </div>
+          );
+        },
       },
       {
         headerName: "",
         field: "id",
         filter: false,
-        width: 250,
-        cellStyle: { "border-width": "0px", outline: 'none' },
-        cellRenderer: function (params) {
-          console.log(params)
-          if (!params.data) return '';
-          return `<a class="btn  btn-success" href="/pages/services/${params.value}">Edit</a> `
-        }
+        cellStyle: { "border-width": "0px", outline: "none" },
+
+        cellRendererFramework: (params) => {
+          return (
+            <Edit
+              className="mr-50"
+              size={15}
+              onClick={() => history.push(`/pages/Services/${params.value}`)}
+            />
+          );
+        },
       },
     ],
   };
@@ -108,9 +127,8 @@ class Table extends React.Component {
 
   GetAllCategory = async (newCategory) => {
     const rowData = [...this.state.rowData, newCategory];
-    this.setState({ rowData })
+    this.setState({ rowData });
   };
-
 
   onGridReady = (params) => {
     this.gridApi = params.api;
@@ -120,6 +138,7 @@ class Table extends React.Component {
       getPageSize: this.gridApi.paginationGetPageSize(),
       totalPages: this.gridApi.paginationGetTotalPages(),
     });
+    params.api.sizeColumnsToFit();
   };
 
   updateSearchQuery = (val) => {
@@ -142,14 +161,12 @@ class Table extends React.Component {
       <React.Fragment>
         <Card className="overflow-hidden agGrid-card">
           <CardHeader>
-
             <Button.Ripple
               color="primary"
               onClick={() => history.push("/pages/Services/Create")}
             >
               Create New Service
             </Button.Ripple>
-
           </CardHeader>
 
           <CardBody className="py-0">
@@ -162,11 +179,11 @@ class Table extends React.Component {
                         {this.gridApi
                           ? this.state.currenPageSize
                           : "" * this.state.getPageSize -
-                          (this.state.getPageSize - 1)}{" "}
+                            (this.state.getPageSize - 1)}{" "}
                         -{" "}
                         {this.state.rowData.length -
                           this.state.currenPageSize * this.state.getPageSize >
-                          0
+                        0
                           ? this.state.currenPageSize * this.state.getPageSize
                           : this.state.rowData.length}
                         of {this.state.rowData.length}
@@ -231,27 +248,26 @@ class Table extends React.Component {
                 {this.state.loading ? (
                   <Spinner></Spinner>
                 ) : (
-                    <ContextLayout.Consumer>
-                      {(context) => (
-                        <AgGridReact
-                          gridOptions={{}}
-                          // rowSelection="multiple"
-                          defaultColDef={defaultColDef}
-                          columnDefs={columnDefs}
-                          rowData={rowData}
-                          onGridReady={this.onGridReady}
-                          colResizeDefault={"shift"}
-                          animateRows={true}
-                          floatingFilter={true}
-                          pagination={true}
-                          paginationPageSize={this.state.paginationPageSize}
-                          pivotPanelShow="always"
-                          enableRtl={context.state.direction === "rtl"}
-
-                        />
-                      )}
-                    </ContextLayout.Consumer>
-                  )}
+                  <ContextLayout.Consumer>
+                    {(context) => (
+                      <AgGridReact
+                        gridOptions={{}}
+                        // rowSelection="multiple"
+                        defaultColDef={defaultColDef}
+                        columnDefs={columnDefs}
+                        rowData={rowData}
+                        onGridReady={this.onGridReady}
+                        colResizeDefault={"shift"}
+                        animateRows={true}
+                        floatingFilter={true}
+                        pagination={true}
+                        paginationPageSize={this.state.paginationPageSize}
+                        pivotPanelShow="always"
+                        enableRtl={context.state.direction === "rtl"}
+                      />
+                    )}
+                  </ContextLayout.Consumer>
+                )}
               </div>
             )}
           </CardBody>

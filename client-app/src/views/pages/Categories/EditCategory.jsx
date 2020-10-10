@@ -8,7 +8,8 @@ import {
   Button,
   Label,
   Alert,
-  Col
+  Col,
+  Spinner
 } from "reactstrap";
 
 import Joi from "joi-browser";
@@ -159,7 +160,7 @@ class EditCategory extends Form {
       const obj = { ...this.state.data, isEnabled: this.state.isEnabled };
       const { data } = await agent.Category.update(obj);
 
-      if (data.result.status){
+      if (data.result.status) {
         toast.success(data.result.message)
       }
     } catch (ex) {
@@ -181,11 +182,11 @@ class EditCategory extends Form {
     }, 800);
   };
 
- 
+
 
 
   render() {
-    const { errorscustom, errorMessage } = this.state
+    const { errorscustom, errorMessage, categories, services } = this.state
 
 
     return (
@@ -211,14 +212,18 @@ class EditCategory extends Form {
             <form onSubmit={this.handleSubmit}>
               {this.renderInput("title", "Title")}
               {this.renderInput("persianTitle", "persianTitle")}
-              {this.renderSelect("parentId", "Parent", this.state.categories.map(item => ({ name: item.title, id: item.id })))}
-              {this.renderSelect("serviceId", "Service", this.state.services)}
+              {/* {this.renderSelect("parentId", "Parent", this.state.categories.map(item => ({ name: item.title, id: item.id })))} */}
+              {this.renderReactSelect("parentId", "Parent", categories.map(item => ({ value: item.id, label: item.title })))}
+
+
+              {/* {this.renderSelect("serviceId", "Service", this.state.services)} */}
+              {this.renderReactSelect("serviceId", "Service", services.map(item => ({ value: item.id, label: item.name })))}
 
               {/* {this.renderCheckBox("isEnabled", "Is Enabled", "checbox")} */}
 
 
               <div className="form-group">
-                <label htmlFor="isEnabled">IsEnabled</label>
+                <label htmlFor="isEnabled">Is Enabled ?</label>
                 <input
                   value={this.state.isEnabled}
                   checked={this.state.isEnabled}
@@ -230,7 +235,16 @@ class EditCategory extends Form {
               </div>
 
 
-              {this.renderButton("Save")}
+
+              {this.state.Loading ?
+                <Button disabled={true} color="primary" className="mb-1">
+                  <Spinner color="white" size="sm" type="grow" />
+                  <span className="ml-50">Loading...</span>
+                </Button>
+                :
+                this.renderButton("Save")
+              }
+
 
               {/* {this.renderSelect("genreId", "Genre", this.state.genres)} */}
               {/* {this.renderInput("numberInStock", "Number in Stock", "number")}

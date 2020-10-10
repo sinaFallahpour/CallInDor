@@ -17,10 +17,14 @@ import "../../../../assets/scss/pages/authentication.scss"
 
 
 import LoginJWT from "./LoginJWT"
+import authService from "../../../../core/services/userService/authService"
+import { history } from "../../../../history"
+
 
 class Login extends React.Component {
   state = {
-    activeTab: "1"
+    activeTab: "1",
+    notload: true
   }
   toggle = tab => {
     if (this.state.activeTab !== tab) {
@@ -29,7 +33,21 @@ class Login extends React.Component {
       })
     }
   }
+
+
+  async componentDidMount() {
+    const isloggedIn = await authService.isAdminLoggedIn();
+
+    if (isloggedIn) {
+      history.push('/')
+    }
+    this.setState({ notload: false })
+  }
+
+
   render() {
+    // if (this.state.notload) return <></>;
+
     return (
       <Row className="m-0 justify-content-center">
         <Col
@@ -51,7 +69,7 @@ class Login extends React.Component {
                 <Card className="rounded-0 mb-0 px-2 login-tabs-container">
                   <CardHeader className="pb-1">
                     <CardTitle>
-                      <h4 className="mb-0">Login</h4>
+                      <h4 className="mb-0 text-center">Login</h4>
                     </CardTitle>
                   </CardHeader>
                   <p className="px-2 auth-title">

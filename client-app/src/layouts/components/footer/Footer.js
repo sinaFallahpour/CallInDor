@@ -33,7 +33,7 @@ const Footer = props => {
       {props.hideScrollToTop === false ? (
         <ScrollToTop showUnder={160}>
           <Button color="primary" className="btn-icon scroll-top">
-            <ArrowUp size={15} />trtrtrt
+            <ArrowUp size={15} />
           </Button>
         </ScrollToTop>
       ) : null}

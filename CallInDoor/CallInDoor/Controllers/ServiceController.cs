@@ -45,7 +45,6 @@ namespace CallInDoor.Controllers
         }
 
         #endregion
-
         #region ServiceType
 
 
@@ -74,6 +73,8 @@ namespace CallInDoor.Controllers
                    c.Color,
                    c.MinPriceForService,
                    c.MinSessionTime,
+                   c.AcceptedMinPriceForNative,
+                   c.AcceptedMinPriceForNonNative,
                    tags = c.Tags.Where(p => p.IsEnglisTags && !string.IsNullOrEmpty(p.TagName)).Select(s => s.TagName).ToList(),
                    persinaTags = c.Tags.Where(p => p.IsEnglisTags == false && !string.IsNullOrEmpty(p.PersianTagName)).Select(s => s.PersianTagName).ToList()
                }).FirstOrDefaultAsync();
@@ -116,6 +117,8 @@ namespace CallInDoor.Controllers
                       c.Name,
                       c.PersianName,
                       c.Color,
+                      c.AcceptedMinPriceForNative,
+                      c.AcceptedMinPriceForNonNative,
                       c.MinSessionTime,
                       c.MinPriceForService
                   }).ToListAsync();
@@ -175,7 +178,6 @@ namespace CallInDoor.Controllers
                     c.IsEnglisTags,
                     c.PersianTagName,
                     c.TagName,
-
                 }).ToList();
 
             return Ok(new ApiOkResponse(new DataFormat()
@@ -216,7 +218,7 @@ namespace CallInDoor.Controllers
                 .Select(c => new
                 {
                     c.MinPriceForService,
-                    c.MinSessionTime
+                    c.MinSessionTime,
                 }).ToList();
 
             return Ok(new ApiOkResponse(new DataFormat()
@@ -318,10 +320,6 @@ namespace CallInDoor.Controllers
             if (!checkToken)
                 return Unauthorized(new ApiResponse(401, PubicMessages.UnAuthorizeMessage));
 
-
-
-
-
             var service = await _servicetypeService.GetByIdWithJoin(model.Id);
             if (service == null)
             {
@@ -351,10 +349,56 @@ namespace CallInDoor.Controllers
 
 
 
-        #endregion 
-
-
+        #endregion
         #region  MyService
+
+
+
+
+
+        /// <summary>
+        /// گرفتن تمام سرویس های من 
+        /// </summary>
+        /// <param name="Id"></param>
+        /// <returns></returns>
+        [HttpGet("GetAllMyService")]
+        [Authorize]
+        public async Task<ActionResult> GetAllMyService(int ServiecTypeId)
+        {
+            var checkToken = await _accountService.CheckTokenIsValid();
+            if (!checkToken)
+                return Unauthorized(new ApiResponse(401, PubicMessages.UnAuthorizeMessage));
+
+            var currentUsername = _accountService.GetCurrentUserName();
+
+            var Service = await _context.BaseMyServiceTBL
+               .AsNoTracking()
+               .Where(c => c.ServiceId == ServiecTypeId && c.UserName == currentUsername)
+               .Select(c => new
+               {
+                   c.Id,
+                   c.ServiceName,
+                   c.ServiceType,
+                   c.IsActive
+               }).ToListAsync();
+
+            if (Service == null)
+                return NotFound(new ApiResponse(404, _localizerShared["NotFound"].Value.ToString()));
+
+            return Ok(new ApiOkResponse(new DataFormat()
+            {
+                Status = 1,
+                data = Service,
+                Message = _localizerShared["SuccessMessage"].Value.ToString()
+            },
+                _localizerShared["SuccessMessage"].Value.ToString()
+            ));
+
+        }
+
+
+
+
 
         /// <summary>
         /// ایجاد  سرویس chat or voice or video  برای یک کاربر 
@@ -365,17 +409,21 @@ namespace CallInDoor.Controllers
         [Authorize]
         public async Task<ActionResult> AddChatServiceForUser([FromBody] AddChatServiceForUsersDTO model)
         {
-
             var checkToken = await _accountService.CheckTokenIsValid();
             if (!checkToken)
                 return Unauthorized(new ApiResponse(401, _localizerShared["UnauthorizedMessage"].Value.ToString()));
-
 
             var res = await _servicetypeService.ValidateChatService(model);
             if (!res.succsseded)
                 return BadRequest(new ApiBadRequestResponse(res.result));
 
 
+            if (model.PackageType == PackageType.Free)
+                model.Duration = null;
+            else
+                model.FreeMessageCount = null;
+
+                 
             var BaseMyService = new BaseMyServiceTBL()
             {
                 ConfirmedServiceType = ConfirmedServiceType.Pending,
@@ -386,6 +434,7 @@ namespace CallInDoor.Controllers
                 ServiceId = model.ServiceId,
                 CatId = model.CatId,
                 SubCatId = model.SubCatId,
+                IsActive = model.IsActive
             };
 
 
@@ -402,7 +451,6 @@ namespace CallInDoor.Controllers
                 //CreateDate = DateTime.Now,
                 //IsCheckedByAdmin = false,
                 //ConfirmedServiceType = ConfirmedServiceType.Rejected,
-
                 BaseMyChatTBL = BaseMyService,
             };
 
@@ -426,8 +474,6 @@ namespace CallInDoor.Controllers
                 return StatusCode(StatusCodes.Status500InternalServerError,
                                 new ApiResponse(500, _localizerShared["InternalServerMessage"].Value.ToString()));
             }
-
-
         }
 
 
@@ -466,6 +512,7 @@ namespace CallInDoor.Controllers
                    c.BaseMyChatTBL.ServiceType,
                    c.BaseMyChatTBL.UserName,
                    c.BaseMyChatTBL.ConfirmedServiceType,
+                   c.BaseMyChatTBL.IsActive
                }).FirstOrDefaultAsync();
 
 
@@ -538,6 +585,7 @@ namespace CallInDoor.Controllers
             serviceFromDB.BaseMyChatTBL.ServiceType = (ServiceType)model.ServiceType;
             serviceFromDB.BaseMyChatTBL.CatId = model.CatId;
             serviceFromDB.BaseMyChatTBL.SubCatId = model.SubCatId;
+            serviceFromDB.BaseMyChatTBL.IsActive = model.IsActive;
 
             serviceFromDB.PackageType = model.PackageType;
             serviceFromDB.BeTranslate = model.BeTranslate;
@@ -604,6 +652,7 @@ namespace CallInDoor.Controllers
                 ServiceId = model.ServiceId,
                 CatId = model.CatId,
                 SubCatId = model.SubCatId,
+                IsActive = model.IsActive
             };
 
 
@@ -688,6 +737,7 @@ namespace CallInDoor.Controllers
                    c.BaseMyChatTBL.ServiceId,
                    c.BaseMyChatTBL.UserName,
                    c.BaseMyChatTBL.ConfirmedServiceType,
+                   c.BaseMyChatTBL.IsActive
                }).FirstOrDefaultAsync();
 
 
@@ -758,6 +808,8 @@ namespace CallInDoor.Controllers
             serviceFromDB.BaseMyChatTBL.ServiceType = (ServiceType)model.ServiceType;
             serviceFromDB.BaseMyChatTBL.CatId = model.CatId;
             serviceFromDB.BaseMyChatTBL.SubCatId = model.SubCatId;
+            serviceFromDB.BaseMyChatTBL.IsActive = model.IsActive;
+
 
             serviceFromDB.Description = model.Description;
             serviceFromDB.BeTranslate = model.BeTranslate;
@@ -768,7 +820,7 @@ namespace CallInDoor.Controllers
             serviceFromDB.HowWorkConducts = model.HowWorkConducts;
             serviceFromDB.DeliveryItems = model.DeliveryItems;
             serviceFromDB.Tags = model.Tags + "," + model.CustomTags;
-          
+
 
             //public string Speciality { get; set; }
             //public string Area { get; set; }
@@ -800,8 +852,5 @@ namespace CallInDoor.Controllers
 
 
         #endregion
-
-
-
     }
 }

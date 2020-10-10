@@ -1,6 +1,6 @@
 import React from "react"
 import { Card, CardHeader, CardTitle, CardBody, Row, Col } from "reactstrap"
-import Select from "react-select"
+import Select from "./Select"
 
 const colourOptions = [
   { value: "ocean", label: "Ocean" },
@@ -69,6 +69,7 @@ class SelectReact extends React.Component {
                 className="React"
                 classNamePrefix="select"
                 defaultValue={colourOptions[3]}
+                components={Select}
                 name="disabled"
                 options={colourOptions}
                 isDisabled={true}

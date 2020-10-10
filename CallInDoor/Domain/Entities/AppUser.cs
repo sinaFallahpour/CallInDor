@@ -34,17 +34,18 @@ namespace Domain.Entities
         /// تاریخ انقضا کد تایید
         /// </summary>
         public DateTime verificationCodeExpireTime { get; set; }
-
-
+        
+        /// <summary>
+        /// کد کشور
+        /// </summary>
+        public string CountryCode { get; set; }
 
 
 
 
         #region  Relation
 
-        public virtual ICollection<User_Degree_FieldTBL> UsersDegrees { get; set; }
-
-
+        public virtual ICollection<User_FieldTBL> UsersFields { get; set; }
 
 
         /// <summary>

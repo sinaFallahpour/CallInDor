@@ -17,10 +17,16 @@ using Service.Interfaces.Category;
 
 namespace CallInDoor.Controllers
 {
+
+
+    /// <summary>
+    /// هم دسته بندی  
+    /// و هم Area
+    /// </summary>
     [Route("api/[controller]")]
     public class CategoryController : ControllerBase
     {
-
+        #region ctor
 
         private readonly DataContext _context;
         private readonly IAccountService _accountService;
@@ -39,6 +45,13 @@ namespace CallInDoor.Controllers
             _categoryService = categoryService;
         }
 
+        #endregion
+
+
+
+        #region Category
+
+        #region GetById
 
         [HttpGet("GetByIdForAdmin")]
         [Authorize(Roles = PublicHelper.ADMINROLE)]
@@ -56,7 +69,7 @@ namespace CallInDoor.Controllers
                 c.ParentId,
                 c.IsEnabled,
                 serviceName = c.Service.Name,
-                serviceId=c.Service.Id
+                serviceId = c.Service.Id
             }).FirstOrDefaultAsync();
 
             if (category == null)
@@ -73,8 +86,9 @@ namespace CallInDoor.Controllers
 
         }
 
+        #endregion
 
-
+        #region GetAllCategoryWithChildren
         // GET: api/ServiceType
         [HttpGet("GetAll")]
         public async Task<ActionResult> GetAllCategoryWithChildren()
@@ -96,9 +110,9 @@ namespace CallInDoor.Controllers
         }
 
 
+        #endregion
 
-
-
+        #region GetAllCateGoryForAdmin
         [HttpGet("GetAllCateGoryForAdmin")]
         [Authorize(Roles = PublicHelper.ADMINROLE)]
         public async Task<ActionResult> GetAllCateGoryForAdmin()
@@ -130,8 +144,9 @@ namespace CallInDoor.Controllers
         }
 
 
+        #endregion
 
-
+        #region Create
 
         /// <summary>
         /// ایجاد   دسته بندی
@@ -154,13 +169,13 @@ namespace CallInDoor.Controllers
             }
 
 
-            var result = await _categoryService.Create(model);
-            if (result)
+            var category = await _categoryService.Create(model);
+            if (category != null)
             {
                 return Ok(new ApiOkResponse(new DataFormat()
                 {
                     Status = 1,
-                    data = new { },
+                    data = category,
                     Message = PubicMessages.SuccessMessage
                 },
                    PubicMessages.SuccessMessage
@@ -173,9 +188,9 @@ namespace CallInDoor.Controllers
 
         }
 
+        #endregion
 
-
-
+        #region  Update
 
         [HttpPut("Update")]
         [Authorize(Roles = PublicHelper.ADMINROLE)]
@@ -212,9 +227,146 @@ namespace CallInDoor.Controllers
 
         }
 
+        #endregion
+
+
+        #endregion
 
 
 
+
+
+        #region Area
+
+
+
+
+        #region GetById
+
+        [HttpGet("/api/Area/GetAreaByIdForAdmin")]
+        [Authorize(Roles = PublicHelper.ADMINROLE)]
+        public async Task<ActionResult> GetAreaByIdForAdmin(int Id)
+        {
+            var checkToken = await _accountService.CheckTokenIsValid();
+            if (!checkToken)
+                return Unauthorized(new ApiResponse(401, PubicMessages.UnAuthorizeMessage));
+
+            var service = await _context.AreaTBL.Where(c => c.Id == Id).Select(c => new
+            {
+                c.Id,
+                c.Title,
+                c.PersianTitle,
+                c.IsEnabled,
+                c.IsProfessional,
+                serviceName = c.Service.Name,
+                serviceId = c.Service.Id,
+                
+                //serviceId = c.Service != null ? c.Service.Id : null
+            }).FirstOrDefaultAsync();
+
+            if (service == null)
+                return NotFound(new ApiResponse(404, PubicMessages.NotFoundMessage));
+
+            return Ok(new ApiOkResponse(new DataFormat()
+            {
+                Status = 1,
+                data = service,
+                Message = PubicMessages.SuccessMessage
+            },
+            PubicMessages.SuccessMessage
+           ));
+
+        }
+
+        #endregion
+
+
+        #region GetAllAreaForAdmin
+
+        [HttpGet("/api/Area/GetAllAreaForAdmin")]
+        [Authorize(Roles = PublicHelper.ADMINROLE)]
+        public async Task<ActionResult> GetAllAreaForAdmin()
+        {
+            var result = await _accountService.CheckTokenIsValid();
+            if (!result)
+                return Unauthorized(new ApiResponse(401, PubicMessages.UnAuthorizeMessage));
+
+            var areas = await _context.AreaTBL
+               .AsNoTracking()
+               .Select(c => new
+               {
+                   c.Id,
+                   c.Title,
+                   c.PersianTitle,
+                   c.IsEnabled,
+                   c.IsProfessional,
+                   serviceName = c.Service.Name,
+
+               }).ToListAsync();
+
+            return Ok(new ApiOkResponse(new DataFormat()
+            {
+                Status = 1,
+                data = areas,
+                Message = PubicMessages.SuccessMessage
+            },
+               PubicMessages.SuccessMessage
+              ));
+        }
+
+
+        #endregion
+
+
+        #region Create
+
+        /// <summary>
+        ///  ایجاد Area
+        /// </summary>
+        /// <param name="CreateCategory"></param>
+        /// <returns></returns>
+        [HttpPost("/api/Area/CreateArea")]
+        [Authorize(Roles = PublicHelper.ADMINROLE)]
+        public async Task<ActionResult> CreateArea([FromBody] CreateAreaDTO model)
+        {
+            var checkToken = await _accountService.CheckTokenIsValid();
+            if (!checkToken)
+                return Unauthorized(new ApiResponse(401, PubicMessages.UnAuthorizeMessage));
+
+
+            //validate
+            var res = await _categoryService.ValidateArea(model);
+            if (!res.succsseded)
+                return BadRequest(new ApiBadRequestResponse(res.result));
+
+            if (!model.IsProfessional)
+                model.Specialities = null;
+
+
+            var Area = await _categoryService.CreateArea(model);
+            if (Area != null)
+            {
+                return Ok(new ApiOkResponse(new DataFormat()
+                {
+                    Status = 1,
+                    data = Area,
+                    Message = PubicMessages.SuccessMessage
+                },
+                   PubicMessages.SuccessMessage
+                  ));
+            }
+
+            return StatusCode(StatusCodes.Status500InternalServerError,
+              new ApiResponse(500, PubicMessages.InternalServerMessage)
+            );
+        }
+
+        #endregion
+
+
+
+
+        #endregion
 
     }
 }

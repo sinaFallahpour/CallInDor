@@ -112,7 +112,8 @@ namespace CallInDoor.Controllers
                 PhoneNumber = model.CountryCode.ToString() + model.PhoneNumber.Trim(),
                 Role = PublicHelper.USERROLE,
                 verificationCode = code,
-                verificationCodeExpireTime = DateTime.UtcNow.AddMinutes(3)
+                verificationCodeExpireTime = DateTime.UtcNow.AddMinutes(3),
+                CountryCode = model.CountryCode
             };
 
             var result = await _userManager.CreateAsync(newUser, model.Password);
@@ -245,6 +246,33 @@ namespace CallInDoor.Controllers
         #endregion
 
 
+        #region IsAdminLoggedIn
+
+        [HttpGet("IsAdminLoggedIn")]
+        public async Task<ActionResult<User>> IsAdminLoggedIn()
+        {
+
+            var result = await _accountService.CheckTokenIsValidForAdminRole();
+            if (!result.status)
+                return Unauthorized(new ApiResponse(401, "Unauthorize."));
+
+
+            return Ok(new ApiOkResponse(new DataFormat()
+            {
+                Status = 1,
+                data = result.username,
+                Message = PubicMessages.SuccessMessage
+            },
+                PubicMessages.SuccessMessage
+           ));
+
+
+
+        }
+
+        #endregion
+
+
         #region  veryfication code
 
         [AllowAnonymous]
@@ -361,7 +389,7 @@ namespace CallInDoor.Controllers
                 return Unauthorized(new ApiResponse(401, _localizerShared["ConfirmPhoneMessage"].Value.ToString()));
             }
 
-        
+
             var newpass = 8.RandomString();
 
             string resetToken = await _userManager.GeneratePasswordResetTokenAsync(user);
@@ -369,7 +397,7 @@ namespace CallInDoor.Controllers
             if (passwordChangeResult.Succeeded)
             {
                 //send Password to user
-               
+
 
                 return Ok(new ApiOkResponse(new DataFormat()
                 {

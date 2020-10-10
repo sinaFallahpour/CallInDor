@@ -13,7 +13,6 @@ namespace Domain
 
         public DataContext(DbContextOptions<DataContext> options) : base(options)
         {
-
         }
 
         //protected override void OnModelCreating(ModelBuilder builder)
@@ -65,9 +64,26 @@ namespace Domain
 
 
         /// <summary>
-        ///مدرک ها   
+        /// حوضه تخصصی هر یک از حوضه ها
         /// </summary>
-        public DbSet<DegreeTBL> DegreeTBL { get; set; }
+        public DbSet<AreaTBL> AreaTBL { get; set; }
+
+
+
+
+        /// <summary>
+        ///  تخصص های هر Area  
+        /// </summary>
+        public DbSet<SpecialityTBL> SpecialityTBL { get; set; }
+
+        
+
+
+
+        ///// <summary>
+        /////مدرک ها   
+        ///// </summary>
+        //public DbSet<DegreeTBL> DegreeTBL { get; set; }
 
 
         /// <summary>
@@ -80,7 +96,7 @@ namespace Domain
         /// <summary>
         ///کاربر مدرک رشته تحصیلی
         /// </summary>
-        public DbSet<User_Degree_FieldTBL> UserDegreeField { get; set; }
+        public DbSet<User_FieldTBL> UserField { get; set; }
 
 
 
@@ -106,6 +122,8 @@ namespace Domain
         public DbSet<MyServiceServiceTBL> MyServiceServiceTBL { get; set; }
 
 
+
+        public DbSet<Test> Tests { get; set; }
 
 
     }

@@ -63,7 +63,7 @@ const ServiceTypes = {
   GetAll: () => requests.get("/ServiceType/GetAllServiceForAdmin"),
   details: (id) => requests.get(`/ServiceType/GetServiceByIdForAdmin?id=${id}`),
   create: (service) => requests.post("/ServiceType/CreateForAdmin", service),
-  update: (activity) => requests.put("/ServiceType/UpdateServiceForAdmin", activity),
+  update: (activity) => requests.put("/ServiceType/UpdateServiceForAdmin", activity)
   // delete: (id) => requests.del(`/activities/${id}`)
 };
 
@@ -82,8 +82,27 @@ const Category = {
   // delete: (id) => requests.del(`/activities/${id}`)
 };
 
+const Areas = {
+  // list: () => requests.get("/category/getAll"),
+  list: () => requests.get("/Area/GetAllAreaForAdmin"),
+  details: (id) => requests.get(`/Area/GetAreaByIdForAdmin?id=${id}`),
+  // create: (area) => requests.post("/Category/Create", area),
+  // update: (area) => requests.put("/api/Area/CreateArea", area)
+  // delete: (id) => requests.del(`/activities/${id}`)
+};
+
+const Test = {
+  list: (params) => requests.get(`/Test/Index?${params}`),
+  details: (id) => requests.get(`/Test/getById?${id}`),
+  create: (test) => requests.post("/Test/Create", test),
+  update: (test) => requests.put("/Test/Update", test),
+  delete: (id) => requests.del("/Test/Index", id),
+};
+
 export default {
   User,
   Category,
-  ServiceTypes
+  ServiceTypes,
+  Test,
+  Areas
 };

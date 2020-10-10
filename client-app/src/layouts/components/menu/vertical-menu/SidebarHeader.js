@@ -1,7 +1,7 @@
-import React, { Component } from "react"
-import { NavLink } from "react-router-dom"
-import { Disc, X, Circle } from "react-feather"
-import classnames from "classnames"
+import React, { Component } from "react";
+import { NavLink } from "react-router-dom";
+import { Disc, X, Circle } from "react-feather";
+import classnames from "classnames";
 class SidebarHeader extends Component {
   render() {
     let {
@@ -11,14 +11,14 @@ class SidebarHeader extends Component {
       toggle,
       sidebarVisibility,
       menuShadow
-    } = this.props
+    } = this.props;
     return (
       <div className="navbar-header">
         <ul className="nav navbar-nav flex-row">
           <li className="nav-item mr-auto">
             <NavLink to="/" className="navbar-brand">
               <div className="brand-logo" />
-              <h2 className="brand-text mb-0">Vuexy</h2>
+              <h2 className="brand-text mb-0">Call In Door</h2>
             </NavLink>
           </li>
           <li className="nav-item nav-toggle">
@@ -26,8 +26,8 @@ class SidebarHeader extends Component {
               {collapsed === false ? (
                 <Disc
                   onClick={() => {
-                    toggleSidebarMenu(true)
-                    toggle()
+                    toggleSidebarMenu(true);
+                    toggle();
                   }}
                   className={classnames(
                     "toggle-icon icon-x d-none d-xl-block font-medium-4",
@@ -37,7 +37,7 @@ class SidebarHeader extends Component {
                       "text-danger": activeTheme === "danger",
                       "text-info": activeTheme === "info",
                       "text-warning": activeTheme === "warning",
-                      "text-dark": activeTheme === "dark"
+                      "text-dark": activeTheme === "dark",
                     }
                   )}
                   size={20}
@@ -46,8 +46,8 @@ class SidebarHeader extends Component {
               ) : (
                 <Circle
                   onClick={() => {
-                    toggleSidebarMenu(false)
-                    toggle()
+                    toggleSidebarMenu(false);
+                    toggle();
                   }}
                   className={classnames(
                     "toggle-icon icon-x d-none d-xl-block font-medium-4",
@@ -57,7 +57,7 @@ class SidebarHeader extends Component {
                       "text-danger": activeTheme === "danger",
                       "text-info": activeTheme === "info",
                       "text-warning": activeTheme === "warning",
-                      "text-dark": activeTheme === "dark"
+                      "text-dark": activeTheme === "dark",
                     }
                   )}
                   size={20}
@@ -73,7 +73,7 @@ class SidebarHeader extends Component {
                     "text-danger": activeTheme === "danger",
                     "text-info": activeTheme === "info",
                     "text-warning": activeTheme === "warning",
-                    "text-dark": activeTheme === "dark"
+                    "text-dark": activeTheme === "dark",
                   }
                 )}
                 size={20}
@@ -83,12 +83,12 @@ class SidebarHeader extends Component {
         </ul>
         <div
           className={classnames("shadow-bottom", {
-            "d-none": menuShadow === false
+            "d-none": menuShadow === false,
           })}
         />
       </div>
-    )
+    );
   }
 }
 
-export default SidebarHeader
+export default SidebarHeader;

@@ -232,4 +232,4 @@ class SelectOptions extends React.Component {
     )
   }
 }
-export default SelectOptions
+export default SelectOptions;

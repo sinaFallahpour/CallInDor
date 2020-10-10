@@ -45,7 +45,7 @@ namespace Domain.DTO.Account
         /// حداقل فیمت برای برای  سرویس  تایپ هایی  از نوع سرویس
         /// </summary>
         [Required(ErrorMessage = "{0} is resquired")]
-        [Range(1, 1000000000000, ErrorMessage = "The  {0} should be between {1} and {2}")]
+        [Range(1, double.MaxValue, ErrorMessage = "The  {0} should be between {1} and {2}")]
         [Display(Name = "Minimm Price For Service")]
         public double MinPriceForService { get; set; }
 
@@ -56,9 +56,37 @@ namespace Domain.DTO.Account
         /// حداقل زمان برای سرویس های Voice//VideCall//voiceCall
         /// </summary>
         [Required(ErrorMessage = "{0} is resquired")]
-        [Range(1, 10000000, ErrorMessage = "The  {0} should be between {1} and {2} minutes")]
+        [Range(1, double.MaxValue, ErrorMessage = "The  {0} should be between {1} and {2} minutes")]
         [Display(Name = "Minimm Session Time")]
         public double MinSessionTime { get; set; }
+
+
+
+
+
+
+        /// <summary>
+        /// حداقل قیمت مجاز برای کاربران تیتیو برای سرویس های چت یا وویس یا ویدیو
+        /// </summary>
+        [Required(ErrorMessage = "{0} is resquired")]
+        [Range(1, double.MaxValue, ErrorMessage = "The  {0} should be between {1} and {2}  ")]
+        [Display(Name = "Accepted Minimm Price For Native user")]
+        public double AcceptedMinPriceForNative { get; set; }
+
+
+
+
+
+
+        /// <summary>
+        /// حداقل قیمت مجاز برای کاربران غیر تیتیو برای سرویس های چت یا وویس یا ویدیو
+        /// </summary>
+        [Required(ErrorMessage = "{0} is resquired")]
+        [Range(1, double.MaxValue, ErrorMessage = "The  {0} should be between {1} and {2}  ")]
+        [Display(Name = "Accepted Minimm Price For Non Native user")]
+        public double AcceptedMinPriceForNonNative { get; set; }
+
+
 
 
 

@@ -27,5 +27,37 @@ namespace Domain.DTO.Service
         public bool IsEnabled { get; set; }
 
 
+
+
+
+        /// <summary>
+        /// /حداقل فیمت برای برای  سرویس  تایپ هایی  از نوع سرویس
+        /// </summary>
+        public double MinPriceForService { get; set; }
+
+
+
+
+        /// <summary>
+        /// حداقل زمان برای سرویس های Voice//VideCall//voiceCall
+        /// </summary>
+        public double MinSessionTime { get; set; }
+
+
+        /// <summary>
+        /// حداقل قیمت مجاز برای کاربران تیتیو برای سرویس های چت یا وویس یا ویدیو
+        /// </summary>
+        public double AcceptedMinPriceForNative { get; set; }
+
+        /// <summary>
+        /// حداقل قیمت مجاز برای کاربران غیر تیتیو برای سرویس های چت یا وویس یا ویدیو
+        /// </summary>
+        public double AcceptedMinPriceForNonNative { get; set; }
+
+      
+ 
+
+
+
     }
 }

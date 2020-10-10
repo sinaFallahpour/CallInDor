@@ -3,11 +3,13 @@ using Domain.DTO.Account;
 using Domain.DTO.Service;
 using Domain.Entities;
 using Domain.Enums;
+using Domain.Utilities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Localization;
 using Service.Interfaces.ServiceType;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -56,7 +58,7 @@ namespace Service
 
 
         /// <summary>
-        /// get All services
+        /// get All servicesType
         /// </summary>
         public Task<List<ListServiceDTO>> GetAllActiveService()
         {
@@ -69,6 +71,10 @@ namespace Service
                     IsEnabled = c.IsEnabled,
                     Name = c.Name,
                     PersianName = c.PersianName,
+                    AcceptedMinPriceForNative = c.AcceptedMinPriceForNative,
+                    AcceptedMinPriceForNonNative = c.AcceptedMinPriceForNonNative,
+                    MinPriceForService = c.MinPriceForService,
+                    MinSessionTime = c.MinSessionTime,
                 }).ToListAsync();
         }
 
@@ -93,6 +99,8 @@ namespace Service
                 PersianName = model.PersianName,
                 MinPriceForService = model.MinPriceForService,
                 MinSessionTime = model.MinSessionTime,
+                AcceptedMinPriceForNative = model.AcceptedMinPriceForNative,
+                AcceptedMinPriceForNonNative = model.AcceptedMinPriceForNonNative
             };
 
             var servicetags = new List<ServiceTagsTBL>();
@@ -168,8 +176,8 @@ namespace Service
                 serviceFromDB.Color = model.Color;
                 serviceFromDB.MinPriceForService = model.MinPriceForService;
                 serviceFromDB.MinSessionTime = model.MinSessionTime;
-
-
+                serviceFromDB.AcceptedMinPriceForNative = model.AcceptedMinPriceForNative;
+                serviceFromDB.AcceptedMinPriceForNonNative = model.AcceptedMinPriceForNonNative;
                 //serviceFromDB.Tags.Clear();
 
                 var servicetags = new List<ServiceTagsTBL>();
@@ -254,19 +262,75 @@ namespace Service
             if (!IsInPackage)
             {
                 IsValid = false;
-                Errors.Add($"package Type Not Exist");
+                Errors.Add(_localizer["package Type Not Exist"].Value.ToString());
+            }
+            if (model.PackageType == PackageType.Free)
+            {
+                if (model.FreeMessageCount == null || model.FreeMessageCount == 0)
+                {
+                    IsValid = false;
+                    Errors.Add(_localizer["FreeMessageCount is Required"].Value.ToString());
+                }
+            }
+            else
+            {
+                if (model.Duration == null || model.Duration == 0)
+                {
+                    IsValid = false;
+                    Errors.Add(_localizer["Duration is Required"].Value.ToString());
+                }
             }
             var IsInServiceType = Enum.IsDefined(typeof(ServiceType), model.ServiceType);
             if (!IsInServiceType)
             {
                 IsValid = false;
-                Errors.Add($"service Type Not Exist");
+                Errors.Add(_localizer["service Type Not Exist"].Value.ToString());
             }
             if (model.ServiceType == ServiceType.Service || model.ServiceType == ServiceType.Course)
             {
                 IsValid = false;
-                Errors.Add($"Invalid ServiceType Type");
+                Errors.Add(_localizer["Invalid ServiceType Type"].Value.ToString());
             }
+
+
+
+
+
+            //validate serviceTypes
+            var serviceFromDb = await _context
+            .ServiceTBL
+            .Where(c => c.Id == model.ServiceId)
+            .Select(c => new { c.Id, c.AcceptedMinPriceForNative, c.AcceptedMinPriceForNonNative, c.Name })
+            .FirstOrDefaultAsync();
+
+            if (serviceFromDb == null)
+            {
+                IsValid = false;
+                Errors.Add(_localizer["service Not Exist"].Value.ToString());
+            }
+
+            else if (model.PriceForNativeCustomer < serviceFromDb.AcceptedMinPriceForNative)
+            {
+                string err = "";
+                if (IsPersianLanguage())
+                    err = $"قیمت برای کاربران بومی باید بیشتر از {serviceFromDb.AcceptedMinPriceForNative} باشد";
+                else
+                    err = string.Format($"Price For Native Customer must be more than {serviceFromDb.AcceptedMinPriceForNative}");
+                IsValid = false;
+                Errors.Add(err);
+            }
+            if (serviceFromDb != null)
+                if (model.PriceForNonNativeCustomer < serviceFromDb.AcceptedMinPriceForNonNative)
+                {
+                    string err = "";
+                    if (IsPersianLanguage())
+                        err = $"قیمت برای کاربران غیر بومی باید بیشتر از {serviceFromDb.AcceptedMinPriceForNonNative} باشد";
+                    else
+                        err = string.Format($"Price For Native Customer must be more than {serviceFromDb.AcceptedMinPriceForNonNative}");
+                    //err = _localizer[string.Format("{0} must be more than {1}", "Price For Non Native Customer", serviceFromDb.AcceptedMinPriceForNonNative)].Value.ToString();
+                    IsValid = false;
+                    Errors.Add(err);
+                }
 
 
             if (model.CatId != null)
@@ -279,7 +343,6 @@ namespace Service
                         c.Id,
                         SubCatIds = c.Children.Select(r => r.Id).ToList()
                     }).FirstOrDefaultAsync();
-
 
                 if (cats == null)
                 {
@@ -301,30 +364,35 @@ namespace Service
                 }
             }
 
+
             if (model.CatId == null)
             {
                 IsValid = false;
-                Errors.Add($"Please Select Category");
+                Errors.Add(_localizer["Category Is Required"].Value.ToString());
             }
 
-
-
-            var IsServiceExist = _context.ServiceTBL.Any(c => c.Id == model.ServiceId);
-            if (!IsServiceExist)
-            {
-                IsValid = false;
-                Errors.Add($"service Not Exist");
-            }
 
             var isUserExist = await _context.Users.AnyAsync(c => c.UserName == model.UserName);
             if (!isUserExist)
             {
+                string err = "";
+
+
+                if (IsPersianLanguage())
+                    err = string.Format("کاربری با نام کاربری {0} یافت نشد", model.UserName);
+                else
+                    err = string.Format("No user with the name {0} was found", model.UserName);
                 IsValid = false;
-                Errors.Add($"No user with the name {model.UserName} was found");
+                Errors.Add(err);
+
             }
 
             return (IsValid, Errors);
         }
+
+
+
+
 
 
 
@@ -348,14 +416,14 @@ namespace Service
             if (!IsInServiceType)
             {
                 IsValid = false;
-                Errors.Add($"service Type Not Exist");
+                Errors.Add(_localizer["service Type Not Exist"].Value.ToString());
             }
             if (model.ServiceType != ServiceType.Service)
             {
                 IsValid = false;
-                Errors.Add($"Invalid ServiceType Type");
+                //Errors.Add($"Invalid ServiceType Type");
+                Errors.Add(_localizer["Invalid ServiceType Type"].Value.ToString());
             }
-
 
             //validate serviceTypes
             var serviceFromDb = await _context
@@ -367,16 +435,19 @@ namespace Service
             if (serviceFromDb == null)
             {
                 IsValid = false;
-                Errors.Add($"service Not Exist");
+                Errors.Add(_localizer["service Not Exist"].Value.ToString());
             }
             else if (model.Price < serviceFromDb.MinPriceForService)
             {
-                var err = _localizer[string.Format("{0} must be more than {1}", "price", serviceFromDb.MinPriceForService)].Value.ToString();
-
+                string err = "";
+                if (IsPersianLanguage())
+                    err = $"قیمت باید بیشتر از {serviceFromDb.MinPriceForService} باشد";
+                else
+                    err = string.Format($"Price must be more than {serviceFromDb.MinPriceForService}");
                 IsValid = false;
                 Errors.Add(err);
             }
-         
+
 
             if (model.CatId != null)
             {
@@ -422,21 +493,41 @@ namespace Service
             if (model.CatId == null)
             {
                 IsValid = false;
-                Errors.Add($"Please Select Category");
+                Errors.Add(_localizer["Category Is Required"].Value.ToString());
             }
-
 
 
 
             var isUserExist = await _context.Users.AnyAsync(c => c.UserName == model.UserName);
             if (!isUserExist)
             {
+                string err = "";
+                if (IsPersianLanguage())
+                    err = string.Format("کاربری با نام کاربری {0} یافت نشد", model.UserName);
+                else
+                    err = string.Format("No user with the name {0} was found", model.UserName);
                 IsValid = false;
-                Errors.Add($"No user with the name {model.UserName} was found");
+                Errors.Add(err);
+
+
+
+
+                //IsValid = false;
+                //Errors.Add($"No user with the name {model.UserName} was found");
             }
 
             return (IsValid, Errors);
         }
+
+
+
+        public bool IsPersianLanguage()
+        {
+            if (CultureInfo.CurrentCulture.Name == PublicHelper.persianCultureName)
+                return true;
+            return false;
+        }
+
 
 
     }

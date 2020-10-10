@@ -46,10 +46,17 @@ namespace Domain.Entities
         /// حداقل زمان برای سرویس های Voice//VideCall//voiceCall
         /// </summary>
         public double MinSessionTime { get; set; }
+        
 
+        /// <summary>
+        /// حداقل قیمت مجاز برای کاربران تیتیو برای سرویس های چت یا وویس یا ویدیو
+        /// </summary>
+        public double AcceptedMinPriceForNative { get; set; }
 
-
-
+        /// <summary>
+        /// حداقل قیمت مجاز برای کاربران غیر تیتیو برای سرویس های چت یا وویس یا ویدیو
+        /// </summary>
+        public double AcceptedMinPriceForNonNative { get; set; }
 
         /// <summary>
         /// آیا فعال است
@@ -65,7 +72,6 @@ namespace Domain.Entities
         public virtual ICollection<CategoryTBL> Categories { get; set; }
 
         public virtual ICollection<ServiceTagsTBL> Tags { get; set; }
-
 
         public virtual ICollection<BaseMyServiceTBL> BaseMyServices { get; set; }
         #endregion 

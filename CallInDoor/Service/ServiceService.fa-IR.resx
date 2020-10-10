@@ -117,6 +117,30 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="Category Is Required" xml:space="preserve">
+    <value>دسته بندی الزامیست</value>
+  </data>
+  <data name="Duration is Required" xml:space="preserve">
+    <value>زمان جلسه الزامیست</value>
+  </data>
+  <data name="FreeMessageCount is Required" xml:space="preserve">
+    <value>تعداد پیام های رایگان الزامیست</value>
+  </data>
+  <data name="Invalid ServiceType Type" xml:space="preserve">
+    <value>نوع سرویس نامعتبر است</value>
+  </data>
+  <data name="No user with the name {0} was found" xml:space="preserve">
+    <value>کاربری با نام کاربری {0} یافت نشد</value>
+  </data>
+  <data name="package Type Not Exist" xml:space="preserve">
+    <value>پکیج نا معتبر است</value>
+  </data>
+  <data name="service Not Exist" xml:space="preserve">
+    <value>سرویس یافت نشد</value>
+  </data>
+  <data name="service Type Not Exist" xml:space="preserve">
+    <value>نوع سرویس نامعتبر است</value>
+  </data>
   <data name="{0} must be more than {1}" xml:space="preserve">
     <value>{0} باید بیش تر از {1} باشد</value>
   </data>

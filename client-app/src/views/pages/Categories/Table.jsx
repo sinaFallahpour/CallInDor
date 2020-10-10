@@ -13,11 +13,7 @@ import {
 import { AgGridReact } from "ag-grid-react";
 import { ContextLayout } from "../../../utility/context/Layout";
 
-import {
-  Edit,
-  Trash2,
-  ChevronDown,
-} from "react-feather"
+import { Edit, Trash2, ChevronDown } from "react-feather";
 import "../../../assets/scss/plugins/tables/_agGridStyleOverride.scss";
 import { toast } from "react-toastify";
 
@@ -38,6 +34,7 @@ class Table extends React.Component {
     currenPageSize: "",
     getPageSize: "",
     defaultColDef: {
+      // minWidth: 600,
       sortable: true,
       editable: false,
       resizable: true,
@@ -58,19 +55,19 @@ class Table extends React.Component {
         headerName: "Title",
         field: "title",
         filter: true,
-        width: 200,
+        // width: 200,
       },
       {
         headerName: "PersianTitle",
         field: "persianTitle",
         filter: true,
-        width: 200,
+        // width: 200,
       },
       {
         headerName: "Parent Name ",
         field: "parentName",
         filter: true,
-        width: 200,
+        // width: 200,
 
         cellRenderer: function (params) {
           if (!params.data) return "";
@@ -82,13 +79,29 @@ class Table extends React.Component {
         headerName: "ServiceName",
         field: "serviceName",
         filter: true,
-        width: 200,
+        // width: 200,
       },
+      {
+        headerName: "status",
+        field: "isEnabled",
+        filter: true,
+        cellRendererFramework: (params) => {
+          console.log(params);
+          return params.value === true ? (
+            <div className="badge badge-pill badge-light-success">Active</div>
+          ) : (
+              <div className="badge badge-pill badge-light-warning">
+                DeActivated
+              </div>
+            );
+        },
+      },
+
       {
         headerName: "",
         field: "id",
         filter: false,
-        width: 210,
+        // width: 210,
         cellStyle: { "border-width": "0px", outline: "none" },
         cellRendererFramework: (params) => {
           return (
@@ -137,6 +150,7 @@ class Table extends React.Component {
       getPageSize: this.gridApi.paginationGetPageSize(),
       totalPages: this.gridApi.paginationGetTotalPages(),
     });
+    params.api.sizeColumnsToFit();
   };
 
   updateSearchQuery = (val) => {
@@ -171,11 +185,11 @@ class Table extends React.Component {
                         {this.gridApi
                           ? this.state.currenPageSize
                           : "" * this.state.getPageSize -
-                            (this.state.getPageSize - 1)}{" "}
+                          (this.state.getPageSize - 1)}{" "}
                         -{" "}
                         {this.state.rowData.length -
                           this.state.currenPageSize * this.state.getPageSize >
-                        0
+                          0
                           ? this.state.currenPageSize * this.state.getPageSize
                           : this.state.rowData.length}{" "}
                         of {this.state.rowData.length}
@@ -240,26 +254,26 @@ class Table extends React.Component {
                 {this.state.loading ? (
                   <Spinner></Spinner>
                 ) : (
-                  <ContextLayout.Consumer>
-                    {(context) => (
-                      <AgGridReact
-                        gridOptions={{}}
-                        // rowSelection="multiple"
-                        defaultColDef={defaultColDef}
-                        columnDefs={columnDefs}
-                        rowData={rowData}
-                        onGridReady={this.onGridReady}
-                        colResizeDefault={"shift"}
-                        animateRows={true}
-                        floatingFilter={true}
-                        pagination={true}
-                        paginationPageSize={this.state.paginationPageSize}
-                        pivotPanelShow="always"
-                        enableRtl={context.state.direction === "rtl"}
-                      />
-                    )}
-                  </ContextLayout.Consumer>
-                )}
+                    <ContextLayout.Consumer>
+                      {(context) => (
+                        <AgGridReact
+                          gridOptions={{}}
+                          // rowSelection="multiple"
+                          defaultColDef={defaultColDef}
+                          columnDefs={columnDefs}
+                          rowData={rowData}
+                          onGridReady={this.onGridReady}
+                          colResizeDefault={"shift"}
+                          animateRows={true}
+                          floatingFilter={true}
+                          pagination={true}
+                          paginationPageSize={this.state.paginationPageSize}
+                          pivotPanelShow="always"
+                          enableRtl={context.state.direction === "rtl"}
+                        />
+                      )}
+                    </ContextLayout.Consumer>
+                  )}
               </div>
             )}
           </CardBody>

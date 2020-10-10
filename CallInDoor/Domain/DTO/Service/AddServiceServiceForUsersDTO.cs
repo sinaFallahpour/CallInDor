@@ -34,6 +34,10 @@ namespace Domain.DTO.Service
         [Display(Name = "ServiceType")]
         public ServiceType? ServiceType { get; set; }
 
+
+
+        public bool IsActive { get; set; }
+      
         #endregion
 
 

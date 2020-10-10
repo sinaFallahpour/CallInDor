@@ -61,7 +61,7 @@ class UsersList extends React.Component {
         headerCheckboxSelection: true
       },
       {
-        headerName: "Username",
+        headerName: "Username asdaa aseqasd deads",
         field: "username",
         filter: true,
         width: 250,
@@ -182,8 +182,13 @@ class UsersList extends React.Component {
 
   onGridReady = params => {
     this.gridApi = params.api
-    this.gridColumnApi = params.columnApi
+    this.gridColumnApi = params.columnApi;
+    this.filterSize = params.api.sizeColumnsToFit();
+
   }
+
+
+
 
   filterData = (column, val) => {
     var filter = this.gridApi.getFilterInstance(column)
@@ -293,8 +298,8 @@ class UsersList extends React.Component {
                 {this.state.reload ? (
                   <Spinner color="primary" className="reload-spinner" />
                 ) : (
-                  ""
-                )}
+                    ""
+                  )}
                 <Row>
                   <Col lg="3" md="6" sm="12">
                     <FormGroup className="mb-0">

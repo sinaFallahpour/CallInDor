@@ -42,6 +42,12 @@ namespace Domain.Entities
 
 
         /// <summary>
+        /// زمان جلسه
+        ///اگر آزاد نبود  این مقدار کیگیرد  
+        /// </summary>
+        public int Duration { get; set; }
+
+        /// <summary>
         /// اگر  این را تیک زد باید تا 8 ساعت بعد از درخواست کاربر 
         /// به او پاسخ دهد در غیر این صورت جریمه میشود
         /// </summary>

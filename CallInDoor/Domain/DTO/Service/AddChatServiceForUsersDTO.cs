@@ -41,11 +41,18 @@ namespace Domain.DTO.Service
         /// <summary>
         /// تعداد مسیج هایی  رایگانی که برای مشتری در نظر میگیرد
         /// </summary>
-        [Required(ErrorMessage = "{0} is  Required")]
+        //[Required(ErrorMessage = "{0} is  Required")]
         [Range(0, int.MaxValue, ErrorMessage = "The  {0} should be between {1} and {2}")]
         [Display(Name = "FreeMessageCount")]
         public int? FreeMessageCount { get; set; }
 
+
+        /// <summary>
+        /// برحسب دقیقه
+        /// </summary>
+        [Range(0, int.MaxValue, ErrorMessage = "The  {0} should be between {1} and {2}")]
+        [Display(Name = "Duration")]
+        public int? Duration { get; set; }
 
         /// <summary>
         /// اگر  این را تیک زد باید تا 8 ساعت بعد از درخواست کاربر 
@@ -60,6 +67,7 @@ namespace Domain.DTO.Service
         /// قیمت برای کاربران محلی یا هم کشور
         /// </summary>
         [Required(ErrorMessage = "{0} is  Required")]
+        [Range(0, double.MaxValue, ErrorMessage = "The  {0} should be between {1} and {2}")]
         [Display(Name = "PriceForNativeCustomer")]
         public double? PriceForNativeCustomer { get; set; }
 
@@ -68,15 +76,19 @@ namespace Domain.DTO.Service
         /// قیمت برای کاربران غیر محلی یاغیر  هم کشور
         /// </summary>
         [Required(ErrorMessage = "{0} is  Required")]
-        [Range(0, int.MaxValue, ErrorMessage = "")]
+        //[Range(0, double.MaxValue, ErrorMessage = "The  {0} should be between {1} and {2}")]
+        [Range(0, double.MaxValue, ErrorMessage = "The {0} should be between {1} and {2}")]
         [Display(Name = "PriceForNonNativeCustomer")]
         public double? PriceForNonNativeCustomer { get; set; }
 
 
+
+        public bool IsActive { get; set; }
+
         #region  دیفالت بین همشونه
 
 
-     
+
 
         /// <summary>
         /// vide or chat or seice or course ,...

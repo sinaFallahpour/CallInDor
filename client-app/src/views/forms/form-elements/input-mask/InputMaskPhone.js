@@ -1,5 +1,5 @@
-import React from "react"
-import InputMask from "react-input-mask"
+import React from "react";
+import InputMask from "react-input-mask";
 
 const InputMaskPhone = () => {
   return (

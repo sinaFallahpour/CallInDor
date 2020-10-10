@@ -5,17 +5,17 @@ const navigationConfig = [
     type: "groupHeader",
     groupTitle: "APPS"
   },
-  {
-    id: "Categories",
-    title: "Categories",
-    type: "item",
-    icon: <Icon.Home size={20} />,
-    navLink: "/pages/categories",
-    parentOf: [
-      "/pages/categories",
-      "/pages/category/:id"
-    ]
-  },
+  // {
+  //   id: "Categories",
+  //   title: "Categories",
+  //   type: "item",
+  //   icon: <Icon.Home size={20} />,
+  //   navLink: "/pages/categories",
+  //   parentOf: [
+  //     "/pages/categories",
+  //     "/pages/category/:id"
+  //   ]
+  // },
   {
     id: "Services",
     title: "Services",
@@ -28,6 +28,50 @@ const navigationConfig = [
       "/pages/Services/:id"
     ]
   },
+  {
+    id: "categories",
+    title: "categories",
+    type: "collapse",
+    icon: <Icon.Database size={20} />,
+    children: [
+      {
+        id: "Categories",
+        title: "Categories",
+        type: "item",
+        icon: <Icon.Circle size={12} />,
+        // permissions: ["admin", "editor"],
+        navLink: "/pages/categories",
+        parentOf: [
+          "/pages/categories",
+          "/pages/category/:id"
+        ]
+      },
+      {
+        id: "Areas",
+        title: "Areas",
+        type: "item",
+        icon: <Icon.Circle size={12} />,
+        permissions: ["admin", "editor"],
+        navLink: "/pages/areas",
+        parentOf: [
+          "/pages/areas",
+          "/pages/areas/:id"
+        ]
+      }
+    ]
+  },
+
+  {
+    id: "Test",
+    title: "test",
+    type: "item",
+    icon: <Icon.Tablet size={20} />,
+    navLink: "/pages/Test",
+    parentOf: [
+      "/pages/test"
+    ]
+  },
+
   {
     type: "groupHeader",
     groupTitle: "APPS"
@@ -832,7 +876,7 @@ const navigationConfig = [
   //     }
   //   ]
   // }
- 
+
 ]
 
 export default navigationConfig

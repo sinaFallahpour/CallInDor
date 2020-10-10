@@ -60,57 +60,17 @@ class LoginJWT extends React.Component {
       }, 1000);
     }
 
-    // e.preventDefault();
-    // const errorMessage = "";
-    // const errors = [];
-    // this.setState({ errorMessage, errors });
-
-    // alert(this.state.phone);
-    // alert(this.state.password);
-    // try {
-    //   const state = this.state;
-    //   // const countrycode = countryCode
-    //   // const { data } = {state.phone, state.password} this.state;
-    //   // await auth.login(data.email, data.password);
-
-    //   const retutnUrl = localStorage.getItem("returnUrl");
-    //   localStorage.removeItem("returnUrl");
-    //   window.location = retutnUrl ? retutnUrl : "/";
-
-    //   // window.location = state ? state.from.pathName : "/";
-    //   // this.props.history.push("/")
-    // } catch (ex) {
-    //   if (ex?.response?.status == 400) {
-    //     const errors = ex?.response?.data?.errors;
-    //     this.setState({ errors });
-    //   } else {
-    //     const errorMessage = ex?.response?.data?.message;
-    //     this.setState({ errorMessage });
-    //     toast(errorMessage);
-    //   }
-
-    // if (
-    //   (ex.response && ex.response.status === 403) ||
-    //   ex.response.status === 400
-    // ) {
-
-    //   const errors = { ...this.state.errors };
-    //   const message = ex.response.data.message.message[0].message;
-    //   toast(message);
-    //   this.setState({ errors });
-    // }
   };
 
   render() {
     if (this.state.Loading) {
       return <Spinner />;
     }
-    if (auth.getCurrentUser()) return <Redirect to="/" />;
-
+    //  if (auth.getCurrentUser()) return <Redirect to="/" />;
     const { errorMessage, errors } = this.state;
     return (
       <React.Fragment>
-        <CardBody className="pt-1">
+        <CardBody className="pt-4">
           {errors &&
             errors.map((err, index) => {
               return (
@@ -120,20 +80,6 @@ class LoginJWT extends React.Component {
                 </Alert>
               );
             })}
-          {/* // errors.map((err, index) => { */}
-          {/* //   return (
-          //   <Alert key={index} color="danger"> {err}</Alert>
-          //   )
-          // }) */}
-
-          {/* < Alert color="danger">Password is Required</Alert>
-          <Alert color="danger">
-            The minimum Password length is 6 characters
-          </Alert>
-          <Alert color="danger">
-            The minimum PhoneNumber length is 10 characters
-          </Alert>
-          <Alert color="danger">Country Code is Required</Alert> */}
 
           <Form action="/s" className="mt-3" onSubmit={this.doSubmit}>
             <FormGroup className="form-label-group position-relative has-icon-left">
@@ -171,7 +117,7 @@ class LoginJWT extends React.Component {
               </div>
             </FormGroup>
             <div className="d-flex justify-content-between">
-              <Button.Ripple  color="primary" type="submit" >
+              <Button.Ripple color="primary" type="submit" >
                 Login
               </Button.Ripple>
             </div>

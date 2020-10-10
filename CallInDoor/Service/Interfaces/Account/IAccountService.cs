@@ -11,6 +11,7 @@ namespace Service.Interfaces.Account
     public interface IAccountService
     {
         string GetCurrentUserName();
+        string GetcurrentSerialNumber();
 
         Task<AppUser> FindUserByPhonenumber(string PhoneNumber);
 
@@ -32,12 +33,16 @@ namespace Service.Interfaces.Account
 
         /// check Token paload(serialNUmber) Is valid
         Task<bool> CheckTokenIsValid();
-        
-        Task<AppUser> CheckIsCurrentUserName(string Id);
-        
-        //Task<string> CheckTokenIsValid2();
-        Task<ProfileGetDTO> ProfileGet(string username);
 
+        Task<(bool status, string username)> CheckTokenIsValidForAdminRole();
+
+        Task<AppUser> CheckIsCurrentUserName(string Id);
+
+        //Task<string> CheckTokenIsValid2();
+
+        Task<ProfileGetDTO> ProfileGet();
+
+        Task<(bool succsseded, List<string> result)> ValidateUpdateProfile(UpdateProfileDTO model);
 
 
     }
