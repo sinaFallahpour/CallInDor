@@ -1,22 +1,11 @@
 import React from "react";
 import {
   Button,
-  Modal,
-  ModalHeader,
-  ModalBody,
-  ModalFooter,
-  Label,
   FormGroup,
-  Input,
   Card,
   CardHeader,
   CardBody,
   CardTitle,
-  TabContent,
-  TabPane,
-  Nav,
-  NavItem,
-  NavLink,
   Form as FormStrap,
   Alert,
   Spinner,
@@ -37,13 +26,14 @@ import ModalCustom from "./ModalCustom";
 class Create extends Form {
   state = {
     data: {
+      id: null,
       title: "",
       persianTitle: "",
       serviceId: null,
     },
     services: [],
     Specialities: [],
-    isEnabled: false;,
+    isEnabled: false,
     isProfessional: false,
 
     modal: false,
@@ -55,6 +45,7 @@ class Create extends Form {
   };
 
   schema = {
+    id: Joi.number(),
     title: Joi.string().required().min(3).max(100).label("English Title"),
 
     persianTitle: Joi.string()
@@ -84,6 +75,87 @@ class Create extends Form {
   async componentDidMount() {
     this.populatingServiceTypes();
   }
+
+  componentDidUpdate(prevProps, prevState) {
+    const { addNew, currentArea, addToAreas } = this.props;
+    // console.log(currentArea);
+    // console.log(this.props.currentArea);
+    // console.log("seperate");
+    // console.log(prevProps.currentArea);
+    if (addNew != prevProps.addNew) {
+      const data = { id: null, title: "", persianTitle: "", serviceId: null };
+      this.setState({
+        data,
+        Specialities: [],
+        isEnabled: false,
+        isProfessional: false,
+      });
+    }
+    if (
+      !addNew &&
+      currentArea != null &&
+      currentArea?.data?.id != prevProps?.currentArea?.data?.id
+    ) {
+      console.log(currentArea);
+
+      this.setState({
+        data: currentArea.data,
+        ...currentArea,
+        // Specialities: [],
+      });
+    }
+  }
+
+  // // // // // // // componentDidUpdate(prevProps, prevState) {
+  // // // // // //   const { addNew, currentArea, addToAreas } = this.props;
+  // // // // // //   console.log(this.props.currentArea);
+  // // // // // //   console.log("seperate");
+  // // // // // //   console.log(prevProps.currentArea);
+  // // // // // //   if (
+  // // // // // //     !addNew &&
+  // // // // // //     currentArea != null &&
+  // // // // // //     (prevProps.currentArea == null ||
+  // // // // // //       currentArea?.data?.id != prevProps?.currentArea?.data?.id)
+  // // // // // //   ) {
+  // // // // // //     const { id, title, persianTitle, serviceId } = currentArea?.data;
+  // // // // // //     const { isEnabled, isProfessional } = currentArea;
+  // // // // // //     if (id != prevState.data.id) {
+  // // // // // //       alert("changeId");
+  // // // // // //       this.setState({ data: { ...prevState.data, id } });
+  // // // // // //     }
+  // // // // // //     if (title != prevState.data.title) {
+  // // // // // //       alert("change title");
+  // // // // // //       this.setState({ data: { ...prevState.data, title } });
+  // // // // // //     }
+  // // // // // //     if (persianTitle != prevState.data.persianTitle) {
+  // // // // // //       alert("change persianTitle");
+  // // // // // //       this.setState({ data: { ...prevState.data, persianTitle } });
+  // // // // // //     }
+  // // // // // //     if (serviceId != prevState.data.serviceId) {
+  // // // // // //       alert("change serviceId ");
+  // // // // // //       this.setState({ data: { ...prevState.data, serviceId } });
+  // // // // // //     }
+  // // // // // //     if (isEnabled != prevState.isEnabled) {
+  // // // // // //       alert("change isEnabled ");
+  // // // // // //       this.setState({ isEnabled });
+  // // // // // //     }
+  // // // // // //     if (isProfessional != prevState.isProfessional) {
+  // // // // // //       alert("change isProfessional");
+  // // // // // //       this.setState({ isProfessional });
+  // // // // // //     }
+  // // // // // //     // if(dont chec speciality)
+
+  // // // // // //     // this.setState({
+  // // // // // //     //   data: currentArea.data,
+  // // // // // //     //   ...currentArea,
+  // // // // // //     // });
+  // // // // // //   }
+
+  // // // // // //   // data: { id, title, persianTitle, serviceId },
+  // // // // // //   // isEnabled,
+  // // // // // //   // isProfessional,
+  // // // // // //   // Specialities,
+  // // // // // // }
 
   // handleAddSpeciality = topic => {
   //   let prevSpecialities = this.state.speciality
@@ -124,16 +196,31 @@ class Create extends Form {
         isProfessional,
         Specialities,
       };
-
-      const { data } = await agent.Areas.create(obj);
-      if (data.result.status) {
-        obj.id = data.result.data.id;
-        obj.serviceName = data.result.data.serviceName;
-        this.props.GetAllCategory(obj);
-        toast.success(data.result.message);
-        setInterval(() => {
-          this.cleanData();
-        }, 600);
+      //Add
+      if (this.props.addNew) {
+        const { data } = await agent.Areas.create(obj);
+        if (data.result.status) {
+          obj.id = data.result.data.id;
+          obj.serviceName = data.result.data.serviceName;
+          this.props.addToAreas(obj);
+          toast.success(data.result.message);
+          setInterval(() => {
+            this.cleanData();
+          }, 600);
+        }
+      }
+      //Edit
+      else {
+        const { data } = await agent.Areas.update(obj);
+        if (data.result.status) {
+          obj.id = data.result.data.id;
+          obj.serviceName = data.result.data.serviceName;
+          this.props.editToAreas(obj);
+          toast.success(data.result.message);
+          setInterval(() => {
+            this.cleanData();
+          }, 600);
+        }
       }
     } catch (ex) {
       console.log(ex);
@@ -169,6 +256,8 @@ class Create extends Form {
 
   render() {
     const { errorscustom, errorMessage, services, modal } = this.state;
+    const { addNew } = this.props;
+
     return (
       <React.Fragment>
         <Col sm="13" className="mx-auto">
@@ -209,7 +298,7 @@ class Create extends Form {
                         handleAddSpeciality={this.handleAddSpeciality}
                         handleDeleteTopic={this.handleDeleteSpeciality}
                         toggleModal={this.toggleModal}
-                        speciality={this.state.Specialities}
+                        Specialities={this.state.Specialities}
                         isProfessional={this.state.isProfessional}
                       />
                     }
@@ -263,8 +352,10 @@ class Create extends Form {
                     <Spinner color="white" size="sm" type="grow" />
                     <span className="ml-50">Loading...</span>
                   </Button>
+                ) : addNew ? (
+                  this.renderButton("Add")
                 ) : (
-                  this.renderButton("Save")
+                  this.renderButton("Edit")
                 )}
               </form>
             </CardBody>

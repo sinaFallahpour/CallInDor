@@ -9,19 +9,17 @@ import {
   Label,
   Alert,
   Col,
-  Spinner
+  Spinner,
 } from "reactstrap";
 
 import Joi from "joi-browser";
 import Form from "../../../components/common/form";
-
 
 // import { Formik, Field, Form  } from "formik";
 // import * as Yup from "yup";
 
 import agent from "../../../core/services/agent";
 import { toast } from "react-toastify";
-
 
 // const formSchema = Yup.object().shape({
 //   // id,isEnabled,title,persianTitle,serviceName,parentName
@@ -38,14 +36,13 @@ import { toast } from "react-toastify";
 // });
 
 class EditCategory extends Form {
-
   state = {
     data: {
       id: null,
       title: "",
       persianTitle: "",
       // isEnabled: false,
-      serviceName: '',
+      serviceName: "",
       parentId: null,
       serviceId: null,
       // parentId: null,
@@ -62,16 +59,11 @@ class EditCategory extends Form {
 
   schema = {
     id: Joi.number(),
-    title: Joi.string()
-      .required()
-      .label("Title"),
+    title: Joi.string().required().label("Title"),
 
-    persianTitle: Joi.string()
-      .required()
-      .label("PersianTitle"),
+    persianTitle: Joi.string().required().label("PersianTitle"),
 
-    parentId: Joi.optional()
-      .label("parent"),
+    parentId: Joi.optional().label("parent"),
 
     // isEnabled: Joi
     // .boolean()
@@ -81,13 +73,12 @@ class EditCategory extends Form {
     serviceId: Joi.number()
       .error(() => {
         return {
-          message: 'service Is Required',
+          message: "service Is Required",
         };
       })
       .required()
       .label("service"),
   };
-
 
   async populatingCategories() {
     const { data } = await agent.Category.list();
@@ -102,17 +93,24 @@ class EditCategory extends Form {
   }
 
   async populatinCategory() {
-
     const catId = this.props.match.params.id;
     try {
       const { data } = await agent.Category.details(catId);
-      let { id, title, persianTitle, isEnabled, serviceId, parentId } = data.result.data;
-      this.setState({ data: { id, title: title, persianTitle, serviceId, parentId }, isEnabled });
-
-    }
-    catch (ex) {
-      console.clear()
-      console.log(ex)
+      let {
+        id,
+        title,
+        persianTitle,
+        isEnabled,
+        serviceId,
+        parentId,
+      } = data.result.data;
+      this.setState({
+        data: { id, title: title, persianTitle, serviceId, parentId },
+        isEnabled,
+      });
+    } catch (ex) {
+      console.clear();
+      console.log(ex);
       console.log(ex);
       if (ex?.response?.status == 404 || ex?.response?.status == 400) {
         return this.props.history.replace("/not-found");
@@ -120,28 +118,16 @@ class EditCategory extends Form {
     }
   }
 
-
   async componentDidMount() {
     this.populatingCategories();
     this.populatingServiceTypes();
     this.populatinCategory();
-
   }
-
-
-
-
 
   // doSubmit = async () => {
   //   await saveMovie(this.state.data);
   //   this.props.history.push("/movies");
   // };
-
-
-
-
-
-
 
   doSubmit = async () => {
     this.setState({ Loading: true });
@@ -153,7 +139,7 @@ class EditCategory extends Form {
       const { data } = await agent.Category.update(obj);
 
       if (data.result.status) {
-        toast.success(data.result.message)
+        toast.success(data.result.message);
       }
     } catch (ex) {
       console.log(ex);
@@ -174,16 +160,12 @@ class EditCategory extends Form {
     }, 800);
   };
 
-
-
-
   render() {
-    const { errorscustom, errorMessage, categories, services } = this.state
-
+    const { errorscustom, errorMessage, categories, services } = this.state;
 
     return (
       <Col sm="10" className="mx-auto">
-        <Card >
+        <Card>
           <CardHeader>
             <CardTitle> Edit Category </CardTitle>
           </CardHeader>
@@ -191,11 +173,7 @@ class EditCategory extends Form {
             {errorscustom &&
               errorscustom.map((err, index) => {
                 return (
-                  <Alert
-                    key={index}
-                    className="text-center"
-                    color="danger "
-                  >
+                  <Alert key={index} className="text-center" color="danger ">
                     {err}
                   </Alert>
                 );
@@ -205,45 +183,53 @@ class EditCategory extends Form {
               {this.renderInput("title", "Title")}
               {this.renderInput("persianTitle", "persianTitle")}
               {/* {this.renderSelect("parentId", "Parent", this.state.categories.map(item => ({ name: item.title, id: item.id })))} */}
-              {this.renderReactSelect("parentId", "Parent", categories.map(item => ({ value: item.id, label: item.title })))}
-
+              {this.renderReactSelect(
+                "parentId",
+                "Parent",
+                categories.map((item) => ({
+                  value: item.id,
+                  label: item.title,
+                }))
+              )}
 
               {/* {this.renderSelect("serviceId", "Service", this.state.services)} */}
-              {this.renderReactSelect("serviceId", "Service", services.map(item => ({ value: item.id, label: item.name })))}
+              {this.renderReactSelect(
+                "serviceId",
+                "Service",
+                services.map((item) => ({ value: item.id, label: item.name }))
+              )}
 
               {/* {this.renderCheckBox("isEnabled", "Is Enabled", "checbox")} */}
-
 
               <div className="form-group">
                 <label htmlFor="isEnabled">Is Enabled ?</label>
                 <input
                   value={this.state.isEnabled}
                   checked={this.state.isEnabled}
-                  onChange={(e) => this.setState({ isEnabled: !this.state.isEnabled })}
+                  onChange={(e) =>
+                    this.setState({ isEnabled: !this.state.isEnabled })
+                  }
                   name="isEnabled"
                   id="isEnabled"
                   type="checkbox"
-                  className="ml-1" />
+                  className="ml-1"
+                />
               </div>
 
-
-
-              {this.state.Loading ?
+              {this.state.Loading ? (
                 <Button disabled={true} color="primary" className="mb-1">
                   <Spinner color="white" size="sm" type="grow" />
                   <span className="ml-50">Loading...</span>
                 </Button>
-                :
+              ) : (
                 this.renderButton("Save")
-              }
-
+              )}
 
               {/* {this.renderSelect("genreId", "Genre", this.state.genres)} */}
               {/* {this.renderInput("numberInStock", "Number in Stock", "number")}
             {this.renderInput("dailyRentalRate", "Rate")}
             {this.renderButton("Save")} */}
             </form>
-
           </CardBody>
         </Card>
       </Col>

@@ -12,7 +12,7 @@ axios.interceptors.request.use(
     const token = window.localStorage.getItem("token");
     if (token) config.headers.Authorization = `Bearer ${token}`;
     return config;
-  },
+  }
   // (error) => {
   //   return Promise.reject(error);
   // }
@@ -51,11 +51,10 @@ export const requests = {
   postForm: (url, file) => {
     const formData = new FormData();
     formData.append("File", file);
-    return axios
-      .post(url, formData, {
-        headers: { "Content-type": "multipart/form-data" }
-      });
-  }
+    return axios.post(url, formData, {
+      headers: { "Content-type": "multipart/form-data" },
+    });
+  },
 };
 
 const ServiceTypes = {
@@ -63,7 +62,8 @@ const ServiceTypes = {
   GetAll: () => requests.get("/ServiceType/GetAllServiceForAdmin"),
   details: (id) => requests.get(`/ServiceType/GetServiceByIdForAdmin?id=${id}`),
   create: (service) => requests.post("/ServiceType/CreateForAdmin", service),
-  update: (activity) => requests.put("/ServiceType/UpdateServiceForAdmin", activity)
+  update: (activity) =>
+    requests.put("/ServiceType/UpdateServiceForAdmin", activity),
   // delete: (id) => requests.del(`/activities/${id}`)
 };
 
@@ -78,7 +78,7 @@ const Category = {
   list: () => requests.get("/Category/GetAllCateGoryForAdmin"),
   details: (id) => requests.get(`/Category/GetByIdForAdmin?id=${id}`),
   create: (category) => requests.post("/Category/Create", category),
-  update: (category) => requests.put("/Category/Update", category)
+  update: (category) => requests.put("/Category/Update", category),
   // delete: (id) => requests.del(`/activities/${id}`)
 };
 
@@ -87,7 +87,7 @@ const Areas = {
   list: () => requests.get("/Area/GetAllAreaForAdmin"),
   details: (id) => requests.get(`/Area/GetAreaByIdForAdmin?id=${id}`),
   create: (area) => requests.post("/Area/CreateArea", area),
-  // update: (area) => requests.put("/api/Area/CreateArea", area)
+  update: (area) => requests.put("/api/Area/UpdateArea", area),
   // delete: (id) => requests.del(`/activities/${id}`)
 };
 
@@ -104,5 +104,5 @@ export default {
   Category,
   ServiceTypes,
   Test,
-  Areas
+  Areas,
 };

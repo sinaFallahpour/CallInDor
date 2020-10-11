@@ -1,8 +1,8 @@
-import React, { Component } from "react"
-import { Label, Input, FormGroup, Button } from "reactstrap"
-import { X } from "react-feather"
-import PerfectScrollbar from "react-perfect-scrollbar"
-import classnames from "classnames"
+import React, { Component } from "react";
+import { Label, Input, FormGroup, Button } from "reactstrap";
+import { X } from "react-feather";
+import PerfectScrollbar from "react-perfect-scrollbar";
+import classnames from "classnames";
 
 class DataListSidebar extends Component {
   state = {
@@ -13,42 +13,44 @@ class DataListSidebar extends Component {
     price: "",
     img: "",
     popularity: {
-      popValue: ""
-    }
-  }
+      popValue: "",
+    },
+  };
 
-  addNew = false
+  addNew = false;
 
   componentDidUpdate(prevProps, prevState) {
     if (this.props.data !== null && prevProps.data === null) {
+      alert(1);
       if (this.props.data.id !== prevState.id) {
-        this.setState({ id: this.props.data.id })
+        this.setState({ id: this.props.data.id });
       }
       if (this.props.data.name !== prevState.name) {
-        this.setState({ name: this.props.data.name })
+        this.setState({ name: this.props.data.name });
       }
       if (this.props.data.category !== prevState.category) {
-        this.setState({ category: this.props.data.category })
+        this.setState({ category: this.props.data.category });
       }
       if (this.props.data.popularity.popValue !== prevState.popularity) {
         this.setState({
           popularity: {
             ...this.state.popularity,
-            popValue: this.props.data.popularity.popValue
-          }
-        })
+            popValue: this.props.data.popularity.popValue,
+          },
+        });
       }
       if (this.props.data.order_status !== prevState.order_status) {
-        this.setState({ order_status: this.props.data.order_status })
+        this.setState({ order_status: this.props.data.order_status });
       }
       if (this.props.data.price !== prevState.price) {
-        this.setState({ price: this.props.data.price })
+        this.setState({ price: this.props.data.price });
       }
       if (this.props.data.img !== prevState.img) {
-        this.setState({ img: this.props.data.img })
+        this.setState({ img: this.props.data.img });
       }
     }
     if (this.props.data === null && prevProps.data !== null) {
+      alert(2);
       this.setState({
         id: "",
         name: "",
@@ -57,9 +59,9 @@ class DataListSidebar extends Component {
         price: "",
         img: "",
         popularity: {
-          popValue: ""
-        }
-      })
+          popValue: "",
+        },
+      });
     }
     if (this.addNew) {
       this.setState({
@@ -70,42 +72,44 @@ class DataListSidebar extends Component {
         price: "",
         img: "",
         popularity: {
-          popValue: ""
-        }
-      })
+          popValue: "",
+        },
+      });
     }
-    this.addNew = false
+    this.addNew = false;
   }
 
-  handleSubmit = obj => {
+  handleSubmit = (obj) => {
     if (this.props.data !== null) {
-      this.props.updateData(obj)
+      this.props.updateData(obj);
     } else {
-      this.addNew = true
-      this.props.addData(obj)
+      this.addNew = true;
+      this.props.addData(obj);
     }
     let params = Object.keys(this.props.dataParams).length
       ? this.props.dataParams
-      : { page: 1, perPage: 4 }
-    this.props.handleSidebar(false, true)
-    this.props.getData(params)
-  }
+      : { page: 1, perPage: 4 };
+    this.props.handleSidebar(false, true);
+    this.props.getData(params);
+  };
 
   render() {
-    let { show, handleSidebar, data } = this.props
-    let { name, category, order_status, price, popularity, img } = this.state
+    let { show, handleSidebar, data } = this.props;
+    let { name, category, order_status, price, popularity, img } = this.state;
     return (
       <div
         className={classnames("data-list-sidebar", {
-          show: show
-        })}>
+          show: show,
+        })}
+      >
         <div className="data-list-sidebar-header mt-2 px-2 d-flex justify-content-between">
           <h4>{data !== null ? "UPDATE DATA" : "ADD NEW DATA"}</h4>
           <X size={20} onClick={() => handleSidebar(false, true)} />
         </div>
         <PerfectScrollbar
           className="data-list-fields px-2 mt-3"
-          options={{ wheelPropagation: false }}>
+          options={{ wheelPropagation: false }}
+        >
           {this.props.thumbView && img.length ? (
             <FormGroup className="text-center">
               <img className="img-fluid" src={img} alt={name} />
@@ -113,22 +117,24 @@ class DataListSidebar extends Component {
                 <label
                   className="btn btn-flat-primary"
                   htmlFor="update-image"
-                  color="primary">
+                  color="primary"
+                >
                   Upload Image
                   <input
                     type="file"
                     id="update-image"
                     hidden
-                    onChange={e =>
+                    onChange={(e) =>
                       this.setState({
-                        img: URL.createObjectURL(e.target.files[0])
+                        img: URL.createObjectURL(e.target.files[0]),
                       })
                     }
                   />
                 </label>
                 <Button
                   color="flat-danger"
-                  onClick={() => this.setState({ img: "" })}>
+                  onClick={() => this.setState({ img: "" })}
+                >
                   Remove Image
                 </Button>
               </div>
@@ -140,7 +146,7 @@ class DataListSidebar extends Component {
               type="text"
               value={name}
               placeholder="Apple IphoneX"
-              onChange={e => this.setState({ name: e.target.value })}
+              onChange={(e) => this.setState({ name: e.target.value })}
               id="data-name"
             />
           </FormGroup>
@@ -150,7 +156,8 @@ class DataListSidebar extends Component {
               type="select"
               id="data-category"
               value={category}
-              onChange={e => this.setState({ category: e.target.value })}>
+              onChange={(e) => this.setState({ category: e.target.value })}
+            >
               <option>Audio</option>
               <option>Computers</option>
               <option>Fitness</option>
@@ -164,9 +171,9 @@ class DataListSidebar extends Component {
               value={popularity.popValue}
               id="data-popularity"
               placeholder="0 - 100%"
-              onChange={e =>
+              onChange={(e) =>
                 this.setState({
-                  popularity: { popularity, popValue: e.target.value }
+                  popularity: { popularity, popValue: e.target.value },
                 })
               }
             />
@@ -177,7 +184,8 @@ class DataListSidebar extends Component {
               type="select"
               id="data-status"
               value={order_status}
-              onChange={e => this.setState({ order_status: e.target.value })}>
+              onChange={(e) => this.setState({ order_status: e.target.value })}
+            >
               <option>pending</option>
               <option>canceled</option>
               <option>delivered</option>
@@ -189,7 +197,7 @@ class DataListSidebar extends Component {
             <Input
               type="number"
               value={price}
-              onChange={e => this.setState({ price: e.target.value })}
+              onChange={(e) => this.setState({ price: e.target.value })}
               id="data-price"
               placeholder="69.99"
             />
@@ -198,13 +206,14 @@ class DataListSidebar extends Component {
             <label
               className="btn btn-primary"
               htmlFor="upload-image"
-              color="primary">
+              color="primary"
+            >
               Upload Image
               <input
                 type="file"
                 id="upload-image"
                 hidden
-                onChange={e =>
+                onChange={(e) =>
                   this.setState({ img: URL.createObjectURL(e.target.files[0]) })
                 }
               />
@@ -219,12 +228,13 @@ class DataListSidebar extends Component {
             className="ml-1"
             color="danger"
             outline
-            onClick={() => handleSidebar(false, true)}>
+            onClick={() => handleSidebar(false, true)}
+          >
             Cancel
           </Button>
         </div>
       </div>
-    )
+    );
   }
 }
-export default DataListSidebar
+export default DataListSidebar;

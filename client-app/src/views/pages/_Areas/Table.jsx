@@ -29,7 +29,10 @@ import Create from "./Create";
 
 class Table extends React.Component {
   state = {
-    currentCategory: null,
+    currentArea: null,
+    currentAreaLoading: false,
+    addNew: true,
+
     loading: true,
     rowData: [],
     paginationPageSize: 20,
@@ -96,19 +99,55 @@ class Table extends React.Component {
         field: "id",
         filter: false,
         cellStyle: { "border-width": "0px", outline: "none" },
-
         cellRendererFramework: (params) => {
           return (
             <Edit
               className="mr-50"
               size={15}
-              onClick={() => history.push(`/pages/Areas/${params.value}`)}
+              onClick={async () => await this.populatingArea(params.data.id)}
+
+              // onClick={() => history.push(`/pages/Areas/${params.value}`)}
             />
           );
         },
       },
     ],
   };
+
+  async populatingArea(areaId) {
+    this.setState({ currentAreaLoading: true, addNew: false });
+    try {
+      const { data } = await agent.Areas.details(areaId);
+      let {
+        id,
+        title,
+        persianTitle,
+        isEnabled,
+        isProfessional,
+        serviceId,
+        specialities,
+      } = data.result.data;
+
+      const currentArea = {
+        data: { id, title, persianTitle, serviceId },
+        isEnabled,
+        isProfessional,
+        Specialities: specialities,
+      };
+
+      this.setState({ currentArea });
+    } catch (ex) {
+      if (ex?.response?.status == 404 || ex?.response?.status == 400) {
+        return this.props.history.replace("/not-found");
+      }
+    }
+  }
+
+  // async populatingArea() {
+  //   const { data } = await agent.Areas.details();
+  //   let categories = data.result.data;
+  //   this.setState({ categories });
+  // }
 
   async componentDidMount() {
     const { data } = await agent.Areas.list();
@@ -123,9 +162,21 @@ class Table extends React.Component {
     });
   }
 
-  GetAllCategory = async (newArea) => {
+  addToAreas = async (newArea) => {
     const rowData = [...this.state.rowData, newArea];
     this.setState({ rowData });
+  };
+
+  editToAreas = async (newArea) => {
+    let rowData = [...this.state.rowData];
+    let index = rowData.findIndex((el) => el.id == newArea.id /* condition */);
+    rowData[index] = newArea;
+    this.setState({ rowData });
+
+    // area = this.state.rowData.find((c) => c.id == newArea.id);
+
+    // const rowData = [...this.state.rowData, newArea];
+    // this.setState({ rowData });
   };
 
   onGridReady = (params) => {
@@ -153,21 +204,36 @@ class Table extends React.Component {
     }
   };
 
+  handledeleteCurrentArea = () => {
+    this.setState({ addNew: true, currentArea: null });
+  };
+
   render() {
-    const { rowData, columnDefs, defaultColDef } = this.state;
+    const {
+      rowData,
+      columnDefs,
+      defaultColDef,
+      currentArea,
+      addNew,
+    } = this.state;
     return (
       <React.Fragment>
-        <Create GetAllCategory={this.GetAllCategory}></Create>
+        <Create
+          addToAreas={this.addToAreas}
+          editToAreas={this.editToAreas}
+          currentArea={currentArea}
+          addNew={addNew}
+        ></Create>
 
         <Card className="overflow-hidden agGrid-card">
-          {/* <CardHeader>
+          <CardHeader>
             <Button.Ripple
               color="primary"
-              onClick={() => history.push("/pages/Areas/Create")}
+              onClick={this.handledeleteCurrentArea}
             >
               Create New Service
             </Button.Ripple>
-          </CardHeader> */}
+          </CardHeader>
 
           <CardBody className="py-0">
             {this.state.rowData === null ? null : (

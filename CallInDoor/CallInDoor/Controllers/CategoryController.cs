@@ -258,7 +258,7 @@ namespace CallInDoor.Controllers
                 c.IsProfessional,
                 serviceName = c.Service.Name,
                 serviceId = c.Service.Id,
-                
+                c.Specialities
                 //serviceId = c.Service != null ? c.Service.Id : null
             }).FirstOrDefaultAsync();
 
@@ -371,6 +371,112 @@ namespace CallInDoor.Controllers
 
         #endregion
 
+
+
+
+
+
+        #region Create
+
+        /// <summary>
+        ///  ایجاد Area
+        /// </summary>
+        /// <param name="CreateCategory"></param>
+        /// <returns></returns>
+        [HttpPost("/api/Area/UpdateArea")]
+        [Authorize(Roles = PublicHelper.ADMINROLE)]
+        public async Task<ActionResult> UpdateArea([FromBody] CreateAreaDTO model)
+        {
+            var checkToken = await _accountService.CheckTokenIsValid();
+            if (!checkToken)
+                return Unauthorized(new ApiResponse(401, PubicMessages.UnAuthorizeMessage));
+
+
+            //validate
+            var res = await _categoryService.ValidateArea(model);
+            if (!res.succsseded)
+                return BadRequest(new ApiBadRequestResponse(res.result));
+
+            if (!model.IsProfessional)
+                model.Specialities = null;
+
+            var Area = await _categoryService.CreateArea(model);
+            var area = new
+            {
+                Area.Id,
+                Area.Title,
+                Area.PersianTitle,
+                Area.ServiceId,
+                serviceName = Area.Service?.Name,
+                Area.IsEnabled,
+                Area.IsProfessional,
+            };
+
+            if (Area != null)
+            {
+                return Ok(new ApiOkResponse(new DataFormat()
+                {
+                    Status = 1,
+                    data = area,
+                    Message = PubicMessages.SuccessMessage
+                },
+                   PubicMessages.SuccessMessage
+                  ));
+            }
+
+            return StatusCode(StatusCodes.Status500InternalServerError,
+              new ApiResponse(500, PubicMessages.InternalServerMessage)
+            );
+        }
+
+        #endregion
+
+
+
+
+
+
+
+
+
+        //#region  Update
+
+        //[HttpPut("Update")]
+        //[Authorize(Roles = PublicHelper.ADMINROLE)]
+        //public async Task<IActionResult> Update([FromBody] CreateCategoryDTO model)
+        //{
+        //    var checkToken = await _accountService.CheckTokenIsValid();
+        //    if (!checkToken)
+        //        return Unauthorized(new ApiResponse(401, PubicMessages.UnAuthorizeMessage));
+
+
+        //    var service = _categoryService.GetById(model.Id);
+        //    if (service == null)
+        //    {
+        //        return NotFound(new ApiResponse(404, _localizerShared["NotFound"].Value.ToString()));
+        //    }
+
+        //    var result = await _categoryService.Update(service, model);
+        //    if (result)
+        //    {
+        //        return Ok(new ApiOkResponse(new DataFormat()
+        //        {
+        //            Status = 1,
+        //            data = new { },
+        //            Message = PubicMessages.SuccessMessage
+        //        },
+        //           PubicMessages.SuccessMessage
+        //        ));
+        //    }
+
+
+        //    return StatusCode(StatusCodes.Status500InternalServerError,
+        //      new ApiResponse(500, PubicMessages.InternalServerMessage)
+        //    );
+
+        //}
+
+        //#endregion
 
 
 

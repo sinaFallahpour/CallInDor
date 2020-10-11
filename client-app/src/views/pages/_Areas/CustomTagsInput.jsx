@@ -8,12 +8,8 @@ import { FormGroup, Form as FormStrap, Spinner } from "reactstrap";
 import { PlusSquare } from "react-feather";
 
 const CustomTagsInput = (props) => {
-  const [validate, setValidate] = useState();
-  const [modal, setModal] = useState(true);
-  const [data, setData] = useState({ persianTitle: "", englishTitle: "" });
-
   const removeTags = (indexToremove) => {
-    const newTopics = props.speciality.filter((_, index) => {
+    const newTopics = props.Specialities.filter((_, index) => {
       return index !== indexToremove;
     });
     props.handleDeleteTopic(newTopics);
@@ -21,42 +17,8 @@ const CustomTagsInput = (props) => {
 
   const addTags = (even) => {
     even.preventDefault();
-
     props.toggleModal();
-
-    // even.preventDefault();
-    // const res = validateIput($(".tagsInput").val())
-    // if (!res)
-    //     return
-    // else
-    //     setValidate({ isvalid: true, error: "speciality is required" })
-
-    // const inputValue = $(".tagsInput").val()
-    // if (inputValue !== "") {
-    //     // setTags([...tags, inputValue]);
-    //     $(".tagsInput").val('');
-    //     props.handleAddTopic(inputValue)
-    // }
   };
-
-  //   const validateIput = (value) => {
-  //     if (value?.length === 0) {
-  //       setValidate({ isvalid: false, error: "speciality is required" });
-  //       return false;
-  //     }
-  //     if (value?.length < 3) {
-  //       setValidate({
-  //         isvalid: false,
-  //         error: "Specialty must be at least 3 characters",
-  //       });
-  //       return false;
-  //     }
-  //     return true;
-  //   };
-
-  // const toggleModal = () => {
-  //     setModal(x => !x)
-  // }
 
   return (
     <>
@@ -80,7 +42,7 @@ const CustomTagsInput = (props) => {
           </button>
         </div>
         <ul className="topics">
-          {props.speciality.map((tag, index) => (
+          {props.Specialities.map((tag, index) => (
             <>
               <li key={index}>
                 <span>
@@ -99,9 +61,6 @@ const CustomTagsInput = (props) => {
           ))}
         </ul>
       </FormGroup>
-      {/* {modal && (
-                <ModalCustom modal={modal} toggleModal={toggleModal} data={data} setData={setData} />
-            )} */}
     </>
   );
 };
