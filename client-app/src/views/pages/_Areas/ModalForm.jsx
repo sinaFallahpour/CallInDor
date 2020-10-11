@@ -32,6 +32,7 @@ import Joi from "joi-browser";
 import agent from "../../../core/services/agent";
 import Form from "../../../components/common/form";
 import CustomTagsInput from "./CustomTagsInput";
+import ModalCustom from './ModalCustom';
 
 class ModalForm extends Form {
   state = {
@@ -42,22 +43,29 @@ class ModalForm extends Form {
     },
 
     services: [],
-    speciality: [],
+    Specialities: [],
     isEnabled: true,
-    IsProfessional: true,
+    isProfessional: true,
+
+    modal: false,
+
     errors: {},
     errorscustom: [],
     errorMessage: "",
     Loading: false,
   };
 
-
   schema = {
     title: Joi.string()
+      .required()
+      .min(3)
+      .max(100)
       .label("English Title"),
 
     persianTitle: Joi.string()
       .required()
+      .min(3)
+      .max(100)
       .label("Persian Title"),
 
     serviceId: Joi.number()
@@ -69,12 +77,9 @@ class ModalForm extends Form {
       .required()
       .label("service"),
 
-    speciality: Joi.label("speciality")
+    Specialities: Joi.label("speciality")
 
   };
-
-
-
 
 
   async populatingServiceTypes() {
@@ -89,18 +94,31 @@ class ModalForm extends Form {
   }
 
 
+  // handleAddSpeciality = topic => {
+  //   let prevSpecialities = this.state.speciality
+  //   prevSpecialities.push(topic)
+  //   this.setState({ speciality: prevSpecialities })
+  // };
 
-  handleAddSpeciality = topic => {
-    let prevSpecialities = this.state.speciality
-    prevSpecialities.push(topic)
-    this.setState({ speciality: prevSpecialities })
+  handleAddSpeciality = (persianName, englishName) => {
+    let prevSpecialities = this.state.Specialities
+    const obj = { persianName, englishName }
+
+    let thisSpeciality = [...prevSpecialities, obj]
+    // prevSpecialities.push(obj)
+    this.setState({ Specialities: thisSpeciality })
+  }
+
+  handleDeleteSpeciality = Specialities => {
+    this.setState({ Specialities });
   };
 
-  handleDeleteSpeciality = speciality => {
-    this.setState({ speciality });
-  };
 
-
+  toggleModal = () => {
+    this.setState((prevstate, prevProps) => {
+      return { modal: !prevstate.modal }
+    })
+  }
 
 
   doSubmit = async (e) => {
@@ -110,10 +128,10 @@ class ModalForm extends Form {
     const errorscustom = [];
     this.setState({ errorMessage, errorscustom });
     try {
-      const { isEnabled, tags, persinaTags } = this.state
-      const obj = { ...this.state.data, isEnabled, tags: tags.join(), persinaTags: persinaTags.join() }
+      const { isEnabled, isProfessional, Specialities } = this.state
+      const obj = { ...this.state.data, isEnabled, isProfessional, Specialities }
 
-      const { data } = await agent.ServiceTypes.create(obj);
+      const { data } = await agent.Areas.create(obj);
       if (data.result.status)
         toast.success(data.result.message)
     } catch (ex) {
@@ -136,7 +154,8 @@ class ModalForm extends Form {
 
 
   render() {
-    const { errorscustom, errorMessage, services } = this.state;
+
+    const { errorscustom, errorMessage, services, modal } = this.state;
     return (
       <React.Fragment>
 
@@ -171,19 +190,19 @@ class ModalForm extends Form {
                     {this.renderReactSelect("serviceId", "Service", services.map(item => ({ value: item.id, label: item.name })))}
                   </Col>
 
-                  <Col md="4">
+                  <Col md="6">
                     {
                       <CustomTagsInput
-                        handleAddTopic={this.handleAddSpeciality}
+                        handleAddSpeciality={this.handleAddSpeciality}
                         handleDeleteTopic={this.handleDeleteSpeciality}
-                        topics={this.state.speciality}
+                        toggleModal={this.toggleModal}
+                        speciality={this.state.Specialities}
+                        isProfessional={this.state.isProfessional}
                       />
                     }
 
                   </Col>
                 </FormGroup>
-
-
 
 
                 {/* <Col lg="6" className="mb-4">
@@ -205,11 +224,7 @@ class ModalForm extends Form {
 
 
 
-
-                {/* {this.renderInput("title", "English Title")} */}
-                {/* {this.renderInput("persianTitle", "Persian Title")} */}
-
-                <div className="form-group">
+                <div className="form-group _customCheckbox">
                   <label htmlFor="isEnabled">Is Enabled</label>
                   <input
                     value={this.state.isEnabled}
@@ -221,18 +236,17 @@ class ModalForm extends Form {
                     className="ml-1" />
                 </div>
 
-                <div className="form-group">
+                <div className="form-group _customCheckbox">
                   <label htmlFor="isProfessional">Is Professional</label>
                   <input
-                    value={this.state.IsProfessional}
-                    checked={this.state.IsProfessional}
-                    onChange={(e) => this.setState({ IsProfessional: !this.state.IsProfessional })}
+                    value={this.state.isProfessional}
+                    checked={this.state.isProfessional}
+                    onChange={(e) => this.setState({ isProfessional: !this.state.isProfessional })}
                     name="isProfessional"
                     id="isProfessional"
                     type="checkbox"
                     className="ml-1" />
                 </div>
-
 
 
                 {this.state.Loading ?
@@ -249,6 +263,10 @@ class ModalForm extends Form {
             </CardBody>
           </Card>
         </Col>
+
+        {modal && (
+          <ModalCustom modal={modal} toggleModal={this.toggleModal} handleAddSpeciality={this.handleAddSpeciality} />
+        )}
       </React.Fragment>
     );
   }

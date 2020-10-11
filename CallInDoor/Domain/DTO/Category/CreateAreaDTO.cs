@@ -13,13 +13,13 @@ namespace Domain.DTO.Category
         /// <summary>
         /// عنوان انگلیسی تخصص
         /// </summary>
-        [Required(ErrorMessage = "{0} is resquired")]
+        [Required(ErrorMessage = "{0} is  Required")]
         [MinLength(1, ErrorMessage = "The minimum {0} length is {1} characters")]
         [MaxLength(100, ErrorMessage = "The maximum {0} length is {1} characters")]
         public string Title { get; set; }
 
 
-        [Required(ErrorMessage = "{0} is resquired")]
+        [Required(ErrorMessage = "{0} is  Required")]
         [MinLength(1, ErrorMessage = "The minimum {0} length is {1} characters")]
         [MaxLength(100, ErrorMessage = "The maximum {0} length is {1} characters")]
         public string PersianTitle { get; set; }
@@ -63,11 +63,11 @@ namespace Domain.DTO.Category
 
     public class Speciality{
 
-        [Required(ErrorMessage = "{0} is resquired")]
+        //[Required(ErrorMessage = "{0} is  Required")]
         [MinLength(1, ErrorMessage = "The minimum {0} length is {1} characters")]
         public string PersianName { get; set; }
 
-        [Required(ErrorMessage = "{0} is resquired")]
+        //[Required(ErrorMessage = "{0} is  Required")]
         [MinLength(1, ErrorMessage = "The minimum {0} length is {1} characters")]
         public string EnglishName { get; set; }
 

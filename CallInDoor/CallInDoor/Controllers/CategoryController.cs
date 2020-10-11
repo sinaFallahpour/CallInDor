@@ -339,15 +339,24 @@ namespace CallInDoor.Controllers
 
             if (!model.IsProfessional)
                 model.Specialities = null;
-
-
+          
             var Area = await _categoryService.CreateArea(model);
+            var area = new
+            {
+                Area.Id,
+                Area.Title,
+                Area.PersianTitle,
+                Area.ServiceId,
+                Area.IsEnabled,
+                Area.IsProfessional,
+            };
+
             if (Area != null)
             {
                 return Ok(new ApiOkResponse(new DataFormat()
                 {
                     Status = 1,
-                    data = Area,
+                    data = area,
                     Message = PubicMessages.SuccessMessage
                 },
                    PubicMessages.SuccessMessage

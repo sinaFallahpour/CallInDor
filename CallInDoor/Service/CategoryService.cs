@@ -173,6 +173,7 @@ namespace Service
                 //Specialities = model.Specialities,
                 ServiceId = model.ServiceId,
                 IsEnabled = model.IsEnabled,
+                
             };
 
             Area.Specialities = new List<SpecialityTBL>();

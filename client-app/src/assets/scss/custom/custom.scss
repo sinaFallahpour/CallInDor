@@ -12,7 +12,8 @@
   text-align: left;
 }
 .topics > li > span {
-  border: 1px solid rgb(56, 35, 35);
+  // border: 1px solid rgb(56, 35, 35);
+  background: #ededed;
   height: 100%;
   display: block;
   padding: 10px;
@@ -25,4 +26,15 @@
 .topics > li > span > i {
   justify-content: space-between;
   float: right;
+}
+
+
+
+/* check box*/
+
+._customCheckbox {
+  width: 200px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
