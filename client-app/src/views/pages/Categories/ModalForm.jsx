@@ -19,7 +19,7 @@ import {
   NavLink,
   Form,
   Alert,
-  Spinner
+  Spinner,
 } from "reactstrap";
 import classnames from "classnames";
 import { Eye, Code } from "react-feather";
@@ -90,19 +90,36 @@ class ModalForm extends React.Component {
         parentId,
       } = this.state;
 
-      const serviceName = this.state.services.find(c => c.id == serviceId).name
-      const parentName = this.state.categories.find(c => c.id == parentId)?.persianTitle
+      const serviceName = this.state.services.find((c) => c.id == serviceId)
+        .name;
+      const parentName = this.state.categories.find((c) => c.id == parentId)
+        ?.persianTitle;
 
-      const obj = { title, persianTitle, isEnabled, serviceId, parentId, serviceName, parentName };
+      const obj = {
+        title,
+        persianTitle,
+        isEnabled,
+        serviceId,
+        parentId,
+        serviceName,
+        parentName,
+      };
       const { data } = await agent.Category.create(obj);
       if (data.result.status) {
-        toast.success(data.result.message)
+        toast.success(data.result.message);
 
-        obj.id = data.result.data.id
-        this.props.GetAllCategory(obj)
+        obj.id = data.result.data.id;
+        this.props.GetAllCategory(obj);
       }
       setTimeout(() => {
-        this.setState({ modal: false, Loading: false, title: '', persianTitle: '', serviceId: null, parentId: null });
+        this.setState({
+          modal: false,
+          Loading: false,
+          title: "",
+          persianTitle: "",
+          serviceId: null,
+          parentId: null,
+        });
         // this.toggleModal()
       }, 2000);
     } catch (ex) {
@@ -131,10 +148,7 @@ class ModalForm extends React.Component {
           <CardBody>
             <TabContent activeTab={this.state.activeTab}>
               <TabPane tabId="1">
-                <Button.Ripple
-                  color="primary"
-                  onClick={this.toggleModal}
-                >
+                <Button.Ripple color="primary" onClick={this.toggleModal}>
                   Create New Category
                 </Button.Ripple>
                 <Modal
@@ -200,9 +214,7 @@ class ModalForm extends React.Component {
                             this.setState({ serviceId: e.target.value })
                           }
                         >
-                          <option key={-1} value={null}>
-
-                          </option>
+                          <option key={-1} value={null}></option>
                           {this.state.services.map((option) => (
                             <option key={option.id} value={option.id}>
                               {option.name}
@@ -220,41 +232,47 @@ class ModalForm extends React.Component {
                             this.setState({ parentId: e.target.value })
                           }
                         >
-                          <option key={-1} value={null}>
-
-                          </option>
+                          <option key={-1} value={null}></option>
                           {this.state.categories.map((option) => (
                             <option key={option.id} value={option.id}>
                               {option.title}
                             </option>
                           ))}
-
                         </Input>
                       </FormGroup>
 
                       <FormGroup className="ml-1">
                         <Label check>
-                          <Input type="checkbox"
+                          <Input
+                            type="checkbox"
                             value={this.state.isEnabled}
                             onChange={(e) =>
                               // alert(e.target.value)
-                              this.setState({ isEnabled: e.target.value == "on" ? true : false })
+                              this.setState({
+                                isEnabled:
+                                  e.target.value == "on" ? true : false,
+                              })
                             }
-                            name="isEnabled" defaultChecked />
-                            IsActive?
+                            name="isEnabled"
+                            defaultChecked
+                          />
+                          IsActive?
                           {/* {this.state.isEnabled ? "active" : "not active"} */}
                         </Label>
                       </FormGroup>
 
-                      {this.state.Loading ?
-                        <Button disabled={true} color="primary" className="mb-1">
+                      {this.state.Loading ? (
+                        <Button
+                          disabled={true}
+                          color="primary"
+                          className="mb-1"
+                        >
                           <Spinner color="white" size="sm" type="grow" />
                           <span className="ml-50">Loading...</span>
                         </Button>
-                        :
+                      ) : (
                         <Button color="primary">submit</Button>
-                      }
-
+                      )}
                     </Form>
                   </ModalBody>
                 </Modal>

@@ -16,10 +16,7 @@ import { ChevronDown } from "react-feather";
 import { AgGridReact } from "ag-grid-react";
 import "../../../assets/scss/plugins/tables/_agGridStyleOverride.scss";
 
-import {
-  CheckCircle,
-  XCircle,
-} from 'react-feather'
+import { CheckCircle, XCircle } from "react-feather";
 
 import { toast } from "react-toastify";
 import { Edit } from "react-feather";
@@ -28,7 +25,7 @@ import { NavLink } from "react-router-dom";
 import Spinner from "../../../components/@vuexy/spinner/Loading-spinner";
 import agent from "../../../core/services/agent";
 import { history } from "../../../history";
-import ModalForm from "./ModalForm";
+import Create from "./Create";
 
 class Table extends React.Component {
   state = {
@@ -46,13 +43,18 @@ class Table extends React.Component {
     },
     columnDefs: [
       {
-        headerName: "EnglishName",
+        headerName: "English Name",
         field: "title",
         filter: true,
       },
       {
-        headerName: "PersianName",
+        headerName: "Persian Name",
         field: "persianTitle",
+        filter: true,
+      },
+      {
+        headerName: "service Name",
+        field: "serviceName",
         filter: true,
       },
       {
@@ -63,15 +65,14 @@ class Table extends React.Component {
           console.log(params);
           return params.value === true ? (
             // <input readOnly checked type="check" className="badge badge-pill badge-light-success" />
+            <div className=" badge badge-pill badge-light-success">
+              <CheckCircle className="text-center" />
+            </div>
+          ) : (
             <div className="badge badge-pill badge-light-warning">
               <XCircle />
             </div>
-
-          ) : (
-              <div className=" badge badge-pill badge-light-success">
-                <CheckCircle className="text-center" />
-              </div>
-            );
+          );
         },
       },
       {
@@ -84,10 +85,10 @@ class Table extends React.Component {
           return params.value === true ? (
             <div className="badge badge-pill badge-light-success">Active</div>
           ) : (
-              <div className="badge badge-pill badge-light-warning">
-                DeActivated
-              </div>
-            );
+            <div className="badge badge-pill badge-light-warning">
+              DeActivated
+            </div>
+          );
         },
       },
       {
@@ -122,8 +123,8 @@ class Table extends React.Component {
     });
   }
 
-  GetAllCategory = async (newCategory) => {
-    const rowData = [...this.state.rowData, newCategory];
+  GetAllCategory = async (newArea) => {
+    const rowData = [...this.state.rowData, newArea];
     this.setState({ rowData });
   };
 
@@ -156,8 +157,7 @@ class Table extends React.Component {
     const { rowData, columnDefs, defaultColDef } = this.state;
     return (
       <React.Fragment>
-
-        <ModalForm GetAllCategory={this.GetAllCategory}></ModalForm>
+        <Create GetAllCategory={this.GetAllCategory}></Create>
 
         <Card className="overflow-hidden agGrid-card">
           {/* <CardHeader>
@@ -179,11 +179,11 @@ class Table extends React.Component {
                         {this.gridApi
                           ? this.state.currenPageSize
                           : "" * this.state.getPageSize -
-                          (this.state.getPageSize - 1)}{" "}
+                            (this.state.getPageSize - 1)}{" "}
                         -{" "}
                         {this.state.rowData.length -
                           this.state.currenPageSize * this.state.getPageSize >
-                          0
+                        0
                           ? this.state.currenPageSize * this.state.getPageSize
                           : this.state.rowData.length}
                         of {this.state.rowData.length}
@@ -248,26 +248,26 @@ class Table extends React.Component {
                 {this.state.loading ? (
                   <Spinner></Spinner>
                 ) : (
-                    <ContextLayout.Consumer>
-                      {(context) => (
-                        <AgGridReact
-                          gridOptions={{}}
-                          // rowSelection="multiple"
-                          defaultColDef={defaultColDef}
-                          columnDefs={columnDefs}
-                          rowData={rowData}
-                          onGridReady={this.onGridReady}
-                          colResizeDefault={"shift"}
-                          animateRows={true}
-                          floatingFilter={true}
-                          pagination={true}
-                          paginationPageSize={this.state.paginationPageSize}
-                          pivotPanelShow="always"
-                          enableRtl={context.state.direction === "rtl"}
-                        />
-                      )}
-                    </ContextLayout.Consumer>
-                  )}
+                  <ContextLayout.Consumer>
+                    {(context) => (
+                      <AgGridReact
+                        gridOptions={{}}
+                        // rowSelection="multiple"
+                        defaultColDef={defaultColDef}
+                        columnDefs={columnDefs}
+                        rowData={rowData}
+                        onGridReady={this.onGridReady}
+                        colResizeDefault={"shift"}
+                        animateRows={true}
+                        floatingFilter={true}
+                        pagination={true}
+                        paginationPageSize={this.state.paginationPageSize}
+                        pivotPanelShow="always"
+                        enableRtl={context.state.direction === "rtl"}
+                      />
+                    )}
+                  </ContextLayout.Consumer>
+                )}
               </div>
             )}
           </CardBody>

@@ -347,6 +347,7 @@ namespace CallInDoor.Controllers
                 Area.Title,
                 Area.PersianTitle,
                 Area.ServiceId,
+             serviceName=   Area.Service?.Name,
                 Area.IsEnabled,
                 Area.IsProfessional,
             };
