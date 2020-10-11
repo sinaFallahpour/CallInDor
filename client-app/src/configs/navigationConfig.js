@@ -55,7 +55,7 @@ const navigationConfig = [
         navLink: "/pages/areas",
         parentOf: [
           "/pages/areas",
-          "/pages/areas/:id"
+          // "/pages/areas/:id"
         ]
       }
     ]

@@ -37,7 +37,7 @@ const ReactSelect = ({
             onChange({ currentTarget: { name: name, value: e?.value } });
           }}
         />
-        {error && <div className="alert alert-danger">{error}</div>}
+        {error && <div className="mt-1 alert alert-danger">{error}</div>}
       </div>
     </>
   );

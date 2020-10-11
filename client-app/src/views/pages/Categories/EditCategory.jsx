@@ -89,8 +89,6 @@ class EditCategory extends Form {
   };
 
 
-
-
   async populatingCategories() {
     const { data } = await agent.Category.list();
     let categories = data.result.data;
@@ -105,14 +103,12 @@ class EditCategory extends Form {
 
   async populatinCategory() {
 
-
     const catId = this.props.match.params.id;
     try {
       const { data } = await agent.Category.details(catId);
       let { id, title, persianTitle, isEnabled, serviceId, parentId } = data.result.data;
       this.setState({ data: { id, title: title, persianTitle, serviceId, parentId }, isEnabled });
 
-      console.log(this.state)
     }
     catch (ex) {
       console.clear()
@@ -125,16 +121,12 @@ class EditCategory extends Form {
   }
 
 
-
-
-
   async componentDidMount() {
     this.populatingCategories();
     this.populatingServiceTypes();
     this.populatinCategory();
 
   }
-
 
 
 

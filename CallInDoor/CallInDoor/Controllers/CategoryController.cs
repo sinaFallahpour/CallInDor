@@ -234,8 +234,6 @@ namespace CallInDoor.Controllers
 
 
 
-
-
         #region Area
 
 

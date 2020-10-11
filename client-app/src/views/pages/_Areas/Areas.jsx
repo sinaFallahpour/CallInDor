@@ -8,7 +8,7 @@ class Services extends React.Component {
     return (
       <React.Fragment>
         <Breadcrumbs
-          breadCrumbTitle="Services "
+          breadCrumbTitle="Areas "
           breadCrumbParent="Forms & Tables"
           breadCrumbActive="Aggrid Table"
         />

@@ -13,19 +13,53 @@ export const searchResult = [
         icon: "Circle"
       },
       {
-        id: 108,
+        id: 109,
+        title: "create",
+        target: "create category",
+        link: "/pages/categories/Create",
+        icon: "Circle"
+      },
+      {
+        id: 110,
         title: "services",
         target: "services",
         link: "/pages/Services",
         icon: "Circle"
       },
       {
-        id: 108,
-        title: "createservices",
-        target: "createservices",
+        id: 111,
+        title: "create service",
+        target: "create service",
         link: "/pages/Services/Create",
         icon: "Circle"
       },
+
+
+
+      {
+        id: 112,
+        title: "Areas",
+        target: "Areas",
+        link: "/pages/Areas",
+        icon: "Circle"
+      },
+      // {
+      //   id: 113,
+      //   title: "create Area",
+      //   target: "create Area",
+      //   link: "/pages/Areas/Create",
+      //   icon: "Circle"
+      // },
+
+
+
+
+
+
+
+
+
+
       {
         id: 1,
         target: "AnalyticsDashboard",

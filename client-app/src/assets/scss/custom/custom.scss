@@ -1,0 +1,28 @@
+/* custom tags input (همون کورس آکادمی) */
+.topics {
+  /* border: 1px solid black; */
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+.topics > li {
+  padding: 4px;
+  margin: 5px;
+  border-radius: 4px;
+  text-align: left;
+}
+.topics > li > span {
+  border: 1px solid rgb(56, 35, 35);
+  height: 100%;
+  display: block;
+  padding: 10px;
+  border-radius: 8px;
+}
+.topics > li > i {
+  border: 1px solid black;
+  justify-content: space-between;
+}
+.topics > li > span > i {
+  justify-content: space-between;
+  float: right;
+}

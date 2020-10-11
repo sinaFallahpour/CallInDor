@@ -24,9 +24,11 @@ import {
 import { toast } from "react-toastify";
 import { Edit } from "react-feather";
 import { NavLink } from "react-router-dom";
+
 import Spinner from "../../../components/@vuexy/spinner/Loading-spinner";
 import agent from "../../../core/services/agent";
 import { history } from "../../../history";
+import ModalForm from "./ModalForm";
 
 class Table extends React.Component {
   state = {
@@ -53,12 +55,6 @@ class Table extends React.Component {
         field: "persianTitle",
         filter: true,
       },
-      {
-        headerName: "Color",
-        field: "color",
-        filter: true,
-      },
-
       {
         headerName: "Professional status",
         field: "isProfessional",
@@ -160,15 +156,18 @@ class Table extends React.Component {
     const { rowData, columnDefs, defaultColDef } = this.state;
     return (
       <React.Fragment>
+
+        <ModalForm GetAllCategory={this.GetAllCategory}></ModalForm>
+
         <Card className="overflow-hidden agGrid-card">
-          <CardHeader>
+          {/* <CardHeader>
             <Button.Ripple
               color="primary"
-              onClick={() => history.push("/pages/Services/Create")}
+              onClick={() => history.push("/pages/Areas/Create")}
             >
               Create New Service
             </Button.Ripple>
-          </CardHeader>
+          </CardHeader> */}
 
           <CardBody className="py-0">
             {this.state.rowData === null ? null : (

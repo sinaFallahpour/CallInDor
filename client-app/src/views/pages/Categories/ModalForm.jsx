@@ -90,15 +90,15 @@ class ModalForm extends React.Component {
         parentId,
       } = this.state;
 
-    const serviceName =  this.state.services.find(c => c.id == serviceId).name
-    const parentName =  this.state.categories.find(c => c.id == parentId)?.persianTitle
+      const serviceName = this.state.services.find(c => c.id == serviceId).name
+      const parentName = this.state.categories.find(c => c.id == parentId)?.persianTitle
 
-      const obj = { title, persianTitle, isEnabled, serviceId, parentId,serviceName,parentName };
+      const obj = { title, persianTitle, isEnabled, serviceId, parentId, serviceName, parentName };
       const { data } = await agent.Category.create(obj);
       if (data.result.status) {
         toast.success(data.result.message)
-        
-        obj.id=data.result.data.id
+
+        obj.id = data.result.data.id
         this.props.GetAllCategory(obj)
       }
       setTimeout(() => {
@@ -201,7 +201,7 @@ class ModalForm extends React.Component {
                           }
                         >
                           <option key={-1} value={null}>
-                           
+
                           </option>
                           {this.state.services.map((option) => (
                             <option key={option.id} value={option.id}>
@@ -221,7 +221,7 @@ class ModalForm extends React.Component {
                           }
                         >
                           <option key={-1} value={null}>
-                         
+
                           </option>
                           {this.state.categories.map((option) => (
                             <option key={option.id} value={option.id}>

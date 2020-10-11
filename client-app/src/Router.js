@@ -188,6 +188,7 @@ const EditCategory = lazy(() => import("./views/pages/Categories/EditCategory"))
 
 
 const Areas = lazy(() => import("./views/pages/_Areas/Areas"));
+// const CreateArea = lazy(() => import("./views/pages/_Areas/Create"));
 const EditArea = lazy(() => import("./views/pages/_Areas/EditService"));
 
 
@@ -325,6 +326,7 @@ class AppRouter extends React.Component {
 
 
             <RouteConfig isLoggedIn={isLoggedIn} title="Areas" exact path="/pages/areas" component={Areas} />
+            {/* <RouteConfig isLoggedIn={isLoggedIn} title="Create Area" exact path="/pages/areas/Create" component={CreateArea} /> */}
             <RouteConfig isLoggedIn={isLoggedIn} title="Edit Area" exact path="/pages/areas/:id" component={EditArea} />
 
 
