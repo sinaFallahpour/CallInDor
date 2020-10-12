@@ -217,9 +217,9 @@ class Create extends Form {
           obj.serviceName = data.result.data.serviceName;
           this.props.editToAreas(obj);
           toast.success(data.result.message);
-          setInterval(() => {
-            this.cleanData();
-          }, 600);
+          // setInterval(() => {
+          //   this.cleanData();
+          // }, 600);
         }
       }
     } catch (ex) {
@@ -228,7 +228,7 @@ class Create extends Form {
         const errorscustom = ex?.response?.data?.errors;
         this.setState({ errorscustom });
       } else if (ex?.response) {
-        const errorMessage = ex?.response?.data?.message;
+        const errorMessage = ex?.response?.data?.Message;
         this.setState({ errorMessage });
         toast.error(errorMessage, {
           autoClose: 10000,
@@ -263,7 +263,7 @@ class Create extends Form {
         <Col sm="13" className="mx-auto">
           <Card>
             <CardHeader>
-              <CardTitle> Create Area </CardTitle>
+              <CardTitle> {addNew ? "Create Area" : "Edit Area"} </CardTitle>
             </CardHeader>
             <CardBody>
               {errorscustom &&
@@ -355,8 +355,8 @@ class Create extends Form {
                 ) : addNew ? (
                   this.renderButton("Add")
                 ) : (
-                  this.renderButton("Edit")
-                )}
+                      this.renderButton("Edit")
+                    )}
               </form>
             </CardBody>
           </Card>

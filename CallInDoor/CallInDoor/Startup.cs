@@ -149,10 +149,6 @@ namespace CallInDoor
 
 
 
-
-
-
-
             services.AddScoped<IAccountService, AccountService>();
             services.AddScoped<IJwtManager, JwtManager>();
             services.AddScoped<ICommonService, CommonService>();

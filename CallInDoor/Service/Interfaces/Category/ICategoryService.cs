@@ -24,8 +24,21 @@ namespace Service.Interfaces.Category
         //Task<bool> Update(ServiceTBL model);
         //Task<bool> Update(ServiceTBL serviceFromDB, CreateServiceDTO model);
 
+
+
+
+
+
+
+
+        //public Task<List<AreaTBL>> GetAreaById(int Id)
+
+         Task<AreaTBL> GetAreaById(int Id);
+        Task<AreaTBL> UpdateArea(AreaTBL areaFreomDB, CreateAreaDTO model);
         Task<AreaTBL> CreateArea(CreateAreaDTO model);
         Task<(bool succsseded, List<string> result)> ValidateArea(CreateAreaDTO model);
+        Task<(bool succsseded, List<string> result)> ValidateAreaForEdit(CreateAreaDTO model, AreaTBL areaFromDB);
+
 
     }
 }

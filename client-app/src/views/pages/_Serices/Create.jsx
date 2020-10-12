@@ -118,7 +118,7 @@ class ModalForm extends Form {
         const errorscustom = ex?.response?.data?.errors;
         this.setState({ errorscustom });
       } else if (ex?.response) {
-        const errorMessage = ex?.response?.data?.message;
+        const errorMessage = ex?.response?.data?.Message;
         this.setState({ errorMessage });
         toast.error(errorMessage, {
           autoClose: 10000,

@@ -87,7 +87,7 @@ const Areas = {
   list: () => requests.get("/Area/GetAllAreaForAdmin"),
   details: (id) => requests.get(`/Area/GetAreaByIdForAdmin?id=${id}`),
   create: (area) => requests.post("/Area/CreateArea", area),
-  update: (area) => requests.put("/api/Area/UpdateArea", area),
+  update: (area) => requests.put("/Area/UpdateArea", area),
   // delete: (id) => requests.del(`/activities/${id}`)
 };
 

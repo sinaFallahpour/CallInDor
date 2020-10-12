@@ -339,7 +339,7 @@ namespace CallInDoor.Controllers
 
             if (!model.IsProfessional)
                 model.Specialities = null;
-          
+
             var Area = await _categoryService.CreateArea(model);
             var area = new
             {
@@ -347,7 +347,7 @@ namespace CallInDoor.Controllers
                 Area.Title,
                 Area.PersianTitle,
                 Area.ServiceId,
-             serviceName=   Area.Service?.Name,
+                serviceName = Area.Service?.Name,
                 Area.IsEnabled,
                 Area.IsProfessional,
             };
@@ -376,14 +376,14 @@ namespace CallInDoor.Controllers
 
 
 
-        #region Create
+        #region UpdateArea
 
         /// <summary>
         ///  ایجاد Area
         /// </summary>
-        /// <param name="CreateCategory"></param>
+        /// <param name="UpdateArea"></param>
         /// <returns></returns>
-        [HttpPost("/api/Area/UpdateArea")]
+        [HttpPut("/api/Area/UpdateArea")]
         [Authorize(Roles = PublicHelper.ADMINROLE)]
         public async Task<ActionResult> UpdateArea([FromBody] CreateAreaDTO model)
         {
@@ -391,17 +391,22 @@ namespace CallInDoor.Controllers
             if (!checkToken)
                 return Unauthorized(new ApiResponse(401, PubicMessages.UnAuthorizeMessage));
 
+            var area =await _categoryService.GetAreaById(model.Id);
+            if (area == null)
+            {
+                return NotFound(new ApiResponse(404, "area " + PubicMessages.NotFoundMessage));
+            }
 
             //validate
-            var res = await _categoryService.ValidateArea(model);
+            var res = await _categoryService.ValidateAreaForEdit(model, area);
             if (!res.succsseded)
                 return BadRequest(new ApiBadRequestResponse(res.result));
 
             if (!model.IsProfessional)
                 model.Specialities = null;
 
-            var Area = await _categoryService.CreateArea(model);
-            var area = new
+            var Area = await _categoryService.UpdateArea(area,model);
+            var areResponse = new
             {
                 Area.Id,
                 Area.Title,
@@ -410,6 +415,7 @@ namespace CallInDoor.Controllers
                 serviceName = Area.Service?.Name,
                 Area.IsEnabled,
                 Area.IsProfessional,
+                //Specialities=area.Specialities.  Area.Specialities
             };
 
             if (Area != null)
@@ -417,7 +423,7 @@ namespace CallInDoor.Controllers
                 return Ok(new ApiOkResponse(new DataFormat()
                 {
                     Status = 1,
-                    data = area,
+                    data = areResponse,
                     Message = PubicMessages.SuccessMessage
                 },
                    PubicMessages.SuccessMessage

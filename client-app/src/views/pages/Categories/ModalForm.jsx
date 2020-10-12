@@ -128,7 +128,7 @@ class ModalForm extends React.Component {
         const errors = ex?.response?.data?.errors;
         this.setState({ errors });
       } else if (ex?.response) {
-        const errorMessage = ex?.response?.data?.message;
+        const errorMessage = ex?.response?.data?.Message;
         this.setState({ errorMessage });
         toast.error(errorMessage, {
           autoClose: 10000,
@@ -271,8 +271,8 @@ class ModalForm extends React.Component {
                           <span className="ml-50">Loading...</span>
                         </Button>
                       ) : (
-                        <Button color="primary">submit</Button>
-                      )}
+                          <Button color="primary">submit</Button>
+                        )}
                     </Form>
                   </ModalBody>
                 </Modal>

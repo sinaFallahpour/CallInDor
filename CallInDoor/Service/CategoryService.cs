@@ -156,6 +156,22 @@ namespace Service
 
         #region  Area
 
+
+
+
+        /// <summary>
+        /// get Area by Id
+        /// </summary>
+        /// <param name="Id"></param>
+        /// <returns></returns>
+        public Task<AreaTBL> GetAreaById(int Id)
+        {
+            return _context.AreaTBL.Where(c => c.Id == Id).Include(c => c.Specialities).FirstOrDefaultAsync();
+        }
+
+
+
+
         /// <summary>
         /// CreateArea
         /// </summary>
@@ -173,7 +189,7 @@ namespace Service
                 //Specialities = model.Specialities,
                 ServiceId = model.ServiceId,
                 IsEnabled = model.IsEnabled,
-                
+
             };
 
             Area.Specialities = new List<SpecialityTBL>();
@@ -201,6 +217,70 @@ namespace Service
                 return null;
             }
         }
+
+
+
+
+
+        /// <summary>
+        /// UpdateArea
+        /// </summary>
+        /// <param name=""></param>
+        /// <returns></returns>
+        public async Task<AreaTBL> UpdateArea(AreaTBL areaFreomDB, CreateAreaDTO model)
+        {
+
+            try
+            {
+                if (model == null) return null;
+                areaFreomDB.Title = model.Title;
+                areaFreomDB.PersianTitle = model.PersianTitle;
+                areaFreomDB.IsEnabled = model.IsEnabled;
+                areaFreomDB.ServiceId = model.ServiceId;
+                areaFreomDB.IsProfessional = model.IsProfessional;
+                if (!areaFreomDB.IsProfessional)
+                    areaFreomDB.Specialities = null;
+
+                else
+                {
+
+
+
+                    var specilaities = new List<SpecialityTBL>();
+
+
+                    //_context.SpecialityTBL.RemoveRange(areaFreomDB.Specialities);
+                    //areaFreomDB.Specialities = new List<SpecialityTBL>();
+                    if (model.Specialities != null)
+                    {
+                        if (areaFreomDB.Specialities != null)
+                            _context.SpecialityTBL.RemoveRange(areaFreomDB.Specialities);
+
+                        foreach (var item in model.Specialities)
+                        {
+                            var speciality = new SpecialityTBL()
+                            {
+                                Area = areaFreomDB,
+                                EnglishName = item.EnglishName,
+                                PersianName = item.PersianName,
+                            };
+                            specilaities.Add(speciality);
+                            //areaFreomDB.Specialities.Add(speciality);
+                        }
+                        areaFreomDB.Specialities = specilaities;
+                    }
+                }
+
+                await _context.SaveChangesAsync();
+                return areaFreomDB;
+            }
+            catch (Exception ex)
+            {
+                return null;
+            }
+
+        }
+
 
 
 
@@ -261,6 +341,69 @@ namespace Service
 
             return (IsValid, Errors);
         }
+
+
+
+
+
+
+        /// <summary>
+        /// ولیدیت کردن آبجکت  چت سرویس
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns></returns>
+        public async Task<(bool succsseded, List<string> result)> ValidateAreaForEdit(CreateAreaDTO model, AreaTBL areaFromDB)
+        {
+            bool IsValid = true;
+            List<string> Errors = new List<string>();
+
+
+
+            var isTittleExist = await _context.AreaTBL.AnyAsync(c => c.Title == model.Title && c.Id != areaFromDB.Id);
+            if (isTittleExist)
+            {
+                IsValid = false;
+                Errors.Add($"{model.Title} already exist.");
+            }
+
+            var isPersianTittleExist = await _context.AreaTBL.AnyAsync(c => c.PersianTitle == model.PersianTitle && c.Id != model.Id);
+            if (isPersianTittleExist)
+            {
+                IsValid = false;
+                Errors.Add($"{model.PersianTitle} already exist.");
+            }
+
+            if (model.IsProfessional)
+                if (model.Specialities == null)
+                {
+                    IsValid = false;
+                    Errors.Add("Specialities is Required");
+                }
+
+            if (model.ServiceId == null)
+            {
+                IsValid = false;
+                var errors = new List<string>();
+                Errors.Add("service Is required");
+            }
+
+
+            //validate serviceTypes
+            var serviceFromDb = await _context
+            .ServiceTBL
+            .Where(c => c.Id == model.ServiceId)
+            .FirstOrDefaultAsync();
+
+            if (serviceFromDb == null)
+            {
+                IsValid = false;
+                Errors.Add("service Not Exist");
+            }
+
+            return (IsValid, Errors);
+        }
+
+
 
 
         #endregion
