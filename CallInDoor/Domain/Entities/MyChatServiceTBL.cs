@@ -93,9 +93,9 @@ namespace Domain.Entities
 
 
         // relation With BaseMyChatTBL
-        public virtual BaseMyServiceTBL BaseMyChatTBL { get; set; }
+        public  BaseMyServiceTBL BaseMyChatTBL { get; set; }
 
-        //[ForeignKey("BaseMyChatTBL")]
+        [ForeignKey("BaseMyChatTBL")]
         public int? BaseId { get; set; }
 
 

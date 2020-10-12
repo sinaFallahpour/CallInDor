@@ -12,19 +12,23 @@ namespace Domain.Entities
     [Table("MyCourseService")]
     public class MyCourseServiceTBL : BaseEntity<int>
     {
-        [MaxLength(600)]
+        [MaxLength(1000)]
         public string Description { get; set; }
 
 
 
         //public string Category { get; set; }
-        //public string NewCategory { get; set; }
+
+        [MaxLength(200)]
+        public string NewCategory { get; set; }
 
 
 
         public string TotalLenght { get; set; }
 
-        public int MyProperty { get; set; }
+
+        [Range(0, double.MaxValue)]
+        public double Price { get; set; }
 
 
         public int DisCountPercent { get; set; }
@@ -39,14 +43,20 @@ namespace Domain.Entities
 
 
 
-
-
-
-
         #region Relation
 
-        public virtual ICollection<TopicsTBL> TopicsTBLs { get; set; }
+        /// <summary>
+        /// لیست تاپیک های یک کورس
+        /// </summary>
+        public virtual ICollection<MyCourseTopics> TopicsTBLs { get; set; }
 
+
+
+        // relation With BaseMyChatTBL
+        public BaseMyServiceTBL BaseMyChatTBL { get; set; }
+
+        [ForeignKey("BaseMyChatTBL")]
+        public int? BaseId { get; set; }
 
         #endregion 
     }

@@ -48,6 +48,8 @@ class EditCategory extends Form {
       // parentId: null,
     },
     isEnabled: null,
+    isForCourse: null,
+    isSubCategory: null,
     categories: [],
     services: [],
 
@@ -81,7 +83,7 @@ class EditCategory extends Form {
   };
 
   async populatingCategories() {
-    const { data } = await agent.Category.list();
+    const { data } = await agent.Category.listParentCatgory();
     let categories = data.result.data;
     this.setState({ categories });
   }
@@ -101,12 +103,16 @@ class EditCategory extends Form {
         title,
         persianTitle,
         isEnabled,
+        isForCourse,
+        isSubCategory,
         serviceId,
         parentId,
       } = data.result.data;
       this.setState({
         data: { id, title: title, persianTitle, serviceId, parentId },
         isEnabled,
+        isForCourse,
+        isSubCategory
       });
     } catch (ex) {
       console.clear();
@@ -135,7 +141,10 @@ class EditCategory extends Form {
     const errorscustom = [];
     this.setState({ errorMessage, errorscustom });
     try {
-      const obj = { ...this.state.data, isEnabled: this.state.isEnabled };
+
+
+      const { isEnabled, isForCourse, isSubCategory } = this.state
+      const obj = { ...this.state.data, isEnabled, isForCourse, isSubCategory };
       const { data } = await agent.Category.update(obj);
 
       if (data.result.status) {
@@ -201,8 +210,7 @@ class EditCategory extends Form {
 
               {/* {this.renderCheckBox("isEnabled", "Is Enabled", "checbox")} */}
 
-              <div className="form-group">
-                <label htmlFor="isEnabled">Is Enabled ?</label>
+              <div className="form-group _customCheckbox">
                 <input
                   value={this.state.isEnabled}
                   checked={this.state.isEnabled}
@@ -214,6 +222,38 @@ class EditCategory extends Form {
                   type="checkbox"
                   className="ml-1"
                 />
+                <label className="ml-2" htmlFor="isEnabled">Is Enabled ?</label>
+              </div>
+
+              <div className="form-group _customCheckbox">
+                <input
+                  value={this.state.isForCourse}
+                  checked={this.state.isForCourse}
+                  onChange={(e) =>
+                    this.setState({ isForCourse: !this.state.isForCourse })
+                  }
+                  name="isForCourse"
+                  id="isForCourse"
+                  type="checkbox"
+                  className="ml-1"
+                />
+                <label className="ml-2" htmlFor="isForCourse">Is this category for Course?  </label>
+
+              </div>
+
+              <div className="form-group _customCheckbox">
+                <input
+                  value={this.state.isSubCategory}
+                  checked={this.state.isSubCategory}
+                  onChange={(e) =>
+                    this.setState({ isSubCategory: !this.state.isSubCategory })
+                  }
+                  name="isSubCategory"
+                  id="isSubCategory"
+                  type="checkbox"
+                  className="ml-1"
+                />
+                <label className="ml-2" htmlFor="isSubCategory">Is this a sub category ?</label>
               </div>
 
               {this.state.Loading ? (

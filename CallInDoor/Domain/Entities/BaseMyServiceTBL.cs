@@ -38,7 +38,7 @@ namespace Domain.Entities
         public ServiceType ServiceType { get; set; }
 
 
-        public bool  IsActive { get; set; }
+        public bool IsActive { get; set; }
 
 
         #region  Relation
@@ -55,22 +55,23 @@ namespace Domain.Entities
         public int? SubCatId { get; set; }
 
 
-
-
         /// <summary>
         /// 1 به 1 لا جدول MyChatService
         /// </summary>
-        public virtual MyChatServiceTBL MyChatsService { get; set; }
-
+        public MyChatServiceTBL MyChatsService { get; set; }
 
         /// <summary>
         /// رابطه 1 به 1 با حدول سرویس هایی از نوع سرویس
         /// </summary>
-        public virtual MyServiceServiceTBL MyServicesService { get; set; }
+        public MyServiceServiceTBL MyServicesService { get; set; }
+
+        /// <summary>
+        /// رابطه 1 به 1 با حدول سرویس هایی از نوع کورس
+        /// </summary>
+        public MyCourseServiceTBL MyCourseService { get; set; }
 
 
-
-        public virtual ServiceTBL ServiceTbl { get; set; }
+        public ServiceTBL ServiceTbl { get; set; }
 
         [ForeignKey("ServiceTbl")]
         public int? ServiceId { get; set; }

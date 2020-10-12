@@ -13,7 +13,8 @@ namespace Domain.DTO.Category
         public bool IsEnabled { get; set; }
         public int? ParentId { get; set; }
         public int? ServiceId { get; set; }
-
+        public bool IsForCourse { get; set; }
+        public bool IsSubCategory { get; set; }
         public List<CategoryListDTO> Children { get; set; }
     }
 }

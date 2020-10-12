@@ -122,6 +122,18 @@ namespace Domain
         public DbSet<MyServiceServiceTBL> MyServiceServiceTBL { get; set; }
 
 
+        /// <summary>
+        /// این جدول سرویس های که فقط از جنس کورس هستند
+        /// </summary>
+        public DbSet<MyCourseServiceTBL> MyCourseServiceTBL { get; set; }
+
+        /// <summary>
+        /// تاپیک های کورس های من
+        /// </summary>
+        public DbSet<MyCourseTopics> MyCourseTopicsTBL { get; set; }
+
+
+        
 
         public DbSet<Test> Tests { get; set; }
 

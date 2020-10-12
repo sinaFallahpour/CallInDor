@@ -126,6 +126,13 @@ namespace Domain.DTO.Service
         public int? SubCatId { get; set; }
 
 
+  
+        public int? AreaId { get; set; }
+ 
+        public int? SpecialityId { get; set; }
+
+
+
         [Required(ErrorMessage = "{0} is  Required")]
         [Display(Name = "Service")]
         public int? ServiceId { get; set; }

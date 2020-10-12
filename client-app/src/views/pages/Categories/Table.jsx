@@ -13,11 +13,15 @@ import {
 import { AgGridReact } from "ag-grid-react";
 import { ContextLayout } from "../../../utility/context/Layout";
 
-import { Edit, Trash2, ChevronDown } from "react-feather";
+import { Edit, Trash2, ChevronDown, Check } from "react-feather";
+
+import Checkbox from "../../../components/@vuexy/checkbox/CheckboxesVuexy";
+
+
 import "../../../assets/scss/plugins/tables/_agGridStyleOverride.scss";
 import { toast } from "react-toastify";
 
-import ModalForm from "./ModalForm";
+import Create from "./Create";
 // import ModalEditForm from "./ModalEditForm";
 
 import Spinner from "../../../components/@vuexy/spinner/Loading-spinner";
@@ -68,7 +72,6 @@ class Table extends React.Component {
         field: "parentName",
         filter: true,
         // width: 200,
-
         cellRenderer: function (params) {
           if (!params.data) return "";
           if (!params.value) return `_ `;
@@ -90,12 +93,68 @@ class Table extends React.Component {
           return params.value === true ? (
             <div className="badge badge-pill badge-light-success">Active</div>
           ) : (
-            <div className="badge badge-pill badge-light-warning">
-              DeActivated
-            </div>
-          );
+              <div className="badge badge-pill badge-light-warning">
+                DeActivated
+              </div>
+            );
         },
       },
+      {
+        headerName: "is For Course",
+        field: "isForCourse",
+        filter: true,
+        cellRendererFramework: (params) => {
+          console.log(params);
+          return params.value === true ? (
+            <Checkbox
+              disabled
+              color="primary"
+              icon={<Check className="vx-icon" size={16} />}
+              label=""
+              defaultChecked={true}
+            />
+
+          ) : (
+              <Checkbox
+                disabled
+                color="primary"
+                icon={<Check className="vx-icon" size={16} />}
+                label=""
+                defaultChecked={false}
+              />
+            );
+        },
+      },
+      {
+        headerName: "Is this a sub category ?",
+        field: "isSubCategory",
+        filter: true,
+        cellRendererFramework: (params) => {
+          console.log(params);
+          return params.value === true ? (
+            <Checkbox
+              disabled
+              color="primary"
+              icon={<Check className="vx-icon" size={16} />}
+              label=""
+              defaultChecked={true}
+            />
+
+          ) : (
+              <Checkbox
+                disabled
+                color="primary"
+                icon={<Check className="vx-icon" size={16} />}
+                label=""
+                defaultChecked={false}
+              />
+
+
+            );
+        },
+      },
+
+
 
       {
         headerName: "",
@@ -124,7 +183,7 @@ class Table extends React.Component {
   };
 
   async componentDidMount() {
-    const { data } = await agent.Category.list();
+    const { data } = await agent.Category.listCategory();
 
     if (data?.result) {
       setTimeout(() => {
@@ -173,7 +232,7 @@ class Table extends React.Component {
       <React.Fragment>
         {/* {this.state.currentCategory!=null? <ModalEditForm /> :null  } */}
         {/* <ModalEditForm/> */}
-        <ModalForm GetAllCategory={this.GetAllCategory}></ModalForm>
+        <Create GetAllCategory={this.GetAllCategory}></Create>
         <Card className="overflow-hidden agGrid-card">
           <CardBody className="py-0">
             {this.state.rowData === null ? null : (
@@ -185,11 +244,11 @@ class Table extends React.Component {
                         {this.gridApi
                           ? this.state.currenPageSize
                           : "" * this.state.getPageSize -
-                            (this.state.getPageSize - 1)}{" "}
+                          (this.state.getPageSize - 1)}{" "}
                         -{" "}
                         {this.state.rowData.length -
                           this.state.currenPageSize * this.state.getPageSize >
-                        0
+                          0
                           ? this.state.currenPageSize * this.state.getPageSize
                           : this.state.rowData.length}{" "}
                         of {this.state.rowData.length}
@@ -254,26 +313,26 @@ class Table extends React.Component {
                 {this.state.loading ? (
                   <Spinner></Spinner>
                 ) : (
-                  <ContextLayout.Consumer>
-                    {(context) => (
-                      <AgGridReact
-                        gridOptions={{}}
-                        // rowSelection="multiple"
-                        defaultColDef={defaultColDef}
-                        columnDefs={columnDefs}
-                        rowData={rowData}
-                        onGridReady={this.onGridReady}
-                        colResizeDefault={"shift"}
-                        animateRows={true}
-                        floatingFilter={true}
-                        pagination={true}
-                        paginationPageSize={this.state.paginationPageSize}
-                        pivotPanelShow="always"
-                        enableRtl={context.state.direction === "rtl"}
-                      />
-                    )}
-                  </ContextLayout.Consumer>
-                )}
+                    <ContextLayout.Consumer>
+                      {(context) => (
+                        <AgGridReact
+                          gridOptions={{}}
+                          // rowSelection="multiple"
+                          defaultColDef={defaultColDef}
+                          columnDefs={columnDefs}
+                          rowData={rowData}
+                          onGridReady={this.onGridReady}
+                          colResizeDefault={"shift"}
+                          animateRows={true}
+                          floatingFilter={true}
+                          pagination={true}
+                          paginationPageSize={this.state.paginationPageSize}
+                          pivotPanelShow="always"
+                          enableRtl={context.state.direction === "rtl"}
+                        />
+                      )}
+                    </ContextLayout.Consumer>
+                  )}
               </div>
             )}
           </CardBody>

@@ -60,6 +60,9 @@ namespace Service
                 PersianTitle = c.PersianTitle,
                 ServiceId = c.ServiceId,
                 Title = c.Title,
+                IsSubCategory=c.IsSubCategory,
+                IsForCourse=c.IsForCourse
+                
             }).ToList();
         }
 
@@ -99,6 +102,8 @@ namespace Service
                 ServiceId = model.ServiceId,
                 IsEnabled = model.IsEnabled,
                 ParentId = model.ParentId,
+                IsForCourse = model.IsForCourse,
+                IsSubCategory = model.IsSubCategory
             };
             try
             {
@@ -135,6 +140,8 @@ namespace Service
                 categoryFromDB.IsEnabled = model.IsEnabled;
                 categoryFromDB.ParentId = model.ParentId;
                 categoryFromDB.ServiceId = model.ServiceId;
+                categoryFromDB.IsForCourse = model.IsForCourse;
+                categoryFromDB.IsSubCategory = model.IsSubCategory;
 
                 var result = await _context.SaveChangesAsync();
                 return true;

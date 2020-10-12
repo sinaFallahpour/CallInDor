@@ -33,6 +33,16 @@ namespace Domain.DTO.Category
         public bool IsEnabled { get; set; }
 
 
+        /// <summary>
+        /// ایا این دسته بندی برای کورس ها است
+        /// </summary>
+        public bool IsForCourse { get; set; }
+
+        /// <summary>
+        /// آیا این دسته بندی از نوع ساب کتوری است
+        /// </summary>
+        public bool IsSubCategory { get; set; }
+
 
 
         #region  Relation 

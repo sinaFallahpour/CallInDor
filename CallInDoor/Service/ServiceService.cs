@@ -364,7 +364,6 @@ namespace Service
                 }
             }
 
-
             if (model.CatId == null)
             {
                 IsValid = false;
@@ -376,8 +375,6 @@ namespace Service
             if (!isUserExist)
             {
                 string err = "";
-
-
                 if (IsPersianLanguage())
                     err = string.Format("کاربری با نام کاربری {0} یافت نشد", model.UserName);
                 else
@@ -407,11 +404,6 @@ namespace Service
             List<string> Errors = new List<string>();
 
 
-            /////////Area   
-            //////Speciality
-
-
-
             var IsInServiceType = Enum.IsDefined(typeof(ServiceType), model.ServiceType);
             if (!IsInServiceType)
             {
@@ -424,6 +416,7 @@ namespace Service
                 //Errors.Add($"Invalid ServiceType Type");
                 Errors.Add(_localizer["Invalid ServiceType Type"].Value.ToString());
             }
+
 
             //validate serviceTypes
             var serviceFromDb = await _context
@@ -449,6 +442,73 @@ namespace Service
             }
 
 
+            //validate Area and  Speciality
+            if (model.AreaId == null)
+            {
+                string err = "";
+                if (IsPersianLanguage())
+                    err = $"حوضه تخصص الزامیست";
+                else
+                    err = $"Area Is Required";
+                IsValid = false;
+                Errors.Add(err);
+            }
+            else
+            {
+                var areaFromDb = await _context
+                    .AreaTBL
+                    .Where(c => c.Id == model.AreaId)
+                    .Select(c => new
+                    {
+                        c.Id,
+                        c.IsProfessional,
+                        ids = c.Specialities.Select(c => c.Id).ToList()
+                    })
+                    .FirstOrDefaultAsync();
+
+                if (areaFromDb == null)
+                {
+                    string err = "";
+
+                    if (IsPersianLanguage())
+                        err = $"تخصصی با آیدی ${model.AreaId} یافت نشد";
+                    else
+                        Errors.Add($"area with id {model.AreaId} Not Found");
+                    IsValid = false;
+                    Errors.Add(err);
+                }
+
+                if (areaFromDb.IsProfessional)
+                {
+                    if (model.SpecialityId == null)
+                    {
+                        string err2 = "";
+                        if (IsPersianLanguage())
+                            err2 = $"تخصص الزامیست";
+                        else
+                            err2 = "Speciality Is Required";
+                        IsValid = false;
+                        Errors.Add(err2);
+                    }
+                    else
+                    {
+                        if (!areaFromDb.ids.Contains((int)model.SpecialityId))
+                        {
+                            string err3 = "";
+                            if (IsPersianLanguage())
+                                err3 = "تخصص نا معتبر";
+                            else
+                                err3 = "Invalid Speciality";
+                            IsValid = false;
+                            Errors.Add(err3);
+
+                        }
+
+                    }//var specialityFromDb = await _context.SpecialityTBL.whe
+                }
+            }
+
+
             if (model.CatId != null)
             {
                 var cats = await _context.CategoryTBL
@@ -463,9 +523,17 @@ namespace Service
 
                 if (cats == null)
                 {
-                    //return (false, fileName)
+
+                    string err = "";
+                    if (IsPersianLanguage())
+                        err = $"دسته بندی با آیدی ${model.CatId} یافت نشد";
+                    else
+                        err = $"category with id {model.CatId} Not Found";
                     IsValid = false;
-                    Errors.Add($"category with id {model.CatId} Not Found");
+                    Errors.Add(err);
+
+
+
                 }
                 else
                 {
@@ -473,8 +541,13 @@ namespace Service
                     {
                         if (cats.ServiceId != serviceFromDb.Id)
                         {
+                            string err = "";
+                            if (IsPersianLanguage())
+                                err = $"دسته بندی نا معتبر است";
+                            else
+                                err = $"Invalid Category";
                             IsValid = false;
-                            Errors.Add($"Category {cats.Id} is not specific to {serviceFromDb.Id} ");
+                            Errors.Add(err);
                         }
                     }
 
@@ -483,8 +556,13 @@ namespace Service
                         var ds = cats.SubCatIds?.Contains((int)model.SubCatId);
                         if (ds == null || (ds != null && !(bool)ds))
                         {
+                            string err = "";
+                            if (IsPersianLanguage())
+                                err = $" زیر دسته نا معتبر است";
+                            else
+                                err = $"Invalid Sub Category";
                             IsValid = false;
-                            Errors.Add($"Sub Category with id {model.SubCatId} Not Found");
+                            Errors.Add(err);
                         }
                     }
                 }
@@ -497,7 +575,6 @@ namespace Service
             }
 
 
-
             var isUserExist = await _context.Users.AnyAsync(c => c.UserName == model.UserName);
             if (!isUserExist)
             {
@@ -508,8 +585,6 @@ namespace Service
                     err = string.Format("No user with the name {0} was found", model.UserName);
                 IsValid = false;
                 Errors.Add(err);
-
-
 
 
                 //IsValid = false;

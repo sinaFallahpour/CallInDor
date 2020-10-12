@@ -14,7 +14,7 @@ namespace Domain.Entities
     public class MyServiceServiceTBL : BaseEntity<int>
     {
 
-        [MaxLength(600)]
+        [MaxLength(1000)]
         public string Description { get; set; }
 
 
@@ -25,8 +25,8 @@ namespace Domain.Entities
         public bool BeTranslate { get; set; }
 
 
-        //public string Speciality { get; set; }
-        //public string Area { get; set; }
+        public string Speciality { get; set; }
+        public string Area { get; set; }
 
 
         public bool FileNeeded { get; set; }
@@ -71,24 +71,29 @@ namespace Domain.Entities
 
 
 
-        //[ForeignKey("CatId")]
-        //public virtual CategoryTBL CategoryTBL { get; set; }
 
-        //public int? CatId { get; set; }
+        [ForeignKey("AreaId")]
+        public AreaTBL AreaTBL { get; set; }
+
+        public int? AreaId { get; set; }
 
 
-        //[ForeignKey("SubCatId")]
-        //public virtual CategoryTBL SubCategoryTBL { get; set; }
 
-        //public int? SubCatId { get; set; }
+
+        [ForeignKey("SpecialityId")]
+        public SpecialityTBL SpecialityTBL { get; set; }
+
+        public int? SpecialityId { get; set; }
+
+
 
 
 
 
         // relation With BaseMyChatTBL
-        public virtual BaseMyServiceTBL BaseMyChatTBL { get; set; }
+        public BaseMyServiceTBL BaseMyChatTBL { get; set; }
 
-        //[ForeignKey("BaseMyChatTBL")]
+        [ForeignKey("BaseMyChatTBL")]
         public int? BaseId { get; set; }
 
 

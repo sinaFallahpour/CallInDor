@@ -27,11 +27,13 @@ import { Eye, Code } from "react-feather";
 import { toast } from "react-toastify";
 import agent from "../../../core/services/agent";
 
-class ModalForm extends React.Component {
+class Create extends React.Component {
   state = {
     title: "",
     persianTitle: "",
     isEnabled: true,
+    isForCourse: true,
+    isSubCategory: true,
     serviceId: null,
     parentId: null,
 
@@ -47,7 +49,7 @@ class ModalForm extends React.Component {
   };
 
   async populatingCategories() {
-    const { data } = await agent.Category.list();
+    const { data } = await agent.Category.listParentCatgory();
     let categories = data.result.data;
     this.setState({ categories });
   }
@@ -86,6 +88,8 @@ class ModalForm extends React.Component {
         title,
         persianTitle,
         isEnabled,
+        isForCourse,
+        isSubCategory,
         serviceId,
         parentId,
       } = this.state;
@@ -99,6 +103,8 @@ class ModalForm extends React.Component {
         title,
         persianTitle,
         isEnabled,
+        isForCourse,
+        isSubCategory,
         serviceId,
         parentId,
         serviceName,
@@ -201,11 +207,12 @@ class ModalForm extends React.Component {
                           required
                           minLength="1"
                           maxLength="100"
+                          className="text-right"
                         />
                       </FormGroup>
 
                       <FormGroup>
-                        <h5 className="text-bold-600">service types</h5>
+                        <h5 className="text-bold-600">Service types</h5>
                         <Input
                           required
                           type="select"
@@ -241,7 +248,7 @@ class ModalForm extends React.Component {
                         </Input>
                       </FormGroup>
 
-                      <FormGroup className="ml-1">
+                      <FormGroup className="ml-1 _customCheckbox">
                         <Label check>
                           <Input
                             type="checkbox"
@@ -256,7 +263,47 @@ class ModalForm extends React.Component {
                             name="isEnabled"
                             defaultChecked
                           />
-                          IsActive?
+                          Is Active?
+                          {/* {this.state.isEnabled ? "active" : "not active"} */}
+                        </Label>
+                      </FormGroup>
+
+                      <FormGroup className="ml-1 _customCheckbox">
+                        <Label check>
+                          <Input
+                            type="checkbox"
+                            value={this.state.isForCourse}
+                            onChange={(e) =>
+                              // alert(e.target.value)
+                              this.setState({
+                                isForCourse:
+                                  e.target.value == "on" ? true : false,
+                              })
+                            }
+                            name="isForCourse"
+                            defaultChecked
+                          />
+                          Is this category for Course?
+                          {/* {this.state.isEnabled ? "active" : "not active"} */}
+                        </Label>
+                      </FormGroup>
+
+                      <FormGroup className="ml-1 _customCheckbox">
+                        <Label check>
+                          <Input
+                            type="checkbox"
+                            value={this.state.isSubCategory}
+                            onChange={(e) =>
+                              // alert(e.target.value)
+                              this.setState({
+                                isSubCategory:
+                                  e.target.value == "on" ? true : false,
+                              })
+                            }
+                            name="isEnabled"
+                            defaultChecked
+                          />
+                          Is this a sub category ?
                           {/* {this.state.isEnabled ? "active" : "not active"} */}
                         </Label>
                       </FormGroup>
@@ -287,4 +334,4 @@ class ModalForm extends React.Component {
     );
   }
 }
-export default ModalForm;
+export default Create;

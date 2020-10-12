@@ -37,12 +37,18 @@ namespace Domain.Entities
 
         #region  Relation 
 
+
+
+
+
         /// <summary>
         /// آیدی سرویس
         /// </summary>
         public int? ServiceId { get; set; }
 
         public virtual ServiceTBL Service { get; set; }
+
+
 
         public  ICollection<SpecialityTBL> Specialities { get; set; }
         #endregion

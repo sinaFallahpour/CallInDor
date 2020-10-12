@@ -423,7 +423,7 @@ namespace CallInDoor.Controllers
             else
                 model.FreeMessageCount = null;
 
-                 
+
             var BaseMyService = new BaseMyServiceTBL()
             {
                 ConfirmedServiceType = ConfirmedServiceType.Pending,
@@ -669,7 +669,8 @@ namespace CallInDoor.Controllers
                 Price = (double)model.Price,
                 WorkDeliveryTimeEstimation = model.WorkDeliveryTimeEstimation,
                 Tags = tags,
-
+                AreaId = model.AreaId,
+                SpecialityId = model.SpecialityId,
                 BaseMyChatTBL = BaseMyService,
             };
 
@@ -693,7 +694,6 @@ namespace CallInDoor.Controllers
                 return StatusCode(StatusCodes.Status500InternalServerError,
                                 new ApiResponse(500, _localizerShared["InternalServerMessage"].Value.ToString()));
             }
-
 
         }
 

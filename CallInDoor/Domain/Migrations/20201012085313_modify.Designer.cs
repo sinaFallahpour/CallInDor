@@ -4,14 +4,16 @@ using Domain;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace Domain.Migrations
 {
     [DbContext(typeof(DataContext))]
-    partial class DataContextModelSnapshot : ModelSnapshot
+    [Migration("20201012085313_modify")]
+    partial class modify
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -198,25 +200,17 @@ namespace Domain.Migrations
                     b.Property<bool>("IsEnabled")
                         .HasColumnType("bit");
 
-                    b.Property<bool>("IsForCourse")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("IsSubCategory")
-                        .HasColumnType("bit");
-
                     b.Property<int?>("ParentId")
                         .HasColumnType("int");
 
                     b.Property<string>("PersianTitle")
-                        .HasColumnType("nvarchar(200)")
-                        .HasMaxLength(200);
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int?>("ServiceId")
                         .HasColumnType("int");
 
                     b.Property<string>("Title")
-                        .HasColumnType("nvarchar(200)")
-                        .HasMaxLength(200);
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
@@ -304,10 +298,6 @@ namespace Domain.Migrations
 
                     b.Property<int>("DisCountPercent")
                         .HasColumnType("int");
-
-                    b.Property<string>("NewCategory")
-                        .HasColumnType("nvarchar(200)")
-                        .HasMaxLength(200);
 
                     b.Property<string>("PreviewVideoAddress")
                         .HasColumnType("nvarchar(max)");

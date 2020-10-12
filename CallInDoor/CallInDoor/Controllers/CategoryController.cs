@@ -68,8 +68,10 @@ namespace CallInDoor.Controllers
                 c.PersianTitle,
                 c.ParentId,
                 c.IsEnabled,
+                c.IsForCourse,
+                c.IsSubCategory,
                 serviceName = c.Service.Name,
-                serviceId = c.Service.Id
+                serviceId = c.Service.Id,
             }).FirstOrDefaultAsync();
 
             if (category == null)
@@ -87,6 +89,9 @@ namespace CallInDoor.Controllers
         }
 
         #endregion
+
+
+
 
         #region GetAllCategoryWithChildren
         // GET: api/ServiceType
@@ -112,23 +117,27 @@ namespace CallInDoor.Controllers
 
         #endregion
 
-        #region GetAllCateGoryForAdmin
-        [HttpGet("GetAllCateGoryForAdmin")]
+        #region GetAllParentCateGoryForAdmin
+        [HttpGet("GetAllParentCateGoryForAdmin")]
         [Authorize(Roles = PublicHelper.ADMINROLE)]
-        public async Task<ActionResult> GetAllCateGoryForAdmin()
+        public async Task<ActionResult> GetAllParentCateGoryForAdmin()
         {
             var result = await _accountService.CheckTokenIsValid();
             if (!result)
                 return Unauthorized(new ApiResponse(401, PubicMessages.UnAuthorizeMessage));
 
-            var categories = await _context.CategoryTBL
+            var categories = await _context
+                .CategoryTBL
+                .Where(c => c.ParentId == null)
                .AsNoTracking()
                .Select(c => new
                {
                    c.Id,
-                   c.IsEnabled,
                    c.Title,
                    c.PersianTitle,
+                   c.IsEnabled,
+                   c.IsSubCategory,
+                   c.IsForCourse,
                    serviceName = c.Service.Name,
                    parentName = c.Parent.Title,
                }).ToListAsync();
@@ -145,6 +154,51 @@ namespace CallInDoor.Controllers
 
 
         #endregion
+
+
+
+
+
+        #region GetAllCateGoryForAdmin
+        [HttpGet("GetAllCateGoryForAdmin")]
+        [Authorize(Roles = PublicHelper.ADMINROLE)]
+        public async Task<ActionResult> GetAllCateGoryForAdmin()
+        {
+            var result = await _accountService.CheckTokenIsValid();
+            if (!result)
+                return Unauthorized(new ApiResponse(401, PubicMessages.UnAuthorizeMessage));
+
+            var categories = await _context
+                .CategoryTBL
+               .AsNoTracking()
+               .Select(c => new
+               {
+                   c.Id,
+                   c.Title,
+                   c.PersianTitle,
+                   c.IsEnabled,
+                   c.IsSubCategory,
+                   c.IsForCourse,
+                   serviceName = c.Service.Name,
+                   parentName = c.Parent.Title,
+               }).ToListAsync();
+
+            return Ok(new ApiOkResponse(new DataFormat()
+            {
+                Status = 1,
+                data = categories,
+                Message = PubicMessages.SuccessMessage
+            },
+               PubicMessages.SuccessMessage
+              ));
+        }
+
+
+        #endregion
+
+
+
+
 
         #region Create
 
@@ -164,7 +218,7 @@ namespace CallInDoor.Controllers
             if (model.ServiceId == null)
             {
                 var errors = new List<string>();
-                errors.Add("service Is required");
+                errors.Add("service is required");
                 return BadRequest(new ApiBadRequestResponse(errors));
             }
 
@@ -374,8 +428,6 @@ namespace CallInDoor.Controllers
 
 
 
-
-
         #region UpdateArea
 
         /// <summary>
@@ -391,7 +443,7 @@ namespace CallInDoor.Controllers
             if (!checkToken)
                 return Unauthorized(new ApiResponse(401, PubicMessages.UnAuthorizeMessage));
 
-            var area =await _categoryService.GetAreaById(model.Id);
+            var area = await _categoryService.GetAreaById(model.Id);
             if (area == null)
             {
                 return NotFound(new ApiResponse(404, "area " + PubicMessages.NotFoundMessage));
@@ -405,7 +457,7 @@ namespace CallInDoor.Controllers
             if (!model.IsProfessional)
                 model.Specialities = null;
 
-            var Area = await _categoryService.UpdateArea(area,model);
+            var Area = await _categoryService.UpdateArea(area, model);
             var areResponse = new
             {
                 Area.Id,
@@ -436,53 +488,6 @@ namespace CallInDoor.Controllers
         }
 
         #endregion
-
-
-
-
-
-
-
-
-
-        //#region  Update
-
-        //[HttpPut("Update")]
-        //[Authorize(Roles = PublicHelper.ADMINROLE)]
-        //public async Task<IActionResult> Update([FromBody] CreateCategoryDTO model)
-        //{
-        //    var checkToken = await _accountService.CheckTokenIsValid();
-        //    if (!checkToken)
-        //        return Unauthorized(new ApiResponse(401, PubicMessages.UnAuthorizeMessage));
-
-
-        //    var service = _categoryService.GetById(model.Id);
-        //    if (service == null)
-        //    {
-        //        return NotFound(new ApiResponse(404, _localizerShared["NotFound"].Value.ToString()));
-        //    }
-
-        //    var result = await _categoryService.Update(service, model);
-        //    if (result)
-        //    {
-        //        return Ok(new ApiOkResponse(new DataFormat()
-        //        {
-        //            Status = 1,
-        //            data = new { },
-        //            Message = PubicMessages.SuccessMessage
-        //        },
-        //           PubicMessages.SuccessMessage
-        //        ));
-        //    }
-
-
-        //    return StatusCode(StatusCodes.Status500InternalServerError,
-        //      new ApiResponse(500, PubicMessages.InternalServerMessage)
-        //    );
-
-        //}
-
-        //#endregion
 
 
 

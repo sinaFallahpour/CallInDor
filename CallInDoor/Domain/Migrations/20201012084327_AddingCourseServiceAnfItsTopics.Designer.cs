@@ -4,14 +4,16 @@ using Domain;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace Domain.Migrations
 {
     [DbContext(typeof(DataContext))]
-    partial class DataContextModelSnapshot : ModelSnapshot
+    [Migration("20201012084327_AddingCourseServiceAnfItsTopics")]
+    partial class AddingCourseServiceAnfItsTopics
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -198,25 +200,17 @@ namespace Domain.Migrations
                     b.Property<bool>("IsEnabled")
                         .HasColumnType("bit");
 
-                    b.Property<bool>("IsForCourse")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("IsSubCategory")
-                        .HasColumnType("bit");
-
                     b.Property<int?>("ParentId")
                         .HasColumnType("int");
 
                     b.Property<string>("PersianTitle")
-                        .HasColumnType("nvarchar(200)")
-                        .HasMaxLength(200);
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int?>("ServiceId")
                         .HasColumnType("int");
 
                     b.Property<string>("Title")
-                        .HasColumnType("nvarchar(200)")
-                        .HasMaxLength(200);
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
@@ -305,10 +299,6 @@ namespace Domain.Migrations
                     b.Property<int>("DisCountPercent")
                         .HasColumnType("int");
 
-                    b.Property<string>("NewCategory")
-                        .HasColumnType("nvarchar(200)")
-                        .HasMaxLength(200);
-
                     b.Property<string>("PreviewVideoAddress")
                         .HasColumnType("nvarchar(max)");
 
@@ -325,33 +315,6 @@ namespace Domain.Migrations
                         .HasFilter("[BaseId] IS NOT NULL");
 
                     b.ToTable("MyCourseService");
-                });
-
-            modelBuilder.Entity("Domain.Entities.MyCourseTopics", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<string>("FileAddress")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<bool>("IsFreeForEveryOne")
-                        .HasColumnType("bit");
-
-                    b.Property<int?>("MyCourseId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("TopicName")
-                        .HasColumnType("nvarchar(200)")
-                        .HasMaxLength(200);
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("MyCourseId");
-
-                    b.ToTable("MyCourseTopics");
                 });
 
             modelBuilder.Entity("Domain.Entities.MyServiceServiceTBL", b =>
@@ -541,6 +504,44 @@ namespace Domain.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Tests");
+                });
+
+            modelBuilder.Entity("Domain.Entities.TopicsTBL", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("Compopnents")
+                        .HasColumnType("nvarchar(200)")
+                        .HasMaxLength(200);
+
+                    b.Property<int?>("CourseId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Directives")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsFreeForEveryOne")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Routings")
+                        .HasColumnType("nvarchar(200)")
+                        .HasMaxLength(200);
+
+                    b.Property<string>("TopicFileAddress")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("TopicName")
+                        .HasColumnType("nvarchar(100)")
+                        .HasMaxLength(100);
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CourseId");
+
+                    b.ToTable("Topics");
                 });
 
             modelBuilder.Entity("Domain.Entities.User_FieldTBL", b =>
@@ -743,13 +744,6 @@ namespace Domain.Migrations
                         .HasForeignKey("Domain.Entities.MyCourseServiceTBL", "BaseId");
                 });
 
-            modelBuilder.Entity("Domain.Entities.MyCourseTopics", b =>
-                {
-                    b.HasOne("Domain.Entities.MyCourseServiceTBL", "MyCourseServiceTBL")
-                        .WithMany("TopicsTBLs")
-                        .HasForeignKey("MyCourseId");
-                });
-
             modelBuilder.Entity("Domain.Entities.MyServiceServiceTBL", b =>
                 {
                     b.HasOne("Domain.Entities.AreaTBL", "AreaTBL")
@@ -777,6 +771,13 @@ namespace Domain.Migrations
                     b.HasOne("Domain.Entities.AreaTBL", "Area")
                         .WithMany("Specialities")
                         .HasForeignKey("AreatId");
+                });
+
+            modelBuilder.Entity("Domain.Entities.TopicsTBL", b =>
+                {
+                    b.HasOne("Domain.Entities.MyCourseServiceTBL", "MyCourseServiceTBL")
+                        .WithMany("TopicsTBLs")
+                        .HasForeignKey("CourseId");
                 });
 
             modelBuilder.Entity("Domain.Entities.User_FieldTBL", b =>
