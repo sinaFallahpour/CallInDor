@@ -48,7 +48,7 @@ namespace Domain.Entities
         /// <summary>
         /// لیست تاپیک های یک کورس
         /// </summary>
-        public virtual ICollection<MyCourseTopics> TopicsTBLs { get; set; }
+        public  ICollection<MyCourseTopics> TopicsTBLs { get; set; }
 
 
 

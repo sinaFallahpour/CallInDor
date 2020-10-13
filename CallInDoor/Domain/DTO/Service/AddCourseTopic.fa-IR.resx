@@ -117,16 +117,16 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="AfterAdminConfirmMessage" xml:space="preserve">
-    <value>Failure to changes service. This service is approved by the admin</value>
+  <data name="The maximum {0} length is {1} characters" xml:space="preserve">
+    <value> حدا کثر تعداد کاراکتر برای {0} {1} میباشد</value>
   </data>
-  <data name="DeleteServiceMessage" xml:space="preserve">
-    <value>Service deleted successfully</value>
+  <data name="The minimum {0} length is {1} characters" xml:space="preserve">
+    <value>حداقل تعداد کاراکتر برای {0} {1} میباشد</value>
   </data>
-  <data name="FileUploadErrorMessage" xml:space="preserve">
-    <value>There was a problem uploading the file</value>
+  <data name="The {0} should be between {1} and {2}" xml:space="preserve">
+    <value>مقدار {0} باید بین {1} و {2} باشد</value>
   </data>
-  <data name="SuccesfullAddServiceMessage" xml:space="preserve">
-    <value>Your service has been successfully registered. After admin approval will be displayed on the site</value>
+  <data name="{0} is  Required" xml:space="preserve">
+    <value>{0} الزامیست</value>
   </data>
 </root>

@@ -1,6 +1,7 @@
 ﻿using Domain.DTO.Account;
 using Domain.DTO.Service;
 using Domain.Entities;
+using Microsoft.AspNetCore.Http;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -20,6 +21,11 @@ namespace Service.Interfaces.ServiceType
 
         Task<(bool succsseded, List<string> result)> ValidateChatService(AddChatServiceForUsersDTO model);
         Task<(bool succsseded, List<string> result)> ValidateServiceService(AddServiceServiceForUsersDTO model);
+
+        Task<(bool succsseded, List<string> result)> ValidateCourseService(AddCourseServiceForUsersDTO model);
+
+        //آدرس فایل
+        string SvaeFileToHost(string path, IFormFile file);
 
     }
 }

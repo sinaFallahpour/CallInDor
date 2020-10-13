@@ -120,6 +120,12 @@
   <data name="AfterAdminConfirmMessage" xml:space="preserve">
     <value>عدم ثبت تغییرات. این سرویس توسط ادمین تایید شده</value>
   </data>
+  <data name="DeleteServiceMessage" xml:space="preserve">
+    <value>سرویس  با موفقیت حذف شد</value>
+  </data>
+  <data name="FileUploadErrorMessage" xml:space="preserve">
+    <value>مشکلی در آپلود فایل رخ داده</value>
+  </data>
   <data name="SuccesfullAddServiceMessage" xml:space="preserve">
     <value>سرویس شما با موفقیت ثبت شد . بعد از تایید ادمین در سایت نمایش داده خواهد شد</value>
   </data>

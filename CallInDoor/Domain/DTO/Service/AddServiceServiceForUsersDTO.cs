@@ -36,7 +36,7 @@ namespace Domain.DTO.Service
 
 
 
-        public bool IsActive { get; set; }
+        //public bool IsActive { get; set; }
       
         #endregion
 

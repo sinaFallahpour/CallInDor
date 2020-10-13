@@ -4,12 +4,15 @@ using Domain.DTO.Service;
 using Domain.Entities;
 using Domain.Enums;
 using Domain.Utilities;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Localization;
 using Service.Interfaces.ServiceType;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -20,13 +23,16 @@ namespace Service
     {
         private readonly DataContext _context;
         private IStringLocalizer<ServiceService> _localizer;
+        private readonly IHostingEnvironment _hostingEnvironment;
 
         public ServiceService(
             DataContext context,
-            IStringLocalizer<ServiceService> localizer
+            IStringLocalizer<ServiceService> localizer,
+            IHostingEnvironment hostingEnvironment
                )
         {
             _context = context;
+            _hostingEnvironment = hostingEnvironment;
             _localizer = localizer;
         }
 
@@ -331,15 +337,15 @@ namespace Service
 
             if (model.CatId != null)
             {
-                var isCatExist = await _context.CategoryTBL.AnyAsync(c => c.Id == model.CatId );
+                var isCatExist = await _context.CategoryTBL.AnyAsync(c => c.Id == model.CatId);
                 if (!isCatExist)
                 {
                     IsValid = false;
                     Errors.Add($"Invalid category");
                 }
- 
+
             }
-            if(model.SubCatId !=null)
+            if (model.SubCatId != null)
             {
                 var isCatExist = await _context.CategoryTBL.AnyAsync(c => c.Id == model.SubCatId && c.IsSubCategory);
                 if (!isCatExist)
@@ -522,7 +528,7 @@ namespace Service
                     Errors.Add(err);
                 }
             }
-       
+
             var isUserExist = await _context.Users.AnyAsync(c => c.UserName == model.UserName);
             if (!isUserExist)
             {
@@ -538,6 +544,249 @@ namespace Service
 
             return (IsValid, Errors);
         }
+
+
+
+
+
+
+
+
+
+
+        /// <summary>
+        /// ولیدیت کردن آبجکت   سرویس سرویس
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns></returns>
+        public async Task<(bool succsseded, List<string> result)> ValidateCourseService(AddCourseServiceForUsersDTO model)
+        {
+            bool IsValid = true;
+            List<string> Errors = new List<string>();
+
+
+            //validate preview
+            #region validate preview
+            var res = ValidatePreviewFile(model.PreviewFile);
+            if (!res.succsseded)
+                Errors.AddRange(res.result);
+            #endregion
+
+            //validate preview
+            #region validate Tpics
+            if (model.Topics == null)
+            {
+                string err = "";
+                if (IsPersianLanguage())
+                    err = $"حداقل یک سرفصل الزامیست";
+                else
+                    err = string.Format($"At least one topic is required");
+                IsValid = false;
+                Errors.Add(err);
+
+            }
+            #endregion 
+
+            //validate serviceTypes
+            #region  validate serviceTypes
+            var serviceFromDb = await _context
+            .ServiceTBL
+            .Where(c => c.Id == model.ServiceId)
+            .Select(c => new { c.Id, c.MinPriceForService, c.Name })
+            .FirstOrDefaultAsync();
+
+            if (serviceFromDb == null)
+            {
+                IsValid = false;
+                Errors.Add(_localizer["service Not Exist"].Value.ToString());
+            }
+            if (model.Price < 0)
+            {
+                string err = "";
+                if (IsPersianLanguage())
+                    err = $"قیمت نامعتبر";
+                else
+                    err = string.Format($"Invalid Price");
+                IsValid = false;
+                Errors.Add(err);
+            }
+            #endregion
+            //vaidate category
+            #region  vaidate category
+            if (model.CatId != null)
+            {
+                var isCatExist = await _context.CategoryTBL.AnyAsync(c => c.Id == model.CatId);
+                if (!isCatExist)
+                {
+                    string err = "";
+                    if (IsPersianLanguage())
+                        err = $"دسته بندی نامعتبر";
+                    else
+                        err = $"Invalid category";
+                    IsValid = false;
+                    Errors.Add(err);
+                }
+            }
+
+            #endregion
+
+            //vaidate user
+            #region  vaidate user 
+            var isUserExist = await _context.Users.AnyAsync(c => c.UserName == model.UserName);
+            if (!isUserExist)
+            {
+                string err = "";
+                if (IsPersianLanguage())
+                    err = string.Format("کاربری با نام کاربری {0} یافت نشد", model.UserName);
+                else
+                    err = string.Format("No user with the name {0} was found", model.UserName);
+                IsValid = false;
+                Errors.Add(err);
+
+            }
+            #endregion
+            return (IsValid, Errors);
+        }
+
+
+
+
+
+        private (bool succsseded, List<string> result) ValidatePreviewFile(IFormFile file)
+        {
+            bool IsValid = true;
+            List<string> Errors = new List<string>();
+
+            //string uniqueFileName = null;
+            if (file != null)
+            {
+                //if (!model.Photo.IsImage())
+                //{
+                //    ModelState.AddModelError("", "به فرمت عکس وارد کنید");
+                //    return View(model);
+                //}
+
+                //1GiG
+                if (file.Length > 1000000000)
+                {
+                    string err = "";
+                    if (IsPersianLanguage())
+                        err = $"حجم فایل زیاد است";
+                    else
+                        err = string.Format($"File size is large");
+                    IsValid = false;
+                    Errors.Add(err);
+                }
+                if (file.Length == 0)
+                {
+                    string err = "";
+                    if (IsPersianLanguage())
+                        err = $"فایل نامعتبر";
+                    else
+                        err = string.Format($"Invalid file");
+                    IsValid = false;
+                    Errors.Add(err);
+                }
+            }
+
+            return (IsValid, Errors);
+        }
+
+
+
+
+
+
+        //private (bool succsseded, List<string> result) ValidateTopics(List<AddCourseTopic> topics)
+        //{
+        //    bool IsValid = true;
+        //    List<string> Errors = new List<string>();
+
+
+        //    foreach (var topic in topics)
+        //    {
+        //        if (topic.File != null)
+        //        {
+        //        }
+        //    }
+
+        //    //string uniqueFileName = null;
+        //    if (file != null)
+        //    {
+        //        //if (!model.Photo.IsImage())
+        //        //{
+        //        //    ModelState.AddModelError("", "به فرمت عکس وارد کنید");
+        //        //    return View(model);
+        //        //}
+
+        //        //1GiG
+        //        if (file.Length > 1000000000)
+        //        {
+        //            string err = "";
+        //            if (IsPersianLanguage())
+        //                err = $"حجم فایل زیاد است";
+        //            else
+        //                err = string.Format($"File size is large");
+        //            IsValid = false;
+        //            Errors.Add(err);
+        //        }
+        //        if (file.Length == 0)
+        //        {
+        //            string err = "";
+        //            if (IsPersianLanguage())
+        //                err = $"فایل نامعتبر";
+        //            else
+        //                err = string.Format($"Invalid file");
+        //            IsValid = false;
+        //            Errors.Add(err);
+
+        //            //var uploadsFolder = Path.Combine(_hostingEnvironment.WebRootPath, "Upload/CoursePreview");
+        //            //uniqueFileName = (Guid.NewGuid().ToString().GetImgUrlFriendly() + "_" + model.PreviewFile.FileName);
+        //            //string filePath = Path.Combine(uploadsFolder, uniqueFileName);
+
+        //            //using (var stream = new FileStream(filePath, FileMode.Create))
+        //            //{
+        //            //    model.PreviewFile.CopyTo(stream);
+        //            //}
+        //            //model.PhotoAddress = "/Upload/Slider/" + uniqueFileName;
+        //        }
+        //    }
+
+        //    return (IsValid, Errors);
+        //}
+
+
+
+
+
+
+        public string SvaeFileToHost(string path, IFormFile file)
+        {
+            try
+            {
+                if (file == null)
+                    return null;
+                string uniqueFileName = null;
+                var uploadsFolder = Path.Combine(_hostingEnvironment.WebRootPath, path);
+                uniqueFileName = (Guid.NewGuid().ToString().GetImgUrlFriendly() + "_" + file.FileName);
+                string filePath = Path.Combine(uploadsFolder, uniqueFileName);
+
+                using (var stream = new FileStream(filePath, FileMode.Create))
+                {
+                    file.CopyTo(stream);
+                }
+                //model.PhotoAddress = "/Upload/Slider/" + uniqueFileName;
+                return path + uniqueFileName;
+            }
+            catch (Exception ex)
+            {
+                return null;
+            }
+        }
+
+
+
+
 
 
 

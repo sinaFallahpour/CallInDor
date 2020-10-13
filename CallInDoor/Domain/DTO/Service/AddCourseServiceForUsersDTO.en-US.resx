@@ -117,16 +117,46 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="AfterAdminConfirmMessage" xml:space="preserve">
-    <value>Failure to changes service. This service is approved by the admin</value>
+  <data name="Category" xml:space="preserve">
+    <value>Category</value>
   </data>
-  <data name="DeleteServiceMessage" xml:space="preserve">
-    <value>Service deleted successfully</value>
+  <data name="Description" xml:space="preserve">
+    <value>Description</value>
   </data>
-  <data name="FileUploadErrorMessage" xml:space="preserve">
-    <value>There was a problem uploading the file</value>
+  <data name="DisCountPercent" xml:space="preserve">
+    <value>DisCountPercent</value>
   </data>
-  <data name="SuccesfullAddServiceMessage" xml:space="preserve">
-    <value>Your service has been successfully registered. After admin approval will be displayed on the site</value>
+  <data name="NewCategory" xml:space="preserve">
+    <value>NewCategory</value>
+  </data>
+  <data name="Price" xml:space="preserve">
+    <value>Price</value>
+  </data>
+  <data name="Service" xml:space="preserve">
+    <value>Service</value>
+  </data>
+  <data name="ServiceName" xml:space="preserve">
+    <value>Service Name</value>
+  </data>
+  <data name="ServiceType" xml:space="preserve">
+    <value>Service Type</value>
+  </data>
+  <data name="The maximum {0} length is {1} characters" xml:space="preserve">
+    <value>The maximum {0} length is {1} characters</value>
+  </data>
+  <data name="The minimum {0} length is {1} characters" xml:space="preserve">
+    <value>The minimum {0} length is {1} characters</value>
+  </data>
+  <data name="The {0} range is valid" xml:space="preserve">
+    <value>{0} is Invalid</value>
+  </data>
+  <data name="TotalLenght" xml:space="preserve">
+    <value>TotalLenght</value>
+  </data>
+  <data name="UserName" xml:space="preserve">
+    <value>User Name</value>
+  </data>
+  <data name="{0} is  Required" xml:space="preserve">
+    <value>{0} is  Required</value>
   </data>
 </root>

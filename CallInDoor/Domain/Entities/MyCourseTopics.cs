@@ -22,6 +22,10 @@ namespace Domain.Entities
 
 
 
+
+        public bool IsConfirmByAdmin { get; set; }
+
+
         #region Relation
 
 

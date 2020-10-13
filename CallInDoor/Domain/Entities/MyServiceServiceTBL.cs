@@ -25,8 +25,7 @@ namespace Domain.Entities
         public bool BeTranslate { get; set; }
 
 
-        public string Speciality { get; set; }
-        public string Area { get; set; }
+     
 
 
         public bool FileNeeded { get; set; }

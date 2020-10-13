@@ -38,8 +38,14 @@ namespace Domain.Entities
         public ServiceType ServiceType { get; set; }
 
 
-        public bool IsActive { get; set; }
 
+        //public bool IsActive { get; set; }
+
+
+        /// <summary>
+        /// آیا این  حذف شده
+        /// </summary>
+        public bool IsDeleted { get; set; }
 
         #region  Relation
 
