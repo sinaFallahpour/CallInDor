@@ -223,8 +223,6 @@ namespace Service
                 }
 
 
-
-
                 var alltags = serviceFromDB.Tags.Where(c => c.IsEnglisTags == true).ToList();
                 var allPersianTags = serviceFromDB.Tags.Where(c => c.IsEnglisTags == false).ToList();
                 alltags.AddRange(allPersianTags);
@@ -294,8 +292,6 @@ namespace Service
 
 
 
-
-
             //validate serviceTypes
             var serviceFromDb = await _context
             .ServiceTBL
@@ -335,40 +331,28 @@ namespace Service
 
             if (model.CatId != null)
             {
-                var cats = await _context.CategoryTBL
-                    .AsNoTracking()
-                    .Where(c => c.Id == model.CatId)
-                    .Select(c => new
-                    {
-                        c.Id,
-                        SubCatIds = c.Children.Select(r => r.Id).ToList()
-                    }).FirstOrDefaultAsync();
-
-                if (cats == null)
+                var isCatExist = await _context.CategoryTBL.AnyAsync(c => c.Id == model.CatId );
+                if (!isCatExist)
                 {
-                    //return (false, fileName)
                     IsValid = false;
-                    Errors.Add($"category with id {model.CatId} Not Found");
+                    Errors.Add($"Invalid category");
                 }
-                else
-                {
-                    if (model.SubCatId != null)
-                    {
-                        var ds = cats.SubCatIds?.Contains((int)model.SubCatId);
-                        if (ds == null || (ds != null && !(bool)ds))
-                        {
-                            IsValid = false;
-                            Errors.Add($"Sub Category with id {model.SubCatId} Not Found");
-                        }
-                    }
-                }
+ 
             }
-
-            if (model.CatId == null)
+            if(model.SubCatId !=null)
             {
-                IsValid = false;
-                Errors.Add(_localizer["Category Is Required"].Value.ToString());
+                var isCatExist = await _context.CategoryTBL.AnyAsync(c => c.Id == model.SubCatId && c.IsSubCategory);
+                if (!isCatExist)
+                {
+                    IsValid = false;
+                    Errors.Add($"Invalid sub category");
+                }
             }
+            //if (model.CatId == null)
+            //{
+            //    IsValid = false;
+            //    Errors.Add(_localizer["Category Is Required"].Value.ToString());
+            //}
 
 
             var isUserExist = await _context.Users.AnyAsync(c => c.UserName == model.UserName);
@@ -386,8 +370,6 @@ namespace Service
 
             return (IsValid, Errors);
         }
-
-
 
 
 
@@ -509,21 +491,12 @@ namespace Service
             }
 
 
+            //vaidate category
             if (model.CatId != null)
             {
-                var cats = await _context.CategoryTBL
-                    .AsNoTracking()
-                    .Where(c => c.Id == model.CatId)
-                    .Select(c => new
-                    {
-                        c.Id,
-                        c.ServiceId,
-                        SubCatIds = c.Children.Select(r => r.Id).ToList()
-                    }).FirstOrDefaultAsync();
-
-                if (cats == null)
+                var isCatExist = await _context.CategoryTBL.AnyAsync(c => c.Id == model.CatId);
+                if (!isCatExist)
                 {
-
                     string err = "";
                     if (IsPersianLanguage())
                         err = $"دسته بندی با آیدی ${model.CatId} یافت نشد";
@@ -531,50 +504,25 @@ namespace Service
                         err = $"category with id {model.CatId} Not Found";
                     IsValid = false;
                     Errors.Add(err);
-
-
-
-                }
-                else
-                {
-                    if (serviceFromDb != null)
-                    {
-                        if (cats.ServiceId != serviceFromDb.Id)
-                        {
-                            string err = "";
-                            if (IsPersianLanguage())
-                                err = $"دسته بندی نا معتبر است";
-                            else
-                                err = $"Invalid Category";
-                            IsValid = false;
-                            Errors.Add(err);
-                        }
-                    }
-
-                    if (model.SubCatId != null)
-                    {
-                        var ds = cats.SubCatIds?.Contains((int)model.SubCatId);
-                        if (ds == null || (ds != null && !(bool)ds))
-                        {
-                            string err = "";
-                            if (IsPersianLanguage())
-                                err = $" زیر دسته نا معتبر است";
-                            else
-                                err = $"Invalid Sub Category";
-                            IsValid = false;
-                            Errors.Add(err);
-                        }
-                    }
                 }
             }
 
-            if (model.CatId == null)
+            //vaidate sub category
+            if (model.SubCatId != null)
             {
-                IsValid = false;
-                Errors.Add(_localizer["Category Is Required"].Value.ToString());
+                var isCatExist = await _context.CategoryTBL.AnyAsync(c => c.Id == model.SubCatId && c.IsSubCategory);
+                if (!isCatExist)
+                {
+                    string err = "";
+                    if (IsPersianLanguage())
+                        err = $" زیر دسته نا معتبر است";
+                    else
+                        err = $"Invalid Sub Category";
+                    IsValid = false;
+                    Errors.Add(err);
+                }
             }
-
-
+       
             var isUserExist = await _context.Users.AnyAsync(c => c.UserName == model.UserName);
             if (!isUserExist)
             {
@@ -586,13 +534,12 @@ namespace Service
                 IsValid = false;
                 Errors.Add(err);
 
-
-                //IsValid = false;
-                //Errors.Add($"No user with the name {model.UserName} was found");
             }
 
             return (IsValid, Errors);
         }
+
+
 
 
 
