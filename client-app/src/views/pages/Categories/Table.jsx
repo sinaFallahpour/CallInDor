@@ -154,8 +154,6 @@ class Table extends React.Component {
         },
       },
 
-
-
       {
         headerName: "",
         field: "id",
@@ -209,7 +207,7 @@ class Table extends React.Component {
       getPageSize: this.gridApi.paginationGetPageSize(),
       totalPages: this.gridApi.paginationGetTotalPages(),
     });
-    params.api.sizeColumnsToFit();
+    // params.api.sizeColumnsToFit();
   };
 
   updateSearchQuery = (val) => {

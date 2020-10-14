@@ -163,6 +163,7 @@ const userEdit = lazy(() => import("./views/apps/user/edit/Edit"));
 const userView = lazy(() => import("./views/apps/user/view/View"));
 const Login = lazy(() => import("./views/pages/authentication/login/Login"));
 const LogOut = lazy(() => import("./views/pages/authentication/LogOut"));
+const AccesDenied = lazy(() => import("./views/pages/authentication/LogOut"));
 
 const ForgotPassword = lazy(() =>
   import("./views/pages/authentication/ForgotPassword")
