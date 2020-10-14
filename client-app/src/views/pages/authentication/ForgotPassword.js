@@ -1,4 +1,4 @@
-import React from "react"
+import React from "react";
 import {
   Card,
   CardHeader,
@@ -11,12 +11,23 @@ import {
   Input,
   Button,
   Label
-} from "reactstrap"
-import fgImg from "../../../assets/img/pages/forgot-password.png"
-import { history } from "../../../history"
-import "../../../assets/scss/pages/authentication.scss"
+} from "reactstrap";
+import fgImg from "../../../assets/img/pages/forgot-password.png";
+import { history } from "../../../history";
+import "../../../assets/scss/pages/authentication.scss";
+
+import authService from "../../../core/services/userService/authService";
 
 class ForgotPassword extends React.Component {
+  async componentDidMount() {
+    const isloggedIn = await authService.isAdminLoggedIn();
+
+    if (isloggedIn) {
+      history.push("/");
+    }
+    this.setState({ notload: false });
+  }
+
   render() {
     return (
       <Row className="m-0 justify-content-center">

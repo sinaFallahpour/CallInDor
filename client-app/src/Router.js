@@ -163,7 +163,7 @@ const userEdit = lazy(() => import("./views/apps/user/edit/Edit"));
 const userView = lazy(() => import("./views/apps/user/view/View"));
 const Login = lazy(() => import("./views/pages/authentication/login/Login"));
 const LogOut = lazy(() => import("./views/pages/authentication/LogOut"));
-const AccesDenied = lazy(() => import("./views/pages/authentication/LogOut"));
+const AccesDenied = lazy(() => import("./views/pages/authentication/AccesDenied"));
 
 const ForgotPassword = lazy(() =>
   import("./views/pages/authentication/ForgotPassword")
@@ -203,7 +203,6 @@ const RouteConfig = ({ component: Component, fullLayout, isLoggedIn, title, ...r
   <Route
     {...rest}
     render={(props) => {
-
       if (!isLoggedIn) {
         return (<Redirect exact to={{
           pathname: "/pages/login",
@@ -247,6 +246,47 @@ const RouteConfig = ({ component: Component, fullLayout, isLoggedIn, title, ...r
 
 // const AppRoute = connect(mapStateToProps)(RouteConfig);
 
+
+
+const NotProtexctedRouteConfig = ({ component: Component, path, fullLayout, title, ...rest }) => (
+
+  <Route
+    path={path}
+    render={(props) => {
+      return (
+        <ContextLayout.Consumer>
+          {(context) => {
+            // const LayoutTag = context.fullLayout
+
+            const LayoutTag =
+              fullLayout === true
+                ? context.fullLayout
+                : context.state.activeLayout === "horizontal"
+                  ? context.horizontalLayout
+                  : context.VerticalLayout;
+            return (
+              <LayoutTag {...props} permission={props.user}>
+                <Suspense fallback={<Spinner />}>
+                  <PageTitle title={title}>
+                    <Component {...props} />
+                  </PageTitle>
+                </Suspense>
+              </LayoutTag>
+            );
+          }}
+        </ContextLayout.Consumer>
+      );
+    }}
+  />
+
+
+);
+
+
+
+
+
+
 class AppRouter extends React.Component {
   state = {
     loading: true,
@@ -273,31 +313,15 @@ class AppRouter extends React.Component {
       <Suspense fallback={<CustomLoader />}>
         <Router history={history}>
           <Switch>
-            {/* <Route path="/pages/login" component={Login} fullLayout /> */}
 
-            <Route
-              path="/pages/login"
-              render={(props) => {
-                return (
-                  <ContextLayout.Consumer>
-                    {(context) => {
-                      const LayoutTag = context.fullLayout
-                      return (
-                        <LayoutTag {...props} permission={props.user}>
-                          <Suspense fallback={<Spinner />}>
-                            <PageTitle title="Login">
-                              <Login {...props} />
-                            </PageTitle >
-                          </Suspense>
-                        </LayoutTag>
-                      );
-                    }}
-                  </ContextLayout.Consumer>
-                );
-              }}
-            />
+            <NotProtexctedRouteConfig path="/pages/login" title="Login" component={Login} fullLayout />
 
-            <Route
+            <NotProtexctedRouteConfig path="/pages/forgot-password" title="ForgotPassword" component={ForgotPassword} fullLayout />
+
+            <Route path="/pages/logout" component={LogOut} fullLayout />
+            <NotProtexctedRouteConfig path="/pages/Accesdenied" title="َAccessDenied" component={AccesDenied} fullLayout />
+
+            {/* <Route
               path="/pages/forgot-password"
               render={(props) => {
                 return (
@@ -317,10 +341,9 @@ class AppRouter extends React.Component {
                   </ContextLayout.Consumer>
                 );
               }}
-            />
+            /> */}
 
-            {/* <Route path="/pages/login" component={Login} fullLayout /> */}
-            <Route path="/pages/logout" component={LogOut} fullLayout />
+
 
             <RouteConfig isLoggedIn={isLoggedIn} title="categories" exact path="/pages/categories" component={Categories} />
             <RouteConfig isLoggedIn={isLoggedIn} title="Edit Category" exact path="/pages/category/:id" component={EditCategory} />

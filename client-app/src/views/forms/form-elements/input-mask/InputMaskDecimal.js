@@ -16,4 +16,4 @@ const InputMaskDecimal = () => {
   )
 }
 
-export default InputMaskDecimal
+export default InputMaskDecimal;
