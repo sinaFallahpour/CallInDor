@@ -7,7 +7,7 @@ using System.Text;
 
 namespace Domain
 {
-    public class DataContext : IdentityDbContext<AppUser>
+    public class DataContext : IdentityDbContext<AppUser, AppRole, string>
     {
 
 
@@ -76,7 +76,7 @@ namespace Domain
         /// </summary>
         public DbSet<SpecialityTBL> SpecialityTBL { get; set; }
 
-        
+
 
 
 
@@ -133,7 +133,7 @@ namespace Domain
         public DbSet<MyCourseTopics> MyCourseTopicsTBL { get; set; }
 
 
-        
+
 
         public DbSet<Test> Tests { get; set; }
 

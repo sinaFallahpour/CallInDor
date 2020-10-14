@@ -281,7 +281,7 @@ namespace Service
                 await _context.SaveChangesAsync();
                 return areaFreomDB;
             }
-            catch (Exception ex)
+            catch  
             {
                 return null;
             }

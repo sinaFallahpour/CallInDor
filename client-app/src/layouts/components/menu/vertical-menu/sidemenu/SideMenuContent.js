@@ -64,12 +64,12 @@ class SideMenuContent extends React.Component {
       // If open group does not include clicked group item
       if (!open_group.includes(id)) {
         // Get unmatched items that are not in the active group
-        let temp = open_group.filter(function(obj) {
+        let temp = open_group.filter(function (obj) {
           return active_group.indexOf(obj) === -1
         })
         // Remove those unmatched items from open group
         if (temp.length > 0 && !open_group.includes(parent)) {
-          open_group = open_group.filter(function(obj) {
+          open_group = open_group.filter(function (obj) {
             return !temp.includes(obj)
           })
         }
@@ -130,7 +130,7 @@ class SideMenuContent extends React.Component {
         return (
           <li
             className="navigation-header"
-            key={`group-header-${item.groupTitle}`}>
+            key={`group-header-${item.groupTitle + Math.random() * 100}`}>
             <span>{item.groupTitle}</span>
           </li>
         )
@@ -170,15 +170,14 @@ class SideMenuContent extends React.Component {
               item.filterBase
                 ? item.filterBase
                 : item.navLink && item.type === "item"
-                ? item.navLink
-                : ""
+                  ? item.navLink
+                  : ""
             }
             href={item.type === "external-link" ? item.navLink : ""}
-            className={`d-flex ${
-              item.badgeText
-                ? "justify-content-between"
-                : "justify-content-start"
-            }`}
+            className={`d-flex ${item.badgeText
+              ? "justify-content-between"
+              : "justify-content-start"
+              }`}
             onMouseEnter={() => {
               this.props.handleSidebarMouseEnter(item.id)
             }}
@@ -204,13 +203,13 @@ class SideMenuContent extends React.Component {
                 </Badge>
               </div>
             ) : (
-              ""
-            )}
+                ""
+              )}
             {item.type === "collapse" ? (
               <ChevronRight className="menu-toggle-icon" size={13} />
             ) : (
-              ""
-            )}
+                ""
+              )}
           </CustomAnchorTag>
           {item.type === "collapse" ? (
             <SideMenuGroup
@@ -234,8 +233,8 @@ class SideMenuContent extends React.Component {
               deviceWidth={this.props.deviceWidth}
             />
           ) : (
-            ""
-          )}
+              ""
+            )}
         </li>
       )
 
@@ -251,7 +250,7 @@ class SideMenuContent extends React.Component {
       if (
         item.type === "collapse" ||
         item.type === "external-link" ||
-        (item.type === "item" ) ||
+        (item.type === "item") ||
         item.permissions === undefined
       ) {
         return renderItem

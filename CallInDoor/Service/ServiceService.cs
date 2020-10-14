@@ -778,7 +778,7 @@ namespace Service
                 //model.PhotoAddress = "/Upload/Slider/" + uniqueFileName;
                 return path + uniqueFileName;
             }
-            catch (Exception ex)
+            catch  
             {
                 return null;
             }

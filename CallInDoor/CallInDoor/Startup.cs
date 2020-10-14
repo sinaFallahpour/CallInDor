@@ -77,7 +77,7 @@ namespace CallInDoor
 
 
             //setting  of identity
-            services.AddIdentity<AppUser, IdentityRole>(options =>
+            services.AddIdentity<AppUser, AppRole>(options =>
             {
                 options.Password.RequireDigit = false;
                 options.Password.RequiredLength = 6;
@@ -93,7 +93,7 @@ namespace CallInDoor
                 options.SignIn.RequireConfirmedAccount = false;
                 options.SignIn.RequireConfirmedPhoneNumber = true;
             })
-            .AddRoleManager<RoleManager<IdentityRole>>()
+            .AddRoleManager<RoleManager<AppRole>>()
             .AddSignInManager<SignInManager<AppUser>>()
             //این توکن میسازه   باید باشه برا چنج پسورد و.کانفیرم ایمیل
             .AddDefaultTokenProviders()

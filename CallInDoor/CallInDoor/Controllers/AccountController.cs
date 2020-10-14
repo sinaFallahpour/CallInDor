@@ -31,12 +31,15 @@ namespace CallInDoor.Controllers
 
         private readonly DataContext _context;
         private readonly UserManager<AppUser> _userManager;
+        private readonly RoleManager<AppRole> _roleManager;
+
         private readonly IAccountService _accountService;
         private readonly IJwtManager _jwtGenerator;
         private IStringLocalizer<AccountController> _localizer;
         private IStringLocalizer<ShareResource> _localizerShared;
 
         public AccountController(UserManager<AppUser> userManager,
+             RoleManager<AppRole> roleManager,
             DataContext context,
                IJwtManager jwtGenerator,
                IStringLocalizer<AccountController> localizer,
@@ -46,6 +49,7 @@ namespace CallInDoor.Controllers
         {
             _context = context;
             _userManager = userManager;
+            _roleManager = roleManager;
             _localizer = localizer;
             _localizerShared = localizerShared;
             _accountService = accountService;
@@ -434,6 +438,166 @@ namespace CallInDoor.Controllers
 
 
         #region  Role
+
+
+        /// <summary>
+        /// </summary>
+        /// <param name="Id"></param>
+        /// <returns></returns>
+        [HttpGet("GetRoleByIdInAdmin")]
+        [Authorize(Roles = PublicHelper.ADMINROLE)]
+        public async Task<ActionResult> GetRoleByIdInAdmin(string id)
+        {
+            var checkToken = await _accountService.CheckTokenIsValid();
+            if (!checkToken)
+                return Unauthorized(new ApiResponse(401, PubicMessages.UnAuthorizeMessage));
+
+            var role = await _roleManager.FindByIdAsync(id);
+
+            if (role == null)
+                return NotFound(new ApiResponse(404, PubicMessages.NotFoundMessage));
+
+            return Ok(new ApiOkResponse(new DataFormat()
+            {
+                Status = 1,
+                data = role,
+                Message = PubicMessages.SuccessMessage
+            },
+            PubicMessages.SuccessMessage
+           ));
+
+        }
+
+
+
+
+
+
+        // GET: api/GetAllServiceForAdmin
+        [HttpGet("GetAllRolesInAdmin")]
+        [Authorize(Roles = PublicHelper.ADMINROLE)]
+        public async Task<ActionResult> GetAllServiceForAdmin()
+        {
+            var checkToken = await _accountService.CheckTokenIsValid();
+            if (!checkToken)
+                return Unauthorized(new ApiResponse(401, PubicMessages.UnAuthorizeMessage));
+
+            var roles = await _roleManager.Roles.ToListAsync();
+
+
+            return Ok(new ApiOkResponse(new DataFormat()
+            {
+                Status = 1,
+                data = roles,
+                Message = PubicMessages.SuccessMessage
+            },
+          PubicMessages.SuccessMessage
+         ));
+
+        }
+
+
+
+
+
+
+
+        /// <summary>
+        /// ایجاد رول
+        /// </summary>
+        /// <param name="CreateServiceDTO"></param>
+        /// <returns></returns>
+        [HttpPost("CreateRoleInAdmin")]
+        [Authorize(Roles = PublicHelper.ADMINROLE)]
+        public async Task<ActionResult> CreateRoleInAdmin([FromBody] RoleDTO model)
+        {
+            var checkToken = await _accountService.CheckTokenIsValid();
+            if (!checkToken)
+                return Unauthorized(new ApiResponse(401, PubicMessages.UnAuthorizeMessage));
+
+            var role = new AppRole(model.Name);
+            var roleResult = await _roleManager.CreateAsync(role);
+            if (roleResult.Succeeded)
+            {
+                return Ok(new ApiOkResponse(new DataFormat()
+                {
+                    Status = 1,
+                    data = role,
+                    Message = PubicMessages.SuccessMessage
+                },
+                   PubicMessages.SuccessMessage
+                  ));
+            }
+
+            if (roleResult.Errors.Any(c => c.Code == "DuplicateRoleName"))
+            {
+                var err = new List<string>();
+                err.Add($"Role name {model.Name} is already taken");
+                return BadRequest(new ApiBadRequestResponse(err));
+            }
+
+
+            return StatusCode(StatusCodes.Status500InternalServerError,
+              new ApiResponse(500, PubicMessages.InternalServerMessage)
+            );
+
+            //return badrequest(new ApiResponse(401, _localizerShared["InvalidPhoneNumber"].Value.ToString()));
+
+        }
+
+
+
+
+
+
+
+
+        /// <summary>
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns></returns>
+        [HttpPut("UpdateRoleInAdmin")]
+        [Authorize(Roles = PublicHelper.ADMINROLE)]
+        public async Task<ActionResult> UpdateRoleInAdmin([FromBody] RoleDTO model)
+        {
+
+            var checkToken = await _accountService.CheckTokenIsValid();
+            if (!checkToken)
+                return Unauthorized(new ApiResponse(401, _localizerShared["UnauthorizedMessage"].Value.ToString()));
+
+            var roleFromDB = await _roleManager.FindByIdAsync(model.Id);
+            if (roleFromDB == null)
+                return NotFound(new ApiResponse(404, _localizerShared["NotFound"].Value.ToString()));
+
+            roleFromDB.Name = model.Name;
+            roleFromDB.NormalizedName = model.Name.Normalize();
+
+            try
+            {
+                await _context.SaveChangesAsync();
+                return Ok(new ApiOkResponse(new DataFormat()
+                {
+                    Status = 1,
+                    data = roleFromDB,
+                    Message = PubicMessages.SuccessMessage
+                },
+                   PubicMessages.SuccessMessage
+                  ));
+            }
+            catch
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError,
+                                new ApiResponse(500, _localizerShared["InternalServerMessage"].Value.ToString()));
+            }
+
+
+        }
+
+
+
+
+
+
 
 
         #endregion 
