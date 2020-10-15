@@ -5,6 +5,14 @@ const navigationConfig = [
     type: "groupHeader",
     groupTitle: "APPS"
   },
+  {
+    id: "rolemanager",
+    title: "manager role",
+    type: "item",
+    icon: <Icon.Layers size={16} />,
+    navLink: "/pages/Roles"
+    // permissions: ["admin", "editor"]
+  },
   // {
   //   id: "Categories",
   //   title: "Categories",

@@ -28,7 +28,7 @@ import {
   activeUsersSeries,
   newsLetter,
   newsLetterSeries
-} from "./StatisticsData2"
+} from "./StatisticsData2";
 
 class StatisticsCards extends React.Component {
   render() {
@@ -85,8 +85,9 @@ class StatisticsCards extends React.Component {
               statTitle="Reviews"
             />
           </Col>
-
           <Col xl="2" lg="4" sm="6">
+
+
             <StatisticsCard
               hideChart
               iconBg="warning"
@@ -95,6 +96,9 @@ class StatisticsCards extends React.Component {
               statTitle="Returns"
             />
           </Col>
+
+
+
           <Col lg="3" sm="6">
             <StatisticsCard
               hideChart
@@ -135,6 +139,7 @@ class StatisticsCards extends React.Component {
               statTitle="Issues Found"
             />
           </Col>
+
           <Col lg="3" md="6" sm="12">
             <SubscribersGained />
           </Col>
@@ -147,6 +152,8 @@ class StatisticsCards extends React.Component {
           <Col lg="3" md="6" sm="12">
             <OrdersReceived />
           </Col>
+
+
           <Col lg="4" md="6" sm="12">
             <StatisticsCard
               iconRight

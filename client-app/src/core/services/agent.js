@@ -70,7 +70,15 @@ const ServiceTypes = {
 const User = {
   // current: () => requests.get("/user"),
   login: (user) => requests.post("/user/login", user),
+
   // register: (user) => requests.post("/user/register", user)
+};
+
+const Role = {
+  list: () => requests.get("/Account/Role/GetAllRolesInAdmin"),
+  details: (id) => requests.get(`/Account/Role/GetRoleByIdInAdmin?id=${id}`),
+  create: (role) => requests.post("/Account/Role/CreateRoleInAdmin", role),
+  update: (role) => requests.put("/Account/Role/UpdateRoleInAdmin", role)
 };
 
 const Category = {
@@ -102,6 +110,7 @@ const Test = {
 
 export default {
   User,
+  Role,
   Category,
   ServiceTypes,
   Test,

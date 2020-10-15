@@ -444,7 +444,7 @@ namespace CallInDoor.Controllers
         /// </summary>
         /// <param name="Id"></param>
         /// <returns></returns>
-        [HttpGet("GetRoleByIdInAdmin")]
+        [HttpGet("Role/GetRoleByIdInAdmin")]
         [Authorize(Roles = PublicHelper.ADMINROLE)]
         public async Task<ActionResult> GetRoleByIdInAdmin(string id)
         {
@@ -474,7 +474,7 @@ namespace CallInDoor.Controllers
 
 
         // GET: api/GetAllServiceForAdmin
-        [HttpGet("GetAllRolesInAdmin")]
+        [HttpGet("Role/GetAllRolesInAdmin")]
         [Authorize(Roles = PublicHelper.ADMINROLE)]
         public async Task<ActionResult> GetAllServiceForAdmin()
         {
@@ -507,7 +507,7 @@ namespace CallInDoor.Controllers
         /// </summary>
         /// <param name="CreateServiceDTO"></param>
         /// <returns></returns>
-        [HttpPost("CreateRoleInAdmin")]
+        [HttpPost("Role/CreateRoleInAdmin")]
         [Authorize(Roles = PublicHelper.ADMINROLE)]
         public async Task<ActionResult> CreateRoleInAdmin([FromBody] RoleDTO model)
         {
@@ -556,7 +556,7 @@ namespace CallInDoor.Controllers
         /// </summary>
         /// <param name="model"></param>
         /// <returns></returns>
-        [HttpPut("UpdateRoleInAdmin")]
+        [HttpPut("Role/UpdateRoleInAdmin")]
         [Authorize(Roles = PublicHelper.ADMINROLE)]
         public async Task<ActionResult> UpdateRoleInAdmin([FromBody] RoleDTO model)
         {

@@ -6,6 +6,13 @@ export const searchResult = [
     searchLimit: 4,
     data: [
       {
+        id: 107,
+        title: "manager role",
+        target: "categories",
+        navLink: "/pages/Roles",
+        icon: "Layers"
+      },
+      {
         id: 108,
         title: "categories",
         target: "categories",
