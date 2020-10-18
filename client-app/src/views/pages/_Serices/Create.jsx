@@ -227,7 +227,9 @@ class ModalForm extends Form {
                   <input
                     value={this.state.isEnabled}
                     checked={this.state.isEnabled}
-                    onChange={(e) => this.setState({ isEnabled: !this.state.isEnabled })}
+                    onChange={(e) => {
+                      this.setState({ isEnabled: !this.state.isEnabled })
+                    }}
                     name="isEnabled"
                     id="isEnabled"
                     type="checkbox"

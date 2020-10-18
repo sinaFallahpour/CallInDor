@@ -139,7 +139,10 @@ namespace CallInDoor.Controllers
             }
 
 
-            return Ok(new ApiOkResponse(new DataFormat() { Status = 0, Message = _localizerShared["ErrorMessage"].Value.ToString() }, _localizerShared["ErrorMessage"].Value.ToString()));
+            return StatusCode(StatusCodes.Status500InternalServerError,
+                                    new ApiResponse(500, _localizerShared["InternalServerMessage"].Value.ToString()));
+
+            //return Ok(new ApiOkResponse(new DataFormat() { Status = 0, Message = _localizerShared["ErrorMessage"].Value.ToString() }, _localizerShared["ErrorMessage"].Value.ToString()));
         }
 
         #endregion
@@ -192,7 +195,6 @@ namespace CallInDoor.Controllers
 
 
         #endregion
-
 
         #region AdminLogin
 
@@ -248,7 +250,6 @@ namespace CallInDoor.Controllers
 
 
         #endregion
-
 
         #region IsAdminLoggedIn
 
@@ -437,6 +438,203 @@ namespace CallInDoor.Controllers
 
 
 
+        #region Admin with Profile
+
+
+
+        #region GetAdminByIdInAdmin
+
+        /// <summary>
+        /// </summary>
+        /// <param name="Id"></param>
+        /// <returns></returns>
+        [HttpGet("admin/GetAdminByIdInAdmin")]
+        [Authorize(Roles = PublicHelper.ADMINROLE)]
+        public async Task<ActionResult> GetAdminByIdInAdmin(string id)
+        {
+             var checkToken = await _accountService.CheckTokenIsValid();
+            if (!checkToken)
+                return Unauthorized(new ApiResponse(401, PubicMessages.UnAuthorizeMessage));
+            var query = (from u in _context.Users.Where(c=>c.Id==id)
+                         join ur in _context.UserRoles
+                         on u.Id equals ur.UserId
+                         join r in _context.Roles
+                         on ur.RoleId equals r.Id
+                         where r.Name != "User"
+                         select new
+                         {
+                             u.Id,
+                             u.UserName,
+                             u.Name,
+                             u.LastName,
+                             u.Email,
+                             roleName = r.Name,
+                             roleId=r.Id
+                         }).AsQueryable();
+
+            var admin = await query.FirstOrDefaultAsync();
+
+            if (admin == null)
+                return NotFound(new ApiResponse(404, PubicMessages.NotFoundMessage));
+
+            return Ok(new ApiOkResponse(new DataFormat()
+            {
+                Status = 1,
+                data = admin,
+                Message = PubicMessages.SuccessMessage
+            },
+               PubicMessages.SuccessMessage
+              ));
+
+        }
+
+
+        #endregion
+
+        #region GetAllUserInAdmin
+
+        [HttpGet("admin/GetAllAdminInAdmin")]
+        [Authorize(Roles = PublicHelper.ADMINROLE)]
+        public async Task<ActionResult> GetAllAdminInAdmin()
+        {
+            var checkToken = await _accountService.CheckTokenIsValid();
+            if (!checkToken)
+                return Unauthorized(new ApiResponse(401, PubicMessages.UnAuthorizeMessage));
+            var query = (from u in _context.Users
+                         join ur in _context.UserRoles
+                         on u.Id equals ur.UserId
+                         join r in _context.Roles
+                         on ur.RoleId equals r.Id
+                         where r.Name != "User"
+                         select new
+                         {
+                             u.Id,
+                             u.UserName,
+                             u.Name,
+                             u.LastName,
+                             u.Email,
+                             roleName = r.Name
+                         }).AsQueryable();
+
+            var admins = await query.ToListAsync();
+            return Ok(new ApiOkResponse(new DataFormat()
+            {
+                Status = 1,
+                data = admins,
+                Message = PubicMessages.SuccessMessage
+            },
+               PubicMessages.SuccessMessage
+              ));
+        }
+
+        #endregion
+
+
+
+        #region RegisterAdmin
+        [HttpPost("admin/RegisterAdminInAdmin")]
+        [Authorize(Roles = PublicHelper.ADMINROLE)]
+        public async Task<ActionResult> RegisterAdmin([FromBody] RegisterAdminDTO model)
+        {
+            var phonenumber = model.CountryCode.ToString().Trim() + model.PhoneNumber.Trim();
+            var isExist = _context.Users.Any(C => (C.PhoneNumber == phonenumber && C.PhoneNumberConfirmed)
+             ||
+             (C.Email == model.Email && C.EmailConfirmed));
+
+            if (isExist)
+            {
+                var errors = new List<string>();
+                errors.Add("phoneNumber number Or email already  exist.");
+                return BadRequest(new ApiBadRequestResponse(errors));
+            }
+
+            var SerialNumber = Guid.NewGuid().ToString().GetHash();
+
+            var roleFromDB = await _context.Roles.Where(c => c.Id == model.RoleId).FirstOrDefaultAsync();
+            if (roleFromDB == null)
+            {
+                var errors = new List<string>();
+                errors.Add("role not exist.");
+                return BadRequest(new ApiBadRequestResponse(errors));
+            }
+
+            var newUser = new AppUser
+            {
+                UserName = model.CountryCode.ToString().Trim() + model.PhoneNumber.Trim(),
+                Email = model.Email,
+                NormalizedEmail = model.Email.Normalize(),
+                EmailConfirmed = true,
+                SerialNumber = SerialNumber,
+                PhoneNumber = model.CountryCode.ToString() + model.PhoneNumber.Trim(),
+                Role = PublicHelper.USERROLE,
+                Name = model.Name,
+                LastName = model.LastName,
+                verificationCodeExpireTime = DateTime.UtcNow.AddMinutes(3),
+                CountryCode = model.CountryCode
+            };
+
+
+
+            var userrole = await _userManager.GetRolesAsync(newUser);
+            using (var transaction = _context.Database.BeginTransaction())
+            {
+                try
+                {
+                    var result = await _userManager.CreateAsync(newUser, model.Password);
+                    if (result.Succeeded)
+                    {
+                        var roleResult = await _userManager.AddToRoleAsync(newUser, roleFromDB.Name);
+                        var response = new
+                        {
+                            newUser.Id,
+                            newUser.Name,
+                            newUser.LastName,
+                            newUser.Email,
+                            roleName = roleFromDB.Name
+                        };
+
+                        if (roleResult.Succeeded)
+                        {
+
+                            transaction.Commit();
+                            return Ok(new ApiOkResponse(new DataFormat()
+                            {
+                                Status = 1,
+                                data = response,
+                                Message = PubicMessages.SuccessMessage
+                            },
+                                PubicMessages.SuccessMessage
+                          ));
+                        }
+                        else
+                        {
+                            transaction.Rollback();
+                            return StatusCode(StatusCodes.Status500InternalServerError,
+                                          new ApiResponse(500, PubicMessages.InternalServerMessage));
+                        }
+                    }
+
+                }
+                catch (Exception ex)
+                {
+                    transaction.Rollback();
+                    return StatusCode(StatusCodes.Status500InternalServerError,
+                                 new ApiResponse(500, PubicMessages.InternalServerMessage));
+                }
+            }
+            return StatusCode(StatusCodes.Status500InternalServerError,
+                                    new ApiResponse(500, PubicMessages.InternalServerMessage));
+        }
+
+
+        #endregion
+    
+        #endregion
+
+
+
+
+
         #region  Role
 
 
@@ -476,7 +674,7 @@ namespace CallInDoor.Controllers
         // GET: api/GetAllServiceForAdmin
         [HttpGet("Role/GetAllRolesInAdmin")]
         [Authorize(Roles = PublicHelper.ADMINROLE)]
-        public async Task<ActionResult> GetAllServiceForAdmin()
+        public async Task<ActionResult> GetAllRoleForAdmin()
         {
             var checkToken = await _accountService.CheckTokenIsValid();
             if (!checkToken)
@@ -516,6 +714,9 @@ namespace CallInDoor.Controllers
                 return Unauthorized(new ApiResponse(401, PubicMessages.UnAuthorizeMessage));
 
             var role = new AppRole(model.Name);
+            role.IsEnabled = model.IsEnabled;
+            role.NormalizedName = model.Name.Normalize();
+
             var roleResult = await _roleManager.CreateAsync(role);
             if (roleResult.Succeeded)
             {
@@ -571,6 +772,8 @@ namespace CallInDoor.Controllers
 
             roleFromDB.Name = model.Name;
             roleFromDB.NormalizedName = model.Name.Normalize();
+            roleFromDB.IsEnabled = model.IsEnabled;
+
 
             try
             {
@@ -589,7 +792,6 @@ namespace CallInDoor.Controllers
                 return StatusCode(StatusCodes.Status500InternalServerError,
                                 new ApiResponse(500, _localizerShared["InternalServerMessage"].Value.ToString()));
             }
-
 
         }
 

@@ -353,7 +353,6 @@ namespace CallInDoor.Controllers
                    c.IsEnabled,
                    c.IsProfessional,
                    serviceName = c.Service.Name,
-
                }).ToListAsync();
 
             return Ok(new ApiOkResponse(new DataFormat()

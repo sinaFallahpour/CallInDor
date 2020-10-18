@@ -29,8 +29,8 @@ import Create from "./Create";
 
 class Table extends React.Component {
   state = {
-    currentArea: null,
-    currentAreaLoading: false,
+    currentUser: null,
+    currentUserLoading: false,
     addNew: true,
 
     loading: true,
@@ -46,53 +46,24 @@ class Table extends React.Component {
     },
     columnDefs: [
       {
-        headerName: "English Name",
-        field: "title",
+        headerName: "Email",
+        field: "email",
         filter: true,
       },
       {
-        headerName: "Persian Name",
-        field: "persianTitle",
+        headerName: "Name",
+        field: "name",
         filter: true,
       },
       {
-        headerName: "service Name",
-        field: "serviceName",
+        headerName: "Last Name",
+        field: "lastName",
         filter: true,
       },
       {
-        headerName: "Professional status",
-        field: "isProfessional",
+        headerName: "Role",
+        field: "roleName",
         filter: true,
-        cellRendererFramework: (params) => {
-          console.log(params);
-          return params.value === true ? (
-            // <input readOnly checked type="check" className="badge badge-pill badge-light-success" />
-            <div className=" badge badge-pill badge-light-success">
-              <CheckCircle className="text-center" />
-            </div>
-          ) : (
-              <div className="badge badge-pill badge-light-warning">
-                <XCircle />
-              </div>
-            );
-        },
-      },
-      {
-        headerName: "status",
-        field: "isEnabled",
-        filter: true,
-
-        cellRendererFramework: (params) => {
-          console.log(params);
-          return params.value === true ? (
-            <div className="badge badge-pill badge-light-success">Active</div>
-          ) : (
-              <div className="badge badge-pill badge-light-warning">
-                DeActivated
-              </div>
-            );
-        },
       },
       {
         headerName: "",
@@ -118,7 +89,7 @@ class Table extends React.Component {
   };
 
   async populatingArea(areaId) {
-    this.setState({ currentAreaLoading: true, addNew: false });
+    this.setState({ currentUserLoading: true, addNew: false });
     try {
       const { data } = await agent.Areas.details(areaId);
       let {
@@ -131,14 +102,14 @@ class Table extends React.Component {
         specialities,
       } = data.result.data;
 
-      const currentArea = {
+      const currentUser = {
         data: { id, title, persianTitle, serviceId },
         isEnabled,
         isProfessional,
         Specialities: specialities,
       };
 
-      this.setState({ currentArea });
+      this.setState({ currentUser });
     } catch (ex) {
       if (ex?.response?.status == 404 || ex?.response?.status == 400) {
         return this.props.history.replace("/not-found");
@@ -153,7 +124,7 @@ class Table extends React.Component {
   // }
 
   async componentDidMount() {
-    const { data } = await agent.Areas.list();
+    const { data } = await agent.User.list();
 
     if (data?.result) {
       this.setState({ rowData: data.result.data, loading: false });
@@ -165,15 +136,15 @@ class Table extends React.Component {
     });
   }
 
-  addToAreas = async (newArea) => {
-    const rowData = [...this.state.rowData, newArea];
+  addToUsers = async (newUser) => {
+    const rowData = [...this.state.rowData, newUser];
     this.setState({ rowData });
   };
 
-  editToAreas = async (newArea) => {
+  editToUsers = async (newUser) => {
     let rowData = [...this.state.rowData];
-    let index = rowData.findIndex((el) => el.id == newArea.id /* condition */);
-    rowData[index] = newArea;
+    let index = rowData.findIndex((el) => el.id == newUser.id /* condition */);
+    rowData[index] = newUser;
     this.setState({ rowData });
 
     // area = this.state.rowData.find((c) => c.id == newArea.id);
@@ -207,8 +178,8 @@ class Table extends React.Component {
     }
   };
 
-  handledeleteCurrentArea = () => {
-    this.setState({ addNew: true, currentArea: null });
+  handledeleteCurrentUser = () => {
+    this.setState({ addNew: true, currentUser: null });
   };
 
   render() {
@@ -216,15 +187,15 @@ class Table extends React.Component {
       rowData,
       columnDefs,
       defaultColDef,
-      currentArea,
+      currentUser,
       addNew,
     } = this.state;
     return (
       <React.Fragment>
         <Create
-          addToAreas={this.addToAreas}
-          editToAreas={this.editToAreas}
-          currentArea={currentArea}
+          addToUsers={this.addToUsers}
+          editToUsers={this.editToUsers}
+          currentUser={currentUser}
           addNew={addNew}
         ></Create>
 
@@ -232,9 +203,9 @@ class Table extends React.Component {
           <CardHeader>
             <Button.Ripple
               color="primary"
-              onClick={this.handledeleteCurrentArea}
+              onClick={this.handledeleteCurrentUser}
             >
-              Create New Area
+              Create New User
             </Button.Ripple>
           </CardHeader>
 

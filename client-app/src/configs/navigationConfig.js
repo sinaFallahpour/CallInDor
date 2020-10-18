@@ -5,14 +5,48 @@ const navigationConfig = [
     type: "groupHeader",
     groupTitle: "APPS"
   },
+  // {
+  //   id: "rolemanager",
+  //   title: "Manager role",
+  //   type: "item",
+  //   icon: <Icon.Layers size={16} />,
+  //   navLink: "/pages/Roles"
+  //   // permissions: ["admin", "editor"]
+  // },
   {
-    id: "rolemanager",
-    title: "manager role",
-    type: "item",
-    icon: <Icon.Layers size={16} />,
-    navLink: "/pages/Roles"
-    // permissions: ["admin", "editor"]
+    id: "mange User",
+    title: "Manage User",
+    type: "collapse",
+    icon: <Icon.Users size={20} />,
+    children: [
+      {
+        id: "roleManage",
+        title: "Manager role",
+        type: "item",
+        icon: <Icon.Circle size={12} />,
+        // permissions: ["admin", "editor"],
+        navLink: "/pages/Roles",
+        parentOf: [
+          "/pages/Roles",
+          "/pages/Roles/Create"
+        ]
+      },
+      {
+        id: "admins",
+        title: "Manage Admin",
+        type: "item",
+        icon: <Icon.Circle size={12} />,
+        // permissions: ["admin", "editor"],
+        navLink: "/pages/admins",
+        parentOf: [
+          "/pages/admins",
+          "/pages/admins/create",
+          // "/pages/areas/:id"
+        ]
+      }
+    ]
   },
+
   // {
   //   id: "Categories",
   //   title: "Categories",
@@ -38,7 +72,7 @@ const navigationConfig = [
   },
   {
     id: "categories",
-    title: "categories",
+    title: "Categories",
     type: "collapse",
     icon: <Icon.Database size={20} />,
     children: [

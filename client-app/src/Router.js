@@ -184,6 +184,8 @@ const CreateService = lazy(() => import("./views/pages/_Serices/Create"));
 const EditService = lazy(() => import("./views/pages/_Serices/EditService"));
 
 const RoleManager = lazy(() => import("./views/pages/_rolemanager/Rolemanager"));
+const UserManager = lazy(() => import("./views/pages/_userManager/Users"));
+
 
 const Categories = lazy(() => import("./views/pages/Categories/Categories"));
 const EditCategory = lazy(() => import("./views/pages/Categories/EditCategory"));
@@ -343,8 +345,7 @@ class AppRouter extends React.Component {
                 );
               }}
             /> */}
-
-
+            <RouteConfig isLoggedIn={isLoggedIn} title="manage admins" exact path="/pages/admins" component={UserManager} />
             <RouteConfig isLoggedIn={isLoggedIn} title="manage role" exact path="/pages/Roles" component={RoleManager} />
 
 

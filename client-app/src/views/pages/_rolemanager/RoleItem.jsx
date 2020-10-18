@@ -4,7 +4,6 @@ import Chart from "react-apexcharts";
 
 class RoleItem extends React.Component {
     render() {
-        console.log(this.props.isEnabled)
         return (
             <Card>
                 <CardBody
@@ -50,7 +49,7 @@ class RoleItem extends React.Component {
                     )
                 }
             </Card >
-        )
+        );
     }
 }
-export default RoleItem
+export default RoleItem;

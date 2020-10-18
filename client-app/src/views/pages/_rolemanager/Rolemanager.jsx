@@ -8,6 +8,7 @@ import SweetAlert from 'react-bootstrap-sweetalert';
 // import QuaterlySales from "./QuaterlySales";
 // import OrdersReceived from "./OrdersReceived;"
 
+import SpinnerPage from "../../../components/@vuexy/spinner/Loading-spinner";
 
 import RoleItem from "./RoleItem";
 import agent from "../../../core/services/agent";
@@ -66,7 +67,6 @@ class RoleManager extends React.Component {
 
         roles: [],
         loading: true,
-        loadingRole: false,
         loadingSubmiting: false,
 
         errors: [],
@@ -97,11 +97,11 @@ class RoleManager extends React.Component {
 
     toggleModal = (role) => {
         if (!role) {
-            alert("role")
+            // alert("role")
             this.setState({ modal: false })
             return
         }
-        alert("no Role")
+        // alert("no Role")
         this.setState((prevState) => ({
             modal: !prevState.modal,
             addNew: false,
@@ -110,7 +110,7 @@ class RoleManager extends React.Component {
     };
 
     addNewModal = async (modal) => {
-        alert(modal)
+        // alert(modal)
         await this.setState((prev) => ({
             modal,
             addNew: true,
@@ -149,27 +149,20 @@ class RoleManager extends React.Component {
         const errors = [];
         this.setState({ errorMessage, errors });
         try {
-            const {
-                name,
-                isEnabled,
-                id
-            } = this.state.data;
+
             const obj = {
-                name,
-                isEnabled,
-                id
+                name: this.state.data.name,
+                isEnabled: this.state.data.isEnabled,
+                id: this.state.data.id
             };
 
 
             if (this.state.addNew) {
-                alert(21)
                 const { data } = await agent.Role.create(obj);
                 if (data.result.status) {
                     toast.success(data.result.message);
-                    let roles = this.state.roles.push(data.result.data)
+                    let roles = this.state.roles.concat(data.result.data)
                     this.setState({ roles })
-                    // obj.id = data.result.data.id;
-                    // this.props.GetAllCategory(obj);
                 }
                 setTimeout(() => {
                     this.setState({
@@ -188,10 +181,39 @@ class RoleManager extends React.Component {
                 const { data } = await agent.Role.update(obj);
                 if (data.result.status) {
                     toast.success(data.result.message);
-                    let roles = this.state.roles.push(data.result.data)
-                    this.setState({ roles })
-                    // obj.id = data.result.data.id;
-                    // this.props.GetAllCategory(obj);
+
+                    // this.setState({
+                    //     data: this.state.roles.map((el) =>
+                    //         (el.id === obj.id ? { ...el, ...obj } : el))
+                    // });
+
+
+                    // this.state.roles.map((el) => {
+                    //     if (el.id === obj.id) {
+
+                    //         return {
+                    //             ...el, name: obj.name
+                    //         }
+                    //     }
+                    //     else {
+                    //         return el;
+                    //     }
+
+
+                    // })
+
+                    this.setState({
+                        roles: this.state.roles.map((el) => {
+                            if (el.id == obj.id) {
+                                return {
+                                    ...obj
+                                }
+                            }
+                            else {
+                                return el;
+                            }
+                        })
+                    })
                 }
                 setTimeout(() => {
                     this.setState({
@@ -206,30 +228,6 @@ class RoleManager extends React.Component {
 
             }
 
-            // else {
-            //     const { data } = await agent.Role.update(obj);
-            //     if (data.result.status) {
-            //         toast.success(data.result.message);
-
-            //         obj.id = data.result.data.id;
-            //         this.props.GetAllCategory(obj);
-            //     }
-            //     setTimeout(() => {
-            //         this.setState({
-            //             modal: false,
-            //             Loading: false,
-            //             title: "",
-            //             persianTitle: "",
-            //             serviceId: null,
-            //             parentId: null,
-            //         });
-            //         // this.toggleModal()
-            //     }, 2000);
-
-            // }
-
-
-
         } catch (ex) {
             console.log(ex);
             if (ex?.response?.status == 400) {
@@ -242,10 +240,8 @@ class RoleManager extends React.Component {
                     autoClose: 10000,
                 });
             }
-
         }
         finally {
-
             setTimeout(() => {
                 this.setState({ loadingSubmiting: false });
             }, 1000);
@@ -255,33 +251,21 @@ class RoleManager extends React.Component {
 
 
 
-
-
-
-
-
-
-
     render() {
-        const { errorMessage, errors, roles, loadingRole, loading, data } = this.state
+        const { errorMessage, errors, roles, loading, data } = this.state
 
         if (loading)
-            return "loading"
-        if (loadingRole)
-            return "loading Role"
-
+            return <SpinnerPage />
 
 
         return (
             <React.Fragment>
-
-                {this.state.addNew ? "add " : "edit"}
                 <Breadcrumbs
-                    breadCrumbTitle="Statistics Cards"
+                    breadCrumbTitle="Manage Roles"
                     breadCrumbParent="Card"
                     breadCrumbActive="Statistics Cards"
                 />
-                <CardHeader>
+                <CardHeader style={{ backgroundColor: "unset", borderBottom: "unset" }}>
                     <Button.Ripple
                         color="primary"
                         onClick={() => { this.addNewModal(true) }}
@@ -292,23 +276,27 @@ class RoleManager extends React.Component {
                 {/* <div onClick={() => this.handleAlert("defaultAlert", true)}>asdas</div> */}
 
                 <Row>
-                    {roles.map((role) => {
-                        return (
-                            <Col key={role.id} lg="6" sm="6">
-                                <RoleItem
-                                    hideChart
-                                    iconRight
-                                    iconBg="success"
-                                    icon={<Edit className="warning" size={22} />}
-                                    stat={role.name}
-                                    isEnabled={role.isEnabled}
-                                    toggleModal={this.toggleModal}
-                                    role={role}
-                                />
-                            </Col>
-                        )
-                    })
+                    {roles.length == 0 ?
+                        (<h3 class="w-100 text-center">There is no role to display </h3>)
+                        :
+                        roles.map((role) => {
+                            return (
+                                <Col key={role.id} lg="6" sm="6">
+                                    <RoleItem
+                                        hideChart
+                                        iconRight
+                                        iconBg="success"
+                                        icon={<Edit className="warning" size={22} />}
+                                        stat={role.name}
+                                        isEnabled={role.isEnabled}
+                                        toggleModal={this.toggleModal}
+                                        role={role}
+                                    />
+                                </Col>
+                            )
+                        })
                     }
+
 
                     {/* <Col xl="2" lg="4" sm="6">
                         <StatisticsCard
@@ -321,94 +309,111 @@ class RoleManager extends React.Component {
                     </Col> */}
                 </Row>
 
-                <Card>
-                    <CardBody>
-                        <TabContent activeTab={this.state.activeTab}>
-                            <TabPane tabId="1">
 
-                                <Modal
-                                    isOpen={this.state.modal}
-                                    toggle={() => { this.addNewModal(false) }}
-                                    className="modal-dialog-centered"
-                                >
-                                    <ModalHeader toggle={() => { this.addNewModal(false) }}>
-                                        {this.state.addNew ? "Add Role " : "Edit Role"}
-                                    </ModalHeader>
-                                    <ModalBody>
-                                        {errors &&
-                                            errors.map((err, index) => {
-                                                return (
-                                                    <Alert
-                                                        key={index}
-                                                        className="text-center"
-                                                        color="danger "
-                                                    >
-                                                        {err}
-                                                    </Alert>
-                                                );
-                                            })}
-                                        <Form action="/s" className="mt-3" onSubmit={this.doSubmit}>
-                                            <FormGroup>
-                                                <h5 for="email">name:</h5>
-                                                <Input
-                                                    type="text"
-                                                    id="name"
-                                                    value={this.state.data.name}
+                <Modal
+                    isOpen={this.state.modal}
+                    toggle={() => { this.addNewModal(false) }}
+                    className="modal-dialog-centered"
+                >
+                    <ModalHeader toggle={() => { this.addNewModal(false) }}>
+                        {this.state.addNew ? "Add Role " : "Edit Role"}
+                    </ModalHeader>
+                    <ModalBody>
+                        {errors &&
+                            errors.map((err, index) => {
+                                return (
+                                    <Alert
+                                        key={index}
+                                        className="text-center"
+                                        color="danger "
+                                    >
+                                        {err}
+                                    </Alert>
+                                );
+                            })}
+                        <Form action="/s" className="mt-3" onSubmit={this.doSubmit}>
+                            <FormGroup>
+                                <h5 for="email">name:</h5>
+                                <Input
+                                    type="text"
+                                    id="name"
+                                    value={this.state.data.name}
+                                    onChange={(e) => {
+                                        this.setState({ data: { ...this.state.data, name: e.target.value } });
+                                    }}
+                                    placeholder="name"
+                                    required
+                                    minLength="1"
+                                    maxLength="100"
+                                />
+                            </FormGroup>
+
+
+                            {this.state.data.isEnabled ? "غیر فعال" : " فعال "}
+
+
+
+                            {/* <div className="form-group">
+                                                <label htmlFor="isEnabled">Is Enabled</label>
+                                                <input
+                                                    value={this.state.data.isEnabled}
+                                                    checked={this.state.data.isEnabled}
                                                     onChange={(e) => {
-                                                        this.setState({ data: { ...this.state.data, name: e.target.value } });
+                                                        console.log("caneg")
+                                                        this.setState({
+                                                            ...this.state.data,
+                                                            isEnabled: !this.state.data.isEnabled
+                                                        })
                                                     }}
-                                                    placeholder="name"
-                                                    required
-                                                    minLength="1"
-                                                    maxLength="100"
-                                                />
-                                            </FormGroup>
+                                                    name="isEnabled"
+                                                    id="isEnabled"
+                                                    type="checkbox"
+                                                    className="ml-1" />
+                                            </div> */}
 
-                                            <FormGroup className="ml-1 _customCheckbox">
-                                                <Label check>
-                                                    <Input
-                                                        type="checkbox"
-                                                        value={this.state.data.isEnabled}
-                                                        onChange={(e) =>
-                                                            // alert(e.target.value)
-                                                            this.setState({
-                                                                data: {
-                                                                    ...this.state.data,
-                                                                    isEnabled:
-                                                                        e.target.value == "on" ? true : false,
-                                                                }
-                                                            })
-                                                        }
-                                                        name="isEnabled"
-                                                    />
-                                            Is this role  ctive?
-
-                                        </Label>
-                                            </FormGroup>
-
-
-                                            {this.state.loadingSubmiting ? (
-                                                <Button
-                                                    disabled={true}
-                                                    color="primary"
-                                                    className="mb-1"
-                                                >
-                                                    <Spinner color="white" size="sm" type="grow" />
-                                                    <span className="ml-50">Loading...</span>
-                                                </Button>
-                                            ) : (
-                                                    <Button color="primary">submit</Button>
-                                                )}
-                                        </Form>
-                                    </ModalBody>
-                                </Modal>
+                            <FormGroup className="ml-1 _customCheckbox">
+                                <Label htmlFor="isEnabled" >
+                                    <Input
+                                        type="checkbox"
+                                        // value={this.state.data.isEnabled}
+                                        checked={this.state.data.isEnabled}
+                                        onChange={(e) => {
+                                            this.setState({
+                                                data: {
+                                                    ...this.state.data,
+                                                    isEnabled: !this.state.data.isEnabled
+                                                }
+                                            })
+                                        }
+                                        }
+                                        name="isEnabled"
+                                        id="isEnabled"
+                                        defaultChecked={this.state.data.isEnabled}
+                                    />
+                                                     Is this role  ctive?
+                                                 </Label>
+                            </FormGroup>
 
 
+                            {this.state.loadingSubmiting ? (
+                                <Button
+                                    disabled={true}
+                                    color="primary"
+                                    className="mb-1"
+                                >
+                                    <Spinner color="white" size="sm" type="grow" />
+                                    <span className="ml-50">Loading...</span>
+                                </Button>
+                            ) : (
+                                    <Button color="primary">submit</Button>
+                                )}
+                        </Form>
+                    </ModalBody>
+                </Modal>
 
-                            </TabPane >
-                        </TabContent >
-                    </CardBody>
-                </Card>
+
+
+
 
 
             </React.Fragment >

@@ -12,5 +12,8 @@ namespace Domain.DTO.Account
         [Required(ErrorMessage = "{0} is  Required", AllowEmptyStrings = false)]
         [Display(Name = "Access level")]
         public string Name { get; set; }
+
+
+        public bool IsEnabled { get; set; }
     }
 }
