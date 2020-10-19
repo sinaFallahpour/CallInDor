@@ -62,17 +62,17 @@ const ServiceTypes = {
   GetAll: () => requests.get("/ServiceType/GetAllServiceForAdmin"),
   details: (id) => requests.get(`/ServiceType/GetServiceByIdForAdmin?id=${id}`),
   create: (service) => requests.post("/ServiceType/CreateForAdmin", service),
-  update: (activity) =>
-    requests.put("/ServiceType/UpdateServiceForAdmin", activity),
+  update: (activity) => requests.put("/ServiceType/UpdateServiceForAdmin", activity)
   // delete: (id) => requests.del(`/activities/${id}`)
 };
 
 const User = {
   // current: () => requests.get("/user"),
   list: () => requests.get("/Account/admin/GetAllAdminInAdmin"),
-  details: (id) => requests.get(`/Area/GetAdminByIdInAdmin?id=${id}`),
+  details: (id) => requests.get(`/Account/admin/GetAdminByIdInAdmin?id=${id}`),
   login: (user) => requests.post("/user/login", user),
-  registerAdmin: (user) => requests.post("/Account/admin/RegisterAdminInAdmin", user)
+  registerAdmin: (user) => requests.post("/Account/admin/RegisterAdminInAdmin", user),
+  update: (user) => requests.put("/Account/admin/UpdateAdmin", user)
 };
 
 const Role = {

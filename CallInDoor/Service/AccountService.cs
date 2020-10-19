@@ -124,7 +124,7 @@ namespace Service
 
             var username = await _context.Users
                     .Where(x => x.SerialNumber == currentSerialNumber && x.UserName == currentUserName
-                    && x.Role == currentUserRole)
+                    && x.Role == currentUserRole && x.Role == PublicHelper.ADMINROLE)
                     .Select(c => c.UserName).FirstOrDefaultAsync();
 
             if (string.IsNullOrEmpty(username))

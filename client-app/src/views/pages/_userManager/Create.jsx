@@ -20,22 +20,23 @@ import Joi from "joi-browser";
 
 import agent from "../../../core/services/agent";
 import Form from "../../../components/common/form";
-import CustomTagsInput from "./CustomTagsInput";
-import ModalCustom from "./ModalCustom";
 
+import ModalCustom from "./ModalCustom";
+import { conutryPhoneCodes } from "../../../utility/phone-codes.data"
 class Create extends Form {
   state = {
     data: {
       id: null,
-      title: "",
-      persianTitle: "",
-      serviceId: null,
+      email: "",
+      password: "",
+      name: "",
+      lastName: "",
+      dial_code: null,
+      phoneNumber: "",
+      roleId: null,
     },
-    services: [],
-    Specialities: [],
-    isEnabled: false,
-    isProfessional: false,
-
+    roles: [],
+    conutryPhoneCodes: conutryPhoneCodes,
     modal: false,
 
     errors: {},
@@ -45,136 +46,106 @@ class Create extends Form {
   };
 
   schema = {
-    id: Joi.number(),
-    title: Joi.string().required().min(3).max(100).label("English Title"),
+    id: Joi.string().allow(null),
+    name: Joi.string().required().min(1).max(200).label("Name"),
 
-    persianTitle: Joi.string()
+    lastName: Joi.string()
       .required()
-      .min(3)
+      .min(1)
       .max(100)
-      .label("Persian Title"),
+      .label("last Name"),
 
-    serviceId: Joi.number()
-      .error(() => {
-        return {
-          message: "service Is Required",
-        };
-      })
+    email: Joi.string()
+      .email({ minDomainAtoms: 2 })
       .required()
-      .label("service"),
+      .label("email"),
 
-    Specialities: Joi.label("speciality"),
+    password: Joi.string()
+      .required()
+      .min(6)
+      .max(20)
+      .label("passworrd"),
+
+    phoneNumber: Joi.number()
+      .required()
+      .label("phone number"),
+
+    dial_code: Joi.string()
+      .required()
+      .label("country code"),
+
+    roleId: Joi.string()
+      .required()
+      .label("role"),
+
+    roles: Joi.label("roles"),
   };
 
-  async populatingServiceTypes() {
-    const { data } = await agent.ServiceTypes.list();
-    let services = data.result.data;
-    this.setState({ services });
+  async populatingRoles() {
+    const { data } = await agent.Role.list();
+    let roles = data.result.data;
+    this.setState({ roles });
   }
 
   async componentDidMount() {
-    this.populatingServiceTypes();
+    this.populatingRoles();
   }
 
   componentDidUpdate(prevProps, prevState) {
-    const { addNew, currentArea, addToUsers } = this.props;
-    // console.log(currentArea);
-    // console.log(this.props.currentArea);
-    // console.log("seperate");
-    // console.log(prevProps.currentArea);
+    const { addNew, currentUser, addToUsers } = this.props;
+
     if (addNew != prevProps.addNew) {
-      const data = { id: null, title: "", persianTitle: "", serviceId: null };
+      const data = { id: null, email: "", name: "", lastName: "", roleId: null };
       this.setState({
         data,
-        Specialities: [],
-        isEnabled: false,
-        isProfessional: false,
       });
     }
     if (
       !addNew &&
-      currentArea != null &&
-      currentArea?.data?.id != prevProps?.currentArea?.data?.id
+      currentUser != null &&
+      currentUser?.data?.id != prevProps?.currentUser?.data?.id
     ) {
-      console.log(currentArea);
+
+      delete currentUser.data.phoneNumber
+      delete currentUser.data.countryCode
+      delete currentUser.data.password
+      delete currentUser.data.dial_code
+      delete currentUser.data.roleName
+
+      delete this.schema.phoneNumber
+      delete this.schema.countryCode
+      delete this.schema.password
+      delete this.schema.dial_code
+      delete this.schema.roleName
+
+
+
+
+
 
       this.setState({
-        data: currentArea.data,
-        ...currentArea,
+        data: currentUser.data,
+        ...currentUser,
         // Specialities: [],
       });
     }
   }
 
-  // // // // // // // componentDidUpdate(prevProps, prevState) {
-  // // // // // //   const { addNew, currentArea, addToUsers } = this.props;
-  // // // // // //   console.log(this.props.currentArea);
-  // // // // // //   console.log("seperate");
-  // // // // // //   console.log(prevProps.currentArea);
-  // // // // // //   if (
-  // // // // // //     !addNew &&
-  // // // // // //     currentArea != null &&
-  // // // // // //     (prevProps.currentArea == null ||
-  // // // // // //       currentArea?.data?.id != prevProps?.currentArea?.data?.id)
-  // // // // // //   ) {
-  // // // // // //     const { id, title, persianTitle, serviceId } = currentArea?.data;
-  // // // // // //     const { isEnabled, isProfessional } = currentArea;
-  // // // // // //     if (id != prevState.data.id) {
-  // // // // // //       alert("changeId");
-  // // // // // //       this.setState({ data: { ...prevState.data, id } });
-  // // // // // //     }
-  // // // // // //     if (title != prevState.data.title) {
-  // // // // // //       alert("change title");
-  // // // // // //       this.setState({ data: { ...prevState.data, title } });
-  // // // // // //     }
-  // // // // // //     if (persianTitle != prevState.data.persianTitle) {
-  // // // // // //       alert("change persianTitle");
-  // // // // // //       this.setState({ data: { ...prevState.data, persianTitle } });
-  // // // // // //     }
-  // // // // // //     if (serviceId != prevState.data.serviceId) {
-  // // // // // //       alert("change serviceId ");
-  // // // // // //       this.setState({ data: { ...prevState.data, serviceId } });
-  // // // // // //     }
-  // // // // // //     if (isEnabled != prevState.isEnabled) {
-  // // // // // //       alert("change isEnabled ");
-  // // // // // //       this.setState({ isEnabled });
-  // // // // // //     }
-  // // // // // //     if (isProfessional != prevState.isProfessional) {
-  // // // // // //       alert("change isProfessional");
-  // // // // // //       this.setState({ isProfessional });
-  // // // // // //     }
-  // // // // // //     // if(dont chec speciality)
 
-  // // // // // //     // this.setState({
-  // // // // // //     //   data: currentArea.data,
-  // // // // // //     //   ...currentArea,
-  // // // // // //     // });
-  // // // // // //   }
 
-  // // // // // //   // data: { id, title, persianTitle, serviceId },
-  // // // // // //   // isEnabled,
-  // // // // // //   // isProfessional,
-  // // // // // //   // Specialities,
-  // // // // // // }
 
-  // handleAddSpeciality = topic => {
-  //   let prevSpecialities = this.state.speciality
-  //   prevSpecialities.push(topic)
-  //   this.setState({ speciality: prevSpecialities })
+  // handleAddSpeciality = (persianName, englishName) => {
+  //   let prevSpecialities = this.state.Specialities;
+  //   const obj = { persianName, englishName };
+
+  //   let thisSpeciality = [...prevSpecialities, obj];
+  //   // prevSpecialities.push(obj)
+  //   this.setState({ Specialities: thisSpeciality });
   // };
 
-  handleAddSpeciality = (persianName, englishName) => {
-    let prevSpecialities = this.state.Specialities;
-    const obj = { persianName, englishName };
-
-    let thisSpeciality = [...prevSpecialities, obj];
-    // prevSpecialities.push(obj)
-    this.setState({ Specialities: thisSpeciality });
-  };
-
-  handleDeleteSpeciality = (Specialities) => {
-    this.setState({ Specialities });
-  };
+  // handleDeleteSpeciality = (Specialities) => {
+  //   this.setState({ Specialities });
+  // };
 
   toggleModal = () => {
     this.setState((prevstate, prevProps) => {
@@ -189,32 +160,31 @@ class Create extends Form {
     const errorscustom = [];
     this.setState({ errorMessage, errorscustom });
     try {
-      const { isEnabled, isProfessional, Specialities } = this.state;
+      // const { isEnabled, isProfessional, Specialities } = this.state;
       const obj = {
         ...this.state.data,
-        isEnabled,
-        isProfessional,
-        Specialities,
+        countryCode: this.state.data.dial_code
       };
+
       //Add
       if (this.props.addNew) {
-        const { data } = await agent.Areas.create(obj);
+        const { data } = await agent.User.registerAdmin(obj);
         if (data.result.status) {
           obj.id = data.result.data.id;
-          obj.serviceName = data.result.data.serviceName;
+          obj.roleName = data.result.data.roleName;
           this.props.addToUsers(obj);
           toast.success(data.result.message);
-          setInterval(() => {
+          setTimeout(() => {
             this.cleanData();
           }, 600);
         }
       }
       //Edit
       else {
-        const { data } = await agent.Areas.update(obj);
+        const { data } = await agent.User.update(obj);
         if (data.result.status) {
           obj.id = data.result.data.id;
-          obj.serviceName = data.result.data.serviceName;
+          obj.roleName = data.result.data.roleName;
           this.props.editToUsers(obj);
           toast.success(data.result.message);
           // setInterval(() => {
@@ -241,21 +211,24 @@ class Create extends Form {
   };
 
   cleanData = () => {
+
     const data = {
-      title: "",
-      persianTitle: "",
-      serviceId: null,
+      id: null,
+      email: "",
+      password: "",
+      name: "",
+      lastName: "",
+      roleId: null,
+      dial_code: null,
     };
+
     this.setState({
       data,
-      Specialities: [],
-      isEnabled: false,
-      isProfessional: false,
     });
   };
 
   render() {
-    const { errorscustom, errorMessage, services, modal } = this.state;
+    const { errorscustom, errorMessage, roles, modal, conutryPhoneCodes } = this.state;
     const { addNew } = this.props;
 
     return (
@@ -263,7 +236,7 @@ class Create extends Form {
         <Col sm="13" className="mx-auto">
           <Card>
             <CardHeader>
-              <CardTitle> {addNew ? "Create Area" : "Edit Area"} </CardTitle>
+              <CardTitle> {addNew ? "Create User" : "Edit User"} </CardTitle>
             </CardHeader>
             <CardBody>
               {errorscustom &&
@@ -275,77 +248,44 @@ class Create extends Form {
                   );
                 })}
 
+
               <form onSubmit={this.handleSubmit}>
                 <FormGroup row>
-                  <Col md="4">{this.renderInput("title", "English Title")}</Col>
-                  <Col md="4">
-                    {this.renderInput("persianTitle", "Persian Title")}
-                  </Col>
+                  <Col md="4">{this.renderInput("name", "Name")}</Col>
+                  <Col md="4">  {this.renderInput("lastName", "Last Name")}</Col>
+                  <Col md="4">  {this.renderInput("email", "Email")}</Col>
+
+
+                  {addNew ?
+                    <>
+                      <Col md="4">  {this.renderInput("password", "Password", 'password')}</Col>
+                      <Col md="4">  {this.renderInput("phoneNumber", "Phone Number(witOut Country Code)", 'number')}</Col>
+                      <Col md="4">
+                        {this.renderReactSelect(
+                          "dial_code",
+                          "Country Code",
+                          conutryPhoneCodes.map((item) => ({
+                            value: item.dial_code,
+                            label: item.name,
+                          }))
+                        )}
+                      </Col>
+                    </>
+
+                    : null}
                   <Col md="4">
                     {this.renderReactSelect(
-                      "serviceId",
-                      "Service",
-                      services.map((item) => ({
+                      "roleId",
+                      "Role",
+                      roles.map((item) => ({
                         value: item.id,
                         label: item.name,
                       }))
                     )}
                   </Col>
 
-                  <Col md="6">
-                    {
-                      <CustomTagsInput
-                        handleAddSpeciality={this.handleAddSpeciality}
-                        handleDeleteTopic={this.handleDeleteSpeciality}
-                        toggleModal={this.toggleModal}
-                        Specialities={this.state.Specialities}
-                        isProfessional={this.state.isProfessional}
-                      />
-                    }
-                  </Col>
                 </FormGroup>
 
-                {/* <Col lg="6" className="mb-4">
-                  {
-                    <CustomTagsInput
-                      handleAddTopic={this.handleAddTopic}
-                      handleDeleteTopic={this.handleDeleteTopic}
-                      topics={this.state.speciality}
-                    />
-                  }
-                </Col> */}
-
-                <div className="form-group _customCheckbox">
-                  <label htmlFor="isEnabled">Is Enabled</label>
-                  <input
-                    value={this.state.isEnabled}
-                    checked={this.state.isEnabled}
-                    onChange={(e) =>
-                      this.setState({ isEnabled: !this.state.isEnabled })
-                    }
-                    name="isEnabled"
-                    id="isEnabled"
-                    type="checkbox"
-                    className="ml-1"
-                  />
-                </div>
-
-                <div className="form-group _customCheckbox">
-                  <label htmlFor="isProfessional">Is Professional</label>
-                  <input
-                    value={this.state.isProfessional}
-                    checked={this.state.isProfessional}
-                    onChange={(e) =>
-                      this.setState({
-                        isProfessional: !this.state.isProfessional,
-                      })
-                    }
-                    name="isProfessional"
-                    id="isProfessional"
-                    type="checkbox"
-                    className="ml-1"
-                  />
-                </div>
 
                 {this.state.Loading ? (
                   <Button disabled={true} color="primary" className="mb-1">

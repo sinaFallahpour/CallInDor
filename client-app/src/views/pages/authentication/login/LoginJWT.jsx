@@ -11,6 +11,7 @@ import {
   Button,
   Label,
   Alert,
+  Spinner
 } from "reactstrap";
 import Checkbox from "../../../../components/@vuexy/checkbox/CheckboxesVuexy";
 import { Mail, Lock, Check, Phone } from "react-feather";
@@ -18,7 +19,7 @@ import { Mail, Lock, Check, Phone } from "react-feather";
 // import { connect } from "react-redux";
 // import { history } from "../../../../history";
 import { toast } from "react-toastify";
-import Spinner from "../../../../components/@vuexy/spinner/Loading-spinner";
+// import Spinner from "../../../../components/@vuexy/spinner/Loading-spinner";
 
 class LoginJWT extends React.Component {
   state = {
@@ -63,9 +64,9 @@ class LoginJWT extends React.Component {
   };
 
   render() {
-    if (this.state.Loading) {
-      return <Spinner />;
-    }
+    // if (this.state.Loading) {
+    //   return <Spinner />;
+    // }
     //  if (auth.getCurrentUser()) return <Redirect to="/" />;
     const { errorMessage, errors } = this.state;
     return (
@@ -75,7 +76,6 @@ class LoginJWT extends React.Component {
             errors.map((err, index) => {
               return (
                 <Alert key={index} color="danger">
-                  {" "}
                   {err}
                 </Alert>
               );
@@ -117,9 +117,26 @@ class LoginJWT extends React.Component {
               </div>
             </FormGroup>
             <div className="d-flex justify-content-between">
-              <Button.Ripple color="primary" type="submit" >
+              {/* <Button.Ripple color="primary" type="submit" >
                 Login
-              </Button.Ripple>
+              </Button.Ripple> */}
+
+
+
+              {this.state.Loading ? (
+                <Button
+                  disabled={true}
+                  color="primary"
+                  className="mb-1"
+                >
+                  <Spinner color="white" size="sm" type="grow" />
+                  <span className="ml-50">Loading...</span>
+                </Button>
+              ) : (
+                  <Button.Ripple color="primary" type="submit" >
+                    Login
+                  </Button.Ripple>)}
+
             </div>
           </Form>
         </CardBody>

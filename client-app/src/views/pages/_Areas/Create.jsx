@@ -204,7 +204,7 @@ class Create extends Form {
           obj.serviceName = data.result.data.serviceName;
           this.props.addToAreas(obj);
           toast.success(data.result.message);
-          setInterval(() => {
+          setTimeout(() => {
             this.cleanData();
           }, 600);
         }
@@ -217,7 +217,7 @@ class Create extends Form {
           obj.serviceName = data.result.data.serviceName;
           this.props.editToAreas(obj);
           toast.success(data.result.message);
-          // setInterval(() => {
+          // setTimeout(() => {
           //   this.cleanData();
           // }, 600);
         }

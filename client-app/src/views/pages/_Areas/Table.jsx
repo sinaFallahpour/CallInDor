@@ -141,7 +141,7 @@ class Table extends React.Component {
       this.setState({ currentArea });
     } catch (ex) {
       if (ex?.response?.status == 404 || ex?.response?.status == 400) {
-        return this.props.history.replace("/not-found");
+        return history.replace("/not-found");
       }
     }
   }

@@ -452,10 +452,10 @@ namespace CallInDoor.Controllers
         [Authorize(Roles = PublicHelper.ADMINROLE)]
         public async Task<ActionResult> GetAdminByIdInAdmin(string id)
         {
-             var checkToken = await _accountService.CheckTokenIsValid();
+            var checkToken = await _accountService.CheckTokenIsValid();
             if (!checkToken)
                 return Unauthorized(new ApiResponse(401, PubicMessages.UnAuthorizeMessage));
-            var query = (from u in _context.Users.Where(c=>c.Id==id)
+            var query = (from u in _context.Users.Where(c => c.Id == id)
                          join ur in _context.UserRoles
                          on u.Id equals ur.UserId
                          join r in _context.Roles
@@ -464,13 +464,17 @@ namespace CallInDoor.Controllers
                          select new
                          {
                              u.Id,
-                             u.UserName,
+                             //u.UserName,
                              u.Name,
                              u.LastName,
                              u.Email,
-                             roleName = r.Name,
-                             roleId=r.Id
+                             //PhoneNumber = ReomeveSomeString(u.PhoneNumber, u.CountryCode),
+                             //CountryCode = u.CountryCode,
+                             //roleName = r.Name,
+                             roleId = r.Id
                          }).AsQueryable();
+
+
 
             var admin = await query.FirstOrDefaultAsync();
 
@@ -488,6 +492,17 @@ namespace CallInDoor.Controllers
 
         }
 
+
+
+
+        private static string ReomeveSomeString(string sourceString, string removeString)
+        {
+            int index = sourceString.IndexOf(removeString);
+            string cleanPath = (index < 0)
+                ? sourceString
+                : sourceString.Remove(index, removeString.Length);
+            return cleanPath;
+        }
 
         #endregion
 
@@ -513,6 +528,7 @@ namespace CallInDoor.Controllers
                              u.Name,
                              u.LastName,
                              u.Email,
+                             u.PhoneNumber,
                              roleName = r.Name
                          }).AsQueryable();
 
@@ -613,9 +629,15 @@ namespace CallInDoor.Controllers
                                           new ApiResponse(500, PubicMessages.InternalServerMessage));
                         }
                     }
+                    else if (result.Errors.Any(c => c.Code == "DuplicateUserName}"))
+                    {
+                        var err = new List<string>();
+                        err.Add($" {model.PhoneNumber} is already taken");
+                        return BadRequest(new ApiBadRequestResponse(err));
+                    }
 
                 }
-                catch (Exception ex)
+                catch (Exception)
                 {
                     transaction.Rollback();
                     return StatusCode(StatusCodes.Status500InternalServerError,
@@ -628,7 +650,102 @@ namespace CallInDoor.Controllers
 
 
         #endregion
-    
+
+
+
+        // /api/Profile/UpdateProfile
+        [HttpPut("admin/UpdateAdmin")]
+        [Authorize(Roles = PublicHelper.ADMINROLE)]
+        public async Task<ActionResult> UpdateAdmin([FromBody] UpdateAdminDTO model)
+        {
+            using (var transaction = _context.Database.BeginTransaction())
+            {
+                try
+                {
+                    var result = await _accountService.CheckTokenIsValidForAdminRole();
+                    if (!result.status)
+                        return Unauthorized(new ApiResponse(401, "Unauthorize."));
+
+                    //var admin = await _userManager.FindByIdAsync(model.Id);
+                    var admin = await _context.Users.Where(c =>
+                     c.Id == model.Id).FirstOrDefaultAsync();
+                    if (admin == null)
+                        return NotFound(new ApiResponse(404, PubicMessages.NotFoundMessage));
+
+                    var roleFromDB = await _roleManager.FindByIdAsync(model.RoleId);
+                    if (roleFromDB == null)
+                    {
+                        var err = new List<string>();
+                        err.Add("invalid role");
+                        return BadRequest(new ApiBadRequestResponse(err));
+                    }
+
+
+                    var userRoles = await _userManager.GetRolesAsync(admin);
+                    var res = await _userManager.RemoveFromRolesAsync(admin, userRoles);
+
+                    if (!res.Succeeded)
+                    {
+                        await transaction.RollbackAsync();
+                        var identitErrors = res.Errors.Select(c => c.Description).ToList();
+                        return BadRequest(new ApiBadRequestResponse(identitErrors));
+                    }
+                    res = await _userManager.AddToRoleAsync(admin, roleFromDB.Name);
+                    if (!res.Succeeded)
+                    {
+                        await transaction.RollbackAsync();
+                        var identitErrors = res.Errors.Select(c => c.Description).ToList();
+                        return BadRequest(new ApiBadRequestResponse(identitErrors));
+                    }
+
+                    var emailExist = await _context.Users.AnyAsync(c => c.Email == model.Email && c.Id != model.Id);
+                    if (emailExist)
+                    {
+                        var err = new List<string>();
+                        err.Add($"Email ${model.Email} already taken.");
+                        return BadRequest(new ApiBadRequestResponse(err));
+                    }
+
+                    admin.Name = model.Name;
+                    admin.LastName = model.LastName;
+                    admin.Email = model.Email;
+
+                    var resposne = new
+                    {
+                        admin.Id,
+                        admin.Name,
+                        admin.LastName,
+                        admin.Email,
+                        roleName = roleFromDB.Name,
+                    };
+
+                    await _context.SaveChangesAsync();
+                    await transaction.CommitAsync();
+                    return Ok(new ApiOkResponse(new DataFormat()
+                    {
+                        Status = 1,
+                        data = resposne,
+                        Message = _localizerShared["SuccessMessage"].Value.ToString()
+                    },
+                     _localizerShared["SuccessMessage"].Value.ToString()
+                    ));
+
+                }
+                catch
+                {
+                    await transaction.RollbackAsync();
+
+                    return StatusCode(StatusCodes.Status500InternalServerError,
+                         new ApiResponse(500, PubicMessages.InternalServerMessage));
+                }
+            }
+
+
+
+        }
+
+
+
         #endregion
 
 
@@ -681,7 +798,6 @@ namespace CallInDoor.Controllers
                 return Unauthorized(new ApiResponse(401, PubicMessages.UnAuthorizeMessage));
 
             var roles = await _roleManager.Roles.ToListAsync();
-
 
             return Ok(new ApiOkResponse(new DataFormat()
             {

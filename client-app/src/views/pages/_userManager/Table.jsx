@@ -77,7 +77,7 @@ class Table extends React.Component {
               size={15}
               onClick={async () => {
                 window.scrollTo(0, 0)
-                await this.populatingArea(params.data.id)
+                await this.populatingUser(params.data.id)
               }}
 
             // onClick={() => history.push(`/pages/Areas/${params.value}`)}
@@ -88,40 +88,32 @@ class Table extends React.Component {
     ],
   };
 
-  async populatingArea(areaId) {
+  async populatingUser(userId) {
     this.setState({ currentUserLoading: true, addNew: false });
     try {
-      const { data } = await agent.Areas.details(areaId);
+      const { data } = await agent.User.details(userId);
       let {
         id,
-        title,
-        persianTitle,
-        isEnabled,
-        isProfessional,
-        serviceId,
-        specialities,
+        email,
+        name,
+        lastName,
+        roleId,
+        roleName
+        // serviceId,
+        // specialities,
       } = data.result.data;
 
       const currentUser = {
-        data: { id, title, persianTitle, serviceId },
-        isEnabled,
-        isProfessional,
-        Specialities: specialities,
+        data: { id, email, name, lastName, roleId, roleName },
       };
-
       this.setState({ currentUser });
     } catch (ex) {
       if (ex?.response?.status == 404 || ex?.response?.status == 400) {
-        return this.props.history.replace("/not-found");
+        return history.replace("/not-found");
       }
     }
   }
 
-  // async populatingArea() {
-  //   const { data } = await agent.Areas.details();
-  //   let categories = data.result.data;
-  //   this.setState({ categories });
-  // }
 
   async componentDidMount() {
     const { data } = await agent.User.list();
@@ -143,8 +135,11 @@ class Table extends React.Component {
 
   editToUsers = async (newUser) => {
     let rowData = [...this.state.rowData];
+    console.clear()
+    console.log(newUser)
     let index = rowData.findIndex((el) => el.id == newUser.id /* condition */);
     rowData[index] = newUser;
+    console.log(rowData)
     this.setState({ rowData });
 
     // area = this.state.rowData.find((c) => c.id == newArea.id);
