@@ -20,7 +20,7 @@ import {
   Form as FormStrap,
   Alert,
   Spinner,
-  Col
+  Col,
 } from "reactstrap";
 
 // import { modalForm } from "./ModalSourceCode"
@@ -28,10 +28,7 @@ import { toast } from "react-toastify";
 import ReactTagInput from "@pathofdev/react-tag-input";
 import "@pathofdev/react-tag-input/build/index.css";
 
-
 import agent from "../../../core/services/agent";
-
-
 
 import Joi from "joi-browser";
 import Form from "../../../components/common/form";
@@ -45,10 +42,13 @@ class ModalForm extends Form {
       minPriceForService: "",
       minSessionTime: "",
       acceptedMinPriceForNative: "",
-      acceptedMinPriceForNonNative: ""
+      acceptedMinPriceForNonNative: "",
+      roleId: null,
     },
     tags: [],
     persinaTags: [],
+    roles: [],
+
     isEnabled: true,
     errors: {},
     errorscustom: [],
@@ -56,48 +56,50 @@ class ModalForm extends Form {
     Loading: false,
   };
 
-
   schema = {
     name: Joi.string(),
 
-    persianName: Joi.string()
-      .required()
-      .label("Persian Name"),
+    persianName: Joi.string().required().label("Persian Name"),
 
-    color: Joi.string()
-      .required()
-      .label("color"),
+    color: Joi.string().required().label("color"),
 
     minPriceForService: Joi.number()
       .required()
       .min(1)
       .max(10000000000000)
-      .label('minimum Price'),
+      .label("minimum Price"),
 
     minSessionTime: Joi.number()
       .required()
       .min(1)
       .max(10000000)
-      .label('minimum Session Time'),
+      .label("minimum Session Time"),
 
     acceptedMinPriceForNative: Joi.number()
       .required()
       .min(1)
       .max(10000000000000)
-      .label('minimum Price For Native User'),
+      .label("minimum Price For Native User"),
 
     acceptedMinPriceForNonNative: Joi.number()
       .required()
       .min(1)
       .max(10000000000000)
-      .label('minimum Price For Non Native User'),
+      .label("minimum Price For Non Native User"),
+
+    roleId: Joi.string().required().label("role"),
+    roles: Joi.label("roles"),
   };
 
-
-  async componentDidMount() {
-
+  async populatingRoles() {
+    const { data } = await agent.Role.listActive();
+    let roles = data.result.data;
+    this.setState({ roles });
   }
 
+  async componentDidMount() {
+    this.populatingRoles();
+  }
 
   doSubmit = async (e) => {
     this.setState({ Loading: true });
@@ -106,12 +108,16 @@ class ModalForm extends Form {
     const errorscustom = [];
     this.setState({ errorMessage, errorscustom });
     try {
-      const { isEnabled, tags, persinaTags } = this.state
-      const obj = { ...this.state.data, isEnabled, tags: tags.join(), persinaTags: persinaTags.join() }
+      const { isEnabled, tags, persinaTags } = this.state;
+      const obj = {
+        ...this.state.data,
+        isEnabled,
+        tags: tags.join(),
+        persinaTags: persinaTags.join(),
+      };
 
       const { data } = await agent.ServiceTypes.create(obj);
-      if (data.result.status)
-        toast.success(data.result.message)
+      if (data.result.status) toast.success(data.result.message);
     } catch (ex) {
       console.log(ex);
       if (ex?.response?.status == 400) {
@@ -130,14 +136,12 @@ class ModalForm extends Form {
     }, 200);
   };
 
-
   render() {
-    const { errorscustom, errorMessage } = this.state;
+    const { errorscustom, errorMessage, roles } = this.state;
     return (
       <React.Fragment>
-
         <Col sm="10" className="mx-auto">
-          <Card >
+          <Card>
             <CardHeader>
               <CardTitle> Create Service </CardTitle>
             </CardHeader>
@@ -145,11 +149,7 @@ class ModalForm extends Form {
               {errorscustom &&
                 errorscustom.map((err, index) => {
                   return (
-                    <Alert
-                      key={index}
-                      className="text-center"
-                      color="danger "
-                    >
+                    <Alert key={index} className="text-center" color="danger ">
                       {err}
                     </Alert>
                   );
@@ -159,13 +159,32 @@ class ModalForm extends Form {
                 {this.renderInput("name", "Name")}
                 {this.renderInput("persianName", "PersianName")}
                 {this.renderInput("color", "Color")}
-                {this.renderInput("minPriceForService", "Minimm Price (For Service)$")}
+                {this.renderInput(
+                  "minPriceForService",
+                  "Minimm Price (For Service)$"
+                )}
 
-                {this.renderInput("acceptedMinPriceForNative", "Minimm Price For Native User (For Chat,Voice,video)$")}
-                {this.renderInput("acceptedMinPriceForNonNative", "Minimm Price For Non Native User  (For Chat,Voice,video)$")}
-                {this.renderInput("minSessionTime", "Min Session Time (minutes) (For Chat,Voice,video)$")}
+                {this.renderInput(
+                  "acceptedMinPriceForNative",
+                  "Minimm Price For Native User (For Chat,Voice,video)$"
+                )}
+                {this.renderInput(
+                  "acceptedMinPriceForNonNative",
+                  "Minimm Price For Non Native User  (For Chat,Voice,video)$"
+                )}
+                {this.renderInput(
+                  "minSessionTime",
+                  "Min Session Time (minutes) (For Chat,Voice,video)$"
+                )}
 
-
+                {this.renderReactSelect(
+                  "roleId",
+                  "Role",
+                  roles.map((item) => ({
+                    value: item.id,
+                    label: item.name,
+                  }))
+                )}
                 {/* {this.renderInput("minSessionTime", "Min Session Time (For Chat, Chat Voice,...)")} */}
 
                 <div className="form-group">
@@ -182,11 +201,11 @@ class ModalForm extends Form {
                       let isvalid = !!value.trim();
                       if (!isvalid) {
                         alert("tag cant be empty");
-                        return isvalid
+                        return isvalid;
                       }
-                      isvalid = value.length < 100
+                      isvalid = value.length < 100;
                       if (!isvalid) {
-                        alert("please enter less than 100 character")
+                        alert("please enter less than 100 character");
                       }
                       // Return boolean to indicate validity
                       return isvalid;
@@ -195,8 +214,6 @@ class ModalForm extends Form {
                 </div>
 
                 <div className="form-group">
-
-
                   <label>Persian Tags</label>
                   <ReactTagInput
                     tags={this.state.persinaTags}
@@ -205,16 +222,18 @@ class ModalForm extends Form {
                     editable={true}
                     readOnly={false}
                     removeOnBackspace={true}
-                    onChange={(newTags) => this.setState({ persinaTags: newTags })}
+                    onChange={(newTags) =>
+                      this.setState({ persinaTags: newTags })
+                    }
                     validator={(value) => {
                       let isvalid = !!value.trim();
                       if (!isvalid) {
                         alert("tag cant be empty");
-                        return isvalid
+                        return isvalid;
                       }
-                      isvalid = value.length < 100
+                      isvalid = value.length < 100;
                       if (!isvalid) {
-                        alert("please enter less than 100 character")
+                        alert("please enter less than 100 character");
                       }
                       // Return boolean to indicate validity
                       return isvalid;
@@ -228,27 +247,24 @@ class ModalForm extends Form {
                     value={this.state.isEnabled}
                     checked={this.state.isEnabled}
                     onChange={(e) => {
-                      this.setState({ isEnabled: !this.state.isEnabled })
+                      this.setState({ isEnabled: !this.state.isEnabled });
                     }}
                     name="isEnabled"
                     id="isEnabled"
                     type="checkbox"
-                    className="ml-1" />
+                    className="ml-1"
+                  />
                 </div>
 
-
-
-                {this.state.Loading ?
+                {this.state.Loading ? (
                   <Button disabled={true} color="primary" className="mb-1">
                     <Spinner color="white" size="sm" type="grow" />
                     <span className="ml-50">Loading...</span>
                   </Button>
-                  :
+                ) : (
                   this.renderButton("Save")
-                }
-
+                )}
               </form>
-
             </CardBody>
           </Card>
         </Col>

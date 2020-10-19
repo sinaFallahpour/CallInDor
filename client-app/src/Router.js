@@ -11,8 +11,7 @@ import knowledgeBaseCategory from "./views/pages/knowledge-base/Category";
 import knowledgeBaseQuestion from "./views/pages/knowledge-base/Questions";
 import { ContextLayout } from "./utility/context/Layout";
 import { Alert } from "reactstrap";
-import PageTitle from './components/common/PageTitle';
-
+import PageTitle from "./components/common/PageTitle";
 
 const analyticsDashboard = lazy(() =>
   import("./views/dashboard/analytics/AnalyticsDashboard")
@@ -163,7 +162,9 @@ const userEdit = lazy(() => import("./views/apps/user/edit/Edit"));
 const userView = lazy(() => import("./views/apps/user/view/View"));
 const Login = lazy(() => import("./views/pages/authentication/login/Login"));
 const LogOut = lazy(() => import("./views/pages/authentication/LogOut"));
-const AccesDenied = lazy(() => import("./views/pages/authentication/AccesDenied"));
+const AccesDenied = lazy(() =>
+  import("./views/pages/authentication/Accesdenied")
+);
 
 const ForgotPassword = lazy(() =>
   import("./views/pages/authentication/ForgotPassword")
@@ -183,36 +184,44 @@ const Services = lazy(() => import("./views/pages/_Serices/Services"));
 const CreateService = lazy(() => import("./views/pages/_Serices/Create"));
 const EditService = lazy(() => import("./views/pages/_Serices/EditService"));
 
-const RoleManager = lazy(() => import("./views/pages/_rolemanager/Rolemanager"));
+const RoleManager = lazy(() =>
+  import("./views/pages/_rolemanager/Rolemanager")
+);
 const UserManager = lazy(() => import("./views/pages/_userManager/Users"));
 
-
 const Categories = lazy(() => import("./views/pages/Categories/Categories"));
-const EditCategory = lazy(() => import("./views/pages/Categories/EditCategory"));
-
+const EditCategory = lazy(() =>
+  import("./views/pages/Categories/EditCategory")
+);
 
 const Areas = lazy(() => import("./views/pages/_Areas/Areas"));
 // const CreateArea = lazy(() => import("./views/pages/_Areas/Create"));
 const EditArea = lazy(() => import("./views/pages/_Areas/EditService"));
 
-
 const Test = lazy(() => import("./views/pages/_test/Test"));
 
-
-
-
 // Set Layout and Component Using App Route
-const RouteConfig = ({ component: Component, fullLayout, isLoggedIn, title, ...rest }) => (
+const RouteConfig = ({
+  component: Component,
+  fullLayout,
+  isLoggedIn,
+  title,
+  ...rest
+}) => (
   <Route
     {...rest}
     render={(props) => {
       if (!isLoggedIn) {
-        return (<Redirect exact to={{
-          pathname: "/pages/login",
-          state: { from: props.location }
-        }} />);
-      }
-      else {
+        return (
+          <Redirect
+            exact
+            to={{
+              pathname: "/pages/login",
+              state: { from: props.location },
+            }}
+          />
+        );
+      } else {
         // return Component ? <Component {...props} /> : render(props)
         return (
           <ContextLayout.Consumer>
@@ -221,10 +230,10 @@ const RouteConfig = ({ component: Component, fullLayout, isLoggedIn, title, ...r
                 fullLayout === true
                   ? context.fullLayout
                   : context.state.activeLayout === "horizontal"
-                    ? context.horizontalLayout
-                    : context.VerticalLayout;
+                  ? context.horizontalLayout
+                  : context.VerticalLayout;
               return (
-                <LayoutTag {...props} >
+                <LayoutTag {...props}>
                   <Suspense fallback={<Spinner />}>
                     <PageTitle title={title}>
                       <Component {...props} />
@@ -236,7 +245,6 @@ const RouteConfig = ({ component: Component, fullLayout, isLoggedIn, title, ...r
           </ContextLayout.Consumer>
         );
       }
-
     }}
   />
 );
@@ -249,10 +257,13 @@ const RouteConfig = ({ component: Component, fullLayout, isLoggedIn, title, ...r
 
 // const AppRoute = connect(mapStateToProps)(RouteConfig);
 
-
-
-const NotProtexctedRouteConfig = ({ component: Component, path, fullLayout, title, ...rest }) => (
-
+const NotProtexctedRouteConfig = ({
+  component: Component,
+  path,
+  fullLayout,
+  title,
+  ...rest
+}) => (
   <Route
     path={path}
     render={(props) => {
@@ -265,8 +276,8 @@ const NotProtexctedRouteConfig = ({ component: Component, path, fullLayout, titl
               fullLayout === true
                 ? context.fullLayout
                 : context.state.activeLayout === "horizontal"
-                  ? context.horizontalLayout
-                  : context.VerticalLayout;
+                ? context.horizontalLayout
+                : context.VerticalLayout;
             return (
               <LayoutTag {...props} permission={props.user}>
                 <Suspense fallback={<Spinner />}>
@@ -281,33 +292,24 @@ const NotProtexctedRouteConfig = ({ component: Component, path, fullLayout, titl
       );
     }}
   />
-
-
 );
-
-
-
-
-
 
 class AppRouter extends React.Component {
   state = {
     loading: true,
-    isLoggedIn: false
+    isLoggedIn: false,
   };
 
-
   async componentDidMount() {
-    const isLoggedIn = await auth.isAdminLoggedIn()
-    this.setState({ isLoggedIn, loading: false })
+    const isLoggedIn = await auth.isAdminLoggedIn();
+    this.setState({ isLoggedIn, loading: false });
   }
 
   render() {
-
     const { isLoggedIn, loading } = this.state;
 
     if (loading) {
-      return <CustomLoader />
+      return <CustomLoader />;
     }
 
     return (
@@ -316,13 +318,27 @@ class AppRouter extends React.Component {
       <Suspense fallback={<CustomLoader />}>
         <Router history={history}>
           <Switch>
+            <NotProtexctedRouteConfig
+              path="/pages/login"
+              title="Login"
+              component={Login}
+              fullLayout
+            />
 
-            <NotProtexctedRouteConfig path="/pages/login" title="Login" component={Login} fullLayout />
-
-            <NotProtexctedRouteConfig path="/pages/forgot-password" title="ForgotPassword" component={ForgotPassword} fullLayout />
+            <NotProtexctedRouteConfig
+              path="/pages/forgot-password"
+              title="ForgotPassword"
+              component={ForgotPassword}
+              fullLayout
+            />
 
             <Route path="/pages/logout" component={LogOut} fullLayout />
-            <NotProtexctedRouteConfig path="/pages/Accesdenied" title="َAccessDenied" component={AccesDenied} fullLayout />
+            <NotProtexctedRouteConfig
+              path="/pages/Accesdenied"
+              title="َAccess Denied"
+              component={AccesDenied}
+              fullLayout
+            />
 
             {/* <Route
               path="/pages/forgot-password"
@@ -345,178 +361,501 @@ class AppRouter extends React.Component {
                 );
               }}
             /> */}
-            <RouteConfig isLoggedIn={isLoggedIn} title="manage admins" exact path="/pages/admins" component={UserManager} />
-            <RouteConfig isLoggedIn={isLoggedIn} title="manage role" exact path="/pages/Roles" component={RoleManager} />
+            <RouteConfig
+              isLoggedIn={isLoggedIn}
+              title="manage admins"
+              exact
+              path="/pages/admins"
+              component={UserManager}
+            />
+            <RouteConfig
+              isLoggedIn={isLoggedIn}
+              title="manage role"
+              exact
+              path="/pages/Roles"
+              component={RoleManager}
+            />
 
+            <RouteConfig
+              isLoggedIn={isLoggedIn}
+              title="categories"
+              exact
+              path="/pages/categories"
+              component={Categories}
+            />
+            <RouteConfig
+              isLoggedIn={isLoggedIn}
+              title="Edit Category"
+              exact
+              path="/pages/category/:id"
+              component={EditCategory}
+            />
 
-
-            <RouteConfig isLoggedIn={isLoggedIn} title="categories" exact path="/pages/categories" component={Categories} />
-            <RouteConfig isLoggedIn={isLoggedIn} title="Edit Category" exact path="/pages/category/:id" component={EditCategory} />
-
-
-            <RouteConfig isLoggedIn={isLoggedIn} title="Areas" exact path="/pages/areas" component={Areas} />
+            <RouteConfig
+              isLoggedIn={isLoggedIn}
+              title="Areas"
+              exact
+              path="/pages/areas"
+              component={Areas}
+            />
             {/* <RouteConfig isLoggedIn={isLoggedIn} title="Create Area" exact path="/pages/areas/Create" component={CreateArea} /> */}
-            <RouteConfig isLoggedIn={isLoggedIn} title="Edit Area" exact path="/pages/areas/:id" component={EditArea} />
+            <RouteConfig
+              isLoggedIn={isLoggedIn}
+              title="Edit Area"
+              exact
+              path="/pages/areas/:id"
+              component={EditArea}
+            />
 
+            <RouteConfig
+              isLoggedIn={isLoggedIn}
+              title="Services"
+              exact
+              path="/pages/Services"
+              component={Services}
+            />
+            <RouteConfig
+              isLoggedIn={isLoggedIn}
+              title="Create Service"
+              exact
+              path="/pages/Services/Create"
+              component={CreateService}
+            />
+            <RouteConfig
+              isLoggedIn={isLoggedIn}
+              title="Edit Service"
+              exact
+              path="/pages/Services/:id"
+              component={EditService}
+            />
 
+            <RouteConfig
+              isLoggedIn={isLoggedIn}
+              exact
+              path="/pages/Test"
+              component={Test}
+            />
 
-
-            <RouteConfig isLoggedIn={isLoggedIn} title="Services" exact path="/pages/Services" component={Services} />
-            <RouteConfig isLoggedIn={isLoggedIn} title="Create Service" exact path="/pages/Services/Create" component={CreateService} />
-            <RouteConfig isLoggedIn={isLoggedIn} title="Edit Service" exact path="/pages/Services/:id" component={EditService} />
-
-
-            <RouteConfig isLoggedIn={isLoggedIn} exact path="/pages/Test" component={Test} />
-
-
-
-
-
-
-
-
-
-
-            <RouteConfig isLoggedIn={isLoggedIn} exact path="/" component={analyticsDashboard} />
-            <RouteConfig isLoggedIn={isLoggedIn}
+            <RouteConfig
+              isLoggedIn={isLoggedIn}
+              exact
+              path="/"
+              component={analyticsDashboard}
+            />
+            <RouteConfig
+              isLoggedIn={isLoggedIn}
               path="/email"
               exact
               component={() => <Redirect to="/email/inbox" />}
             />
-            <RouteConfig isLoggedIn={isLoggedIn} path="/email/:filter" component={email} />
-            <RouteConfig isLoggedIn={isLoggedIn}
+            <RouteConfig
+              isLoggedIn={isLoggedIn}
+              path="/email/:filter"
+              component={email}
+            />
+            <RouteConfig
+              isLoggedIn={isLoggedIn}
               path="/todo"
               exact
               component={() => <Redirect to="/todo/all" />}
             />
-            <RouteConfig isLoggedIn={isLoggedIn} path="/todo/:filter" component={todo} />
-            <RouteConfig isLoggedIn={isLoggedIn} path="/calendar" component={calendar} />
-            <RouteConfig isLoggedIn={isLoggedIn} path="/data-list/list-view" component={listView} />
-            <RouteConfig isLoggedIn={isLoggedIn} path="/data-list/thumb-view" component={thumbView} />
-            <RouteConfig isLoggedIn={isLoggedIn} path="/ui-element/grid" component={grid} />
-            <RouteConfig isLoggedIn={isLoggedIn} path="/ui-element/typography" component={typography} />
-            <RouteConfig isLoggedIn={isLoggedIn}
+            <RouteConfig
+              isLoggedIn={isLoggedIn}
+              path="/todo/:filter"
+              component={todo}
+            />
+            <RouteConfig
+              isLoggedIn={isLoggedIn}
+              path="/calendar"
+              component={calendar}
+            />
+            <RouteConfig
+              isLoggedIn={isLoggedIn}
+              path="/data-list/list-view"
+              component={listView}
+            />
+            <RouteConfig
+              isLoggedIn={isLoggedIn}
+              path="/data-list/thumb-view"
+              component={thumbView}
+            />
+            <RouteConfig
+              isLoggedIn={isLoggedIn}
+              path="/ui-element/grid"
+              component={grid}
+            />
+            <RouteConfig
+              isLoggedIn={isLoggedIn}
+              path="/ui-element/typography"
+              component={typography}
+            />
+            <RouteConfig
+              isLoggedIn={isLoggedIn}
               path="/ui-element/textutilities"
               component={textutilities}
             />
-            <RouteConfig isLoggedIn={isLoggedIn}
+            <RouteConfig
+              isLoggedIn={isLoggedIn}
               path="/ui-element/syntaxhighlighter"
               component={syntaxhighlighter}
             />
-            <RouteConfig isLoggedIn={isLoggedIn} path="/colors/colors" component={colors} />
-            <RouteConfig isLoggedIn={isLoggedIn} path="/icons/reactfeather" component={reactfeather} />
-            <RouteConfig isLoggedIn={isLoggedIn} path="/cards/basic" component={basicCards} />
-            <RouteConfig isLoggedIn={isLoggedIn} path="/cards/statistics" component={statisticsCards} />
-            <RouteConfig isLoggedIn={isLoggedIn} path="/cards/analytics" component={analyticsCards} />
-            <RouteConfig isLoggedIn={isLoggedIn} path="/cards/action" component={actionCards} />
-            <RouteConfig isLoggedIn={isLoggedIn} path="/components/alerts" component={Alerts} />
-            <RouteConfig isLoggedIn={isLoggedIn} path="/components/buttons" component={Buttons} />
-            <RouteConfig isLoggedIn={isLoggedIn} path="/components/breadcrumbs" component={Breadcrumbs} />
-            <RouteConfig isLoggedIn={isLoggedIn} path="/components/carousel" component={Carousel} />
-            <RouteConfig isLoggedIn={isLoggedIn} path="/components/collapse" component={Collapse} />
-            <RouteConfig isLoggedIn={isLoggedIn} path="/components/dropdowns" component={Dropdowns} />
-            <RouteConfig isLoggedIn={isLoggedIn} path="/components/list-group" component={ListGroup} />
-            <RouteConfig isLoggedIn={isLoggedIn} path="/components/modals" component={Modals} />
-            <RouteConfig isLoggedIn={isLoggedIn} path="/components/pagination" component={Pagination} />
-            <RouteConfig isLoggedIn={isLoggedIn} path="/components/nav-component" component={NavComponent} />
-            <RouteConfig isLoggedIn={isLoggedIn} path="/components/navbar" component={Navbar} />
-            <RouteConfig isLoggedIn={isLoggedIn} path="/components/tabs-component" component={Tabs} />
-            <RouteConfig isLoggedIn={isLoggedIn} path="/components/pills-component" component={TabPills} />
-            <RouteConfig isLoggedIn={isLoggedIn} path="/components/tooltips" component={Tooltips} />
-            <RouteConfig isLoggedIn={isLoggedIn} path="/components/popovers" component={Popovers} />
-            <RouteConfig isLoggedIn={isLoggedIn} path="/components/badges" component={Badge} />
-            <RouteConfig isLoggedIn={isLoggedIn} path="/components/pill-badges" component={BadgePill} />
-            <RouteConfig isLoggedIn={isLoggedIn} path="/components/progress" component={Progress} />
-            <RouteConfig isLoggedIn={isLoggedIn} path="/components/media-objects" component={Media} />
-            <RouteConfig isLoggedIn={isLoggedIn} path="/components/spinners" component={Spinners} />
-            <RouteConfig isLoggedIn={isLoggedIn} path="/components/toasts" component={Toasts} />
-            <RouteConfig isLoggedIn={isLoggedIn}
+            <RouteConfig
+              isLoggedIn={isLoggedIn}
+              path="/colors/colors"
+              component={colors}
+            />
+            <RouteConfig
+              isLoggedIn={isLoggedIn}
+              path="/icons/reactfeather"
+              component={reactfeather}
+            />
+            <RouteConfig
+              isLoggedIn={isLoggedIn}
+              path="/cards/basic"
+              component={basicCards}
+            />
+            <RouteConfig
+              isLoggedIn={isLoggedIn}
+              path="/cards/statistics"
+              component={statisticsCards}
+            />
+            <RouteConfig
+              isLoggedIn={isLoggedIn}
+              path="/cards/analytics"
+              component={analyticsCards}
+            />
+            <RouteConfig
+              isLoggedIn={isLoggedIn}
+              path="/cards/action"
+              component={actionCards}
+            />
+            <RouteConfig
+              isLoggedIn={isLoggedIn}
+              path="/components/alerts"
+              component={Alerts}
+            />
+            <RouteConfig
+              isLoggedIn={isLoggedIn}
+              path="/components/buttons"
+              component={Buttons}
+            />
+            <RouteConfig
+              isLoggedIn={isLoggedIn}
+              path="/components/breadcrumbs"
+              component={Breadcrumbs}
+            />
+            <RouteConfig
+              isLoggedIn={isLoggedIn}
+              path="/components/carousel"
+              component={Carousel}
+            />
+            <RouteConfig
+              isLoggedIn={isLoggedIn}
+              path="/components/collapse"
+              component={Collapse}
+            />
+            <RouteConfig
+              isLoggedIn={isLoggedIn}
+              path="/components/dropdowns"
+              component={Dropdowns}
+            />
+            <RouteConfig
+              isLoggedIn={isLoggedIn}
+              path="/components/list-group"
+              component={ListGroup}
+            />
+            <RouteConfig
+              isLoggedIn={isLoggedIn}
+              path="/components/modals"
+              component={Modals}
+            />
+            <RouteConfig
+              isLoggedIn={isLoggedIn}
+              path="/components/pagination"
+              component={Pagination}
+            />
+            <RouteConfig
+              isLoggedIn={isLoggedIn}
+              path="/components/nav-component"
+              component={NavComponent}
+            />
+            <RouteConfig
+              isLoggedIn={isLoggedIn}
+              path="/components/navbar"
+              component={Navbar}
+            />
+            <RouteConfig
+              isLoggedIn={isLoggedIn}
+              path="/components/tabs-component"
+              component={Tabs}
+            />
+            <RouteConfig
+              isLoggedIn={isLoggedIn}
+              path="/components/pills-component"
+              component={TabPills}
+            />
+            <RouteConfig
+              isLoggedIn={isLoggedIn}
+              path="/components/tooltips"
+              component={Tooltips}
+            />
+            <RouteConfig
+              isLoggedIn={isLoggedIn}
+              path="/components/popovers"
+              component={Popovers}
+            />
+            <RouteConfig
+              isLoggedIn={isLoggedIn}
+              path="/components/badges"
+              component={Badge}
+            />
+            <RouteConfig
+              isLoggedIn={isLoggedIn}
+              path="/components/pill-badges"
+              component={BadgePill}
+            />
+            <RouteConfig
+              isLoggedIn={isLoggedIn}
+              path="/components/progress"
+              component={Progress}
+            />
+            <RouteConfig
+              isLoggedIn={isLoggedIn}
+              path="/components/media-objects"
+              component={Media}
+            />
+            <RouteConfig
+              isLoggedIn={isLoggedIn}
+              path="/components/spinners"
+              component={Spinners}
+            />
+            <RouteConfig
+              isLoggedIn={isLoggedIn}
+              path="/components/toasts"
+              component={Toasts}
+            />
+            <RouteConfig
+              isLoggedIn={isLoggedIn}
               path="/extra-components/auto-complete"
               component={AutoComplete}
             />
-            <RouteConfig isLoggedIn={isLoggedIn} path="/extra-components/chips" component={chips} />
-            <RouteConfig isLoggedIn={isLoggedIn} path="/extra-components/divider" component={divider} />
-            <RouteConfig isLoggedIn={isLoggedIn} path="/forms/wizard" component={vuexyWizard} />
-            <RouteConfig isLoggedIn={isLoggedIn} path="/forms/elements/select" component={select} />
-            <RouteConfig isLoggedIn={isLoggedIn} path="/forms/elements/switch" component={switchComponent} />
-            <RouteConfig isLoggedIn={isLoggedIn} path="/forms/elements/checkbox" component={checkbox} />
-            <RouteConfig isLoggedIn={isLoggedIn} path="/forms/elements/radio" component={radio} />
-            <RouteConfig isLoggedIn={isLoggedIn} path="/forms/elements/input" component={input} />
-            <RouteConfig isLoggedIn={isLoggedIn} path="/forms/elements/input-group" component={group} />
-            <RouteConfig isLoggedIn={isLoggedIn} path="/extra-components/avatar" component={avatar} />
-            <RouteConfig isLoggedIn={isLoggedIn}
+            <RouteConfig
+              isLoggedIn={isLoggedIn}
+              path="/extra-components/chips"
+              component={chips}
+            />
+            <RouteConfig
+              isLoggedIn={isLoggedIn}
+              path="/extra-components/divider"
+              component={divider}
+            />
+            <RouteConfig
+              isLoggedIn={isLoggedIn}
+              path="/forms/wizard"
+              component={vuexyWizard}
+            />
+            <RouteConfig
+              isLoggedIn={isLoggedIn}
+              path="/forms/elements/select"
+              component={select}
+            />
+            <RouteConfig
+              isLoggedIn={isLoggedIn}
+              path="/forms/elements/switch"
+              component={switchComponent}
+            />
+            <RouteConfig
+              isLoggedIn={isLoggedIn}
+              path="/forms/elements/checkbox"
+              component={checkbox}
+            />
+            <RouteConfig
+              isLoggedIn={isLoggedIn}
+              path="/forms/elements/radio"
+              component={radio}
+            />
+            <RouteConfig
+              isLoggedIn={isLoggedIn}
+              path="/forms/elements/input"
+              component={input}
+            />
+            <RouteConfig
+              isLoggedIn={isLoggedIn}
+              path="/forms/elements/input-group"
+              component={group}
+            />
+            <RouteConfig
+              isLoggedIn={isLoggedIn}
+              path="/extra-components/avatar"
+              component={avatar}
+            />
+            <RouteConfig
+              isLoggedIn={isLoggedIn}
               path="/forms/elements/number-input"
               component={numberInput}
             />
-            <RouteConfig isLoggedIn={isLoggedIn} path="/forms/elements/textarea" component={textarea} />
-            <RouteConfig isLoggedIn={isLoggedIn} path="/forms/elements/pickers" component={pickers} />
-            <RouteConfig isLoggedIn={isLoggedIn} path="/forms/elements/input-mask" component={inputMask} />
-            <RouteConfig isLoggedIn={isLoggedIn} path="/forms/layout/form-layout" component={layout} />
-            <RouteConfig isLoggedIn={isLoggedIn} path="/forms/formik" component={formik} />
-            <RouteConfig isLoggedIn={isLoggedIn} path="/tables/reactstrap" component={tables} />
-            <RouteConfig isLoggedIn={isLoggedIn} path="/tables/react-tables" component={ReactTables} />
-            <RouteConfig isLoggedIn={isLoggedIn} path="/tables/agGrid" component={Aggrid} />
-            <RouteConfig isLoggedIn={isLoggedIn} path="/tables/data-tables" component={DataTable} />
-            <RouteConfig isLoggedIn={isLoggedIn} path="/pages/profile" component={profile} />
-            <RouteConfig isLoggedIn={isLoggedIn} path="/pages/knowledge-base" exact />
-            <RouteConfig isLoggedIn={isLoggedIn}
+            <RouteConfig
+              isLoggedIn={isLoggedIn}
+              path="/forms/elements/textarea"
+              component={textarea}
+            />
+            <RouteConfig
+              isLoggedIn={isLoggedIn}
+              path="/forms/elements/pickers"
+              component={pickers}
+            />
+            <RouteConfig
+              isLoggedIn={isLoggedIn}
+              path="/forms/elements/input-mask"
+              component={inputMask}
+            />
+            <RouteConfig
+              isLoggedIn={isLoggedIn}
+              path="/forms/layout/form-layout"
+              component={layout}
+            />
+            <RouteConfig
+              isLoggedIn={isLoggedIn}
+              path="/forms/formik"
+              component={formik}
+            />
+            <RouteConfig
+              isLoggedIn={isLoggedIn}
+              path="/tables/reactstrap"
+              component={tables}
+            />
+            <RouteConfig
+              isLoggedIn={isLoggedIn}
+              path="/tables/react-tables"
+              component={ReactTables}
+            />
+            <RouteConfig
+              isLoggedIn={isLoggedIn}
+              path="/tables/agGrid"
+              component={Aggrid}
+            />
+            <RouteConfig
+              isLoggedIn={isLoggedIn}
+              path="/tables/data-tables"
+              component={DataTable}
+            />
+            <RouteConfig
+              isLoggedIn={isLoggedIn}
+              path="/pages/profile"
+              component={profile}
+            />
+            <RouteConfig
+              isLoggedIn={isLoggedIn}
+              path="/pages/knowledge-base"
+              exact
+            />
+            <RouteConfig
+              isLoggedIn={isLoggedIn}
               path="/pages/knowledge-base/category"
               component={knowledgeBaseCategory}
               exact
             />
-            <RouteConfig isLoggedIn={isLoggedIn}
+            <RouteConfig
+              isLoggedIn={isLoggedIn}
               path="/pages/knowledge-base/category/questions"
               component={knowledgeBaseQuestion}
             />
-            <RouteConfig isLoggedIn={isLoggedIn} path="/pages/search" component={search} />
-            <RouteConfig isLoggedIn={isLoggedIn}
+            <RouteConfig
+              isLoggedIn={isLoggedIn}
+              path="/pages/search"
+              component={search}
+            />
+            <RouteConfig
+              isLoggedIn={isLoggedIn}
               path="/pages/account-settings"
               component={accountSettings}
             />
-            <RouteConfig isLoggedIn={isLoggedIn}
+            <RouteConfig
+              isLoggedIn={isLoggedIn}
               path="/misc/coming-soon"
               component={comingSoon}
               fullLayout
             />
             {/* <RouteConfig isLoggedIn={isLoggedIn} path="/misc/error/404" component={Error404} fullLayout /> */}
             {/* <RouteConfig path="/pages/login" component={Login} fullLayout /> */}
-            <RouteConfig isLoggedIn={isLoggedIn} path="/pages/register" component={register} fullLayout />
+            <RouteConfig
+              isLoggedIn={isLoggedIn}
+              path="/pages/register"
+              component={register}
+              fullLayout
+            />
             {/* <RouteConfig
             path="/pages/forgot-password"
             component={forgotPassword}
             fullLayout
           /> */}
-            <RouteConfig isLoggedIn={isLoggedIn}
+            <RouteConfig
+              isLoggedIn={isLoggedIn}
               path="/pages/lock-screen"
               component={lockScreen}
               fullLayout
             />
-            <RouteConfig isLoggedIn={isLoggedIn}
+            <RouteConfig
+              isLoggedIn={isLoggedIn}
               path="/pages/reset-password"
               component={resetPassword}
               fullLayout
             />
-            <RouteConfig isLoggedIn={isLoggedIn} path="/misc/error/500" component={error500} fullLayout />
-            <RouteConfig isLoggedIn={isLoggedIn}
+            <RouteConfig
+              isLoggedIn={isLoggedIn}
+              path="/misc/error/500"
+              component={error500}
+              fullLayout
+            />
+            <RouteConfig
+              isLoggedIn={isLoggedIn}
               path="/misc/not-authorized"
               component={authorized}
               fullLayout
             />
-            <RouteConfig isLoggedIn={isLoggedIn}
+            <RouteConfig
+              isLoggedIn={isLoggedIn}
               path="/misc/maintenance"
               component={maintenance}
               fullLayout
             />
-            <RouteConfig isLoggedIn={isLoggedIn} path="/app/user/list" component={userList} />
-            <RouteConfig isLoggedIn={isLoggedIn} path="/app/user/edit" component={userEdit} />
-            <RouteConfig isLoggedIn={isLoggedIn} path="/app/user/view" component={userView} />
+            <RouteConfig
+              isLoggedIn={isLoggedIn}
+              path="/app/user/list"
+              component={userList}
+            />
+            <RouteConfig
+              isLoggedIn={isLoggedIn}
+              path="/app/user/edit"
+              component={userEdit}
+            />
+            <RouteConfig
+              isLoggedIn={isLoggedIn}
+              path="/app/user/view"
+              component={userView}
+            />
 
-            <RouteConfig isLoggedIn={isLoggedIn} path="/maps/leaflet" component={leafletMaps} />
-            <RouteConfig isLoggedIn={isLoggedIn} path="/extensions/sweet-alert" component={sweetAlert} />
-            <RouteConfig isLoggedIn={isLoggedIn} path="/extensions/toastr" component={toastr} />
+            <RouteConfig
+              isLoggedIn={isLoggedIn}
+              path="/maps/leaflet"
+              component={leafletMaps}
+            />
+            <RouteConfig
+              isLoggedIn={isLoggedIn}
+              path="/extensions/sweet-alert"
+              component={sweetAlert}
+            />
+            <RouteConfig
+              isLoggedIn={isLoggedIn}
+              path="/extensions/toastr"
+              component={toastr}
+            />
 
-
-            <RouteConfig isLoggedIn={isLoggedIn} path="/extensions/clipboard" component={clipboard} />
+            <RouteConfig
+              isLoggedIn={isLoggedIn}
+              path="/extensions/clipboard"
+              component={clipboard}
+            />
             {/* <Route component={Error404} fullLayout /> */}
 
             <Route
@@ -524,7 +863,7 @@ class AppRouter extends React.Component {
                 return (
                   <ContextLayout.Consumer>
                     {(context) => {
-                      const LayoutTag = context.fullLayout
+                      const LayoutTag = context.fullLayout;
                       return (
                         <LayoutTag {...props} permission={props.user}>
                           <Suspense fallback={<Spinner />}>
@@ -537,11 +876,9 @@ class AppRouter extends React.Component {
                 );
               }}
             />
-
           </Switch>
         </Router>
       </Suspense>
-
     );
   }
 }

@@ -1,0 +1,102 @@
+git clone گرفتن پروژه از بالا
+
+git status چه تغغییری ما از پایین داده ایم (چه چیزی به پروژه پایین اضافهکردیم که به بالا نرففته)
+
+git add .  یا git add fileAddress همه چیز از پایین میریزه تو استیج
+
+git commit -m"" این یعنی یه ورژن جدید بزاری تو گیت
+
+git push پروژه میرهتو کلون
+
+git branch برای اینکه بفهمیم چنتا برنچ داریم
+
+git branch develop ایجاد یک\روژه جدید از دولو‍‍پ
+
+git checkout develop تغییر برنچ به دولوپ
+
+git log  کله کامیت هایی کهکردیم را برمیگرداند
+
+git log --graph     کله کامیت هایی که کردیم را به صورت شاخه میبینیم
+
+git fetch   تغییرات بالا را پایین میبیند
+git rebase develop     ابتدا باید رو برنچ خودت باشی
+
+git pull       از بالا بیارپایین
+
+
+===========================
+                  چگونه یک برنچ از روی  یک کامیت بسازیم؟
+
+الف)با دستور git checkout commitId  وارد کامیت مربوظه شده
+ب) این دستور ر ا میزنیم   git checkout -b  newBranchName
+=============================
+ادامه بالا
+git checkout -     برگرداندن چک آت به حالت اول
+
+
+
+
+
+
+git rebase --abort    برگرداندن به حالت قبل از rebase 
+
+git rebase -i 34c4f95       حالت فعلی تورو میبره به حالت اون   کامیه 
+
+ابتدا بعد از اینکه هر فایل را کانفلیکت را برطرف کردی گیت ادد کن اه فایل را بعد ازدستو ر    گیت ریبیس کانتینو استفاده
+
+از استیج در آوردن فایل ها
+git rm --cached  filName 
+ or
+git rm --cached  -r .
+
+
+
+git diff      به تغییری در پروژه داده ای  البت قبل از اینکه کامیتش کنی     
+
+git log --oneline   کامیت ها بهصورت مرتب نشان میده
+git log -12 --oneline   ۱۲تا کامیت آخر نشان میده
+
+
+git checkout -- FileName    برگرداندن هر تغییری در پروژه البته قبل از کامیت و ادد کردن(قبلش کامیت یا ادد نکرده باشیا)
+
+
+git reset HEAD .        تمام فایل هایی که وارد استیح شده اند را از استیح درمی آورد
+
+git reset commitID بزگشتن به کامیت خیلی     قبل  بدون پاک شدن فایل های  کامیت بالای (درواقع ترکیب کامیت مورد نظر با کامیت بالایی هاشه) بعد از این اگرمیخوای فایل به حالت اولی برگرده گیت چک اوت هم کن
+
+git reset --hard commitId     دقیقابر میگرده به کامیت مربوطه دیگه چک اوت هم نمیخواد
+git reset --hard CommitId && git clean -f     خطر خطر برگشتن به کامیت قبل و پاک کردن کامیتهای روش تمام چیز ها به قب تغییر میکنه
+
+git  branch -d branchName   حذف برنچ
+
+git stash      فایلی را اگر کامیت نکنیم اگر بریم رو یه برنچ دیگه اون تغییراترو اون برنچ جدیده میره  اگر بخوایم فعلا نره وکامیت همنخواهیم بکنیم
+
+git stash show stashName     نشون   دادن تغییرا اون stassh
+git stash list        لیست کل stash
+
+git stash drop StashName         حذف stash
+
+gits tash pop stashName   در آوردن ازstash    va stash pak Nashavad
+
+git stash  apply              در آوردن ازstash    va stash pak shavad
+
+
+
+
+
+//////////////git config 
+
+git config usxe.namse 'sina'     داخل پوشه گیت ت و            کانفیگ ایناره میزااره
+git config usxe.namse 'fallahpour.sina77@gmail.com'   
+
+git config --global usxe.namse 'sina'      به ضورت گلوبال
+git config  --global usxe.namse 'fallahpour.sina77@gmail.com'   
+
+ 
+
+
+
+
+
+
+

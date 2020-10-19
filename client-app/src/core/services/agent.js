@@ -62,7 +62,8 @@ const ServiceTypes = {
   GetAll: () => requests.get("/ServiceType/GetAllServiceForAdmin"),
   details: (id) => requests.get(`/ServiceType/GetServiceByIdForAdmin?id=${id}`),
   create: (service) => requests.post("/ServiceType/CreateForAdmin", service),
-  update: (activity) => requests.put("/ServiceType/UpdateServiceForAdmin", activity)
+  update: (activity) =>
+    requests.put("/ServiceType/UpdateServiceForAdmin", activity),
   // delete: (id) => requests.del(`/activities/${id}`)
 };
 
@@ -71,20 +72,23 @@ const User = {
   list: () => requests.get("/Account/admin/GetAllAdminInAdmin"),
   details: (id) => requests.get(`/Account/admin/GetAdminByIdInAdmin?id=${id}`),
   login: (user) => requests.post("/user/login", user),
-  registerAdmin: (user) => requests.post("/Account/admin/RegisterAdminInAdmin", user),
-  update: (user) => requests.put("/Account/admin/UpdateAdmin", user)
+  registerAdmin: (user) =>
+    requests.post("/Account/admin/RegisterAdminInAdmin", user),
+  update: (user) => requests.put("/Account/admin/UpdateAdmin", user),
 };
 
 const Role = {
   list: () => requests.get("/Account/Role/GetAllRolesInAdmin"),
+  listActive: () => requests.get("/Account/Role/GetAllActiveRolesInAdmin"),
   details: (id) => requests.get(`/Account/Role/GetRoleByIdInAdmin?id=${id}`),
   create: (role) => requests.post("/Account/Role/CreateRoleInAdmin", role),
-  update: (role) => requests.put("/Account/Role/UpdateRoleInAdmin", role)
+  update: (role) => requests.put("/Account/Role/UpdateRoleInAdmin", role),
 };
 
 const Category = {
   // list: () => requests.get("/category/getAll"),
-  listParentCatgory: () => requests.get("/Category/GetAllParentCateGoryForAdmin"),
+  listParentCatgory: () =>
+    requests.get("/Category/GetAllParentCateGoryForAdmin"),
   listCategory: () => requests.get("/Category/GetAllCateGoryForAdmin"),
   details: (id) => requests.get(`/Category/GetByIdForAdmin?id=${id}`),
   create: (category) => requests.post("/Category/Create", category),

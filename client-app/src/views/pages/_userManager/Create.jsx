@@ -22,7 +22,7 @@ import agent from "../../../core/services/agent";
 import Form from "../../../components/common/form";
 
 import ModalCustom from "./ModalCustom";
-import { conutryPhoneCodes } from "../../../utility/phone-codes.data"
+import { conutryPhoneCodes } from "../../../utility/phone-codes.data";
 class Create extends Form {
   state = {
     data: {
@@ -49,40 +49,23 @@ class Create extends Form {
     id: Joi.string().allow(null),
     name: Joi.string().required().min(1).max(200).label("Name"),
 
-    lastName: Joi.string()
-      .required()
-      .min(1)
-      .max(100)
-      .label("last Name"),
+    lastName: Joi.string().required().min(1).max(100).label("last Name"),
 
-    email: Joi.string()
-      .email({ minDomainAtoms: 2 })
-      .required()
-      .label("email"),
+    email: Joi.string().email({ minDomainAtoms: 2 }).required().label("email"),
 
-    password: Joi.string()
-      .required()
-      .min(6)
-      .max(20)
-      .label("passworrd"),
+    password: Joi.string().required().min(6).max(20).label("passworrd"),
 
-    phoneNumber: Joi.number()
-      .required()
-      .label("phone number"),
+    phoneNumber: Joi.number().required().label("phone number"),
 
-    dial_code: Joi.string()
-      .required()
-      .label("country code"),
+    dial_code: Joi.string().required().label("country code"),
 
-    roleId: Joi.string()
-      .required()
-      .label("role"),
+    roleId: Joi.string().required().label("role"),
 
     roles: Joi.label("roles"),
   };
 
   async populatingRoles() {
-    const { data } = await agent.Role.list();
+    const { data } = await agent.Role.listActive();
     let roles = data.result.data;
     this.setState({ roles });
   }
@@ -95,7 +78,13 @@ class Create extends Form {
     const { addNew, currentUser, addToUsers } = this.props;
 
     if (addNew != prevProps.addNew) {
-      const data = { id: null, email: "", name: "", lastName: "", roleId: null };
+      const data = {
+        id: null,
+        email: "",
+        name: "",
+        lastName: "",
+        roleId: null,
+      };
       this.setState({
         data,
       });
@@ -105,23 +94,17 @@ class Create extends Form {
       currentUser != null &&
       currentUser?.data?.id != prevProps?.currentUser?.data?.id
     ) {
+      delete currentUser.data.phoneNumber;
+      delete currentUser.data.countryCode;
+      delete currentUser.data.password;
+      delete currentUser.data.dial_code;
+      delete currentUser.data.roleName;
 
-      delete currentUser.data.phoneNumber
-      delete currentUser.data.countryCode
-      delete currentUser.data.password
-      delete currentUser.data.dial_code
-      delete currentUser.data.roleName
-
-      delete this.schema.phoneNumber
-      delete this.schema.countryCode
-      delete this.schema.password
-      delete this.schema.dial_code
-      delete this.schema.roleName
-
-
-
-
-
+      delete this.schema.phoneNumber;
+      delete this.schema.countryCode;
+      delete this.schema.password;
+      delete this.schema.dial_code;
+      delete this.schema.roleName;
 
       this.setState({
         data: currentUser.data,
@@ -130,22 +113,6 @@ class Create extends Form {
       });
     }
   }
-
-
-
-
-  // handleAddSpeciality = (persianName, englishName) => {
-  //   let prevSpecialities = this.state.Specialities;
-  //   const obj = { persianName, englishName };
-
-  //   let thisSpeciality = [...prevSpecialities, obj];
-  //   // prevSpecialities.push(obj)
-  //   this.setState({ Specialities: thisSpeciality });
-  // };
-
-  // handleDeleteSpeciality = (Specialities) => {
-  //   this.setState({ Specialities });
-  // };
 
   toggleModal = () => {
     this.setState((prevstate, prevProps) => {
@@ -163,7 +130,7 @@ class Create extends Form {
       // const { isEnabled, isProfessional, Specialities } = this.state;
       const obj = {
         ...this.state.data,
-        countryCode: this.state.data.dial_code
+        countryCode: this.state.data.dial_code,
       };
 
       //Add
@@ -211,7 +178,6 @@ class Create extends Form {
   };
 
   cleanData = () => {
-
     const data = {
       id: null,
       email: "",
@@ -228,7 +194,13 @@ class Create extends Form {
   };
 
   render() {
-    const { errorscustom, errorMessage, roles, modal, conutryPhoneCodes } = this.state;
+    const {
+      errorscustom,
+      errorMessage,
+      roles,
+      modal,
+      conutryPhoneCodes,
+    } = this.state;
     const { addNew } = this.props;
 
     return (
@@ -248,18 +220,26 @@ class Create extends Form {
                   );
                 })}
 
-
               <form onSubmit={this.handleSubmit}>
                 <FormGroup row>
                   <Col md="4">{this.renderInput("name", "Name")}</Col>
-                  <Col md="4">  {this.renderInput("lastName", "Last Name")}</Col>
-                  <Col md="4">  {this.renderInput("email", "Email")}</Col>
+                  <Col md="4"> {this.renderInput("lastName", "Last Name")}</Col>
+                  <Col md="4"> {this.renderInput("email", "Email")}</Col>
 
-
-                  {addNew ?
+                  {addNew ? (
                     <>
-                      <Col md="4">  {this.renderInput("password", "Password", 'password')}</Col>
-                      <Col md="4">  {this.renderInput("phoneNumber", "Phone Number(witOut Country Code)", 'number')}</Col>
+                      <Col md="4">
+                        {" "}
+                        {this.renderInput("password", "Password", "password")}
+                      </Col>
+                      <Col md="4">
+                        {" "}
+                        {this.renderInput(
+                          "phoneNumber",
+                          "Phone Number(witOut Country Code)",
+                          "number"
+                        )}
+                      </Col>
                       <Col md="4">
                         {this.renderReactSelect(
                           "dial_code",
@@ -271,8 +251,7 @@ class Create extends Form {
                         )}
                       </Col>
                     </>
-
-                    : null}
+                  ) : null}
                   <Col md="4">
                     {this.renderReactSelect(
                       "roleId",
@@ -283,9 +262,7 @@ class Create extends Form {
                       }))
                     )}
                   </Col>
-
                 </FormGroup>
-
 
                 {this.state.Loading ? (
                   <Button disabled={true} color="primary" className="mb-1">
@@ -295,8 +272,8 @@ class Create extends Form {
                 ) : addNew ? (
                   this.renderButton("Add")
                 ) : (
-                      this.renderButton("Edit")
-                    )}
+                  this.renderButton("Edit")
+                )}
               </form>
             </CardBody>
           </Card>

@@ -27,7 +27,7 @@ namespace Domain.DTO.Service
         public bool IsEnabled { get; set; }
 
 
-
+        public string RoleName { get; set; }
 
 
         /// <summary>
@@ -54,8 +54,8 @@ namespace Domain.DTO.Service
         /// </summary>
         public double AcceptedMinPriceForNonNative { get; set; }
 
-      
- 
+
+
 
 
 

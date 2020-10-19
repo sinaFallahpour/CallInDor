@@ -107,5 +107,12 @@ namespace Domain.DTO.Account
         [MaxLength(2000, ErrorMessage = "The maximum {0} length is {1} characters")]
         public string PersinaTags { get; set; }
 
+
+
+
+        [Required(ErrorMessage = "{0} is resquired")]
+        public string RoleId { get; set; }
+
+
     }
 }

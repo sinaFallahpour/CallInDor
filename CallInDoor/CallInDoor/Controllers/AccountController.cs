@@ -529,6 +529,7 @@ namespace CallInDoor.Controllers
                              u.LastName,
                              u.Email,
                              u.PhoneNumber,
+                             u.CountryCode,
                              roleName = r.Name
                          }).AsQueryable();
 
@@ -544,8 +545,6 @@ namespace CallInDoor.Controllers
         }
 
         #endregion
-
-
 
         #region RegisterAdmin
         [HttpPost("admin/RegisterAdminInAdmin")]
@@ -652,7 +651,7 @@ namespace CallInDoor.Controllers
         #endregion
 
 
-
+        #region UpdateAdmin
         // /api/Profile/UpdateProfile
         [HttpPut("admin/UpdateAdmin")]
         [Authorize(Roles = PublicHelper.ADMINROLE)]
@@ -744,7 +743,7 @@ namespace CallInDoor.Controllers
 
         }
 
-
+        #endregion
 
         #endregion
 
@@ -780,6 +779,33 @@ namespace CallInDoor.Controllers
             },
             PubicMessages.SuccessMessage
            ));
+
+        }
+
+
+
+
+
+
+        // GET: api/GetAllServiceForAdmin
+        [HttpGet("Role/GetAllActiveRolesInAdmin")]
+        [Authorize]
+        public async Task<ActionResult> GetAllActiveRolesInAdmin()
+        {
+            var checkToken = await _accountService.CheckTokenIsValid();
+            if (!checkToken)
+                return Unauthorized(new ApiResponse(401, PubicMessages.UnAuthorizeMessage));
+
+            var roles = await _roleManager.Roles.Where(c=>c.IsEnabled).ToListAsync();
+
+            return Ok(new ApiOkResponse(new DataFormat()
+            {
+                Status = 1,
+                data = roles,
+                Message = PubicMessages.SuccessMessage
+            },
+          PubicMessages.SuccessMessage
+         ));
 
         }
 

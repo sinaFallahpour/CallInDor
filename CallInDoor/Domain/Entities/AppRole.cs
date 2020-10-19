@@ -15,5 +15,17 @@ namespace Domain.Entities
 
 
         public bool IsEnabled { get; set; }
+
+
+
+        #region  relation
+
+        public ICollection<ServiceTBL> Services { get; set; }
+
+        #endregion 
+
+
+
+
     }
 }

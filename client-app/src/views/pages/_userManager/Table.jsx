@@ -66,6 +66,16 @@ class Table extends React.Component {
         filter: true,
       },
       {
+        headerName: "Phone Number",
+        field: "phoneNumber",
+        filter: true,
+      },
+      {
+        headerName: "Country Code",
+        field: "countryCode",
+        filter: true,
+      },
+      {
         headerName: "",
         field: "id",
         filter: false,
@@ -76,11 +86,11 @@ class Table extends React.Component {
               className="mr-50"
               size={15}
               onClick={async () => {
-                window.scrollTo(0, 0)
-                await this.populatingUser(params.data.id)
+                window.scrollTo(0, 0);
+                await this.populatingUser(params.data.id);
               }}
 
-            // onClick={() => history.push(`/pages/Areas/${params.value}`)}
+              // onClick={() => history.push(`/pages/Areas/${params.value}`)}
             />
           );
         },
@@ -98,7 +108,7 @@ class Table extends React.Component {
         name,
         lastName,
         roleId,
-        roleName
+        roleName,
         // serviceId,
         // specialities,
       } = data.result.data;
@@ -113,7 +123,6 @@ class Table extends React.Component {
       }
     }
   }
-
 
   async componentDidMount() {
     const { data } = await agent.User.list();
@@ -135,11 +144,11 @@ class Table extends React.Component {
 
   editToUsers = async (newUser) => {
     let rowData = [...this.state.rowData];
-    console.clear()
-    console.log(newUser)
+    console.clear();
+    console.log(newUser);
     let index = rowData.findIndex((el) => el.id == newUser.id /* condition */);
     rowData[index] = newUser;
-    console.log(rowData)
+    console.log(rowData);
     this.setState({ rowData });
 
     // area = this.state.rowData.find((c) => c.id == newArea.id);
@@ -214,11 +223,11 @@ class Table extends React.Component {
                         {this.gridApi
                           ? this.state.currenPageSize
                           : "" * this.state.getPageSize -
-                          (this.state.getPageSize - 1)}{" "}
+                            (this.state.getPageSize - 1)}{" "}
                         -{" "}
                         {this.state.rowData.length -
                           this.state.currenPageSize * this.state.getPageSize >
-                          0
+                        0
                           ? this.state.currenPageSize * this.state.getPageSize
                           : this.state.rowData.length}
                         of {this.state.rowData.length}
@@ -283,26 +292,26 @@ class Table extends React.Component {
                 {this.state.loading ? (
                   <Spinner></Spinner>
                 ) : (
-                    <ContextLayout.Consumer>
-                      {(context) => (
-                        <AgGridReact
-                          gridOptions={{}}
-                          // rowSelection="multiple"
-                          defaultColDef={defaultColDef}
-                          columnDefs={columnDefs}
-                          rowData={rowData}
-                          onGridReady={this.onGridReady}
-                          colResizeDefault={"shift"}
-                          animateRows={true}
-                          floatingFilter={true}
-                          pagination={true}
-                          paginationPageSize={this.state.paginationPageSize}
-                          pivotPanelShow="always"
-                          enableRtl={context.state.direction === "rtl"}
-                        />
-                      )}
-                    </ContextLayout.Consumer>
-                  )}
+                  <ContextLayout.Consumer>
+                    {(context) => (
+                      <AgGridReact
+                        gridOptions={{}}
+                        // rowSelection="multiple"
+                        defaultColDef={defaultColDef}
+                        columnDefs={columnDefs}
+                        rowData={rowData}
+                        onGridReady={this.onGridReady}
+                        colResizeDefault={"shift"}
+                        animateRows={true}
+                        floatingFilter={true}
+                        pagination={true}
+                        paginationPageSize={this.state.paginationPageSize}
+                        pivotPanelShow="always"
+                        enableRtl={context.state.direction === "rtl"}
+                      />
+                    )}
+                  </ContextLayout.Consumer>
+                )}
               </div>
             )}
           </CardBody>

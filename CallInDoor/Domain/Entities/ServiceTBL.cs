@@ -74,6 +74,13 @@ namespace Domain.Entities
         public virtual ICollection<ServiceTagsTBL> Tags { get; set; }
 
         public virtual ICollection<BaseMyServiceTBL> BaseMyServices { get; set; }
+
+
+        public string RoleId { get; set; }
+
+        [ForeignKey("RoleId")]
+        public AppRole AppRole { get; set; }
+
         #endregion 
     }
 }

@@ -75,6 +75,7 @@ namespace CallInDoor.Controllers
                    c.MinSessionTime,
                    c.AcceptedMinPriceForNative,
                    c.AcceptedMinPriceForNonNative,
+                   RoleId = c.AppRole.Id,
                    tags = c.Tags.Where(p => p.IsEnglisTags && !string.IsNullOrEmpty(p.TagName)).Select(s => s.TagName).ToList(),
                    persinaTags = c.Tags.Where(p => p.IsEnglisTags == false && !string.IsNullOrEmpty(p.PersianTagName)).Select(s => s.PersianTagName).ToList()
                }).FirstOrDefaultAsync();
@@ -117,6 +118,7 @@ namespace CallInDoor.Controllers
                       c.Name,
                       c.PersianName,
                       c.Color,
+                      RoleName = c.AppRole.Name,
                       c.AcceptedMinPriceForNative,
                       c.AcceptedMinPriceForNonNative,
                       c.MinSessionTime,
@@ -287,6 +289,15 @@ namespace CallInDoor.Controllers
             if (!checkToken)
                 return Unauthorized(new ApiResponse(401, PubicMessages.UnAuthorizeMessage));
 
+            var roleExist = await _context.Roles.AnyAsync(c => c.Id == model.RoleId);
+            if (!roleExist)
+            {
+                var errors = new List<string>();
+                errors.Add("invalid Role.");
+                return BadRequest(new ApiBadRequestResponse(errors));
+            }
+
+
             var result = await _servicetypeService.Create(model);
             if (result)
             {
@@ -319,6 +330,15 @@ namespace CallInDoor.Controllers
             var checkToken = await _accountService.CheckTokenIsValid();
             if (!checkToken)
                 return Unauthorized(new ApiResponse(401, PubicMessages.UnAuthorizeMessage));
+
+
+            var roleExist = await _context.Roles.AnyAsync(c => c.Id == model.RoleId);
+            if (!roleExist)
+            {
+                var errors = new List<string>();
+                errors.Add("invalid Role.");
+                return BadRequest(new ApiBadRequestResponse(errors));
+            }
 
             var service = await _servicetypeService.GetByIdWithJoin(model.Id);
             if (service == null)

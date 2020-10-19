@@ -8,7 +8,7 @@ import {
   CardTitle,
   Form as FormStrap,
   Alert,
-  Spinner,
+  Spinner as ReactStrapSpinner,
   Col,
 } from "reactstrap";
 
@@ -22,6 +22,7 @@ import agent from "../../../core/services/agent";
 import Form from "../../../components/common/form";
 import CustomTagsInput from "./CustomTagsInput";
 import ModalCustom from "./ModalCustom";
+import Spinner from "../../../components/@vuexy/spinner/Loading-spinner";
 
 class Create extends Form {
   state = {
@@ -30,9 +31,12 @@ class Create extends Form {
       title: "",
       persianTitle: "",
       serviceId: null,
+      roleId: null,
     },
     services: [],
     Specialities: [],
+    roles: [],
+
     isEnabled: false,
     isProfessional: false,
 
@@ -41,7 +45,7 @@ class Create extends Form {
     errors: {},
     errorscustom: [],
     errorMessage: "",
-    Loading: false,
+    Loading: true,
   };
 
   schema = {
@@ -64,6 +68,9 @@ class Create extends Form {
       .label("service"),
 
     Specialities: Joi.label("speciality"),
+
+    roleId: Joi.string().required().label("role"),
+    roles: Joi.label("roles"),
   };
 
   async populatingServiceTypes() {
@@ -72,16 +79,21 @@ class Create extends Form {
     this.setState({ services });
   }
 
+  async populatingRoles() {
+    const { data } = await agent.Role.listActive();
+    let roles = data.result.data;
+    this.setState({ roles });
+  }
+
   async componentDidMount() {
     this.populatingServiceTypes();
+    this.populatingRoles();
+    this.setState({ Loading: false });
   }
 
   componentDidUpdate(prevProps, prevState) {
     const { addNew, currentArea, addToAreas } = this.props;
-    // console.log(currentArea);
-    // console.log(this.props.currentArea);
-    // console.log("seperate");
-    // console.log(prevProps.currentArea);
+
     if (addNew != prevProps.addNew) {
       const data = { id: null, title: "", persianTitle: "", serviceId: null };
       this.setState({
@@ -105,57 +117,6 @@ class Create extends Form {
       });
     }
   }
-
-  // // // // // // // componentDidUpdate(prevProps, prevState) {
-  // // // // // //   const { addNew, currentArea, addToAreas } = this.props;
-  // // // // // //   console.log(this.props.currentArea);
-  // // // // // //   console.log("seperate");
-  // // // // // //   console.log(prevProps.currentArea);
-  // // // // // //   if (
-  // // // // // //     !addNew &&
-  // // // // // //     currentArea != null &&
-  // // // // // //     (prevProps.currentArea == null ||
-  // // // // // //       currentArea?.data?.id != prevProps?.currentArea?.data?.id)
-  // // // // // //   ) {
-  // // // // // //     const { id, title, persianTitle, serviceId } = currentArea?.data;
-  // // // // // //     const { isEnabled, isProfessional } = currentArea;
-  // // // // // //     if (id != prevState.data.id) {
-  // // // // // //       alert("changeId");
-  // // // // // //       this.setState({ data: { ...prevState.data, id } });
-  // // // // // //     }
-  // // // // // //     if (title != prevState.data.title) {
-  // // // // // //       alert("change title");
-  // // // // // //       this.setState({ data: { ...prevState.data, title } });
-  // // // // // //     }
-  // // // // // //     if (persianTitle != prevState.data.persianTitle) {
-  // // // // // //       alert("change persianTitle");
-  // // // // // //       this.setState({ data: { ...prevState.data, persianTitle } });
-  // // // // // //     }
-  // // // // // //     if (serviceId != prevState.data.serviceId) {
-  // // // // // //       alert("change serviceId ");
-  // // // // // //       this.setState({ data: { ...prevState.data, serviceId } });
-  // // // // // //     }
-  // // // // // //     if (isEnabled != prevState.isEnabled) {
-  // // // // // //       alert("change isEnabled ");
-  // // // // // //       this.setState({ isEnabled });
-  // // // // // //     }
-  // // // // // //     if (isProfessional != prevState.isProfessional) {
-  // // // // // //       alert("change isProfessional");
-  // // // // // //       this.setState({ isProfessional });
-  // // // // // //     }
-  // // // // // //     // if(dont chec speciality)
-
-  // // // // // //     // this.setState({
-  // // // // // //     //   data: currentArea.data,
-  // // // // // //     //   ...currentArea,
-  // // // // // //     // });
-  // // // // // //   }
-
-  // // // // // //   // data: { id, title, persianTitle, serviceId },
-  // // // // // //   // isEnabled,
-  // // // // // //   // isProfessional,
-  // // // // // //   // Specialities,
-  // // // // // // }
 
   // handleAddSpeciality = topic => {
   //   let prevSpecialities = this.state.speciality
@@ -245,7 +206,9 @@ class Create extends Form {
       title: "",
       persianTitle: "",
       serviceId: null,
+      roleId: null,
     };
+
     this.setState({
       data,
       Specialities: [],
@@ -255,11 +218,16 @@ class Create extends Form {
   };
 
   render() {
-    const { errorscustom, errorMessage, services, modal } = this.state;
+    const { errorscustom, errorMessage, services, modal, Loading } = this.state;
     const { addNew } = this.props;
 
     return (
       <React.Fragment>
+        {Loading && (
+          <>
+            <Spinner />
+          </>
+        )}
         <Col sm="13" className="mx-auto">
           <Card>
             <CardHeader>
@@ -349,14 +317,14 @@ class Create extends Form {
 
                 {this.state.Loading ? (
                   <Button disabled={true} color="primary" className="mb-1">
-                    <Spinner color="white" size="sm" type="grow" />
+                    <ReactStrapSpinner color="white" size="sm" type="grow" />
                     <span className="ml-50">Loading...</span>
                   </Button>
                 ) : addNew ? (
                   this.renderButton("Add")
                 ) : (
-                      this.renderButton("Edit")
-                    )}
+                  this.renderButton("Edit")
+                )}
               </form>
             </CardBody>
           </Card>
