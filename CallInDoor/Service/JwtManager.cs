@@ -9,19 +9,54 @@ using Service.Interfaces.JwtManager;
 using System.Security.Claims;
 using System.Text;
 using System.IdentityModel.Tokens.Jwt;
+using Domain;
+using System.Linq;
 
 namespace Service
 {
     public class JwtManager : IJwtManager
     {
         private readonly SymmetricSecurityKey _key;
-        public JwtManager(IConfiguration config)
+        private readonly DataContext _context;
+
+        public JwtManager(IConfiguration config,
+               DataContext context
+            )
         {
+            _context = context;
             _key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(PublicHelper.SECREKEY));
         }
 
         public string CreateToken(AppUser user)
         {
+
+
+            //var query = (from u in _context.Users.Where(c => c.Id == user.Id)
+            //             join ur in _context.UserRoles
+            //             on u.Id equals ur.UserId
+            //             join r in _context.Roles
+            //             on ur.RoleId equals r.Id
+            //             join per in _context.Permissions
+            //             on r.Id equals per.RoleId
+            //             //where r.Name != "User"
+            //             select new
+            //             {
+            //                 u,
+            //                 r,
+            //                 r.Permissions,
+            //                 ur,
+            //                 per,
+            //                 //u.Id,
+            //                 //u.UserName,
+            //                 //ur.RoleId,
+            //                 //PhoneNumber = ReomeveSomeString(u.PhoneNumber, u.CountryCode),
+            //                 //CountryCode = u.CountryCode,
+            //                 //roleName = r.Name,
+            //                 //roleId = r.Id
+            //             }).AsQueryable();
+
+            //var uw = query.FirstOrDefault();
+            //var  ds  =  u.r
             var claims = new List<Claim>
             {
                 new Claim(JwtRegisteredClaimNames.UniqueName, user.UserName),

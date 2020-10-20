@@ -21,10 +21,13 @@ namespace Domain.Entities
 
         #region Relation
 
-        public string RoleId { get; set; }
 
-        [ForeignKey("RoleId")]
-        public AppRole AppRole { get; set; }
+        public ICollection<Role_Permission> Role_Permissions { get; set; }
+
+        //public string RoleId { get; set; }
+
+        //[ForeignKey("RoleId")]
+        //public AppRole AppRole { get; set; }
 
         #endregion
 
