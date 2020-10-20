@@ -57,12 +57,7 @@ class Table extends React.Component {
       },
       {
         headerName: "service Name",
-        field: "service Name",
-        filter: true,
-      },
-      {
-        headerName: "role name",
-        field: "roleName",
+        field: "serviceName",
         filter: true,
       },
       {

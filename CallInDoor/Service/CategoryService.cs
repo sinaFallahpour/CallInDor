@@ -171,7 +171,7 @@ namespace Service
         /// </summary>
         /// <param name="Id"></param>
         /// <returns></returns>
-        public Task<AreaTBL> GetAreaById(int Id)
+        public Task<AreaTBL> GetAreaById(int? Id)
         {
             return _context.AreaTBL.Where(c => c.Id == Id).Include(c => c.Specialities).FirstOrDefaultAsync();
         }

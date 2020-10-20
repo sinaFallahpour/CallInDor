@@ -33,7 +33,7 @@ namespace Service.Interfaces.Category
 
         //public Task<List<AreaTBL>> GetAreaById(int Id)
 
-         Task<AreaTBL> GetAreaById(int Id);
+         Task<AreaTBL> GetAreaById(int? Id);
         Task<AreaTBL> UpdateArea(AreaTBL areaFreomDB, CreateAreaDTO model);
         Task<AreaTBL> CreateArea(CreateAreaDTO model);
         Task<(bool succsseded, List<string> result)> ValidateArea(CreateAreaDTO model);

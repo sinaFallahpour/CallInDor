@@ -27,15 +27,15 @@ import Spinner from "../../../components/@vuexy/spinner/Loading-spinner";
 class Create extends Form {
   state = {
     data: {
-      id: null,
+      id: 0,
       title: "",
       persianTitle: "",
       serviceId: null,
-      roleId: null,
+      // roleId: null,
     },
     services: [],
     Specialities: [],
-    roles: [],
+    // roles: [],
 
     isEnabled: false,
     isProfessional: false,
@@ -49,7 +49,7 @@ class Create extends Form {
   };
 
   schema = {
-    id: Joi.number(),
+    id: Joi.number().allow(null),
     title: Joi.string().required().min(3).max(100).label("English Title"),
 
     persianTitle: Joi.string()
@@ -69,8 +69,8 @@ class Create extends Form {
 
     Specialities: Joi.label("speciality"),
 
-    roleId: Joi.string().required().label("role"),
-    roles: Joi.label("roles"),
+    // roleId: Joi.string().required().label("role"),
+    // roles: Joi.label("roles"),
   };
 
   async populatingServiceTypes() {
@@ -206,7 +206,7 @@ class Create extends Form {
       title: "",
       persianTitle: "",
       serviceId: null,
-      roleId: null,
+      // roleId: null,
     };
 
     this.setState({

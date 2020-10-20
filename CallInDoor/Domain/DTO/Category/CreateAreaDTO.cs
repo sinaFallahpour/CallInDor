@@ -8,7 +8,7 @@ namespace Domain.DTO.Category
     public class CreateAreaDTO
     {
 
-        public int Id { get; set; }
+        public int? Id { get; set; }
 
         /// <summary>
         /// عنوان انگلیسی تخصص

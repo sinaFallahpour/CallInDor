@@ -456,7 +456,7 @@ namespace CallInDoor.Controllers
 
         #endregion
 
-        #region Admin and Profile
+        #region Admin 
 
 
 
@@ -961,10 +961,7 @@ namespace CallInDoor.Controllers
 
         #endregion
 
-
         #region permission
-
-
 
 
         [HttpGet("Permission/GetAllPermissionInAdmin")]
@@ -997,10 +994,6 @@ namespace CallInDoor.Controllers
 
 
         #endregion
-
-
-
-
        
 
     }

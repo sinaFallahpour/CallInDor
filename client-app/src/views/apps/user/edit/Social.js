@@ -1,5 +1,5 @@
-import React from "react"
-import { Form, FormGroup, Label, Input, Row, Col, Button } from "reactstrap"
+import React from "react";
+import { Form, FormGroup, Label, Input, Row, Col, Button } from "reactstrap";
 import {
   Link,
   Twitter,
@@ -7,12 +7,12 @@ import {
   Instagram,
   GitHub,
   Codepen,
-  Slack
-} from "react-feather"
+  Slack,
+} from "react-feather";
 class UserSocialTab extends React.Component {
   render() {
     return (
-      <Form className="mt-2" onSubmit={e => e.preventDefault()}>
+      <Form className="mt-2" onSubmit={(e) => e.preventDefault()}>
         <h5 className="mb-1">
           <Link size={15} />
           <span className="align-middle ml-50">Social Links</span>
@@ -73,7 +73,7 @@ class UserSocialTab extends React.Component {
           </Col>
         </Row>
       </Form>
-    )
+    );
   }
 }
-export default UserSocialTab
+export default UserSocialTab;
