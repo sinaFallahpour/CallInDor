@@ -68,7 +68,11 @@ namespace CallInDoor
                                "https://localhost:80",
                                "http://localhost:3000",
                                "http://localhost:3001",
-                               "http://localhost:4321"
+                               "http://localhost:4321",
+                               "https://localhost:44374",
+                               "http://panel.callindoor.ir",
+                                "https://panel.callindoor.ir"
+
                                )
                     .AllowCredentials();
                 });

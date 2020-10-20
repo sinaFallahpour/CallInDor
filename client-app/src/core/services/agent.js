@@ -2,7 +2,8 @@ import axios from "axios";
 // import { history } from "../..";
 import { toast } from "react-toastify";
 
-axios.defaults.baseURL = "https://localhost:44377/api";
+// axios.defaults.baseURL = "https://localhost:44377/api";
+axios.defaults.baseURL = "https://api.callindoor.ir/api";
 
 // const token = window.localStorage.getItem("jwt");
 // axios.config.headers.Authorization = `Bearer ${token}`;

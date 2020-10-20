@@ -236,7 +236,7 @@ class Create extends Form {
                         {" "}
                         {this.renderInput(
                           "phoneNumber",
-                          "Phone Number(witOut Country Code)",
+                          "Phone Number(withOut Country Code)",
                           "number"
                         )}
                       </Col>
@@ -272,8 +272,8 @@ class Create extends Form {
                 ) : addNew ? (
                   this.renderButton("Add")
                 ) : (
-                  this.renderButton("Edit")
-                )}
+                      this.renderButton("Edit")
+                    )}
               </form>
             </CardBody>
           </Card>
