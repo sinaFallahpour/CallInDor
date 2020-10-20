@@ -49,6 +49,13 @@ namespace Domain
         /// پرمیشن های کاربر  
         /// </summary>
         public DbSet<Permissions> Permissions { get; set; }
+       
+        
+
+        /// <summary>
+        /// جدول واسط role - permission
+        /// </summary>
+        public DbSet<Role_Permission> Role_Permission { get; set; }
 
 
         /// <summary>
