@@ -4,7 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 
-namespace AuthJWT.Config.Permissions
+namespace CallInDoor.Config.Permissions
 {
     public class PermissionAuthorizeAttribute : AuthorizeAttribute
     {

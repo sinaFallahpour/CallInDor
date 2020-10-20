@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace AuthJWT.Config.Permissions
+namespace CallInDoor.Config.Permissions
 {
-    public static class Permissions
+    public static class PublicPermissions
     {
         public static string Permission = "Permissions";
 

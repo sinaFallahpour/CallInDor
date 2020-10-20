@@ -2,10 +2,11 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Domain.Utilities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.Options;
 
-namespace AuthJWT.Config.Permissions
+namespace CallInDoor.Config.Permissions
 {
     public class AuthorizationPolicyProvider : DefaultAuthorizationPolicyProvider
     {
@@ -24,7 +25,7 @@ namespace AuthJWT.Config.Permissions
             var permissionNames = policyName.Substring(PermissionAuthorizeAttribute.PolicyPrefix.Length).Split(',');
 
             var policy = new AuthorizationPolicyBuilder()
-                .RequireClaim(Permissions.Permission, permissionNames)
+                .RequireClaim(PublicPermissions.Permission, permissionNames)
                 .Build();
 
             return Task.FromResult(policy);

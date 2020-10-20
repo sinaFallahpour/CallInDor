@@ -25,7 +25,6 @@ namespace CallInDoor.Controllers
     public class AccountController : BaseControlle
     {
 
-
         #region ctor
 
 
@@ -58,6 +57,8 @@ namespace CallInDoor.Controllers
 
         #endregion ctor
 
+        #region User
+
         #region register
 
         [AllowAnonymous]
@@ -65,11 +66,8 @@ namespace CallInDoor.Controllers
         public async Task<ActionResult> Register([FromBody] RegisterDTO model)
         {
 
-
             var phonenumber = model.CountryCode.ToString().Trim() + model.PhoneNumber.Trim();
             var user = await _accountService.FindUserByPhonenumber(phonenumber);
-            //await _context.Users.Where(x => x.PhoneNumber == model.PhoneNumber).FirstOrDefaultAsync();
-
 
             var random = new Random();
             //var code = random.Next(100000, 999999);
@@ -109,40 +107,65 @@ namespace CallInDoor.Controllers
 
             var SerialNumber = Guid.NewGuid().ToString().GetHash();
 
+
             var newUser = new AppUser
             {
                 UserName = model.CountryCode.ToString().Trim() + model.PhoneNumber.Trim(),
                 SerialNumber = SerialNumber,
                 PhoneNumber = model.CountryCode.ToString() + model.PhoneNumber.Trim(),
-                Role = PublicHelper.USERROLE,
+                //Role = PublicHelper.USERROLE,
                 verificationCode = code,
                 verificationCodeExpireTime = DateTime.UtcNow.AddMinutes(3),
                 CountryCode = model.CountryCode
             };
 
-            var result = await _userManager.CreateAsync(newUser, model.Password);
-            if (result.Succeeded)
+
+            //var userrole = await _userManager.GetRolesAsync(newUser);
+            using (var transaction = _context.Database.BeginTransaction())
             {
-
-                //send Code
-
-                return Ok(new ApiOkResponse(new DataFormat()
+                try
                 {
-                    Status = 1,
-                    data = new { },
-                    Message = _localizerShared["SuccessMessage"].Value.ToString()
-                },
-                _localizerShared["SuccessMessage"].Value.ToString()
-                ));
+                    var res = await _userManager.CreateAsync(newUser, model.Password);
+                    if (res.Succeeded)
+                    {
+                        var roleResult = await _userManager.AddToRoleAsync(newUser, PublicHelper.USERROLE);
+                        if (roleResult.Succeeded)
+                        {
+                            transaction.Commit();
+                            //send Code
 
-                //return new JsonResult(new { Status = 1, Message = " ثبت نام موفقیت آمیز", Data = userInfo });
+                            return Ok(new ApiOkResponse(new DataFormat()
+                            {
+                                Status = 1,
+                                data = new { },
+                                Message = _localizerShared["SuccessMessage"].Value.ToString()
+                            },
+                            _localizerShared["SuccessMessage"].Value.ToString()
+                            ));
+                        }
+                        else
+                        {
+                            transaction.Rollback();
+                            return StatusCode(StatusCodes.Status500InternalServerError,
+                                   new ApiResponse(500, _localizerShared["InternalServerMessage"].Value.ToString()));
+                        }
+                    }
+                    else if (res.Errors.Any(c => c.Code == "DuplicateUserName}"))
+                    {
+                        var err = new List<string>();
+                        err.Add($" {model.PhoneNumber} is already taken");
+                        return BadRequest(new ApiBadRequestResponse(err));
+                    }
+                }
+                catch (Exception)
+                {
+                    transaction.Rollback();
+                    return StatusCode(StatusCodes.Status500InternalServerError,
+                                   new ApiResponse(500, _localizerShared["InternalServerMessage"].Value.ToString()));
+                }
             }
-
-
             return StatusCode(StatusCodes.Status500InternalServerError,
-                                    new ApiResponse(500, _localizerShared["InternalServerMessage"].Value.ToString()));
-
-            //return Ok(new ApiOkResponse(new DataFormat() { Status = 0, Message = _localizerShared["ErrorMessage"].Value.ToString() }, _localizerShared["ErrorMessage"].Value.ToString()));
+                                    new ApiResponse(500, PubicMessages.InternalServerMessage));
         }
 
         #endregion
@@ -172,7 +195,7 @@ namespace CallInDoor.Controllers
                 var userInfo = new User
                 {
                     Id = user.Id,
-                    Token = _jwtGenerator.CreateToken(user),
+                    Token = await _jwtGenerator.CreateToken(user),
                     UserName = user.UserName,
                 };
 
@@ -206,15 +229,10 @@ namespace CallInDoor.Controllers
             if (user == null)
                 return Unauthorized(new ApiResponse(401, "Invalid phone number or password."));
 
-
-            if (user.Role != PublicHelper.ADMINROLE)
-                return Unauthorized(new ApiResponse(401, "Inaccessibility"));
-
-            //model.PhoneNumber = model.CountryCode.ToString().Trim() + model.PhoneNumber.Trim();
-            //var user = await _accountService.FindUserByPhonenumber(model.PhoneNumber);
-
-            //if (user == null)
-            //    return Unauthorized(new ApiResponse(401, _localizerShared["InvalidPhoneNumber"].Value.ToString()));
+            var roles = await _userManager.GetRolesAsync(user);
+            var role = roles.FirstOrDefault();
+            if (role != PublicHelper.ADMINROLE)
+                return Unauthorized(new ApiResponse(401, "In accessibility"));
 
             var result = await _accountService.CheckPasswordAsync(user, model.Password);
 
@@ -228,7 +246,7 @@ namespace CallInDoor.Controllers
                 var userInfo = new User
                 {
                     Id = user.Id,
-                    Token = _jwtGenerator.CreateToken(user),
+                    Token = await _jwtGenerator.CreateToken(user),
                     UserName = user.UserName,
                 };
 
@@ -306,7 +324,7 @@ namespace CallInDoor.Controllers
             var userInfo = new User
             {
                 Id = user.Id,
-                Token = _jwtGenerator.CreateToken(user),
+                Token = await _jwtGenerator.CreateToken(user),
                 UserName = user.UserName,
             };
 
@@ -436,9 +454,9 @@ namespace CallInDoor.Controllers
 
         #endregion
 
+        #endregion
 
-
-        #region Admin with Profile
+        #region Admin and Profile
 
 
 
@@ -520,7 +538,7 @@ namespace CallInDoor.Controllers
                          on u.Id equals ur.UserId
                          join r in _context.Roles
                          on ur.RoleId equals r.Id
-                         where r.Name != "User"
+                         where r.Name != PublicHelper.USERROLE
                          select new
                          {
                              u.Id,
@@ -547,6 +565,7 @@ namespace CallInDoor.Controllers
         #endregion
 
         #region RegisterAdmin
+
         [HttpPost("admin/RegisterAdminInAdmin")]
         [Authorize(Roles = PublicHelper.ADMINROLE)]
         public async Task<ActionResult> RegisterAdmin([FromBody] RegisterAdminDTO model)
@@ -581,7 +600,7 @@ namespace CallInDoor.Controllers
                 EmailConfirmed = true,
                 SerialNumber = SerialNumber,
                 PhoneNumber = model.CountryCode.ToString() + model.PhoneNumber.Trim(),
-                Role = PublicHelper.USERROLE,
+                //Role = PublicHelper.ADMINROLE,
                 Name = model.Name,
                 LastName = model.LastName,
                 verificationCodeExpireTime = DateTime.UtcNow.AddMinutes(3),
@@ -590,7 +609,7 @@ namespace CallInDoor.Controllers
 
 
 
-            var userrole = await _userManager.GetRolesAsync(newUser);
+            //var userrole = await _userManager.GetRolesAsync(newUser);
             using (var transaction = _context.Database.BeginTransaction())
             {
                 try
@@ -747,10 +766,6 @@ namespace CallInDoor.Controllers
 
         #endregion
 
-
-
-
-
         #region  Role
 
 
@@ -789,14 +804,14 @@ namespace CallInDoor.Controllers
 
         // GET: api/GetAllServiceForAdmin
         [HttpGet("Role/GetAllActiveRolesInAdmin")]
-        [Authorize]
+        [Authorize(Roles = PublicHelper.ADMINROLE)]
         public async Task<ActionResult> GetAllActiveRolesInAdmin()
         {
             var checkToken = await _accountService.CheckTokenIsValid();
             if (!checkToken)
                 return Unauthorized(new ApiResponse(401, PubicMessages.UnAuthorizeMessage));
 
-            var roles = await _roleManager.Roles.Where(c=>c.IsEnabled).ToListAsync();
+            var roles = await _roleManager.Roles.Where(c => c.IsEnabled).ToListAsync();
 
             return Ok(new ApiOkResponse(new DataFormat()
             {
@@ -944,7 +959,49 @@ namespace CallInDoor.Controllers
 
 
 
-        #endregion 
+        #endregion
+
+
+        #region permission
+
+
+
+
+        [HttpGet("Permission/GetAllPermissionInAdmin")]
+        [Authorize(Roles = PublicHelper.ADMINROLE)]
+        public async Task<ActionResult> GetAllPermissionInAdmin()
+        {
+            var checkToken = await _accountService.CheckTokenIsValid();
+            if (!checkToken)
+                return Unauthorized(new ApiResponse(401, PubicMessages.UnAuthorizeMessage));
+
+            var permissions = await _context.Permissions.Select(c => new
+            {
+                c.Id,
+                c.ActionName,
+                c.Title
+            }).ToListAsync();
+
+            return Ok(new ApiOkResponse(new DataFormat()
+            {
+                Status = 1,
+                data = permissions,
+                Message = PubicMessages.SuccessMessage
+            },
+          PubicMessages.SuccessMessage
+         ));
+
+        }
+
+
+
+
+        #endregion
+
+
+
+
+       
 
     }
 }

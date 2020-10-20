@@ -14,6 +14,7 @@
 
   <ItemGroup>
     <Compile Remove="Config\Middleware\ErrorHandlingMiddleware.cs" />
+    <Compile Remove="Config\Permissions\PublicPermissions.cs" />
   </ItemGroup>
 
   <ItemGroup>
