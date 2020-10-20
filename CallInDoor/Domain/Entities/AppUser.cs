@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Text;
 
 namespace Domain.Entities
@@ -52,8 +53,6 @@ namespace Domain.Entities
         /// سرویس های من از نوع پت یا وویس  یا ویدیو
         /// </summary>
         //public virtual ICollection<BaseMyServiceTBL> MyChatServices { get; set; }
-
-
 
 
         #endregion 

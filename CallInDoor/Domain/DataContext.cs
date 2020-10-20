@@ -46,6 +46,12 @@ namespace Domain
 
 
         /// <summary>
+        /// پرمیشن های کاربر  
+        /// </summary>
+        public DbSet<Permissions> Permissions { get; set; }
+
+
+        /// <summary>
         ///  سرویس(حوضه کاری)یه جورایی
         /// </summary>
         public DbSet<ServiceTBL> ServiceTBL { get; set; }

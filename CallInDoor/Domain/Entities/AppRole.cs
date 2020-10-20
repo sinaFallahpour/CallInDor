@@ -22,7 +22,9 @@ namespace Domain.Entities
 
         public ICollection<ServiceTBL> Services { get; set; }
 
-        #endregion 
+        public ICollection<Permissions> Permissions;
+
+        #endregion
 
 
 
