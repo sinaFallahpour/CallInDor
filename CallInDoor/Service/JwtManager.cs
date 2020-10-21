@@ -59,9 +59,6 @@ namespace Service
 
 
 
-
-
-
             var query1 = (from u in _context.Users.Where(c => c.Id == user.Id)
                           join ur in _context.UserRoles
                           on u.Id equals ur.UserId

@@ -2,8 +2,8 @@ import axios from "axios";
 // import { history } from "../..";
 import { toast } from "react-toastify";
 
-// axios.defaults.baseURL = "https://localhost:44377/api";
-axios.defaults.baseURL = "https://api.callindoor.ir/api";
+axios.defaults.baseURL = "https://localhost:44377/api";
+// axios.defaults.baseURL = "https://api.callindoor.ir/api";
 
 // const token = window.localStorage.getItem("jwt");
 // axios.config.headers.Authorization = `Bearer ${token}`;
@@ -86,6 +86,14 @@ const Role = {
   update: (role) => requests.put("/Account/Role/UpdateRoleInAdmin", role),
 };
 
+const Permissions = {
+  list: () => requests.get("/Account/Permission/GetAllPermissionInAdmin"),
+  // listActive: () => requests.get("/Account/Role/GetAllActiveRolesInAdmin"),
+  // details: (id) => requests.get(`/Account/Role/GetRoleByIdInAdmin?id=${id}`),
+  // create: (role) => requests.post("/Account/Role/CreateRoleInAdmin", role),
+  // update: (role) => requests.put("/Account/Role/UpdateRoleInAdmin", role),
+};
+
 const Category = {
   // list: () => requests.get("/category/getAll"),
   listParentCatgory: () =>
@@ -117,6 +125,7 @@ const Test = {
 export default {
   User,
   Role,
+  Permissions,
   Category,
   ServiceTypes,
   Test,

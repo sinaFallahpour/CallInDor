@@ -838,16 +838,35 @@ namespace CallInDoor.Controllers
             if (!checkToken)
                 return Unauthorized(new ApiResponse(401, PubicMessages.UnAuthorizeMessage));
 
-            var roles = await _roleManager.Roles.ToListAsync();
+            var query = await _context
+                .Roles
+               .Select(x =>
+                new
+                {
+                    x.Name,
+                    x.IsEnabled,
+                    x.Id,
+                    rolesPermission = x.Role_Permissions.Select(c => c.PermissionId)
+                }).ToListAsync();
+
+
+            //.Select(c => new
+            //{
+            //    c.Name,
+            //    c.IsEnabled,
+            //    rolesPermission = c.Role_Permissions.Select(vb => vb.PermissionId)
+            //}).ToListAsync();
+
 
             return Ok(new ApiOkResponse(new DataFormat()
             {
                 Status = 1,
-                data = roles,
+                data = query,
                 Message = PubicMessages.SuccessMessage
             },
-          PubicMessages.SuccessMessage
-         ));
+              PubicMessages.SuccessMessage
+              ));
+
 
         }
 
@@ -874,9 +893,26 @@ namespace CallInDoor.Controllers
             role.IsEnabled = model.IsEnabled;
             role.NormalizedName = model.Name.Normalize();
 
+
             var roleResult = await _roleManager.CreateAsync(role);
+            //await _context.SaveChangesAsync();
+
             if (roleResult.Succeeded)
             {
+                if (model.premissions != null)
+                {
+                    foreach (var item in model.premissions)
+                    {
+                        var newRolePermission = new Role_Permission()
+                        {
+                            AppRole = role,
+                            PermissionId = item
+                        };
+                        _context.Role_Permission.Add(newRolePermission);
+                    }
+                }
+                await _context.SaveChangesAsync();
+
                 return Ok(new ApiOkResponse(new DataFormat()
                 {
                     Status = 1,
@@ -927,18 +963,53 @@ namespace CallInDoor.Controllers
             if (roleFromDB == null)
                 return NotFound(new ApiResponse(404, _localizerShared["NotFound"].Value.ToString()));
 
+            if (roleFromDB.Name == PublicHelper.ADMINROLE || roleFromDB.Name == PublicHelper.USERROLE)
+            {
+                var err = new List<string>();
+                err.Add("The role of admin or user cannot be changed");
+                return BadRequest(new ApiBadRequestResponse(err));
+            }
+            var roleExist = await _context.Roles.AnyAsync(c => c.Name == model.Name && c.Id != model.Id);
+            if (roleExist)
+            {
+                var err = new List<string>();
+                err.Add($"Role name {model.Name} is already taken");
+                return BadRequest(new ApiBadRequestResponse(err));
+            }
+
+
             roleFromDB.Name = model.Name;
             roleFromDB.NormalizedName = model.Name.Normalize();
             roleFromDB.IsEnabled = model.IsEnabled;
 
+            var role_permissions = await _context.Role_Permission.Where(c => c.RoleId == roleFromDB.Id).ToListAsync();
+            _context.Role_Permission.RemoveRange(role_permissions);
+
+            roleFromDB.Role_Permissions = new List<Role_Permission>();
+
+            foreach (var item in model.premissions)
+            {
+                roleFromDB.Role_Permissions.Add(new Role_Permission
+                {
+                    PermissionId = item,
+                    RoleId = roleFromDB.Id,
+                });
+            }
 
             try
             {
                 await _context.SaveChangesAsync();
+                var reposne = new
+                {
+                    roleFromDB.Id,
+                    roleFromDB.Name,
+                    roleFromDB.IsEnabled,
+                    rolesPermission = roleFromDB.Role_Permissions.Select(c => c.PermissionId)
+                };
                 return Ok(new ApiOkResponse(new DataFormat()
                 {
                     Status = 1,
-                    data = roleFromDB,
+                    data = reposne,
                     Message = PubicMessages.SuccessMessage
                 },
                    PubicMessages.SuccessMessage
@@ -994,7 +1065,7 @@ namespace CallInDoor.Controllers
 
 
         #endregion
-       
+
 
     }
 }

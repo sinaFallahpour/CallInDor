@@ -19,7 +19,7 @@ namespace Domain.Entities
         /// <summary>
         ///user role
         /// </summary>
-        public string Role { get; set; }
+        //public string Role { get; set; }
 
         /// <summary>
         /// serial number for jwt token

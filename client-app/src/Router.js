@@ -163,7 +163,7 @@ const userView = lazy(() => import("./views/apps/user/view/View"));
 const Login = lazy(() => import("./views/pages/authentication/login/Login"));
 const LogOut = lazy(() => import("./views/pages/authentication/LogOut"));
 const AccesDenied = lazy(() =>
-  import("./views/pages/authentication/Accesdenied")
+  import("./views/pages/authentication/AccesDenied")
 );
 
 const ForgotPassword = lazy(() =>
@@ -208,46 +208,46 @@ const RouteConfig = ({
   title,
   ...rest
 }) => (
-  <Route
-    {...rest}
-    render={(props) => {
-      if (!isLoggedIn) {
-        return (
-          <Redirect
-            exact
-            to={{
-              pathname: "/pages/login",
-              state: { from: props.location },
-            }}
-          />
-        );
-      } else {
-        // return Component ? <Component {...props} /> : render(props)
-        return (
-          <ContextLayout.Consumer>
-            {(context) => {
-              const LayoutTag =
-                fullLayout === true
-                  ? context.fullLayout
-                  : context.state.activeLayout === "horizontal"
-                  ? context.horizontalLayout
-                  : context.VerticalLayout;
-              return (
-                <LayoutTag {...props}>
-                  <Suspense fallback={<Spinner />}>
-                    <PageTitle title={title}>
-                      <Component {...props} />
-                    </PageTitle>
-                  </Suspense>
-                </LayoutTag>
-              );
-            }}
-          </ContextLayout.Consumer>
-        );
-      }
-    }}
-  />
-);
+    <Route
+      {...rest}
+      render={(props) => {
+        if (!isLoggedIn) {
+          return (
+            <Redirect
+              exact
+              to={{
+                pathname: "/pages/login",
+                state: { from: props.location },
+              }}
+            />
+          );
+        } else {
+          // return Component ? <Component {...props} /> : render(props)
+          return (
+            <ContextLayout.Consumer>
+              {(context) => {
+                const LayoutTag =
+                  fullLayout === true
+                    ? context.fullLayout
+                    : context.state.activeLayout === "horizontal"
+                      ? context.horizontalLayout
+                      : context.VerticalLayout;
+                return (
+                  <LayoutTag {...props}>
+                    <Suspense fallback={<Spinner />}>
+                      <PageTitle title={title}>
+                        <Component {...props} />
+                      </PageTitle>
+                    </Suspense>
+                  </LayoutTag>
+                );
+              }}
+            </ContextLayout.Consumer>
+          );
+        }
+      }}
+    />
+  );
 
 // const mapStateToProps = (state) => {
 //   return {
@@ -264,35 +264,35 @@ const NotProtexctedRouteConfig = ({
   title,
   ...rest
 }) => (
-  <Route
-    path={path}
-    render={(props) => {
-      return (
-        <ContextLayout.Consumer>
-          {(context) => {
-            // const LayoutTag = context.fullLayout
+    <Route
+      path={path}
+      render={(props) => {
+        return (
+          <ContextLayout.Consumer>
+            {(context) => {
+              // const LayoutTag = context.fullLayout
 
-            const LayoutTag =
-              fullLayout === true
-                ? context.fullLayout
-                : context.state.activeLayout === "horizontal"
-                ? context.horizontalLayout
-                : context.VerticalLayout;
-            return (
-              <LayoutTag {...props} permission={props.user}>
-                <Suspense fallback={<Spinner />}>
-                  <PageTitle title={title}>
-                    <Component {...props} />
-                  </PageTitle>
-                </Suspense>
-              </LayoutTag>
-            );
-          }}
-        </ContextLayout.Consumer>
-      );
-    }}
-  />
-);
+              const LayoutTag =
+                fullLayout === true
+                  ? context.fullLayout
+                  : context.state.activeLayout === "horizontal"
+                    ? context.horizontalLayout
+                    : context.VerticalLayout;
+              return (
+                <LayoutTag {...props} permission={props.user}>
+                  <Suspense fallback={<Spinner />}>
+                    <PageTitle title={title}>
+                      <Component {...props} />
+                    </PageTitle>
+                  </Suspense>
+                </LayoutTag>
+              );
+            }}
+          </ContextLayout.Consumer>
+        );
+      }}
+    />
+  );
 
 class AppRouter extends React.Component {
   state = {

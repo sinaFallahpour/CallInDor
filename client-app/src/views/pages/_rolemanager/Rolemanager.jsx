@@ -56,62 +56,64 @@ class RoleManager extends React.Component {
       id: "",
       name: "",
       isEnabled: true,
+      rolesPermission: []
     },
 
     addNew: true,
 
     roles: [],
+    permissions: [],
     loading: true,
     loadingSubmiting: false,
 
     errors: [],
     errorMessage: "",
-    Loading: false,
+
     activeTab: "1",
 
     modal: false,
   };
 
-  // async componentDidMount() {
-  //     const { data } = await agent.Role.list();
-  //     const courses = data.result;
-  //     this.setState({ courses });
-  // }
+
+  async populatingRoles() {
+    const { data } = await agent.Role.list();
+    let roles = data.result.data;
+    this.setState({ roles });
+  }
+
+
+  async populatingPermissions() {
+    const { data } = await agent.Permissions.list();
+    let permissions = data.result.data;
+    this.setState({ permissions });
+  }
 
   async componentDidMount() {
-    const { data } = await agent.Role.list();
-    if (data?.result) {
-      this.setState({ roles: data.result.data, loading: false });
-      return;
-    }
-    toast.error(data.message, {
-      autoClose: 10000,
-    });
+    await this.populatingRoles()
+    this.populatingPermissions()
+    this.setState({ loading: false })
   }
 
   toggleModal = (role) => {
     if (!role) {
-      // alert("role")
       this.setState({ modal: false });
       return;
     }
-    // alert("no Role")
+    console.log(role)
+    alert("stop")
     this.setState((prevState) => ({
       modal: !prevState.modal,
       addNew: false,
-      data: { id: role.id, name: role.name, isEnabled: role.isEnabled },
+      data: { id: role.id, name: role.name, isEnabled: role.isEnabled, rolesPermission: role.rolesPermission },
     }));
   };
 
   addNewModal = async (modal) => {
-    // alert(modal)
     await this.setState((prev) => ({
       modal,
       addNew: true,
-      data: { id: null, name: "", isEnabled: false },
+      data: { id: null, name: "", isEnabled: false, rolesPermission: [] },
     }));
-
-    // alert(this.stat.modal)
   };
 
   mapToViewModel(role) {
@@ -120,15 +122,22 @@ class RoleManager extends React.Component {
         id: role.id,
         name: role.name,
         isEnabled: role.isEnabled,
+        rolesPermission: role.rolesPermission
       };
     }
   }
 
-  // toggleModal1 = () => {
-  //     this.setState((prevState) => ({
-  //         modal: !prevState.modal,
-  //     }));
-  // };
+
+
+  roleEnclude = (permissionId) => {
+    if (this.state.data.rolesPermission.includes(permissionId)) {
+      return true
+    }
+    else {
+      return false
+    }
+  }
+
 
   doSubmit = async (e) => {
     this.setState({ loadingSubmiting: true });
@@ -141,8 +150,9 @@ class RoleManager extends React.Component {
         name: this.state.data.name,
         isEnabled: this.state.data.isEnabled,
         id: this.state.data.id,
+        // rolesPermission: this.state.data.rolesPermission
       };
-
+      obj.premissions = this.state.data.rolesPermission
       if (this.state.addNew) {
         const { data } = await agent.Role.create(obj);
         if (data.result.status) {
@@ -164,25 +174,6 @@ class RoleManager extends React.Component {
         const { data } = await agent.Role.update(obj);
         if (data.result.status) {
           toast.success(data.result.message);
-
-          // this.setState({
-          //     data: this.state.roles.map((el) =>
-          //         (el.id === obj.id ? { ...el, ...obj } : el))
-          // });
-
-          // this.state.roles.map((el) => {
-          //     if (el.id === obj.id) {
-
-          //         return {
-          //             ...el, name: obj.name
-          //         }
-          //     }
-          //     else {
-          //         return el;
-          //     }
-
-          // })
-
           this.setState({
             roles: this.state.roles.map((el) => {
               if (el.id == obj.id) {
@@ -228,7 +219,8 @@ class RoleManager extends React.Component {
   render() {
     const { errorMessage, errors, roles, loading, data } = this.state;
 
-    if (loading) return <SpinnerPage />;
+    if (loading)
+      return (<SpinnerPage />);
 
     return (
       <React.Fragment>
@@ -253,33 +245,25 @@ class RoleManager extends React.Component {
           {roles.length == 0 ? (
             <h3 class="w-100 text-center">There is no role to display </h3>
           ) : (
-            roles.map((role) => {
-              return (
-                <Col key={role.id} lg="6" sm="6">
-                  <RoleItem
-                    hideChart
-                    iconRight
-                    iconBg="success"
-                    icon={<Edit className="warning" size={22} />}
-                    stat={role.name}
-                    isEnabled={role.isEnabled}
-                    toggleModal={this.toggleModal}
-                    role={role}
-                  />
-                </Col>
-              );
-            })
-          )}
+              roles.map((role) => {
+                return (
+                  <Col key={role.id} lg="6" sm="6">
+                    <RoleItem
+                      hideChart
+                      iconRight
+                      iconBg="success"
+                      icon={<Edit className="warning" size={22} />}
+                      stat={role.name}
+                      isEnabled={role.isEnabled}
+                      toggleModal={this.toggleModal}
+                      role={role}
+                    />
+                  </Col>
+                );
+              })
+            )}
 
-          {/* <Col xl="2" lg="4" sm="6">
-                        <StatisticsCard
-                            hideChart
-                            iconBg="warning"
-                            icon={<Truck className="warning" size={22} />}
-                            stat="2"
-                            statTitle="Returns"
-                        />
-                    </Col> */}
+
         </Row>
 
         <Modal
@@ -323,24 +307,7 @@ class RoleManager extends React.Component {
                   maxLength="100"
                 />
               </FormGroup>
-              {/* {this.state.data.isEnabled ? "غیر فعال" : " فعال "} */}
-              {/* <div className="form-group">
-                                                <label htmlFor="isEnabled">Is Enabled</label>
-                                                <input
-                                                    value={this.state.data.isEnabled}
-                                                    checked={this.state.data.isEnabled}
-                                                    onChange={(e) => {
-                                                        console.log("caneg")
-                                                        this.setState({
-                                                            ...this.state.data,
-                                                            isEnabled: !this.state.data.isEnabled
-                                                        })
-                                                    }}
-                                                    name="isEnabled"
-                                                    id="isEnabled"
-                                                    type="checkbox"
-                                                    className="ml-1" />
-                                            </div> */}
+
               <FormGroup className="ml-1 _customCheckbox">
                 <Label htmlFor="isEnabled">
                   <Input
@@ -364,7 +331,86 @@ class RoleManager extends React.Component {
               </FormGroup>
 
               <Row className="mb-2">
-                <Col md="6" sm="12">
+
+                {this.state.permissions?.map((item, index) => {
+                  return (
+                    <Col md="6" sm="12">
+                      <Label >
+                        <Checkbox
+                          value={item.id}
+                          color="primary"
+                          icon={<Check className="vx-icon" size={16} />}
+                          label=""
+                          // defaultChecked={true}
+                          // checked={this.state.data.rolesPermission.includes(item.id) ? true : false}
+                          checked={this.roleEnclude(item.id)}
+                          defaultChecked={this.roleEnclude(item.id)}
+                          onChange={async (e) => {
+
+                            if (data.rolesPermission.indexOf(parseInt(e.target.value)) !== -1) {
+                              let rolesPermission = data.rolesPermission.filter(item => {
+                                return item != parseInt(e.target.value)
+                              })
+                              this.setState({ data: { ...data, rolesPermission } }, function () {
+                              });
+                            }
+                            else {
+                              let rolesPermission = data.rolesPermission
+                              rolesPermission.push(parseInt(e.target.value))
+                              this.setState({ data: { ...data, rolesPermission } }, function () {
+                              });
+                            }
+
+                          }}
+                        />
+                      </Label>
+                      {item.id}
+                      {item.title}
+                    </Col>
+                  )
+                })}
+
+
+
+
+
+
+
+
+
+
+
+                {/* <Col md="6" sm="12">
+                  <Label >
+                    <Checkbox
+                      value={1}
+                      color="primary"
+                      icon={<Check className="vx-icon" size={16} />}
+                      label="hoghoghy msool"
+                      // defaultChecked={true}
+                      checked={true}
+                    />
+                  </Label>
+
+                </Col> */}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                {/* <Col md="6" sm="12">
                   <Label htmlFor="isEnabled">
                     <Checkbox
                       color="primary"
@@ -391,13 +437,15 @@ class RoleManager extends React.Component {
                 <Col md="6" sm="12">
                   <Label htmlFor="isEnabled">
                     <Checkbox
+                      value={1}
                       color="primary"
                       icon={<Check className="vx-icon" size={16} />}
-                      label=""
-                      defaultChecked={true}
+                      label="hoghoghy msool"
+                      // defaultChecked={true}
+                      checked={true}
                     />
                   </Label>
-                  hoghoghy msool
+
                 </Col>
 
                 <Col md="6" sm="12">
@@ -406,11 +454,13 @@ class RoleManager extends React.Component {
                       color="primary"
                       icon={<Check className="vx-icon" size={16} />}
                       label=""
-                      defaultChecked={true}
+                      // defaultChecked={true}
+                      checked={false}
+
                     />
                   </Label>
                   veryfy Services
-                </Col>
+                </Col> */}
               </Row>
 
               {/* <FormGroup className="ml-1 _customCheckbox">
@@ -452,8 +502,8 @@ class RoleManager extends React.Component {
                   <span className="ml-50">Loading...</span>
                 </Button>
               ) : (
-                <Button color="primary">submit</Button>
-              )}
+                  <Button color="primary">submit</Button>
+                )}
             </Form>
           </ModalBody>
         </Modal>

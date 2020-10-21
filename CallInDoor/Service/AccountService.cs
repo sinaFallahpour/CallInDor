@@ -122,15 +122,17 @@ namespace Service
             var currentUserName = _httpContextAccessor.HttpContext.User?.Claims?.FirstOrDefault(x => x.Type == ClaimTypes.Name)?.Value;
             var currentUserRole = _httpContextAccessor.HttpContext.User?.Claims?.FirstOrDefault(x => x.Type == ClaimTypes.Role)?.Value;
 
-            var username = await _context.Users
-                    .Where(x => x.SerialNumber == currentSerialNumber && x.UserName == currentUserName
-                    && x.Role == currentUserRole && x.Role == PublicHelper.ADMINROLE)
-                    .Select(c => c.UserName).FirstOrDefaultAsync();
+            var user = await _context.Users
+                    .FirstOrDefaultAsync(x => x.UserName == currentUserName
+                    && x.SerialNumber == currentSerialNumber);
 
-            if (string.IsNullOrEmpty(username))
-                return (false, username);
+            if (user == null)
+                return (false, null);
 
-            return (true, username);
+            var role = await _userManager.IsInRoleAsync(user, PublicHelper.ADMINROLE);
+            if (!role)
+                return (false, user.UserName);
+            return (true, user.UserName);
         }
 
 
