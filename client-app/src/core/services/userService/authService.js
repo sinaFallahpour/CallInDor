@@ -1,7 +1,7 @@
 import { requests } from "../agent";
 
 import jwtDecode from "jwt-decode";
-import { functions } from "firebase";
+
 
 const tokenKey = "token";
 
@@ -10,6 +10,7 @@ export async function login(phoneNumber, password) {
     phoneNumber,
     password
   });
+
   console.log(data);
   const jwt = data.result.data.token;
   localStorage.setItem(tokenKey, jwt);

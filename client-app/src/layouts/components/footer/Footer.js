@@ -4,7 +4,6 @@ import { Button } from "reactstrap"
 import { Heart, ArrowUp } from "react-feather"
 import classnames from "classnames"
 
-
 const Footer = props => {
   let footerTypeArr = ["sticky", "static", "hidden"];
   return (
@@ -24,7 +23,7 @@ const Footer = props => {
         </span>
       </p>
       {props.hideScrollToTop === false ? (
-        <ScrollToTop showUnder={160}>
+        <ScrollToTop showUnder={160} >
           <Button color="primary" className="btn-icon scroll-top">
             <ArrowUp size={15} />
           </Button>
@@ -35,3 +34,6 @@ const Footer = props => {
 }
 
 export default Footer
+
+
+

@@ -100,8 +100,7 @@ class RoleManager extends React.Component {
       return;
     }
     console.log(role)
-    alert("stop")
-    this.setState((prevState) => ({
+     this.setState((prevState) => ({
       modal: !prevState.modal,
       addNew: false,
       data: { id: role.id, name: role.name, isEnabled: role.isEnabled, rolesPermission: role.rolesPermission },

@@ -12,6 +12,8 @@ import knowledgeBaseQuestion from "./views/pages/knowledge-base/Questions";
 import { ContextLayout } from "./utility/context/Layout";
 import { Alert } from "reactstrap";
 import PageTitle from "./components/common/PageTitle";
+import Permissoin from "./core/permissions"
+
 
 const analyticsDashboard = lazy(() =>
   import("./views/dashboard/analytics/AnalyticsDashboard")
@@ -199,7 +201,6 @@ const Areas = lazy(() => import("./views/pages/_Areas/Areas"));
 const EditArea = lazy(() => import("./views/pages/_Areas/EditService"));
 
 const Test = lazy(() => import("./views/pages/_test/Test"));
-
 // Set Layout and Component Using App Route
 const RouteConfig = ({
   component: Component,
@@ -235,8 +236,8 @@ const RouteConfig = ({
                 return (
                   <LayoutTag {...props}>
                     <Suspense fallback={<Spinner />}>
-                      <PageTitle title={title}>
-                        <Component {...props} />
+                      <PageTitle title={title} >
+                        <Component {...props} permission={["dsds", "sasas"]} />
                       </PageTitle>
                     </Suspense>
                   </LayoutTag>
@@ -363,6 +364,7 @@ class AppRouter extends React.Component {
             /> */}
             <RouteConfig
               isLoggedIn={isLoggedIn}
+              permissoin={[Permissoin.userGetAll, Permissoin.userEdit]}
               title="manage admins"
               exact
               path="/pages/admins"

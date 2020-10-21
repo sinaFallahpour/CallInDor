@@ -44,25 +44,25 @@ class SidebarHeader extends Component {
                   data-tour="toggle-icon"
                 />
               ) : (
-                <Circle
-                  onClick={() => {
-                    toggleSidebarMenu(false);
-                    toggle();
-                  }}
-                  className={classnames(
-                    "toggle-icon icon-x d-none d-xl-block font-medium-4",
-                    {
-                      "text-primary": activeTheme === "primary",
-                      "text-success": activeTheme === "success",
-                      "text-danger": activeTheme === "danger",
-                      "text-info": activeTheme === "info",
-                      "text-warning": activeTheme === "warning",
-                      "text-dark": activeTheme === "dark",
-                    }
-                  )}
-                  size={20}
-                />
-              )}
+                  <Circle
+                    onClick={() => {
+                      toggleSidebarMenu(false);
+                      toggle();
+                    }}
+                    className={classnames(
+                      "toggle-icon icon-x d-none d-xl-block font-medium-4",
+                      {
+                        "text-primary": activeTheme === "primary",
+                        "text-success": activeTheme === "success",
+                        "text-danger": activeTheme === "danger",
+                        "text-info": activeTheme === "info",
+                        "text-warning": activeTheme === "warning",
+                        "text-dark": activeTheme === "dark",
+                      }
+                    )}
+                    size={20}
+                  />
+                )}
               <X
                 onClick={sidebarVisibility}
                 className={classnames(

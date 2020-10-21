@@ -165,6 +165,7 @@ class SideMenuContent extends React.Component {
               this.handleGroupClick(item.id, null, item.type)
             }
           }}>
+
           <CustomAnchorTag
             to={
               item.filterBase
@@ -211,6 +212,11 @@ class SideMenuContent extends React.Component {
                 ""
               )}
           </CustomAnchorTag>
+
+
+
+
+
           {item.type === "collapse" ? (
             <SideMenuGroup
               group={item}
@@ -262,6 +268,9 @@ class SideMenuContent extends React.Component {
         return this.redirectUnauthorized()
       }
     })
+
+
+
     return <React.Fragment>{menuItems}</React.Fragment>
   }
 }

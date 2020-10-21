@@ -31,8 +31,8 @@ import userImg from "../../../assets/img/portrait/small/avatar-s-11.jpg"
 // }
 const ThemeNavbar = props => {
   // const { user } = useAuth0()
-  const colorsArr = [ "primary", "danger", "success", "info", "warning", "dark"]
-  const navbarTypes = ["floating" , "static" , "sticky" , "hidden"]
+  const colorsArr = ["primary", "danger", "success", "info", "warning", "dark"];
+  const navbarTypes = ["floating", "static", "sticky", "hidden"];
 
   return (
     <React.Fragment>
@@ -86,13 +86,13 @@ const ThemeNavbar = props => {
                 </div>
               ) : null}
               <NavbarUser
-              userName="sina"
+                userName="sina"
                 handleAppOverlay={props.handleAppOverlay}
                 changeCurrentLang={props.changeCurrentLang}
-                userImg={require("../../../assets/img/profile/post-media/25.jpg")} 
+                userImg={require("../../../assets/img/profile/post-media/25.jpg")}
                 loggedInWith={
                   props.user !== undefined &&
-                  props.user.login.values !== undefined
+                    props.user.login.values !== undefined
                     ? props.user.login.values.loggedInWith
                     : null
                 }
@@ -107,7 +107,7 @@ const ThemeNavbar = props => {
   )
 }
 
-export default   ThemeNavbar;
+export default ThemeNavbar;
 
 // const mapStateToProps = state => {
 //   return {

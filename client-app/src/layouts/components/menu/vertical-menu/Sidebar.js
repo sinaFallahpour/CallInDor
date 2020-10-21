@@ -211,6 +211,8 @@ class Sidebar extends Component {
                   </Hammer>
                 </ScrollbarTag>
               </div>
+
+
             </React.Fragment>
           )
         }}

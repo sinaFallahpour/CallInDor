@@ -13,7 +13,7 @@ var FailedAlert = function (msg) {
 }
 
 
-var FailedAlert2 = function (msg,title, confirmButtonText) {
+var FailedAlert2 = function (msg, title, confirmButtonText) {
     swal({
         title: `${title}!`,
         text: msg,
@@ -38,7 +38,7 @@ var SuccessAlert = function (msg) {
         confirmButtonText: "باشه",
         buttonsStyling: false
     });
-}
+};
 
 var SuccessAlert2 = function (msg, title, confirmButtonText) {
     swal({
@@ -52,17 +52,13 @@ var SuccessAlert2 = function (msg, title, confirmButtonText) {
     });
 }
 
-
-var toShortString = function (text, count)  {
+var toShortString = function (text, count) {
     if (!text) return "";
     if (text.length >= count) return text.substring(0, count) + "[...]";
     else return text;
 };
 
-
-
-
-var getPriceFormat = function (price)  {
+var getPriceFormat = function (price) {
     if (!price)
         return null;
     price += '';
@@ -76,18 +72,12 @@ var getPriceFormat = function (price)  {
     return y + z;
 }
 
-
-
-
 /*   اینپوتاها نتوانن اسپیس وارد کنند برای حرف اولشان   */
 // <input  oninput="validate(this)" >
 function validate(input) {
     if (/^\s/.test(input.value))
         input.value = '';
 }
-
-
-
 
 //get query string value 
 function getQueryString() {

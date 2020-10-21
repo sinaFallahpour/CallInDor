@@ -68,8 +68,8 @@ class VerticalLayout extends PureComponent {
       return layout === "dark"
         ? document.body.classList.add("dark-layout")
         : layout === "semi-dark"
-        ? document.body.classList.add("semi-dark-layout")
-        : null;
+          ? document.body.classList.add("semi-dark-layout")
+          : null;
     }
   }
 
@@ -106,7 +106,7 @@ class VerticalLayout extends PureComponent {
       }
       if (
         prevProps.app.customizer.sidebarCollapsed ===
-          this.props.app.customizer.sidebarCollapsed &&
+        this.props.app.customizer.sidebarCollapsed &&
         pathname !== prevProps.location.pathname &&
         this.collapsedPaths.includes(pathname)
       ) {
@@ -114,7 +114,7 @@ class VerticalLayout extends PureComponent {
       }
       if (
         prevProps.app.customizer.sidebarCollapsed ===
-          this.props.app.customizer.sidebarCollapsed &&
+        this.props.app.customizer.sidebarCollapsed &&
         pathname !== prevProps.location.pathname &&
         !this.collapsedPaths.includes(pathname)
       ) {
@@ -211,7 +211,22 @@ class VerticalLayout extends PureComponent {
       currentLang: this.state.currentLang,
       activeTheme: appProps.menuTheme,
       collapsed: this.state.collapsedContent,
+
+
+
+
+
+
       permission: this.props.permission,
+
+
+
+
+
+
+
+
+
       deviceWidth: this.state.width
     };
     let navbarProps = {
@@ -265,7 +280,15 @@ class VerticalLayout extends PureComponent {
           }
         )}
       >
+
+
+
         <Sidebar {...sidebarProps} />
+
+
+
+
+
         <div
           className={classnames("app-content content", {
             "show-overlay": this.state.appOverlay === true

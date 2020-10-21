@@ -18,6 +18,7 @@ const navigationConfig = [
     title: "Manage User",
     type: "collapse",
     icon: <Icon.Users size={20} />,
+    permissions: ["admin", "editor"],
     children: [
       {
         id: "roleManage",
