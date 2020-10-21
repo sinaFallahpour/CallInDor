@@ -31,7 +31,7 @@ class Create extends Form {
       password: "",
       name: "",
       lastName: "",
-      dial_code: null,
+      dial_code: "",
       phoneNumber: "",
       roleId: null,
     },
@@ -184,6 +184,7 @@ class Create extends Form {
       password: "",
       name: "",
       lastName: "",
+      phoneNumber: "",
       roleId: null,
       dial_code: null,
     };
@@ -272,8 +273,8 @@ class Create extends Form {
                 ) : addNew ? (
                   this.renderButton("Add")
                 ) : (
-                      this.renderButton("Edit")
-                    )}
+                  this.renderButton("Edit")
+                )}
               </form>
             </CardBody>
           </Card>

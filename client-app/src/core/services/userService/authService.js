@@ -2,13 +2,13 @@ import { requests } from "../agent";
 
 import jwtDecode from "jwt-decode";
 
-
 const tokenKey = "token";
+const permissionKey = "Permissions";
 
 export async function login(phoneNumber, password) {
   const { data } = await requests.post("/Account/AdminLogin", {
     phoneNumber,
-    password
+    password,
   });
 
   console.log(data);
@@ -35,8 +35,7 @@ export function getCurrentUser() {
 
 export async function isAdminLoggedIn() {
   const token = getJwt();
-  if (!token)
-    return false;
+  if (!token) return false;
   try {
     await requests.get("/Account/IsAdminLoggedIn");
     return true;
@@ -54,11 +53,19 @@ export function getJwt() {
   return localStorage.getItem(tokenKey);
 }
 
+export function getPermissons() {
+  const token = getJwt();
+  if (!token) return undefined;
+  const payloat = jwtDecode(token);
+  return payloat.Permissions;
+}
+
 export default {
   login,
   logout,
   isAdminLoggedIn,
   getCurrentUser,
   loginWithJwt,
-  getJwt
+  getJwt,
+  getPermissons,
 };

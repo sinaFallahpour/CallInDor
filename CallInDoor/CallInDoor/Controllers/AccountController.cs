@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
+using CallInDoor.Config.Attributes;
 using CallInDoor.Models;
 using Domain;
 using Domain.DTO.Account;
@@ -58,6 +60,28 @@ namespace CallInDoor.Controllers
         #endregion ctor
 
         #region User
+
+        #region  CheckTokenIsValid
+        [AllowAnonymous]
+        [HttpGet("CheckTokenIsValid")]
+        public async Task<ActionResult> CheckTokenIsValid()
+        {
+            var result = await _accountService.CheckTokenIsValid();
+            if (!result)
+                return Unauthorized(new ApiResponse(401, "Unauthorize."));
+
+            return Ok(new ApiOkResponse(new DataFormat()
+            {
+                Status = 1,
+                data = result,
+                Message = PubicMessages.SuccessMessage
+            },
+                PubicMessages.SuccessMessage
+           ));
+
+        }
+
+        #endregion
 
         #region register
 
@@ -271,6 +295,7 @@ namespace CallInDoor.Controllers
 
         #region IsAdminLoggedIn
 
+        [AllowAnonymous]
         [HttpGet("IsAdminLoggedIn")]
         public async Task<ActionResult<User>> IsAdminLoggedIn()
         {
@@ -468,6 +493,7 @@ namespace CallInDoor.Controllers
         /// <returns></returns>
         [HttpGet("admin/GetAdminByIdInAdmin")]
         [Authorize(Roles = PublicHelper.ADMINROLE)]
+        [ClaimsAuthorize]
         public async Task<ActionResult> GetAdminByIdInAdmin(string id)
         {
             var checkToken = await _accountService.CheckTokenIsValid();
@@ -511,16 +537,7 @@ namespace CallInDoor.Controllers
         }
 
 
-
-
-        private static string ReomeveSomeString(string sourceString, string removeString)
-        {
-            int index = sourceString.IndexOf(removeString);
-            string cleanPath = (index < 0)
-                ? sourceString
-                : sourceString.Remove(index, removeString.Length);
-            return cleanPath;
-        }
+     
 
         #endregion
 
@@ -528,11 +545,10 @@ namespace CallInDoor.Controllers
 
         [HttpGet("admin/GetAllAdminInAdmin")]
         [Authorize(Roles = PublicHelper.ADMINROLE)]
+        [ClaimsAuthorize]
         public async Task<ActionResult> GetAllAdminInAdmin()
         {
-            var checkToken = await _accountService.CheckTokenIsValid();
-            if (!checkToken)
-                return Unauthorized(new ApiResponse(401, PubicMessages.UnAuthorizeMessage));
+
             var query = (from u in _context.Users
                          join ur in _context.UserRoles
                          on u.Id equals ur.UserId
@@ -568,6 +584,7 @@ namespace CallInDoor.Controllers
 
         [HttpPost("admin/RegisterAdminInAdmin")]
         [Authorize(Roles = PublicHelper.ADMINROLE)]
+        [ClaimsAuthorize]
         public async Task<ActionResult> RegisterAdmin([FromBody] RegisterAdminDTO model)
         {
             var phonenumber = model.CountryCode.ToString().Trim() + model.PhoneNumber.Trim();
@@ -674,6 +691,7 @@ namespace CallInDoor.Controllers
         // /api/Profile/UpdateProfile
         [HttpPut("admin/UpdateAdmin")]
         [Authorize(Roles = PublicHelper.ADMINROLE)]
+        [ClaimsAuthorize]
         public async Task<ActionResult> UpdateAdmin([FromBody] UpdateAdminDTO model)
         {
             using (var transaction = _context.Database.BeginTransaction())
@@ -775,14 +793,11 @@ namespace CallInDoor.Controllers
         /// <returns></returns>
         [HttpGet("Role/GetRoleByIdInAdmin")]
         [Authorize(Roles = PublicHelper.ADMINROLE)]
+        [ClaimsAuthorize]
         public async Task<ActionResult> GetRoleByIdInAdmin(string id)
         {
-            var checkToken = await _accountService.CheckTokenIsValid();
-            if (!checkToken)
-                return Unauthorized(new ApiResponse(401, PubicMessages.UnAuthorizeMessage));
 
             var role = await _roleManager.FindByIdAsync(id);
-
             if (role == null)
                 return NotFound(new ApiResponse(404, PubicMessages.NotFoundMessage));
 
@@ -800,19 +815,14 @@ namespace CallInDoor.Controllers
 
 
 
-
-
-        // GET: api/GetAllServiceForAdmin
-        [HttpGet("Role/GetAllActiveRolesInAdmin")]
-        [Authorize(Roles = PublicHelper.ADMINROLE)]
+         // GET: api/GetAllServiceForAdmin
+         [HttpGet("Role/GetAllActiveRolesInAdmin")]
+         [Authorize(Roles = PublicHelper.ADMINROLE)]
+         [ClaimsAuthorize]
         public async Task<ActionResult> GetAllActiveRolesInAdmin()
         {
-            var checkToken = await _accountService.CheckTokenIsValid();
-            if (!checkToken)
-                return Unauthorized(new ApiResponse(401, PubicMessages.UnAuthorizeMessage));
 
             var roles = await _roleManager.Roles.Where(c => c.IsEnabled).ToListAsync();
-
             return Ok(new ApiOkResponse(new DataFormat()
             {
                 Status = 1,
@@ -832,11 +842,9 @@ namespace CallInDoor.Controllers
         // GET: api/GetAllServiceForAdmin
         [HttpGet("Role/GetAllRolesInAdmin")]
         [Authorize(Roles = PublicHelper.ADMINROLE)]
+        [ClaimsAuthorize]
         public async Task<ActionResult> GetAllRoleForAdmin()
         {
-            var checkToken = await _accountService.CheckTokenIsValid();
-            if (!checkToken)
-                return Unauthorized(new ApiResponse(401, PubicMessages.UnAuthorizeMessage));
 
             var query = await _context
                 .Roles
@@ -850,14 +858,6 @@ namespace CallInDoor.Controllers
                 }).ToListAsync();
 
 
-            //.Select(c => new
-            //{
-            //    c.Name,
-            //    c.IsEnabled,
-            //    rolesPermission = c.Role_Permissions.Select(vb => vb.PermissionId)
-            //}).ToListAsync();
-
-
             return Ok(new ApiOkResponse(new DataFormat()
             {
                 Status = 1,
@@ -866,7 +866,6 @@ namespace CallInDoor.Controllers
             },
               PubicMessages.SuccessMessage
               ));
-
 
         }
 
@@ -883,16 +882,13 @@ namespace CallInDoor.Controllers
         /// <returns></returns>
         [HttpPost("Role/CreateRoleInAdmin")]
         [Authorize(Roles = PublicHelper.ADMINROLE)]
+        [ClaimsAuthorize]
         public async Task<ActionResult> CreateRoleInAdmin([FromBody] RoleDTO model)
         {
-            var checkToken = await _accountService.CheckTokenIsValid();
-            if (!checkToken)
-                return Unauthorized(new ApiResponse(401, PubicMessages.UnAuthorizeMessage));
 
             var role = new AppRole(model.Name);
             role.IsEnabled = model.IsEnabled;
             role.NormalizedName = model.Name.Normalize();
-
 
             var roleResult = await _roleManager.CreateAsync(role);
             //await _context.SaveChangesAsync();
@@ -913,10 +909,18 @@ namespace CallInDoor.Controllers
                 }
                 await _context.SaveChangesAsync();
 
+                var reponse = new
+                {
+                    role.Id,
+                    role.Name,
+                    role.IsEnabled,
+                    model.premissions
+                };
+
                 return Ok(new ApiOkResponse(new DataFormat()
                 {
                     Status = 1,
-                    data = role,
+                    data = reponse,
                     Message = PubicMessages.SuccessMessage
                 },
                    PubicMessages.SuccessMessage
@@ -943,21 +947,15 @@ namespace CallInDoor.Controllers
 
 
 
-
-
-
         /// <summary>
         /// </summary>
         /// <param name="model"></param>
         /// <returns></returns>
         [HttpPut("Role/UpdateRoleInAdmin")]
         [Authorize(Roles = PublicHelper.ADMINROLE)]
+        [ClaimsAuthorize]
         public async Task<ActionResult> UpdateRoleInAdmin([FromBody] RoleDTO model)
         {
-
-            var checkToken = await _accountService.CheckTokenIsValid();
-            if (!checkToken)
-                return Unauthorized(new ApiResponse(401, _localizerShared["UnauthorizedMessage"].Value.ToString()));
 
             var roleFromDB = await _roleManager.FindByIdAsync(model.Id);
             if (roleFromDB == null)
@@ -1028,8 +1026,6 @@ namespace CallInDoor.Controllers
 
 
 
-
-
         #endregion
 
         #region permission
@@ -1037,12 +1033,9 @@ namespace CallInDoor.Controllers
 
         [HttpGet("Permission/GetAllPermissionInAdmin")]
         [Authorize(Roles = PublicHelper.ADMINROLE)]
+        [ClaimsAuthorize]
         public async Task<ActionResult> GetAllPermissionInAdmin()
         {
-            var checkToken = await _accountService.CheckTokenIsValid();
-            if (!checkToken)
-                return Unauthorized(new ApiResponse(401, PubicMessages.UnAuthorizeMessage));
-
             var permissions = await _context.Permissions.Select(c => new
             {
                 c.Id,
@@ -1060,8 +1053,6 @@ namespace CallInDoor.Controllers
          ));
 
         }
-
-
 
 
         #endregion

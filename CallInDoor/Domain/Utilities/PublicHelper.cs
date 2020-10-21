@@ -29,7 +29,7 @@ namespace Domain.Utilities
 
     public static class PubicMessages
     {
-        public const string UnAuthorizeMessage = "You are  Unauthorized";
+        public const string UnAuthorizeMessage = "You are Unauthorized";
         public const string NotFoundMessage = " Not Found";
         public const string ForbidenMessage = "Forbidden";
         public const string BadRequestMessage = "Bad Request";

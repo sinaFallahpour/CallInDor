@@ -48,31 +48,37 @@ class Table extends React.Component {
       {
         headerName: "Email",
         field: "email",
+        width: 280,
         filter: true,
       },
       {
         headerName: "Name",
         field: "name",
+        width: 150,
         filter: true,
       },
       {
         headerName: "Last Name",
         field: "lastName",
+        width: 150,
         filter: true,
       },
       {
         headerName: "Role",
         field: "roleName",
+        width: 150,
         filter: true,
       },
       {
         headerName: "Phone Number",
         field: "phoneNumber",
+        width: 200,
         filter: true,
       },
       {
         headerName: "Country Code",
         field: "countryCode",
+        width: 200,
         filter: true,
       },
       {
@@ -165,7 +171,7 @@ class Table extends React.Component {
       getPageSize: this.gridApi.paginationGetPageSize(),
       totalPages: this.gridApi.paginationGetTotalPages(),
     });
-    params.api.sizeColumnsToFit();
+    // params.api.sizeColumnsToFit();
   };
 
   updateSearchQuery = (val) => {
