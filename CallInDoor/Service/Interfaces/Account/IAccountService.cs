@@ -34,6 +34,8 @@ namespace Service.Interfaces.Account
         /// check Token paload(serialNUmber) Is valid
         Task<bool> CheckTokenIsValid();
 
+        Task<bool> CheckHasPermission(List<string> requiredPermissions);
+
         Task<(bool status, string username)> CheckTokenIsValidForAdminRole();
 
         Task<AppUser> CheckIsCurrentUserName(string Id);

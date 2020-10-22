@@ -11,8 +11,8 @@ namespace Domain.Utilities
 
         public static class User
         {
-            public const string GetAll = "Permissions.User.GetAll";
-            public const string CheckUser = "Permissions.User.CheckUser";
+            public const string GetAll = "USer.GEtAll";
+            public const string userEdit = "user.Edit";
         }
     }
 }

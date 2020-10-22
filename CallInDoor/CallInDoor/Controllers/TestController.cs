@@ -1,7 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
+using CallInDoor.Config.Attributes;
+using CallInDoor.Config.Permissions;
 using Domain;
 using Domain.DTO.Response;
 using Domain.Entities;
@@ -10,6 +13,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Localization;
+using Service.Interfaces.Account;
 
 namespace CallInDoor.Controllers
 {
@@ -21,14 +25,17 @@ namespace CallInDoor.Controllers
 
         private readonly DataContext _context;
         private IStringLocalizer<ShareResource> _localizerShared;
+        private readonly IAccountService _accountService;
 
         public TestController(
             DataContext context,
-            IStringLocalizer<ShareResource> localizerShared
+            IStringLocalizer<ShareResource> localizerShared,
+               IAccountService accountService
             )
         {
             _context = context;
             _localizerShared = localizerShared;
+            _accountService = accountService;
         }
 
         #endregion ctor
@@ -36,9 +43,20 @@ namespace CallInDoor.Controllers
         #region List (Pagination)
 
         [HttpGet("Index")]
+        [ClaimsAuthorize]
+        [PermissionAuthorize(PublicPermissions.User.GetAll, PublicPermissions.User.userEdit)]
         public async Task<IActionResult> Index(int? page, int? perPage,
                    string searchedWord)
         {
+
+            var requiredPermission = new List<string>() {
+             PublicPermissions.User.GetAll,
+             PublicPermissions.User.userEdit
+            };
+
+            var hasPermission = await _accountService.CheckHasPermission(requiredPermission);
+            if (!hasPermission)
+                return Unauthorized(new ApiResponse(401, PubicMessages.UnAuthorizeMessage));
 
 
             var QueryAble = _context.Tests.AsNoTracking().AsQueryable();
@@ -57,7 +75,6 @@ namespace CallInDoor.Controllers
                      (c.price.ToString().ToLower().StartsWith(searchedWord.ToLower()) || c.price.ToString().ToLower().Contains(searchedWord.ToLower()))
                      ));
             };
-
 
 
             if (perPage == 0)

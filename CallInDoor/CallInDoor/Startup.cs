@@ -29,6 +29,8 @@ using Service.Interfaces.ServiceType;
 using Service.Interfaces.Category;
 using AutoMapper;
 using Domain.DTO.Account;
+using Microsoft.AspNetCore.Authorization;
+using CallInDoor.Config.Permissions;
 
 namespace CallInDoor
 {
@@ -159,6 +161,7 @@ namespace CallInDoor
             services.AddScoped<ICommonService, CommonService>();
             services.AddScoped<IServiceService, ServiceService>();
             services.AddScoped<ICategoryService, CategoryService>();
+            services.AddSingleton<IAuthorizationPolicyProvider, AuthorizationPolicyProvider>();
 
         }
 
