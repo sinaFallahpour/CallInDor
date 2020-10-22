@@ -33,11 +33,11 @@ export function getCurrentUser() {
   }
 }
 
-export async function isAdminLoggedIn() {
+export async function checkTokenIsValid() {
   const token = getJwt();
   if (!token) return false;
   try {
-    await requests.get("/Account/IsAdminLoggedIn");
+    await requests.get("/Account/CheckTokenIsValid");
     return true;
   } catch (error) {
     return false;
@@ -60,12 +60,20 @@ export function getPermissons() {
   return payloat.Permissions;
 }
 
+export function getRole() {
+  const token = getJwt();
+  if (!token) return undefined;
+  const payloat = jwtDecode(token);
+  return payloat.role;
+}
+
 export default {
   login,
   logout,
-  isAdminLoggedIn,
+  checkTokenIsValid,
   getCurrentUser,
   loginWithJwt,
   getJwt,
   getPermissons,
+  getRole,
 };

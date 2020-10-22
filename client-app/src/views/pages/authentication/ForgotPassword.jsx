@@ -10,7 +10,7 @@ import {
   Form,
   Input,
   Button,
-  Label
+  Label,
 } from "reactstrap";
 import fgImg from "../../../assets/img/pages/forgot-password.png";
 import { history } from "../../../history";
@@ -20,7 +20,7 @@ import authService from "../../../core/services/userService/authService";
 
 class ForgotPassword extends React.Component {
   async componentDidMount() {
-    const isloggedIn = await authService.isAdminLoggedIn();
+    const isloggedIn = await authService.checkTokenIsValid();
 
     if (isloggedIn) {
       history.push("/");
@@ -78,9 +78,9 @@ class ForgotPassword extends React.Component {
                           color="primary"
                           type="submit"
                           className="px-75 btn-block"
-                          onClick={e => {
-                            e.preventDefault()
-                            history.push("/")
+                          onClick={(e) => {
+                            e.preventDefault();
+                            history.push("/");
                           }}
                         >
                           Recover Password
@@ -94,7 +94,7 @@ class ForgotPassword extends React.Component {
           </Card>
         </Col>
       </Row>
-    )
+    );
   }
 }
-export default ForgotPassword
+export default ForgotPassword;

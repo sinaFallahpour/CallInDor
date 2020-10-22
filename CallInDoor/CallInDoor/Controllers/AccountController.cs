@@ -496,9 +496,7 @@ namespace CallInDoor.Controllers
         [ClaimsAuthorize]
         public async Task<ActionResult> GetAdminByIdInAdmin(string id)
         {
-            var checkToken = await _accountService.CheckTokenIsValid();
-            if (!checkToken)
-                return Unauthorized(new ApiResponse(401, PubicMessages.UnAuthorizeMessage));
+
             var query = (from u in _context.Users.Where(c => c.Id == id)
                          join ur in _context.UserRoles
                          on u.Id equals ur.UserId
@@ -517,8 +515,6 @@ namespace CallInDoor.Controllers
                              //roleName = r.Name,
                              roleId = r.Id
                          }).AsQueryable();
-
-
 
             var admin = await query.FirstOrDefaultAsync();
 
