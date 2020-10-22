@@ -230,11 +230,9 @@ class Create extends Form {
                   {addNew ? (
                     <>
                       <Col md="4">
-                        {" "}
                         {this.renderInput("password", "Password", "password")}
                       </Col>
                       <Col md="4">
-                        {" "}
                         {this.renderInput(
                           "phoneNumber",
                           "Phone Number(withOut Country Code)",
@@ -273,8 +271,8 @@ class Create extends Form {
                 ) : addNew ? (
                   this.renderButton("Add")
                 ) : (
-                  this.renderButton("Edit")
-                )}
+                      this.renderButton("Edit")
+                    )}
               </form>
             </CardBody>
           </Card>

@@ -13,7 +13,7 @@ import SpinnerPage from "../../../components/@vuexy/spinner/Loading-spinner";
 import RoleItem from "./RoleItem";
 import agent from "../../../core/services/agent";
 
-import { Edit } from "react-feather";
+import { Edit, Plus } from "react-feather";
 import Checkbox from "../../../components/@vuexy/checkbox/CheckboxesVuexy";
 import { Check, Lock } from "react-feather";
 import {
@@ -232,15 +232,25 @@ class RoleManager extends React.Component {
           breadCrumbParent="Card"
           breadCrumbActive="Statistics Cards"
         />
+
+
+
+
         <CardHeader style={{ backgroundColor: "unset", borderBottom: "unset" }}>
-          <Button.Ripple
+
+          <Button
+            className="add-new-btn mb-2"
             color="primary"
+            // onClick={this.toggleModal}
             onClick={() => {
               this.addNewModal(true);
             }}
+            outline
           >
-            Create New Service
-          </Button.Ripple>
+            <Plus size={15} />
+            <span className="align-middle">Add New</span>
+          </Button>
+
         </CardHeader>
         {/* <div onClick={() => this.handleAlert("defaultAlert", true)}>asdas</div> */}
 
@@ -248,24 +258,24 @@ class RoleManager extends React.Component {
           {roles.length == 0 ? (
             <h3 class="w-100 text-center">There is no role to display </h3>
           ) : (
-            roles.map((role) => {
-              console.log(role);
-              return (
-                <Col key={role.id} lg="6" sm="6">
-                  <RoleItem
-                    hideChart
-                    iconRight
-                    iconBg="success"
-                    icon={<Edit className="warning" size={22} />}
-                    stat={role.name}
-                    isEnabled={role.isEnabled}
-                    toggleModal={this.toggleModal}
-                    role={role}
-                  />
-                </Col>
-              );
-            })
-          )}
+              roles.map((role) => {
+                console.log(role);
+                return (
+                  <Col key={role.id} lg="6" sm="6">
+                    <RoleItem
+                      hideChart
+                      iconRight
+                      iconBg="success"
+                      icon={<Edit className="warning" size={22} />}
+                      stat={role.name}
+                      isEnabled={role.isEnabled}
+                      toggleModal={this.toggleModal}
+                      role={role}
+                    />
+                  </Col>
+                );
+              })
+            )}
         </Row>
 
         <Modal
@@ -359,14 +369,14 @@ class RoleManager extends React.Component {
                               );
                               this.setState(
                                 { data: { ...data, rolesPermission } },
-                                function () {}
+                                function () { }
                               );
                             } else {
                               let rolesPermission = data.rolesPermission;
                               rolesPermission.push(parseInt(e.target.value));
                               this.setState(
                                 { data: { ...data, rolesPermission } },
-                                function () {}
+                                function () { }
                               );
                             }
                           }}
@@ -484,8 +494,8 @@ class RoleManager extends React.Component {
                   <span className="ml-50">Loading...</span>
                 </Button>
               ) : (
-                <Button color="primary">submit</Button>
-              )}
+                  <Button color="primary">submit</Button>
+                )}
             </Form>
           </ModalBody>
         </Modal>

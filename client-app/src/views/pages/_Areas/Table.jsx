@@ -11,7 +11,7 @@ import {
   CardHeader,
 } from "reactstrap";
 import { ContextLayout } from "../../../utility/context/Layout";
-import { ChevronDown } from "react-feather";
+import { ChevronDown, Plus } from "react-feather";
 
 import { AgGridReact } from "ag-grid-react";
 import "../../../assets/scss/plugins/tables/_agGridStyleOverride.scss";
@@ -72,10 +72,10 @@ class Table extends React.Component {
               <CheckCircle className="text-center" />
             </div>
           ) : (
-            <div className="badge badge-pill badge-light-warning">
-              <XCircle />
-            </div>
-          );
+              <div className="badge badge-pill badge-light-warning">
+                <XCircle />
+              </div>
+            );
         },
       },
       {
@@ -88,10 +88,10 @@ class Table extends React.Component {
           return params.value === true ? (
             <div className="badge badge-pill badge-light-success">Active</div>
           ) : (
-            <div className="badge badge-pill badge-light-warning">
-              DeActivated
-            </div>
-          );
+              <div className="badge badge-pill badge-light-warning">
+                DeActivated
+              </div>
+            );
         },
       },
       {
@@ -109,7 +109,7 @@ class Table extends React.Component {
                 await this.populatingArea(params.data.id);
               }}
 
-              // onClick={() => history.push(`/pages/Areas/${params.value}`)}
+            // onClick={() => history.push(`/pages/Areas/${params.value}`)}
             />
           );
         },
@@ -229,14 +229,29 @@ class Table extends React.Component {
         ></Create>
 
         <Card className="overflow-hidden agGrid-card">
+
           <CardHeader>
+            <Button
+              className="add-new-btn mb-2"
+              color="primary"
+              // onClick={this.toggleModal}
+              onClick={this.handledeleteCurrentArea}
+              outline
+            >
+              <Plus size={15} />
+              <span className="align-middle">Add New</span>
+            </Button>
+          </CardHeader>
+
+
+          {/* <CardHeader>
             <Button.Ripple
               color="primary"
               onClick={this.handledeleteCurrentArea}
             >
               Create New Area
             </Button.Ripple>
-          </CardHeader>
+          </CardHeader> */}
 
           <CardBody className="py-0">
             {this.state.rowData === null ? null : (
@@ -248,11 +263,11 @@ class Table extends React.Component {
                         {this.gridApi
                           ? this.state.currenPageSize
                           : "" * this.state.getPageSize -
-                            (this.state.getPageSize - 1)}{" "}
+                          (this.state.getPageSize - 1)}{" "}
                         -{" "}
                         {this.state.rowData.length -
                           this.state.currenPageSize * this.state.getPageSize >
-                        0
+                          0
                           ? this.state.currenPageSize * this.state.getPageSize
                           : this.state.rowData.length}
                         of {this.state.rowData.length}
@@ -317,26 +332,26 @@ class Table extends React.Component {
                 {this.state.loading ? (
                   <Spinner></Spinner>
                 ) : (
-                  <ContextLayout.Consumer>
-                    {(context) => (
-                      <AgGridReact
-                        gridOptions={{}}
-                        // rowSelection="multiple"
-                        defaultColDef={defaultColDef}
-                        columnDefs={columnDefs}
-                        rowData={rowData}
-                        onGridReady={this.onGridReady}
-                        colResizeDefault={"shift"}
-                        animateRows={true}
-                        floatingFilter={true}
-                        pagination={true}
-                        paginationPageSize={this.state.paginationPageSize}
-                        pivotPanelShow="always"
-                        enableRtl={context.state.direction === "rtl"}
-                      />
-                    )}
-                  </ContextLayout.Consumer>
-                )}
+                    <ContextLayout.Consumer>
+                      {(context) => (
+                        <AgGridReact
+                          gridOptions={{}}
+                          // rowSelection="multiple"
+                          defaultColDef={defaultColDef}
+                          columnDefs={columnDefs}
+                          rowData={rowData}
+                          onGridReady={this.onGridReady}
+                          colResizeDefault={"shift"}
+                          animateRows={true}
+                          floatingFilter={true}
+                          pagination={true}
+                          paginationPageSize={this.state.paginationPageSize}
+                          pivotPanelShow="always"
+                          enableRtl={context.state.direction === "rtl"}
+                        />
+                      )}
+                    </ContextLayout.Consumer>
+                  )}
               </div>
             )}
           </CardBody>
