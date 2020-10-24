@@ -378,7 +378,7 @@ namespace CallInDoor.Controllers
 
 
         /// <summary>
-        /// گرفتن تمام سرویس های من 
+        /// گرفتن تمام سرویس های من  از نوع یک سرویس تایپ خاص
         /// </summary>
         /// <param name="Id"></param>
         /// <returns></returns>
@@ -419,11 +419,7 @@ namespace CallInDoor.Controllers
 
 
 
-
         #region chatService
-
-
-
 
 
         /// <summary>
@@ -440,7 +436,6 @@ namespace CallInDoor.Controllers
             var res = await _servicetypeService.ValidateChatService(model);
             if (!res.succsseded)
                 return BadRequest(new ApiBadRequestResponse(res.result));
-
 
             if (model.PackageType == PackageType.Free)
                 model.Duration = null;
@@ -464,19 +459,15 @@ namespace CallInDoor.Controllers
 
             var MyChatService = new MyChatServiceTBL()
             {
-                //UserName = model.UserName,
-                //ServiceName = model.ServiceName,
                 PackageType = model.PackageType,
                 BeTranslate = model.BeTranslate,
                 //FreeMessageCount = (int)model.FreeMessageCount,
                 IsServiceReverse = model.IsServiceReverse,
                 PriceForNativeCustomer = (double)model.PriceForNativeCustomer,
                 PriceForNonNativeCustomer = (double)model.PriceForNonNativeCustomer,
-                //CreateDate = DateTime.Now,
-                //IsCheckedByAdmin = false,
-                //ConfirmedServiceType = ConfirmedServiceType.Rejected,
                 BaseMyChatTBL = BaseMyService,
             };
+
             if (model.PackageType == PackageType.Free)
                 MyChatService.FreeMessageCount = (int)model.FreeMessageCount;
             else
@@ -538,33 +529,8 @@ namespace CallInDoor.Controllers
                     c.ServiceType,
                     c.UserName,
                     c.ConfirmedServiceType,
-                    c.IsDeleted
+                    c.IsDeleted,
                 }).FirstOrDefaultAsync();
-
-
-            //var serviceFromDB = await _context
-            //    .MyChatServiceTBL
-            //   .AsNoTracking()
-            //   .Where(c => c.Id == Id && c.BaseMyChatTBL.IsDeleted == false)
-            //   .Select(c => new
-            //   {
-            //       c.Id,
-            //       c.PackageType,
-            //       c.BeTranslate,
-            //       c.FreeMessageCount,
-            //       c.IsServiceReverse,
-            //       c.PriceForNativeCustomer,
-            //       c.PriceForNonNativeCustomer,
-            //       c.BaseMyChatTBL.CatId,
-            //       c.BaseMyChatTBL.SubCatId,
-            //       c.BaseMyChatTBL.ServiceName,
-            //       c.BaseMyChatTBL.ServiceType,
-            //       c.BaseMyChatTBL.UserName,
-            //       c.BaseMyChatTBL.ConfirmedServiceType,
-            //       c.BaseMyChatTBL.IsDeleted
-            //       //c.BaseMyChatTBL.IsActive
-            //   }).FirstOrDefaultAsync();
-
 
             var currentUsername = _accountService.GetCurrentUserName();
 
@@ -598,12 +564,9 @@ namespace CallInDoor.Controllers
         /// <returns></returns>
         [HttpPut("/api/userService/UpdateChatServiceForUser")]
         [Authorize]
+        [ClaimsAuthorize(IsAdmin = false)]
         public async Task<ActionResult> UpdateChatServiceForUser([FromBody] AddChatServiceForUsersDTO model)
         {
-
-            var checkToken = await _accountService.CheckTokenIsValid();
-            if (!checkToken)
-                return Unauthorized(new ApiResponse(401, _localizerShared["UnauthorizedMessage"].Value.ToString()));
 
             var res = await _servicetypeService.ValidateChatService(model);
             if (!res.succsseded)
@@ -612,18 +575,19 @@ namespace CallInDoor.Controllers
             var currentUsername = _accountService.GetCurrentUserName();
 
             var serviceFromDB = await _context
-                .MyChatServiceTBL
-                .Where(c => c.Id == model.Id && c.BaseMyChatTBL.IsDeleted == false)
-                .Include(c => c.BaseMyChatTBL)
-                .FirstOrDefaultAsync();
+               .BaseMyServiceTBL
+               .Where(c => c.Id == model.Id && c.IsDeleted == false)
+               .Include(c => c.MyChatsService)
+               .FirstOrDefaultAsync();
 
+        
             if (serviceFromDB == null)
                 return NotFound(new ApiResponse(404, _localizerShared["NotFound"].Value.ToString()));
 
-            if (serviceFromDB.BaseMyChatTBL.UserName != currentUsername)
+            if (serviceFromDB.UserName != currentUsername)
                 return Unauthorized(new ApiResponse(401, _localizerShared["UnauthorizedMessage"].Value.ToString()));
 
-            if (serviceFromDB.BaseMyChatTBL.ConfirmedServiceType != ConfirmedServiceType.Pending)
+            if (serviceFromDB.ConfirmedServiceType != ConfirmedServiceType.Pending)
             {
                 var errors = new List<string>() {
                       _locaLizer["AfterAdminConfirmMessage"].Value.ToString()
@@ -631,18 +595,18 @@ namespace CallInDoor.Controllers
                 return BadRequest(new ApiBadRequestResponse(errors));
             }
 
-            serviceFromDB.BaseMyChatTBL.ServiceName = model.ServiceName;
-            serviceFromDB.BaseMyChatTBL.ServiceType = (ServiceType)model.ServiceType;
-            serviceFromDB.BaseMyChatTBL.CatId = model.CatId;
-            serviceFromDB.BaseMyChatTBL.SubCatId = model.SubCatId;
+            serviceFromDB.ServiceName = model.ServiceName;
+            serviceFromDB.ServiceType = (ServiceType)model.ServiceType;
+            serviceFromDB.CatId = model.CatId;
+            serviceFromDB.SubCatId = model.SubCatId;
             //serviceFromDB.BaseMyChatTBL.IsActive = model.IsActive;
 
-            serviceFromDB.PackageType = model.PackageType;
-            serviceFromDB.BeTranslate = model.BeTranslate;
-            serviceFromDB.FreeMessageCount = (int)model.FreeMessageCount;
-            serviceFromDB.IsServiceReverse = model.IsServiceReverse;
-            serviceFromDB.PriceForNativeCustomer = (double)model.PriceForNativeCustomer;
-            serviceFromDB.PriceForNonNativeCustomer = (double)model.PriceForNonNativeCustomer;
+            serviceFromDB.MyChatsService.PackageType = model.PackageType;
+            serviceFromDB.MyChatsService.BeTranslate = model.BeTranslate;
+            serviceFromDB.MyChatsService.FreeMessageCount = (int)model.FreeMessageCount;
+            serviceFromDB.MyChatsService.IsServiceReverse = model.IsServiceReverse;
+            serviceFromDB.MyChatsService.PriceForNativeCustomer = (double)model.PriceForNativeCustomer;
+            serviceFromDB.MyChatsService.PriceForNonNativeCustomer = (double)model.PriceForNonNativeCustomer;
 
 
             try
@@ -684,31 +648,25 @@ namespace CallInDoor.Controllers
         /// <returns></returns>
         [HttpDelete("/api/userService/DeleteChatServiceForUser")]
         [Authorize]
+        [ClaimsAuthorize(IsAdmin = false)]
         public async Task<ActionResult> DeleteChatServiceForUser(int id)
         {
-
-            var checkToken = await _accountService.CheckTokenIsValid();
-            if (!checkToken)
-                return Unauthorized(new ApiResponse(401, _localizerShared["UnauthorizedMessage"].Value.ToString()));
-
-
 
             var currentUsername = _accountService.GetCurrentUserName();
 
             var serviceFromDB = await _context
-                .MyChatServiceTBL
-                .Where(c => c.Id == id && c.BaseMyChatTBL.IsDeleted == false)
-                .Include(c => c.BaseMyChatTBL)
-                .FirstOrDefaultAsync();
+               .BaseMyServiceTBL
+               .Where(c => c.Id == id && c.IsDeleted == false)
+               .FirstOrDefaultAsync();
 
 
             if (serviceFromDB == null)
                 return NotFound(new ApiResponse(404, _localizerShared["NotFound"].Value.ToString()));
 
-            if (serviceFromDB.BaseMyChatTBL.UserName != currentUsername)
+            if (serviceFromDB.UserName != currentUsername)
                 return Unauthorized(new ApiResponse(401, _localizerShared["UnauthorizedMessage"].Value.ToString()));
 
-            if (serviceFromDB.BaseMyChatTBL.ConfirmedServiceType != ConfirmedServiceType.Pending)
+            if (serviceFromDB.ConfirmedServiceType != ConfirmedServiceType.Pending)
             {
                 var errors = new List<string>() {
                       _locaLizer["AfterAdminConfirmMessage"].Value.ToString()
@@ -716,7 +674,7 @@ namespace CallInDoor.Controllers
                 return BadRequest(new ApiBadRequestResponse(errors));
             }
 
-            serviceFromDB.BaseMyChatTBL.IsDeleted = true;
+            serviceFromDB.IsDeleted = true;
 
             try
             {
@@ -762,13 +720,9 @@ namespace CallInDoor.Controllers
         /// <returns></returns>
         [HttpPost("/api/userService/AddServiceServiceForUser")]
         [Authorize]
+        [ClaimsAuthorize(IsAdmin = false)]
         public async Task<ActionResult> AddServiceServiceForUser([FromBody] AddServiceServiceForUsersDTO model)
         {
-
-            var checkToken = await _accountService.CheckTokenIsValid();
-            if (!checkToken)
-                return Unauthorized(new ApiResponse(401, _localizerShared["UnauthorizedMessage"].Value.ToString()));
-
 
             var res = await _servicetypeService.ValidateServiceService(model);
             if (!res.succsseded)
@@ -826,7 +780,7 @@ namespace CallInDoor.Controllers
             catch
             {
                 return StatusCode(StatusCodes.Status500InternalServerError,
-                                new ApiResponse(500, _localizerShared["InternalServerMessage"].Value.ToString()));
+                        new ApiResponse(500, _localizerShared["InternalServerMessage"].Value.ToString()));
             }
 
         }
@@ -840,37 +794,35 @@ namespace CallInDoor.Controllers
         /// <returns></returns>
         [HttpGet("/api/userService/GetServiceServiceForUser")]
         [Authorize]
+        [ClaimsAuthorize(IsAdmin = false)]
         public async Task<ActionResult> GetServiceServiceForUser(int Id)
         {
-            var checkToken = await _accountService.CheckTokenIsValid();
-            if (!checkToken)
-                return Unauthorized(new ApiResponse(401, PubicMessages.UnAuthorizeMessage));
 
             var serviceFromDB = await _context
-                .MyServiceServiceTBL
-               .AsNoTracking()
-               .Where(c => c.Id == Id && c.BaseMyChatTBL.IsDeleted == false)
+                .BaseMyServiceTBL
+                .AsNoTracking()
+               .Where(c => c.Id == Id && c.IsDeleted == false)
                .Select(c => new
                {
-                   c.Id,
-                   c.Description,
-                   c.BeTranslate,
-                   c.FileNeeded,
-                   c.FileDescription,
-                   c.Price,
-                   c.WorkDeliveryTimeEstimation,
-                   c.HowWorkConducts,
-                   c.DeliveryItems,
-                   c.Tags,
-                   c.AreaId,
-                   c.SpecialityId,
-                   c.BaseMyChatTBL.CatId,
-                   c.BaseMyChatTBL.SubCatId,
-                   c.BaseMyChatTBL.ServiceName,
-                   c.BaseMyChatTBL.ServiceType,
-                   c.BaseMyChatTBL.ServiceId,
-                   c.BaseMyChatTBL.UserName,
-                   c.BaseMyChatTBL.ConfirmedServiceType,
+                   c.MyServicesService.Id,
+                   c.MyServicesService.Description,
+                   c.MyServicesService.BeTranslate,
+                   c.MyServicesService.FileNeeded,
+                   c.MyServicesService.FileDescription,
+                   c.MyServicesService.Price,
+                   c.MyServicesService.WorkDeliveryTimeEstimation,
+                   c.MyServicesService.HowWorkConducts,
+                   c.MyServicesService.DeliveryItems,
+                   c.MyServicesService.Tags,
+                   c.MyServicesService.AreaId,
+                   c.MyServicesService.SpecialityId,
+                   c.CatId,
+                   c.SubCatId,
+                   c.ServiceName,
+                   c.ServiceType,
+                   c.ServiceId,
+                   c.UserName,
+                   c.ConfirmedServiceType,
 
                    //c.BaseMyChatTBL.IsConfirmByAdmin
                }).FirstOrDefaultAsync();
@@ -907,32 +859,28 @@ namespace CallInDoor.Controllers
         /// <returns></returns>
         [HttpPut("/api/userService/UpdateServiceServiceForUser")]
         [Authorize]
+        [ClaimsAuthorize(IsAdmin = false)]
         public async Task<ActionResult> UpdateServiceServiceForUser([FromBody] AddServiceServiceForUsersDTO model)
         {
-
-            var checkToken = await _accountService.CheckTokenIsValid();
-            if (!checkToken)
-                return Unauthorized(new ApiResponse(401, _localizerShared["UnauthorizedMessage"].Value.ToString()));
 
             var res = await _servicetypeService.ValidateServiceService(model);
             if (!res.succsseded)
                 return BadRequest(new ApiBadRequestResponse(res.result));
 
             var serviceFromDB = await _context
-                .MyServiceServiceTBL
-                .Where(c => c.Id == model.Id)
-                .Include(c => c.BaseMyChatTBL)
-                .Where(c => c.BaseMyChatTBL.IsDeleted == false)
+                .BaseMyServiceTBL
+                .Where(c => c.Id == model.Id && c.IsDeleted == false)
+                .Include(c => c.MyServicesService)
                 .FirstOrDefaultAsync();
 
             if (serviceFromDB == null)
                 return NotFound(new ApiResponse(404, _localizerShared["NotFound"].Value.ToString()));
 
             var currentUsername = _accountService.GetCurrentUserName();
-            if (serviceFromDB.BaseMyChatTBL.UserName != currentUsername)
+            if (serviceFromDB.UserName != currentUsername)
                 return Unauthorized(new ApiResponse(401, _localizerShared["UnauthorizedMessage"].Value.ToString()));
 
-            if (serviceFromDB.BaseMyChatTBL.ConfirmedServiceType != ConfirmedServiceType.Pending)
+            if (serviceFromDB.ConfirmedServiceType != ConfirmedServiceType.Pending)
             {
                 var errors = new List<string>() {
                       _locaLizer["AfterAdminConfirmMessage"].Value.ToString()
@@ -940,22 +888,22 @@ namespace CallInDoor.Controllers
                 return BadRequest(new ApiBadRequestResponse(errors));
             }
 
-            serviceFromDB.BaseMyChatTBL.ServiceName = model.ServiceName;
-            serviceFromDB.BaseMyChatTBL.ServiceType = (ServiceType)model.ServiceType;
-            serviceFromDB.BaseMyChatTBL.CatId = model.CatId;
-            serviceFromDB.BaseMyChatTBL.SubCatId = model.SubCatId;
+            serviceFromDB.ServiceName = model.ServiceName;
+            serviceFromDB.ServiceType = (ServiceType)model.ServiceType;
+            serviceFromDB.CatId = model.CatId;
+            serviceFromDB.SubCatId = model.SubCatId;
             //serviceFromDB.BaseMyChatTBL.IsActive = model.IsActive;
 
 
-            serviceFromDB.Description = model.Description;
-            serviceFromDB.BeTranslate = model.BeTranslate;
-            serviceFromDB.FileNeeded = model.FileNeeded;
-            serviceFromDB.FileDescription = model.FileDescription;
-            serviceFromDB.Price = (double)model.Price;
-            serviceFromDB.WorkDeliveryTimeEstimation = model.WorkDeliveryTimeEstimation;
-            serviceFromDB.HowWorkConducts = model.HowWorkConducts;
-            serviceFromDB.DeliveryItems = model.DeliveryItems;
-            serviceFromDB.Tags = model.Tags + "," + model.CustomTags;
+            serviceFromDB.MyServicesService.Description = model.Description;
+            serviceFromDB.MyServicesService.BeTranslate = model.BeTranslate;
+            serviceFromDB.MyServicesService.FileNeeded = model.FileNeeded;
+            serviceFromDB.MyServicesService.FileDescription = model.FileDescription;
+            serviceFromDB.MyServicesService.Price = (double)model.Price;
+            serviceFromDB.MyServicesService.WorkDeliveryTimeEstimation = model.WorkDeliveryTimeEstimation;
+            serviceFromDB.MyServicesService.HowWorkConducts = model.HowWorkConducts;
+            serviceFromDB.MyServicesService.DeliveryItems = model.DeliveryItems;
+            serviceFromDB.MyServicesService.Tags = model.Tags + "," + model.CustomTags;
 
 
             //public string Speciality { get; set; }
