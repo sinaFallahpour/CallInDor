@@ -35,7 +35,10 @@ class Login extends React.Component {
 
   async componentDidMount() {
     const isloggedIn = await authService.checkTokenIsValid();
+    const role = authService.getRole()
     if (isloggedIn) {
+      if (role != 'Admin')
+        history.push('/pages/Accesdenieds')
       history.push("/");
     }
     this.setState({ notload: false });

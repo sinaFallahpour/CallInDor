@@ -7,6 +7,14 @@ import { Badge } from "reactstrap"
 import { ChevronRight } from "react-feather"
 import { FormattedMessage } from "react-intl"
 import { history } from "../../../../../history"
+import auth from "../../../../../core/services/userService/authService"
+import { applyMiddleware } from "redux"
+
+let userRole = auth.getRole();
+let userPermissions = []
+if (auth.getPermissons)
+  userPermissions = Object.values(auth.getPermissons());
+
 
 class SideMenuContent extends React.Component {
   constructor(props) {
@@ -125,6 +133,11 @@ class SideMenuContent extends React.Component {
     // eslint-disable-next-line
     const menuItems = navigationConfig.map(item => {
       const CustomAnchorTag = item.type === "external-link" ? `a` : Link
+
+
+
+
+
       // checks if item has groupheader
       if (item.type === "groupHeader") {
         return (
@@ -134,7 +147,12 @@ class SideMenuContent extends React.Component {
             <span>{item.groupTitle}</span>
           </li>
         )
-      }
+      }//finished
+
+
+
+
+
 
       let renderItem = (
         <li
@@ -216,7 +234,7 @@ class SideMenuContent extends React.Component {
 
 
 
-
+          {/* ین برای آیتم هایی است که یه صورت کال اپس هستند */}
           {item.type === "collapse" ? (
             <SideMenuGroup
               group={item}
@@ -244,6 +262,16 @@ class SideMenuContent extends React.Component {
         </li>
       )
 
+
+
+
+      console.log(item.title)
+      //  ==================check the role && permission================
+      if (!item.role) {
+        if (!item.permissions) {
+          return renderItem
+        }
+      }
       if (
         item.navLink &&
         item.collapsed !== undefined &&
@@ -253,11 +281,47 @@ class SideMenuContent extends React.Component {
         this.props.collapsedMenuPaths(item.navLink)
       }
 
+      if (item.role) {
+        if (item.role.toLowerCase() == userRole.toLowerCase())
+          return renderItem
+        else
+          return null
+      }
+      if (!item.role) {
+        if (item.permissions) {
+          if (!item.permissions.some(r => userPermissions.includes(r))) {
+            // if (!item.permissions.includes(userPermissions)) {
+            return null;
+          } else {
+            return renderItem
+          }
+        }
+        return renderItem;
+      }
+      //  ==================check the role && permission  Finished ================
+
+      ///shayad hazf shavad
+      if (
+        item.type === "collapse" ||
+        item.type === "external-link" ||
+        (item.type === "item") ||
+        item.role === undefined
+      ) {
+        if (item.permissions) {
+          if (!item.permissions.includes(userPermissions)) {
+            return null
+          }
+        }
+        else
+          return renderItem;
+      }
       if (
         item.type === "collapse" ||
         item.type === "external-link" ||
         (item.type === "item") ||
         item.permissions === undefined
+
+        // ==================   My custompermissions check  ==============================
       ) {
         return renderItem
       } else if (
@@ -270,6 +334,7 @@ class SideMenuContent extends React.Component {
     })
 
 
+    console.log(this.props.currentUser)
 
     return <React.Fragment>{menuItems}</React.Fragment>
   }

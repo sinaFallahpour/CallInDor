@@ -1,5 +1,6 @@
-import React from "react"
-import * as Icon from "react-feather"
+import React from "react";
+import * as Icon from "react-feather";
+import permission from "../core/permissions";
 const navigationConfig = [
   {
     type: "groupHeader",
@@ -18,7 +19,8 @@ const navigationConfig = [
     title: "Manage User",
     type: "collapse",
     icon: <Icon.Users size={20} />,
-    permissions: ["admin", "editor"],
+    role: "Admin",
+    // permissions: ["admin", "editor"],
     children: [
       {
         id: "roleManage",
@@ -61,10 +63,12 @@ const navigationConfig = [
   // },
   {
     id: "Services",
-    title: "Services",
+    title: "Services Types",
     type: "item",
     icon: <Icon.Home size={20} />,
     navLink: "/pages/Services",
+    role: "Admin",
+    // permissions: [permission.userGetAll, permission.notShow],
     parentOf: [
       "/pages/Services",
       "/pages/Services/Create",
@@ -76,11 +80,15 @@ const navigationConfig = [
     title: "Categories",
     type: "collapse",
     icon: <Icon.Database size={20} />,
+    role: "Admin",
+    // //permissions: [permission.userGetAll, permission.notShow],
     children: [
       {
         id: "Categories",
         title: "Categories",
         type: "item",
+        role: "Admin",
+        // permissions: [permission.userGetAll, permission.notShow],
         icon: <Icon.Circle size={12} />,
         // permissions: ["admin", "editor"],
         navLink: "/pages/categories",
@@ -94,7 +102,7 @@ const navigationConfig = [
         title: "Areas",
         type: "item",
         icon: <Icon.Circle size={12} />,
-        permissions: ["admin", "editor"],
+        permissions: [permission.userGetAll, permission.notShow],
         navLink: "/pages/areas",
         parentOf: [
           "/pages/areas",
@@ -108,6 +116,7 @@ const navigationConfig = [
     id: "Test",
     title: "test",
     type: "item",
+    role: "Admin",
     icon: <Icon.Tablet size={20} />,
     navLink: "/pages/Test",
     parentOf: [
