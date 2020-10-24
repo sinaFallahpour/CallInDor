@@ -16,6 +16,7 @@ using Microsoft.Extensions.Localization;
 using Service.Interfaces.ServiceType;
 using Domain.DTO.Service;
 using Domain.Enums;
+using CallInDoor.Config.Attributes;
 
 namespace CallInDoor.Controllers
 {
@@ -383,17 +384,15 @@ namespace CallInDoor.Controllers
         /// <returns></returns>
         [HttpGet("GetAllMyService")]
         [Authorize]
+        [ClaimsAuthorize]
         public async Task<ActionResult> GetAllMyService(int ServiecTypeId)
         {
-            var checkToken = await _accountService.CheckTokenIsValid();
-            if (!checkToken)
-                return Unauthorized(new ApiResponse(401, PubicMessages.UnAuthorizeMessage));
 
             var currentUsername = _accountService.GetCurrentUserName();
 
             var Service = await _context.BaseMyServiceTBL
                .AsNoTracking()
-               .Where(c => c.ServiceId == ServiecTypeId && c.UserName == currentUsername)
+               .Where(c => c.ServiceId == ServiecTypeId && c.UserName == currentUsername && c.IsDeleted == false)
                .Select(c => new
                {
                    c.Id,
@@ -423,6 +422,10 @@ namespace CallInDoor.Controllers
 
         #region chatService
 
+
+
+
+
         /// <summary>
         /// ایجاد  سرویس chat or voice or video  برای یک کاربر 
         /// </summary>
@@ -430,11 +433,9 @@ namespace CallInDoor.Controllers
         /// <returns></returns>
         [HttpPost("/api/userService/AddChatServiceForUser")]
         [Authorize]
+        [ClaimsAuthorize(IsAdmin = false)]
         public async Task<ActionResult> AddChatServiceForUser([FromBody] AddChatServiceForUsersDTO model)
         {
-            var checkToken = await _accountService.CheckTokenIsValid();
-            if (!checkToken)
-                return Unauthorized(new ApiResponse(401, _localizerShared["UnauthorizedMessage"].Value.ToString()));
 
             var res = await _servicetypeService.ValidateChatService(model);
             if (!res.succsseded)
@@ -516,34 +517,53 @@ namespace CallInDoor.Controllers
         /// <returns></returns>
         [HttpGet("/api/userService/GetChatServiceForUser")]
         [Authorize]
+        [ClaimsAuthorize(IsAdmin = false)]
         public async Task<ActionResult> GetChatServiceForUser(int Id)
         {
-            var checkToken = await _accountService.CheckTokenIsValid();
-            if (!checkToken)
-                return Unauthorized(new ApiResponse(401, PubicMessages.UnAuthorizeMessage));
 
             var serviceFromDB = await _context
-                .MyChatServiceTBL
-               .AsNoTracking()
-               .Where(c => c.Id == Id && c.BaseMyChatTBL.IsDeleted == false)
-               .Select(c => new
-               {
-                   c.Id,
-                   c.PackageType,
-                   c.BeTranslate,
-                   c.FreeMessageCount,
-                   c.IsServiceReverse,
-                   c.PriceForNativeCustomer,
-                   c.PriceForNonNativeCustomer,
-                   c.BaseMyChatTBL.CatId,
-                   c.BaseMyChatTBL.SubCatId,
-                   c.BaseMyChatTBL.ServiceName,
-                   c.BaseMyChatTBL.ServiceType,
-                   c.BaseMyChatTBL.UserName,
-                   c.BaseMyChatTBL.ConfirmedServiceType,
-                   c.BaseMyChatTBL.IsDeleted
-                   //c.BaseMyChatTBL.IsActive
-               }).FirstOrDefaultAsync();
+                .BaseMyServiceTBL.Where(c => c.Id == Id && c.IsDeleted == false)
+                .Select(c => new
+                {
+                    c.Id,
+                    c.MyChatsService.PackageType,
+                    c.MyChatsService.BeTranslate,
+                    c.MyChatsService.FreeMessageCount,
+                    c.MyChatsService.IsServiceReverse,
+                    c.MyChatsService.PriceForNativeCustomer,
+                    c.MyChatsService.PriceForNonNativeCustomer,
+                    c.MyChatsService.BaseMyChatTBL.CatId,
+                    c.MyChatsService.BaseMyChatTBL.SubCatId,
+                    c.MyChatsService.BaseMyChatTBL.ServiceName,
+                    c.ServiceType,
+                    c.UserName,
+                    c.ConfirmedServiceType,
+                    c.IsDeleted
+                }).FirstOrDefaultAsync();
+
+
+            //var serviceFromDB = await _context
+            //    .MyChatServiceTBL
+            //   .AsNoTracking()
+            //   .Where(c => c.Id == Id && c.BaseMyChatTBL.IsDeleted == false)
+            //   .Select(c => new
+            //   {
+            //       c.Id,
+            //       c.PackageType,
+            //       c.BeTranslate,
+            //       c.FreeMessageCount,
+            //       c.IsServiceReverse,
+            //       c.PriceForNativeCustomer,
+            //       c.PriceForNonNativeCustomer,
+            //       c.BaseMyChatTBL.CatId,
+            //       c.BaseMyChatTBL.SubCatId,
+            //       c.BaseMyChatTBL.ServiceName,
+            //       c.BaseMyChatTBL.ServiceType,
+            //       c.BaseMyChatTBL.UserName,
+            //       c.BaseMyChatTBL.ConfirmedServiceType,
+            //       c.BaseMyChatTBL.IsDeleted
+            //       //c.BaseMyChatTBL.IsActive
+            //   }).FirstOrDefaultAsync();
 
 
             var currentUsername = _accountService.GetCurrentUserName();
