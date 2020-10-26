@@ -8,7 +8,6 @@ _localizerShared["SuccessMessage"].Value.ToString()
 ));
 
 
-
 return Unauthorized(new ApiResponse(401, _localizerShared["UnauthorizedMessage"].Value.ToString()));
 
 
@@ -20,3 +19,30 @@ return Unauthorized(new ApiResponse(401, _localizerShared["UnauthorizedMessage"]
                          new ApiResponse(500, _localizerShared["InternalServerMessage"].Value.ToString()));
 
 return BadRequest(new ApiBadRequestResponse(err));
+
+
+
+
+
+=================================Admin===============================
+
+return Ok(new ApiOkResponse(new DataFormat()
+            {
+                Status = 1,
+                data = admin,
+                Message = PubicMessages.SuccessMessage
+            },
+               PubicMessages.SuccessMessage
+              ));
+
+return Unauthorized(new ApiResponse(401, PubicMessages.UnAuthorizeMessage));
+
+return NotFound(new ApiResponse(404, PubicMessages.NotFoundMessage));
+
+return StatusCode(StatusCodes.Status500InternalServerError,
+          new ApiResponse(500, PubicMessages.InternalServerMessage));
+
+
+var errors = new List<string>();
+        errors.Add(_localizer["PhoneNumber  already  exist."].Value.ToString());
+        return BadRequest(new ApiBadRequestResponse(errors));

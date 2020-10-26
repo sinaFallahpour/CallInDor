@@ -25,11 +25,19 @@ namespace Domain.Utilities
         public const string swaggerProductionUrl = "https://api.callindoor.ir";
         public const string swaggerdevelopmentUrl = "https://localhost:44377";
 
+
+        public const string AboutUsKeyName = "AboutUs";
+        public const string AddressKeyName = "Address";
+        public const string PhoneNumberKeyName = "PhoneNumber";
+        public const string EmailKeyName = "Email";
+
+
+
     }
 
     public static class PubicMessages
     {
-        public const string UnAuthorizeMessage = "You are Unauthorized";
+        public const string UnAuthorizeMessage = "Unauthorized";
         public const string NotFoundMessage = " Not Found";
         public const string ForbidenMessage = "Forbidden";
         public const string BadRequestMessage = "Bad Request";

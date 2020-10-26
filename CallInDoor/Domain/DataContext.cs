@@ -1,4 +1,5 @@
 ﻿using Domain.Entities;
+using Helper.Models.Entities;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -45,12 +46,16 @@ namespace Domain
 
 
 
+        public DbSet<SettingTBL> SettingsTBL { get; set; }
+
+
+
         /// <summary>
         /// پرمیشن های کاربر  
         /// </summary>
         public DbSet<Permissions> Permissions { get; set; }
-       
-        
+
+
 
         /// <summary>
         /// جدول واسط role - permission

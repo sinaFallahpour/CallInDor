@@ -77,7 +77,7 @@ namespace Service
                     IsEnabled = c.IsEnabled,
                     Name = c.Name,
                     PersianName = c.PersianName,
-                    RoleName=c.AppRole.Name,
+                    RoleName = c.AppRole.Name,
                     AcceptedMinPriceForNative = c.AcceptedMinPriceForNative,
                     AcceptedMinPriceForNonNative = c.AcceptedMinPriceForNonNative,
                     MinPriceForService = c.MinPriceForService,
@@ -104,7 +104,7 @@ namespace Service
                 Name = model.Name,
                 IsEnabled = model.IsEnabled,
                 PersianName = model.PersianName,
-                RoleId=model.RoleId,
+                RoleId = model.RoleId,
                 MinPriceForService = model.MinPriceForService,
                 MinSessionTime = model.MinSessionTime,
                 AcceptedMinPriceForNative = model.AcceptedMinPriceForNative,
@@ -462,14 +462,14 @@ namespace Service
                     string err = "";
 
                     if (IsPersianLanguage())
-                        err = $"تخصصی با آیدی ${model.AreaId} یافت نشد";
+                        err = $"تخصصی با آیدی {model.AreaId} یافت نشد";
                     else
                         Errors.Add($"area with id {model.AreaId} Not Found");
                     IsValid = false;
                     Errors.Add(err);
                 }
 
-                if (areaFromDb.IsProfessional)
+                else if (areaFromDb.IsProfessional)
                 {
                     if (model.SpecialityId == null)
                     {
@@ -781,7 +781,7 @@ namespace Service
                 //model.PhotoAddress = "/Upload/Slider/" + uniqueFileName;
                 return path + uniqueFileName;
             }
-            catch  
+            catch
             {
                 return null;
             }

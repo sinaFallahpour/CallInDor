@@ -376,7 +376,6 @@ namespace CallInDoor.Controllers
 
 
 
-
         /// <summary>
         /// گرفتن تمام سرویس های من  از نوع یک سرویس تایپ خاص
         /// </summary>
@@ -455,7 +454,6 @@ namespace CallInDoor.Controllers
                 IsDeleted = false,
                 //IsActive = false
             };
-
 
             var MyChatService = new MyChatServiceTBL()
             {
@@ -658,8 +656,8 @@ namespace CallInDoor.Controllers
                .BaseMyServiceTBL
                .Where(c => c.Id == id && c.IsDeleted == false)
                .FirstOrDefaultAsync();
-
-
+            
+            
             if (serviceFromDB == null)
                 return NotFound(new ApiResponse(404, _localizerShared["NotFound"].Value.ToString()));
 
@@ -699,13 +697,6 @@ namespace CallInDoor.Controllers
 
 
         }
-
-
-
-
-
-
-
 
 
 
@@ -941,29 +932,25 @@ namespace CallInDoor.Controllers
         /// <returns></returns>
         [HttpDelete("/api/userService/DeleteServiceServiceForUser")]
         [Authorize]
+        [ClaimsAuthorize(IsAdmin = false)]
         public async Task<ActionResult> DeleteServiceServiceForUser(int id)
         {
-
-            var checkToken = await _accountService.CheckTokenIsValid();
-            if (!checkToken)
-                return Unauthorized(new ApiResponse(401, _localizerShared["UnauthorizedMessage"].Value.ToString()));
 
             var currentUsername = _accountService.GetCurrentUserName();
 
             var serviceFromDB = await _context
-                .MyServiceServiceTBL
-                .Where(c => c.Id == id && c.BaseMyChatTBL.IsDeleted == false)
-                .Include(c => c.BaseMyChatTBL)
+                .BaseMyServiceTBL
+                .Where(c => c.Id == id && c.IsDeleted == false)
                 .FirstOrDefaultAsync();
 
 
             if (serviceFromDB == null)
                 return NotFound(new ApiResponse(404, _localizerShared["NotFound"].Value.ToString()));
 
-            if (serviceFromDB.BaseMyChatTBL.UserName != currentUsername)
+            if (serviceFromDB.UserName != currentUsername)
                 return Unauthorized(new ApiResponse(401, _localizerShared["UnauthorizedMessage"].Value.ToString()));
 
-            if (serviceFromDB.BaseMyChatTBL.ConfirmedServiceType != ConfirmedServiceType.Pending)
+            if (serviceFromDB.ConfirmedServiceType != ConfirmedServiceType.Pending)
             {
                 var errors = new List<string>() {
                       _locaLizer["AfterAdminConfirmMessage"].Value.ToString()
@@ -971,7 +958,7 @@ namespace CallInDoor.Controllers
                 return BadRequest(new ApiBadRequestResponse(errors));
             }
 
-            serviceFromDB.BaseMyChatTBL.IsDeleted = true;
+            serviceFromDB.IsDeleted = true;
 
             try
             {

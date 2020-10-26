@@ -68,7 +68,7 @@ namespace CallInDoor.Controllers
         {
             var result = await _accountService.CheckTokenIsValid();
             if (!result)
-                return Unauthorized(new ApiResponse(401, "Unauthorize."));
+                return Unauthorized(new ApiResponse(401, PubicMessages.UnAuthorizeMessage));
 
             return Ok(new ApiOkResponse(new DataFormat()
             {
@@ -89,14 +89,12 @@ namespace CallInDoor.Controllers
         [HttpPost("register")]
         public async Task<ActionResult> Register([FromBody] RegisterDTO model)
         {
-
             var phonenumber = model.CountryCode.ToString().Trim() + model.PhoneNumber.Trim();
             var user = await _accountService.FindUserByPhonenumber(phonenumber);
 
             var random = new Random();
             //var code = random.Next(100000, 999999);
             var code = 1111;
-
 
             if (user != null)
             {
@@ -130,7 +128,6 @@ namespace CallInDoor.Controllers
             }
 
             var SerialNumber = Guid.NewGuid().ToString().GetHash();
-
 
             var newUser = new AppUser
             {
@@ -493,7 +490,7 @@ namespace CallInDoor.Controllers
         /// <returns></returns>
         [HttpGet("admin/GetAdminByIdInAdmin")]
         [Authorize(Roles = PublicHelper.ADMINROLE)]
-        [ClaimsAuthorize]
+        [ClaimsAuthorize(IsAdmin = true)]
         public async Task<ActionResult> GetAdminByIdInAdmin(string id)
         {
 
@@ -533,7 +530,7 @@ namespace CallInDoor.Controllers
         }
 
 
-     
+
 
         #endregion
 
@@ -811,10 +808,10 @@ namespace CallInDoor.Controllers
 
 
 
-         // GET: api/GetAllServiceForAdmin
-         [HttpGet("Role/GetAllActiveRolesInAdmin")]
-         [Authorize(Roles = PublicHelper.ADMINROLE)]
-         [ClaimsAuthorize]
+        // GET: api/GetAllServiceForAdmin
+        [HttpGet("Role/GetAllActiveRolesInAdmin")]
+        [Authorize(Roles = PublicHelper.ADMINROLE)]
+        [ClaimsAuthorize]
         public async Task<ActionResult> GetAllActiveRolesInAdmin()
         {
 
@@ -1029,7 +1026,7 @@ namespace CallInDoor.Controllers
 
         [HttpGet("Permission/GetAllPermissionInAdmin")]
         [Authorize(Roles = PublicHelper.ADMINROLE)]
-        [ClaimsAuthorize]
+        [ClaimsAuthorize(IsAdmin = true)]
         public async Task<ActionResult> GetAllPermissionInAdmin()
         {
             var permissions = await _context.Permissions.Select(c => new
