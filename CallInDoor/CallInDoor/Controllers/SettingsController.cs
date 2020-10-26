@@ -34,10 +34,6 @@ namespace CallInDoor.Controllers
 
 
 
-
-
-
-
         [HttpGet("GetSettings")]
         [Authorize(Roles = PublicHelper.ADMINROLE)]
         [ClaimsAuthorize(IsAdmin = true)]
@@ -55,8 +51,8 @@ namespace CallInDoor.Controllers
                 Email = settings.Where(c => c.Key == PublicHelper.EmailKeyName).SingleOrDefault().Value,
                 EmailEnglish = settings.Where(c => c.Key == PublicHelper.EmailKeyName).SingleOrDefault().EnglishValue,
 
-                PhoneNumber = settings.Where(c => c.Key == PublicHelper.EmailKeyName).SingleOrDefault().Value,
-                PhoneNumberEnglish = settings.Where(c => c.Key == PublicHelper.EmailKeyName).SingleOrDefault().EnglishValue,
+                PhoneNumber = settings.Where(c => c.Key == PublicHelper.PhoneNumberKeyName).SingleOrDefault().Value,
+                PhoneNumberEnglish = settings.Where(c => c.Key == PublicHelper.PhoneNumberKeyName).SingleOrDefault().EnglishValue,
             };
             return Ok(_commonService.OkResponse(settingsFromDB, PubicMessages.SuccessMessage));
         }

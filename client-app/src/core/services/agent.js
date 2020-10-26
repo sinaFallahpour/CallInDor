@@ -122,6 +122,11 @@ const Test = {
   delete: (id) => requests.del("/Test/Index", id),
 };
 
+const Settings = {
+  details: () => requests.get("/Settings/GetSettings"),
+  update: (setting) => requests.put("/Settings/UpdateSettings", setting)
+};
+
 export default {
   User,
   Role,
@@ -130,4 +135,5 @@ export default {
   ServiceTypes,
   Test,
   Areas,
+  Settings
 };

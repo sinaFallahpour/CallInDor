@@ -25,9 +25,8 @@ class TextareaCounter extends React.Component {
             <Label>Counter</Label>
           </div>
           <small
-            className={`counter-value float-right ${
-              this.state.value.length > 20 ? "bg-danger" : ""
-            }`}
+            className={`counter-value float-right ${this.state.value.length > 20 ? "bg-danger" : ""
+              }`}
           >
             {`${this.state.value.length}/20`}
           </small>

@@ -6,52 +6,49 @@ export const searchResult = [
     searchLimit: 4,
     data: [
       {
-        id: 105,
+        id: 1,
         title: "Manager role",
         target: "Manage Role",
         link: "/pages/Roles",
         icon: "Layers"
       },
       {
-        id: 107,
+        id: 2,
         title: "Manager User",
         target: "Manage User",
         link: "/pages/admins",
         icon: "Users"
       },
       {
-        id: 108,
+        id: 3,
         title: "categories",
         target: "categories",
         link: "/pages/categories",
         icon: "Circle"
       },
       {
-        id: 109,
+        id: 4,
         title: "create",
         target: "create category",
         link: "/pages/categories/Create",
         icon: "Circle"
       },
       {
-        id: 110,
+        id: 6,
         title: "services",
         target: "services",
         link: "/pages/Services",
         icon: "Circle"
       },
       {
-        id: 111,
+        id: 7,
         title: "create service",
         target: "create service",
         link: "/pages/Services/Create",
         icon: "Circle"
       },
-
-
-
       {
-        id: 112,
+        id: 8,
         title: "Areas",
         target: "Areas",
         link: "/pages/Areas",
@@ -64,15 +61,6 @@ export const searchResult = [
       //   link: "/pages/Areas/Create",
       //   icon: "Circle"
       // },
-
-
-
-
-
-
-
-
-
 
       {
         id: 1,

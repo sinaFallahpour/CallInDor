@@ -8,7 +8,6 @@ import { ChevronRight } from "react-feather"
 import { FormattedMessage } from "react-intl"
 import { history } from "../../../../../history"
 import auth from "../../../../../core/services/userService/authService"
-import { applyMiddleware } from "redux"
 
 let userRole = auth.getRole();
 let userPermissions = []
@@ -265,7 +264,6 @@ class SideMenuContent extends React.Component {
 
 
 
-      console.log(item.title)
       //  ==================check the role && permission================
       if (!item.role) {
         if (!item.permissions) {
