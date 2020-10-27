@@ -129,6 +129,9 @@
   <data name="InvalidPhoneNumber" xml:space="preserve">
     <value>شماره موبایل صحیح نمیباشد</value>
   </data>
+  <data name="LockedOutMessage" xml:space="preserve">
+    <value>حساب کاربری قفل شده است</value>
+  </data>
   <data name="NotFound" xml:space="preserve">
     <value>نتیجه ایی یافت نشد</value>
   </data>

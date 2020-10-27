@@ -10,9 +10,10 @@ namespace Domain.Utilities
         public static string Permission = "Permissions";
 
         public static class User
-        {
-            public const string GetAll = "USer.GEtAll";
-            public const string userEdit = "user.Edit";
+        {                                      
+            public const string GetAllUsersList = "user.GetAllUsersList";
+            public const string EditUser = "user.Edit";
+
         }
     }
 }

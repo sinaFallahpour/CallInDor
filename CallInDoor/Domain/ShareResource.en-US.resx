@@ -129,6 +129,9 @@
   <data name="InvalidPhoneNumber" xml:space="preserve">
     <value>Invalid Phone number</value>
   </data>
+  <data name="LockedOutMessage" xml:space="preserve">
+    <value>User account locked out</value>
+  </data>
   <data name="NotFound" xml:space="preserve">
     <value>Not Found</value>
   </data>

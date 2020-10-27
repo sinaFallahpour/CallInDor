@@ -4,6 +4,7 @@ using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using CallInDoor.Config.Attributes;
+using CallInDoor.Config.Permissions;
 using CallInDoor.Models;
 using Domain;
 using Domain.DTO.Account;
@@ -36,30 +37,102 @@ namespace CallInDoor.Controllers
 
         private readonly IAccountService _accountService;
         private readonly IJwtManager _jwtGenerator;
+        private readonly ICommonService _commonService;
+
         private IStringLocalizer<AccountController> _localizer;
         private IStringLocalizer<ShareResource> _localizerShared;
 
         public AccountController(UserManager<AppUser> userManager,
              RoleManager<AppRole> roleManager,
             DataContext context,
-               IJwtManager jwtGenerator,
+             IJwtManager jwtGenerator,
+                   IAccountService accountService,
+                   ICommonService commonService,
                IStringLocalizer<AccountController> localizer,
-                IStringLocalizer<ShareResource> localizerShared,
-                IAccountService accountService
+                IStringLocalizer<ShareResource> localizerShared
             )
         {
             _context = context;
             _userManager = userManager;
             _roleManager = roleManager;
+            _accountService = accountService;
+            _commonService = commonService;
+            _jwtGenerator = jwtGenerator;
             _localizer = localizer;
             _localizerShared = localizerShared;
-            _accountService = accountService;
-            _jwtGenerator = jwtGenerator;
+
         }
 
         #endregion ctor
 
         #region User
+
+
+
+
+        #region GetAllUsers 
+
+
+        /// <summary>
+        /// گرفتن کاربران با استفاده از پیجینیشن
+        /// </summary>
+        /// <param name="Id"></param>
+        /// <returns></returns>
+        [HttpGet("GetAllUsersList")]
+        //[Authorize]
+        [PermissionAuthorize(PublicPermissions.User.GetAllUsersList)]
+        [PermissionDBCheck(IsAdmin = true, requiredPermission = new string[] { PublicPermissions.User.GetAllUsersList })]
+        public async Task<ActionResult> GetAllUsersList(int? page, int? perPage,
+                   string searchedWord)
+        {
+
+            var QueryAble = _context.Users.AsNoTracking()
+                .AsQueryable();
+
+            if (!string.IsNullOrEmpty(searchedWord))
+            {
+                QueryAble = QueryAble.Where(c =>
+                      (c.Name.ToLower().StartsWith(searchedWord.ToLower()) || c.Name.ToLower().Contains(searchedWord.ToLower())
+                      ||
+                     (c.LastName.StartsWith(searchedWord.ToLower()) || c.LastName.ToLower().Contains(searchedWord.ToLower()))
+                     ||
+                     (c.UserName.ToString().ToLower().StartsWith(searchedWord.ToLower()) || c.UserName.ToString().ToLower().Contains(searchedWord.ToLower()))
+                    ));
+            };
+
+
+            if (perPage == 0)
+                perPage = 1;
+            page = page ?? 0;
+            perPage = perPage ?? 10;
+
+            var count = QueryAble.Count();
+            double len = (double)count / (double)perPage;
+            var totalPages = Math.Ceiling((double)len);
+
+            var users = await QueryAble
+              .Skip((int)page * (int)perPage)
+              .Take((int)perPage)
+              .Select(c => new
+              {
+                 c.PhoneNumber,
+                  c.Name,
+                  c.LastName,
+                  c.UserName,
+                  c.PhoneNumberConfirmed,
+                  c.ImageAddress,
+                  isLockOut = (c.LockoutEnd != null && c.LockoutEnd > DateTime.Now),
+              }).ToListAsync();
+
+            return Ok(_commonService.OkResponse(users, PubicMessages.SuccessMessage));
+        }
+
+
+        #endregion
+
+
+
+
 
         #region  CheckTokenIsValid
         [AllowAnonymous]
@@ -82,6 +155,8 @@ namespace CallInDoor.Controllers
         }
 
         #endregion
+
+
 
         #region register
 
@@ -232,8 +307,12 @@ namespace CallInDoor.Controllers
             if (result.IsNotAllowed)
             {
                 return Unauthorized(new ApiResponse(401, _localizerShared["ConfirmPhoneMessage"].Value.ToString()));
-
             }
+            if (result.IsLockedOut)
+            {
+                return Unauthorized(new ApiResponse(401, _localizerShared["LockedOutMessage"].Value.ToString()));
+            }
+
             return Unauthorized(new ApiResponse(401, _localizerShared["UnMathPhoneNumberPassword"].Value.ToString()));
         }
 
@@ -283,6 +362,10 @@ namespace CallInDoor.Controllers
             if (result.IsNotAllowed)
             {
                 return Unauthorized(new ApiResponse(401, "Invalid phone number or password."));
+            }
+            if (result.IsNotAllowed)
+            {
+                return Unauthorized(new ApiResponse(401, "User account locked out."));
             }
             return Unauthorized(new ApiResponse(401, "Invalid phone number or password."));
         }

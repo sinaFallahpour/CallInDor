@@ -43,15 +43,16 @@ namespace CallInDoor.Controllers
         #region List (Pagination)
 
         [HttpGet("Index")]
-        [ClaimsAuthorize]
-        [PermissionAuthorize(PublicPermissions.User.GetAll, PublicPermissions.User.userEdit)]
+        //[ClaimsAuthorize]
+        [PermissionAuthorize(new string[] { PublicPermissions.User.GetAllUsersList, PublicPermissions.User.EditUser })]
+        [PermissionDBCheck(IsAdmin = true, requiredPermission = new string[] { PublicPermissions.User.GetAllUsersList, PublicPermissions.User.EditUser })]
         public async Task<IActionResult> Index(int? page, int? perPage,
                    string searchedWord)
         {
 
             var requiredPermission = new List<string>() {
-             PublicPermissions.User.GetAll,
-             PublicPermissions.User.userEdit
+             PublicPermissions.User.EditUser,
+             PublicPermissions.User.GetAllUsersList
             };
 
             var hasPermission = await _accountService.CheckHasPermission(requiredPermission);
