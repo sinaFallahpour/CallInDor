@@ -97,7 +97,6 @@ class RoleManager extends React.Component {
       this.setState({ modal: false });
       return;
     }
-    console.log(role);
     this.setState((prevState) => ({
       modal: !prevState.modal,
       addNew: false,
@@ -253,24 +252,23 @@ class RoleManager extends React.Component {
           {roles.length == 0 ? (
             <h3 class="w-100 text-center">There is no role to display </h3>
           ) : (
-            roles.map((role) => {
-              console.log(role);
-              return (
-                <Col key={role.id} lg="6" sm="6">
-                  <RoleItem
-                    hideChart
-                    iconRight
-                    iconBg="success"
-                    icon={<Edit className="warning" size={22} />}
-                    stat={role.name}
-                    isEnabled={role.isEnabled}
-                    toggleModal={this.toggleModal}
-                    role={role}
-                  />
-                </Col>
-              );
-            })
-          )}
+              roles.map((role) => {
+                return (
+                  <Col key={role.id} lg="6" sm="6">
+                    <RoleItem
+                      hideChart
+                      iconRight
+                      iconBg="success"
+                      icon={<Edit className="warning" size={22} />}
+                      stat={role.name}
+                      isEnabled={role.isEnabled}
+                      toggleModal={this.toggleModal}
+                      role={role}
+                    />
+                  </Col>
+                );
+              })
+            )}
         </Row>
 
         <Modal
@@ -364,14 +362,14 @@ class RoleManager extends React.Component {
                               );
                               this.setState(
                                 { data: { ...data, rolesPermission } },
-                                function () {}
+                                function () { }
                               );
                             } else {
                               let rolesPermission = data.rolesPermission;
                               rolesPermission.push(parseInt(e.target.value));
                               this.setState(
                                 { data: { ...data, rolesPermission } },
-                                function () {}
+                                function () { }
                               );
                             }
                           }}
@@ -449,48 +447,14 @@ class RoleManager extends React.Component {
                   veryfy Services
                 </Col> */}
               </Row>
-
-              {/* <FormGroup className="ml-1 _customCheckbox">
-                <Label htmlFor="isEnabled">
-                  <Checkbox
-                    color="primary"
-                    icon={<Check className="vx-icon" size={16} />}
-                    label=""
-                    defaultChecked={true}
-                  />
-                </Label>
-                get all user in asdmin pannekl
-                <Label htmlFor="isEnabled">
-                  <Checkbox
-                    color="primary"
-                    icon={<Check className="vx-icon" size={16} />}
-                    label=""
-                    defaultChecked={true}
-                  />
-                </Label>
-                get all user in asdmin pannekl
-              </FormGroup> */}
-
-              {/* <Checkbox
-                color="primary"
-                icon={<Check className="vx-icon" size={16} />}
-                label=""
-                defaultChecked={true}
-              />
-              <Checkbox
-                color="primary"
-                icon={<Check className="vx-icon" size={16} />}
-                label=""
-                defaultChecked={true}
-              /> */}
               {this.state.loadingSubmiting ? (
                 <Button disabled={true} color="primary" className="mb-1">
                   <Spinner color="white" size="sm" type="grow" />
                   <span className="ml-50">Loading...</span>
                 </Button>
               ) : (
-                <Button color="primary">submit</Button>
-              )}
+                  <Button color="primary">submit</Button>
+                )}
             </Form>
           </ModalBody>
         </Modal>

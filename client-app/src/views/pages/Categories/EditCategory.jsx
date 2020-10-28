@@ -141,8 +141,6 @@ class EditCategory extends Form {
     const errorscustom = [];
     this.setState({ errorMessage, errorscustom });
     try {
-
-
       const { isEnabled, isForCourse, isSubCategory } = this.state
       const obj = { ...this.state.data, isEnabled, isForCourse, isSubCategory };
       const { data } = await agent.Category.update(obj);
@@ -156,7 +154,7 @@ class EditCategory extends Form {
         const errorscustom = ex?.response?.data?.errors;
         this.setState({ errorscustom });
       } else if (ex?.response) {
-        const errorMessage = ex?.response?.data?.Message;
+        const errorMessage = ex?.response?.data?.message;
         this.setState({ errorMessage });
         toast.error(errorMessage, {
           autoClose: 10000,

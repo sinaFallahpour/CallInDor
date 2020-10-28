@@ -1,12 +1,12 @@
 import React, { Component } from "react";
 import {
   Button,
-  Progress,
   UncontrolledDropdown,
   DropdownMenu,
   DropdownToggle,
   DropdownItem,
   Input,
+  Alert
 } from "reactstrap";
 import DataTable from "react-data-table-component";
 import classnames from "classnames";
@@ -22,16 +22,16 @@ import {
   ChevronRight,
 } from "react-feather";
 import { connect } from "react-redux";
-import {
-  getData,
-  getInitialData,
-  deleteData,
-  updateData,
-  addData,
-  filterData,
-} from "../../../redux/actions/data-list";
+// import {
+//   getData,
+//   getInitialData,
+//   deleteData,
+//   updateData,
+//   addData,
+//   filterData,
+// } from "../../../redux/actions/data-list";
 import Sidebar from "./DataListSidebar";
-import Chip from "../../../components/@vuexy/chips/ChipComponent";
+// import Chip from "../../../components/@vuexy/chips/ChipComponent";
 import Checkbox from "../../../components/@vuexy/checkbox/CheckboxesVuexy";
 
 import "../../../assets/scss/plugins/extensions/react-paginate.scss";
@@ -39,7 +39,10 @@ import "../../../assets/scss/pages/data-list.scss";
 
 import { toast } from "react-toastify";
 import agent from "../../../core/services/agent";
-import Spinner from "../../../components/@vuexy/spinner/Loading-spinner";
+// import Spinner from "../../../components/@vuexy/spinner/Loading-spinner";
+
+import Swal from "sweetalert2";
+
 
 // const chipColors = {
 //   "on hold": "warning",
@@ -82,7 +85,7 @@ const ActionsComponent = (props) => {
         className="cursor-pointer"
         size={20}
         onClick={() => {
-          props.deleteRow(props.row);
+          props.deleteRow(props.row)
         }}
       />
     </div>
@@ -143,50 +146,13 @@ const CustomHeader = (props) => {
 };
 
 class DataListConfig extends Component {
-  // static getDerivedStateFromProps(props, state) {
-  //   if (
-  //     props.dataList.data.length !== state.data.length ||
-  //     state.currentPage !== props.parsedFilter.page
-  //   ) {
-  //     return {
-  //       data: props.dataList.data,
-  //       allData: props.dataList.filteredData,
-  //       totalPages: props.dataList.totalPages,
-  //       currentPage: parseInt(props.parsedFilter.page) - 1,
-  //       rowsPerPage: parseInt(props.parsedFilter.perPage),
-  //       totalRecords: props.dataList.totalRecords,
-  //       sortIndex: props.dataList.sortIndex
-  //     }
-  //   }
-
-  //   // Return null if the state hasn't changed
-  //   return null
-  // }
-
-  // // // // // static async getDerivedStateFromProps(props, state) {
-  // // // // //   if (
-  // // // // //     state.currentPage !== props.parsedFilter.page
-  // // // // //   ) {
-  // // // // //     // alert(props.parsedFilter.page)
-
-  // // // // //     return {
-  // // // // //       // data: props.dataList.data,
-  // // // // //       // allData: props.dataList.filteredData,
-  // // // // //       // totalPages: props.dataList.totalPages,
-  // // // // //       currentPage: parseInt(props.parsedFilter.page) - 1,
-  // // // // //       rowsPerPage: parseInt(props.parsedFilter.perPage),
-  // // // // //       // totalRecords: props.dataList.totalRecords,
-  // // // // //       // sortIndex: props.dataList.sortIndex
-  // // // // //     };
-  // // // // //   }
-  // // // // //   // Return null if the state hasn't changed
-  // // // // //   return null;
-  // // // // // }
-
   state = {
     data: [],
     totalPages: 0,
     currentPage: 0,
+    defaultAlert: false,
+    confirmAlert: false,
+    cancelAlert: false,
     columns: [
       {
         name: "Full Name",
@@ -284,6 +250,10 @@ class DataListConfig extends Component {
     addNew: "",
 
     loading: true,
+    loadngDelete: false,
+
+    errors: [],
+    errorMessage: "",
   };
 
   async populatingData() {
@@ -291,6 +261,7 @@ class DataListConfig extends Component {
     var params = this.axiosParams();
     const { data } = await agent.User.UsersList(params);
     if (data?.result) {
+      console.log(data.result.data.users)
       await this.setState({
         data: data.result.data.users,
         allData: data.result.data.users,
@@ -309,7 +280,7 @@ class DataListConfig extends Component {
     this.populatingData();
   }
 
-  async componentDidUpdate(prevProps, prevState) {}
+  async componentDidUpdate(prevProps, prevState) { }
 
   handleFilter = async (e) => {
     if (this.state.value == "" && e.target.value == "") return;
@@ -342,24 +313,149 @@ class DataListConfig extends Component {
     if (addNew === true) this.setState({ currentData: null, addNew: true });
   };
 
-  handleDelete = (row) => {
-    this.props.deleteData(row);
-    this.props.getData(this.props.parsedFilter);
-    if (this.state.data.length - 1 === 0) {
-      let urlPrefix = this.props.thumbView
-        ? "/data-list/thumb-view/"
-        : "/data-list/list-view/";
-      history.push(
-        `${urlPrefix}list-view?page=${parseInt(
-          this.props.parsedFilter.page - 1
-        )}&perPage=${this.props.parsedFilter.perPage}`
-      );
-      this.props.getData({
-        page: this.props.parsedFilter.page - 1,
-        perPage: this.props.parsedFilter.perPage,
+
+
+
+
+
+
+
+  // data: data.result.data.users,
+  // allData: data.result.data.users,
+
+
+  handleDelete = async row => {
+
+    console.log(row)
+    this.setState({ loadngDelete: true })
+
+    Swal.fire({
+      title: "Delete!",
+      text: "Do you want the user to be locked ?",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes,it locks",
+      cancelButtonText: "Cancellation",
+
+    }).then(async result => {
+      if (result.value) {
+        try {
+          console.clear()
+          console.log(row)
+          console.log(row.userName)
+
+          const { data } = await agent.User.lockedUser(row.userName);
+          if (data.result.status) {
+            this.handleSetNewData(row)
+            if (data.result.data)
+              Swal.fire("Successful locking ", "User Successfully Locked", "success");
+            else
+              Swal.fire("Successful un locking ", "User Successfully un Locked", "success");
+
+          }
+        } catch (ex) {
+          this.handleCatch(ex);
+        }
+        setTimeout(() => {
+          this.setState({ loadngDelete: false });
+        }, 1000);
+      }
+    });
+  };
+
+  handleSetNewData = (row) => {
+    const { data, allData } = this.state
+    console.clear()
+    console.log(this.state.data)
+    console.log(this.state.allData)
+
+
+    // this.setState({ data: [] })
+
+    this.setState(prevState => {
+      return {
+        data: prevState.data.map((el) => {
+          if (el.userName == row.userName) {
+            return { ...el, isLockOut: !el.isLockOut }
+          }
+          else {
+            return el
+          }
+        })
+      }
+    })
+
+
+
+
+
+
+
+
+    // this.setState((pre) => {
+    //   console.log(11)
+    //   data: pre.data.map((el) => {
+    //     if (el.userName == row.userName) {
+    //       return { ...el, isLockOut: !el.isLockOut }
+    //     }
+    //     else {
+    //       return el
+    //     }
+    //   })
+    // })
+    // this.setState((prev) => ({ );
+
+    // this.setState({
+
+    //   data: data.filter((el) => {
+    //     return el.userName == row.username
+    //   ),
+    // data: data.map((el) => {
+    //   if (el.userName == row.userName) {
+    //     return { ...el, isLockOut: !el.isLockOut }
+    //   }
+    //   else {
+    //     return el
+    //   }
+    // }),
+    //   allData: allData.map((el) => {
+    //     if (el.userName == row.userName) {
+    //       return { ...el, isLockOut: !el.isLockOut }
+    //     }
+    //     else {
+    //       return el
+    //     }
+    //   }),
+    // }, () => {
+    //   console.log(this.state.data)
+    //   console.log(this.state.allData)
+    // });
+    Swal.fire("Successful locking ", "User Successfully Locked", "success");
+
+    console.log("=============")
+    console.log(this.state.data)
+    console.log(this.state.allData)
+
+  }
+
+
+
+  handleCatch = (ex) => {
+    console.log(ex)
+    if (ex?.response?.status == 400) {
+      const errors = ex?.response?.data?.errors;
+      this.setState({ errors });
+    } else if (ex?.response) {
+      const errorMessage = ex?.response?.data?.message;
+      this.setState({ errorMessage });
+      toast.error(errorMessage, {
+        autoClose: 10000,
       });
     }
-  };
+  }
+
 
   handleCurrentData = (obj) => {
     this.setState({ currentData: obj });
@@ -370,6 +466,11 @@ class DataListConfig extends Component {
     await this.setState({ loading: true, currentPage: page.selected });
     this.populatingData();
   };
+
+
+  // handleDelete = (state, value) => {
+  //   this.setState({ [state]: value })
+  // }
 
   render() {
     let {
@@ -384,101 +485,126 @@ class DataListConfig extends Component {
       sidebar,
       totalRecords,
       sortIndex,
+      errorMessage,
+      errors
     } = this.state;
 
-    return (
-      <div
-        className={`data-list ${
-          this.props.thumbView ? "thumb-view" : "list-view"
-        }`}
-      >
-        <DataTable
-          progressPending={this.state.loading}
-          columns={columns}
-          data={value.length ? allData : data}
-          pagination
-          paginationServer
-          paginationComponent={() => (
-            <ReactPaginate
-              previousLabel={<ChevronLeft size={15} />}
-              nextLabel={<ChevronRight size={15} />}
-              breakLabel="..."
-              breakClassName="break-me"
-              pageCount={totalPages}
-              containerClassName="vx-pagination separated-pagination pagination-end pagination-sm mb-0 mt-2"
-              activeClassName="active"
-              // forcePage={
-              //   this.props.parsedFilter.page
-              //     ? parseInt(this.props.parsedFilter.page - 1)
-              //     : 0
-              // }
-              forcePage={currentPage}
-              onPageChange={(page) => this.handlePagination(page)}
-            />
-          )}
-          noHeader
-          subHeader
-          selectableRows
-          responsive
-          pointerOnHover
-          selectableRowsHighlight
-          onSelectedRowsChange={(data) =>
-            this.setState({ selected: data.selectedRows })
-          }
-          customStyles={selectedStyle}
-          subHeaderComponent={
-            <CustomHeader
-              handleSidebar={this.handleSidebar}
-              handleFilter={this.handleFilter}
-              handleRowsPerPage={this.handleRowsPerPage}
-              rowsPerPage={rowsPerPage}
-              total={totalRecords}
-              index={sortIndex}
-            />
-          }
-          sortIcon={<ChevronDown />}
-          selectableRowsComponent={Checkbox}
-          selectableRowsComponentProps={{
-            color: "primary",
-            icon: <Check className="vx-icon" size={12} />,
-            label: "",
-            size: "sm",
-          }}
-        />
+    // const { errorMessage, errors } = this.state;
 
-        <Sidebar
-          show={sidebar}
-          data={currentData}
-          updateData={this.props.updateData}
-          addData={this.props.addData}
-          handleSidebar={this.handleSidebar}
-          thumbView={this.props.thumbView}
-          getData={this.props.getData}
-          dataParams={this.props.parsedFilter}
-          addNew={this.state.addNew}
-        />
+    return (
+      <>
         <div
-          className={classnames("data-list-overlay", {
-            show: sidebar,
-          })}
-          onClick={() => this.handleSidebar(false, true)}
-        />
-      </div>
+          className={`data-list ${this.props.thumbView ? "thumb-view" : "list-view"
+            }`}
+        >
+
+          {errors &&
+            errors.map((err, index) => {
+              return (
+                <Alert
+                  key={index}
+                  className="text-center"
+                  color="danger "
+                >
+                  {err}
+                </Alert>
+              );
+            })}
+          <DataTable
+            progressPending={this.state.loading}
+            columns={columns}
+            data={value.length ? allData : data}
+            pagination
+            paginationServer
+            paginationComponent={() => (
+              <ReactPaginate
+                previousLabel={<ChevronLeft size={15} />}
+                nextLabel={<ChevronRight size={15} />}
+                breakLabel="..."
+                breakClassName="break-me"
+                pageCount={totalPages}
+                containerClassName="vx-pagination separated-pagination pagination-end pagination-sm mb-0 mt-2"
+                activeClassName="active"
+                // forcePage={
+                //   this.props.parsedFilter.page
+                //     ? parseInt(this.props.parsedFilter.page - 1)
+                //     : 0
+                // }
+                forcePage={currentPage}
+                onPageChange={(page) => this.handlePagination(page)}
+              />
+            )}
+            noHeader
+            subHeader
+            selectableRows
+            responsive
+            pointerOnHover
+            selectableRowsHighlight
+            onSelectedRowsChange={(data) =>
+              this.setState({ selected: data.selectedRows })
+            }
+            customStyles={selectedStyle}
+            subHeaderComponent={
+              <CustomHeader
+                handleSidebar={this.handleSidebar}
+                handleFilter={this.handleFilter}
+                handleRowsPerPage={this.handleRowsPerPage}
+                rowsPerPage={rowsPerPage}
+                total={totalRecords}
+                index={sortIndex}
+              />
+            }
+            sortIcon={<ChevronDown />}
+            selectableRowsComponent={Checkbox}
+            selectableRowsComponentProps={{
+              color: "primary",
+              icon: <Check className="vx-icon" size={12} />,
+              label: "",
+              size: "sm",
+            }}
+
+          />
+
+          <Sidebar
+            show={sidebar}
+            data={currentData}
+            updateData={this.props.updateData}
+            addData={this.props.addData}
+            handleSidebar={this.handleSidebar}
+            thumbView={this.props.thumbView}
+            getData={this.props.getData}
+            dataParams={this.props.parsedFilter}
+            addNew={this.state.addNew}
+          />
+          <div
+            className={classnames("data-list-overlay", {
+              show: sidebar,
+            })}
+            onClick={() => this.handleSidebar(false, true)}
+          />
+        </div>
+
+      </>
     );
   }
 }
 
-const mapStateToProps = (state) => {
-  return {
-    dataList: state.dataList,
-  };
-};
+// const mapStateToProps = (state) => {
+//   return {
+//     dataList: state.dataList,
+//   };
+// };
 
-export default connect(mapStateToProps, {
-  getData,
-  deleteData,
-  updateData,
-  addData,
-  getInitialData,
-  filterData,
-})(DataListConfig);
+// export default connect(mapStateToProps, {
+//   getData,
+//   deleteData,
+//   updateData,
+//   addData,
+//   getInitialData,
+//   filterData,
+// })(DataListConfig);
+
+
+
+
+export default DataListConfig;

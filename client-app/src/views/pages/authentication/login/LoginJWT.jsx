@@ -13,8 +13,8 @@ import {
   Alert,
   Spinner
 } from "reactstrap";
-import Checkbox from "../../../../components/@vuexy/checkbox/CheckboxesVuexy";
-import { Mail, Lock, Check, Phone } from "react-feather";
+// import Checkbox from "../../../../components/@vuexy/checkbox/CheckboxesVuexy";
+import { Lock, Phone } from "react-feather";
 // import { loginWithJWT } from "../../../../redux/actions/auth/loginActions";
 // import { connect } from "react-redux";
 // import { history } from "../../../../history";

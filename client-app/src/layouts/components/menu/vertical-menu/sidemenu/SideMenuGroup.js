@@ -9,9 +9,10 @@ import auth from "../../../../../core/services/userService/authService"
 
 let userRole = auth.getRole();
 let userPermissions = []
-if (auth.getPermissons)
-  userPermissions = Object.values(auth.getPermissons());
 
+if (auth.getPermissons()) {
+  userPermissions = Object.values(auth.getPermissons());
+}
 class SideMenuGroup extends React.Component {
   constructor(props) {
     super(props)

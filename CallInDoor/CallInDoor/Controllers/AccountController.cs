@@ -140,23 +140,40 @@ namespace CallInDoor.Controllers
         #region    locked User
 
 
-        [HttpDelete("LockedUser")]
+        [HttpPost("LockedUser")]
         //[Authorize]
         [PermissionAuthorize(PublicPermissions.User.EditUser)]
         [PermissionDBCheck(IsAdmin = true, requiredPermission = new string[] { PublicPermissions.User.EditUser })]
-        public async Task<ActionResult> LockedUser(string userId)
+        public async Task<ActionResult> LockedUser([FromBody] LockedUser model)
         {
-            var userFromDB = await _userManager.FindByIdAsync(userId);
+            if (string.IsNullOrEmpty(model.Username))
+                return NotFound(new ApiResponse(404, "User Not Found"));
+            //if (username.StartsWith(" "))
+            //{
+            //    username = username.Trim();
+            //}
 
+            var userFromDB = await _context.Users.Where(c => c.UserName == model.Username).FirstOrDefaultAsync();
             if (userFromDB == null)
                 return NotFound(new ApiResponse(404, _localizerShared["NotFound"].Value.ToString()));
 
-            userFromDB.LockoutEnabled = true;
-            userFromDB.LockoutEnd = DateTime.Now.AddYears(100);
+            var locked = true;
+            var LockoutEnd = userFromDB.LockoutEnd;
+            if (LockoutEnd != null && LockoutEnd > DateTime.Now)
+            {
+                userFromDB.LockoutEnd = null;
+                userFromDB.LockoutEnd = DateTime.Now.AddYears(-1000);
+                locked = false;
+            }
+            if (LockoutEnd == null || LockoutEnd < DateTime.Now)
+            {
+                userFromDB.LockoutEnd = DateTime.Now.AddYears(1000);
+                //userFromDB.LockoutEnd = DateTime.Now.AddYears(1000);
+                locked = true;
+            }
 
             await _context.SaveChangesAsync();
-            await _context.SaveChangesAsync();
-            return Ok(_commonService.OkResponse(null, _localizerShared["SuccessMessage"].Value.ToString()));
+            return Ok(_commonService.OkResponse(locked, _localizerShared["SuccessMessage"].Value.ToString()));
 
         }
 
@@ -399,7 +416,7 @@ namespace CallInDoor.Controllers
             {
                 return Unauthorized(new ApiResponse(401, "Invalid phone number or password."));
             }
-            if (result.IsNotAllowed)
+            if (result.IsLockedOut)
             {
                 return Unauthorized(new ApiResponse(401, "User account locked out."));
             }

@@ -7,11 +7,10 @@ import {
   Col,
   Nav,
   NavItem,
-  NavLink,
   TabContent,
   TabPane,
 } from "reactstrap";
-import classnames from "classnames";
+// import classnames from "classnames";
 import loginImg from "../../../../assets/img/pages/login.png";
 import "../../../../assets/scss/pages/authentication.scss";
 import CustomLoader from "../../../../components/@vuexy/spinner/FullPageLoading";

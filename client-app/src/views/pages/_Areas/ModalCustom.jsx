@@ -10,7 +10,6 @@ import {
   TabContent,
   TabPane,
   Form,
-  Spinner,
   Col,
 } from "reactstrap";
 const ModalCustom = (props) => {
