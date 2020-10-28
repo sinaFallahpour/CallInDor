@@ -134,9 +134,6 @@ namespace CallInDoor.Controllers
         #endregion
 
 
-
-
-
         #region    locked User
 
 
@@ -179,9 +176,6 @@ namespace CallInDoor.Controllers
 
 
         #endregion
-
-
-
 
 
 
@@ -543,7 +537,6 @@ namespace CallInDoor.Controllers
         [HttpPost("ForgetPasswod")]
         public async Task<IActionResult> ForgetPasswod([FromBody] ForgetPasswordDTO model)
         {
-
             var phoneNumber = model.CountryCode.ToString().Trim() + model.PhoneNumber.Trim();
 
             var user = await _accountService.FindUserByPhonenumber(phoneNumber);
@@ -552,51 +545,112 @@ namespace CallInDoor.Controllers
 
             /*................................................. question.......................................*/
             if (!await _userManager.IsPhoneNumberConfirmedAsync(user))
-            {
                 return Unauthorized(new ApiResponse(401, _localizerShared["ConfirmPhoneMessage"].Value.ToString()));
-            }
-
 
             var newpass = 8.RandomString();
-
             string resetToken = await _userManager.GeneratePasswordResetTokenAsync(user);
             var passwordChangeResult = await _userManager.ResetPasswordAsync(user, resetToken, newpass);
             if (passwordChangeResult.Succeeded)
             {
                 //send Password to user
 
-
-                return Ok(new ApiOkResponse(new DataFormat()
-                {
-                    Status = 1,
-                    //data = passwordResetLink,
-                    data = { },
-                    Message = _localizerShared["SuccessMessage"].Value.ToString()
-                },
-                 _localizerShared["SuccessMessage"].Value.ToString()
-                ));
+                return Ok(_commonService.OkResponse(null, _localizerShared["SuccessMessage"].Value.ToString()));
             }
             else
             {
-                return Ok(new ApiOkResponse(new DataFormat()
+                var errors = new List<string>();
+                foreach (var item in passwordChangeResult.Errors)
                 {
-                    Status = 0,
-                    //data = passwordResetLink,
-                    data = { },
-                    Message = _localizerShared["InternalServerMessage"].Value.ToString()
-                },
-                 _localizerShared["InternalServerMessage"].Value.ToString()
-              ));
-
+                    errors.Add(item.Description);
+                }
+                return BadRequest(new ApiBadRequestResponse(errors));
+                //  return Ok(new ApiOkResponse(new DataFormat()
+                //  {
+                //      Status = 0,
+                //      //data = passwordResetLink,
+                //      data = { },
+                //      Message = _localizerShared["InternalServerMessage"].Value.ToString()
+                //  },
+                //   _localizerShared["InternalServerMessage"].Value.ToString()
+                //));
             }
-
-
-
 
         }
 
 
         #endregion
+
+
+
+
+
+        #region ForgetPasswodInAdmin
+
+
+        [HttpPost("ChangePasswordInAdmin")]
+        [Authorize]
+        [PermissionAuthorize(PublicPermissions.User.EditUser)]
+        [PermissionDBCheck(IsAdmin = true, requiredPermission = new string[] { PublicPermissions.User.EditUser })]
+        public async Task<IActionResult> ChangePasswordInAdmin([FromBody] AdminChangePasswordDTO model)
+        {
+            var userFromDB = await _userManager.FindByNameAsync(model.UserName);
+            if (userFromDB == null)
+                return NotFound(new ApiResponse(404, PubicMessages.NotFoundMessage));
+
+
+            var newPassword = _userManager.PasswordHasher.HashPassword(userFromDB, model.NewPassword);
+            userFromDB.PasswordHash = newPassword;
+            var result = await _userManager.UpdateAsync(userFromDB);
+
+            if (result.Succeeded)
+                return Ok(_commonService.OkResponse(new { }, _localizerShared["SuccessMessage"].Value.ToString()));
+            else
+            {
+                var errors = new List<string>();
+                foreach (var item in result.Errors)
+                    errors.Add(item.Description);
+                return BadRequest(new ApiBadRequestResponse(errors));
+            }
+        }
+
+
+        #endregion
+
+        #region ChangePassword
+
+
+        [HttpPost("ChangePassword")]
+        [Authorize]
+        [ClaimsAuthorize(IsAdmin = false)]
+        public async Task<IActionResult> ChangePassword([FromBody] ChangePasswordDTO model)
+        {
+            var currentUsername = _accountService.GetCurrentUserName();
+            var userfromDB = await _userManager.FindByNameAsync(currentUsername);
+            var result = await _userManager.ChangePasswordAsync(userfromDB, model.CurrentPassword, model.NewPassword);
+
+            if (result.Succeeded)
+                return Ok(_commonService.OkResponse(new { }, _localizerShared["SuccessMessage"].Value.ToString()));
+            else
+            {
+                if (result.Errors.Any(c => c.Code == "PasswordMismatch"))
+                {
+                    var err = new List<string>();
+                    err.Add(_localizerShared["InCorrectPassword"].Value.ToString());
+                    return BadRequest(new ApiBadRequestResponse(err));
+                }
+
+                var errors = new List<string>();
+                foreach (var item in result.Errors)
+                {
+                    errors.Add(item.Description);
+                }
+                return BadRequest(new ApiBadRequestResponse(errors));
+            }
+        }
+
+
+        #endregion
+
 
         #endregion
 

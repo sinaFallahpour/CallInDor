@@ -1,99 +1,121 @@
 import React, { Component } from "react";
-import { Label, Input, FormGroup, Button } from "reactstrap";
+import {
+  Label,
+  Alert,
+  Input,
+  FormGroup,
+  Button,
+  Spinner,
+  Form,
+} from "reactstrap";
 import { X } from "react-feather";
 import PerfectScrollbar from "react-perfect-scrollbar";
 import classnames from "classnames";
+import { toast } from "react-toastify";
+
+import agent from "../../../core/services/agent";
 
 class DataListSidebar extends Component {
   state = {
-    id: "",
-    name: "",
-    category: "Audio",
-    order_status: "pending",
-    price: "",
-    img: "",
-    popularity: {
-      popValue: "",
-    },
+    userName: "",
+    newPassword: "",
+    confirmPassword: "",
+
+    loadingSubmit: false,
+
+    errors: [],
+    errorMessage: "",
   };
 
   addNew = false;
 
   componentDidUpdate(prevProps, prevState) {
     if (this.props.data !== null && prevProps.data === null) {
-      if (this.props.data.id !== prevState.id) {
-        this.setState({ id: this.props.data.id });
-      }
-      if (this.props.data.name !== prevState.name) {
-        this.setState({ name: this.props.data.name });
-      }
-      if (this.props.data.category !== prevState.category) {
-        this.setState({ category: this.props.data.category });
-      }
-      if (this.props.data.popularity.popValue !== prevState.popularity) {
-        this.setState({
-          popularity: {
-            ...this.state.popularity,
-            popValue: this.props.data.popularity.popValue,
-          },
-        });
-      }
-      if (this.props.data.order_status !== prevState.order_status) {
-        this.setState({ order_status: this.props.data.order_status });
-      }
-      if (this.props.data.price !== prevState.price) {
-        this.setState({ price: this.props.data.price });
-      }
-      if (this.props.data.img !== prevState.img) {
-        this.setState({ img: this.props.data.img });
+      if (this.props.data.userName !== prevState.userName) {
+        this.setState({ userName: this.props.data.userName });
       }
     }
     if (this.props.data === null && prevProps.data !== null) {
       this.setState({
-        id: "",
-        name: "",
-        category: "Audio",
-        order_status: "pending",
-        price: "",
-        img: "",
-        popularity: {
-          popValue: "",
-        },
+        newPassword: "",
+        confirmPassword: "",
+        userName: "",
       });
     }
     if (this.addNew) {
       this.setState({
-        id: "",
-        name: "",
-        category: "Audio",
-        order_status: "pending",
-        price: "",
-        img: "",
-        popularity: {
-          popValue: "",
-        },
+        newPassword: "",
+        confirmPassword: "",
+        userName: "",
       });
     }
     this.addNew = false;
   }
 
-  handleSubmit = (obj) => {
-    if (this.props.data !== null) {
-      this.props.updateData(obj);
-    } else {
-      this.addNew = true;
-      this.props.addData(obj);
+  handleValidate = () => {
+    const { newPassword, confirmPassword } = this.state;
+    if (newPassword !== confirmPassword) {
+      this.setState({ errors: ["Incorrect Confirm Passwwrod "] });
+      return false;
     }
-    let params = Object.keys(this.props.dataParams).length
-      ? this.props.dataParams
-      : { page: 1, perPage: 4 };
-    this.props.handleSidebar(false, true);
-    this.props.getData(params);
+
+    return true;
   };
+
+  doSubmit = async (e) => {
+    e.preventDefault();
+
+    var res = this.handleValidate();
+    if (!res) return;
+    this.setState({ loadingSubmit: true });
+    const errorMessage = "";
+    const errors = [];
+    this.setState({ errorMessage, errors });
+    try {
+      const { data } = await agent.User.changePassword(this.state);
+      toast.success(data.result.message);
+    } catch (ex) {
+      this.handleCatch(ex);
+    } finally {
+      setTimeout(() => {
+        this.setState({ loadingSubmit: false });
+        this.props.handleSidebar(false, true);
+      }, 2000);
+    }
+  };
+
+  handleCatch = (ex) => {
+    console.log(ex);
+    if (ex?.response?.status == 400) {
+      const errors = ex?.response?.data?.errors;
+      this.setState({ errors });
+    } else if (ex?.response) {
+      const errorMessage = ex?.response?.data?.message;
+      this.setState({ errorMessage });
+      toast.error(errorMessage, {
+        autoClose: 10000,
+      });
+    }
+  };
+
+  // handleSubmit = (obj) => {
+  //   this.setState({ loadingSubmit: true });
+  //   if (this.props.data !== null) {
+  //     this.props.updateData(obj);
+  //   } else {
+  //     this.addNew = true;
+  //     this.props.addData(obj);
+  //   }
+  //   // let params = Object.keys(this.props.dataParams).length
+  //   //   ? this.props.dataParams
+  //   //   : { page: 1, perPage: 4 };
+  //   this.props.handleSidebar(false, true);
+  //   // this.props.getData(params);
+  // };
 
   render() {
     let { show, handleSidebar, data } = this.props;
-    let { name, category, order_status, price, popularity, img } = this.state;
+    let { newPassword, confirmPassword, loadingSubmit, errors } = this.state;
     return (
       <div
         className={classnames("data-list-sidebar", {
@@ -104,103 +126,75 @@ class DataListSidebar extends Component {
           <h4>{data !== null ? "UPDATE DATA" : "ADD NEW DATA"}</h4>
           <X size={20} onClick={() => handleSidebar(false, true)} />
         </div>
-        <PerfectScrollbar
-          className="data-list-fields px-2 mt-3"
-          options={{ wheelPropagation: false }}
-        >
-          <FormGroup>
-            <Label for="data-name">Name</Label>
-            <Input
-              type="text"
-              value={name}
-              placeholder="Apple IphoneX"
-              onChange={(e) => this.setState({ name: e.target.value })}
-              id="data-name"
-            />
-          </FormGroup>
-          <FormGroup>
-            <Label for="data-category">Category</Label>
-            <Input
-              type="select"
-              id="data-category"
-              value={category}
-              onChange={(e) => this.setState({ category: e.target.value })}
-            >
-              <option>Audio</option>
-              <option>Computers</option>
-              <option>Fitness</option>
-              <option>Appliances</option>
-            </Input>
-          </FormGroup>
-          <FormGroup>
-            <Label for="data-popularity">Popularity</Label>
-            <Input
-              type="number"
-              value={popularity.popValue}
-              id="data-popularity"
-              placeholder="0 - 100%"
-              onChange={(e) =>
-                this.setState({
-                  popularity: { popularity, popValue: e.target.value },
-                })
-              }
-            />
-          </FormGroup>
-          <FormGroup>
-            <Label for="data-status">Order Status</Label>
-            <Input
-              type="select"
-              id="data-status"
-              value={order_status}
-              onChange={(e) => this.setState({ order_status: e.target.value })}
-            >
-              <option>pending</option>
-              <option>canceled</option>
-              <option>delivered</option>
-              <option>on hold</option>
-            </Input>
-          </FormGroup>
-          <FormGroup>
-            <Label for="data-price">Price</Label>
-            <Input
-              type="number"
-              value={price}
-              onChange={(e) => this.setState({ price: e.target.value })}
-              id="data-price"
-              placeholder="69.99"
-            />
-          </FormGroup>
-          {this.props.thumbView && img.length <= 0 ? (
-            <label
-              className="btn btn-primary"
-              htmlFor="upload-image"
-              color="primary"
-            >
-              Upload Image
-              <input
-                type="file"
-                id="upload-image"
-                hidden
-                onChange={(e) =>
-                  this.setState({ img: URL.createObjectURL(e.target.files[0]) })
-                }
-              />
-            </label>
-          ) : null}
-        </PerfectScrollbar>
-        <div className="data-list-sidebar-footer px-2 d-flex justify-content-start align-items-center mt-1">
-          <Button color="primary" onClick={() => this.handleSubmit(this.state)}>
-            {data !== null ? "Update" : "Submit"}
-          </Button>
-          <Button
-            className="ml-1"
-            color="danger"
-            outline
-            onClick={() => handleSidebar(false, true)}
+        <Form action="/s" onSubmit={this.doSubmit}>
+          <PerfectScrollbar
+            className="data-list-fields px-2 mt-3"
+            options={{ wheelPropagation: false }}
           >
-            Cancel
-          </Button>
-        </div>
+            {errors &&
+              errors.map((err, index) => {
+                return (
+                  <Alert key={index} className="text-center" color="danger ">
+                    {err}
+                  </Alert>
+                );
+              })}
+            <FormGroup>
+              <Label for="data-newPass">New Password</Label>
+              <Input
+                type="text"
+                value={newPassword}
+                placeholder="New PassWord"
+                onChange={(e) => this.setState({ newPassword: e.target.value })}
+                id="data-newPass"
+                required
+                minLength={6}
+                maxLength={20}
+              />
+            </FormGroup>
+
+            <FormGroup>
+              <Label for="data-confirm">Confirm Password</Label>
+              <Input
+                type="text"
+                value={confirmPassword}
+                placeholder="Confirm Password"
+                onChange={(e) =>
+                  this.setState({ confirmPassword: e.target.value })
+                }
+                id="data-confirm"
+                required
+                minLength={6}
+                maxLength={20}
+              />
+            </FormGroup>
+          </PerfectScrollbar>
+
+          <div className="data-list-sidebar-footer px-2 d-flex justify-content-start align-items-center mt-1">
+            {loadingSubmit ? (
+              <Button disabled={true} color="primary" className="mb-1">
+                <Spinner color="white" size="sm" type="grow" />
+                <span className="ml-50">Loading...</span>
+              </Button>
+            ) : (
+              <Button
+                color="primary"
+                // onClick={() => this.handleSubmit(this.state)}
+              >
+                {data !== null ? "Update" : "Submit"}
+              </Button>
+            )}
+
+            <Button
+              className="ml-1"
+              color="danger"
+              outline
+              onClick={() => handleSidebar(false, true)}
+            >
+              Cancel
+            </Button>
+          </div>
+        </Form>
       </div>
     );
   }

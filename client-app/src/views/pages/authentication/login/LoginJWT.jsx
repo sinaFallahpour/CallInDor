@@ -11,7 +11,7 @@ import {
   Button,
   Label,
   Alert,
-  Spinner
+  Spinner,
 } from "reactstrap";
 // import Checkbox from "../../../../components/@vuexy/checkbox/CheckboxesVuexy";
 import { Lock, Phone } from "react-feather";
@@ -27,11 +27,11 @@ class LoginJWT extends React.Component {
     password: "",
     errors: [],
     errorMessage: "",
-    Loading: false,
+    loading: false,
   };
 
   doSubmit = async (e) => {
-    this.setState({ Loading: true });
+    this.setState({ loading: true });
     e.preventDefault();
     const errorMessage = "";
     const errors = [];
@@ -42,7 +42,7 @@ class LoginJWT extends React.Component {
       setTimeout(() => {
         const state = this.props?.location?.state;
         window.location = state ? state.from.pathName : "/";
-        this.setState({ Loading: false });
+        this.setState({ loading: false });
       }, 1000);
     } catch (ex) {
       console.log(ex);
@@ -57,10 +57,9 @@ class LoginJWT extends React.Component {
         });
       }
       setTimeout(() => {
-        this.setState({ Loading: false });
+        this.setState({ loading: false });
       }, 1000);
     }
-
   };
 
   render() {
@@ -121,22 +120,16 @@ class LoginJWT extends React.Component {
                 Login
               </Button.Ripple> */}
 
-
-
-              {this.state.Loading ? (
-                <Button
-                  disabled={true}
-                  color="primary"
-                  className="mb-1"
-                >
+              {this.state.loading ? (
+                <Button disabled={true} color="primary" className="mb-1">
                   <Spinner color="white" size="sm" type="grow" />
                   <span className="ml-50">Loading...</span>
                 </Button>
               ) : (
-                  <Button.Ripple color="primary" type="submit" >
-                    Login
-                  </Button.Ripple>)}
-
+                <Button.Ripple color="primary" type="submit">
+                  Login
+                </Button.Ripple>
+              )}
             </div>
           </Form>
         </CardBody>

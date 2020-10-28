@@ -74,9 +74,12 @@ const User = {
   UsersList: () => requests.get("/Account/GetAllUsersList"),
   details: (id) => requests.get(`/Account/admin/GetAdminByIdInAdmin?id=${id}`),
   login: (user) => requests.post("/user/login", user),
-  registerAdmin: (user) => requests.post("/Account/admin/RegisterAdminInAdmin", user),
+  registerAdmin: (user) =>
+    requests.post("/Account/admin/RegisterAdminInAdmin", user),
   update: (user) => requests.put("/Account/admin/UpdateAdmin", user),
-  lockedUser: (username) => requests.post("/Account/LockedUser", { username })
+  changePassword: (obj) => requests.post("/Account/ChangePasswordInAdmin", obj),
+  forgetPassword: (obj) => requests.post("/Account/ForgetPasswod", obj),
+  lockedUser: (username) => requests.post("/Account/LockedUser", { username }),
 };
 
 const Role = {

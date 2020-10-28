@@ -123,6 +123,9 @@
   <data name="ErrorMessage" xml:space="preserve">
     <value>خطا در ثبت</value>
   </data>
+  <data name="InCorrectPassword" xml:space="preserve">
+    <value>پسورد صحیح نمیباشد</value>
+  </data>
   <data name="InternalServerMessage" xml:space="preserve">
     <value>خطایی رخ داده است</value>
   </data>

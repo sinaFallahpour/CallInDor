@@ -11,24 +11,69 @@ import {
   Input,
   Button,
   Label,
+  Alert,
 } from "reactstrap";
 import fgImg from "../../../assets/img/pages/forgot-password.png";
 import { history } from "../../../history";
 import "../../../assets/scss/pages/authentication.scss";
 
-import authService from "../../../core/services/userService/authService";
+// import authService from "../../../core/services/userService/authService";
+import auth from "../../../core/services/userService/authService";
+import agent from "../../../core/services/agent";
+import { toast } from "react-toastify";
 
 class ForgotPassword extends React.Component {
-  async componentDidMount() {
-    const isloggedIn = await authService.checkTokenIsValid();
+  state = {
+    phoneNumber: "",
+    countryCode: "",
+    loading: false,
 
+    errors: [],
+    errorMessage: "",
+  };
+
+  async componentDidMount() {
+    const isloggedIn = await auth.checkTokenIsValid();
     if (isloggedIn) {
       history.push("/");
     }
     this.setState({ notload: false });
   }
 
+  doSubmit = async (e) => {
+    this.setState({ loading: true });
+    e.preventDefault();
+    const errorMessage = "";
+    const errors = [];
+    this.setState({ errorMessage, errors });
+    try {
+      const { data } = await agent.User.forgetPassword(this.state);
+      if (data.result.status) toast.success("We sent you the new password");
+    } catch (ex) {
+      this.handleCatch(ex);
+    } finally {
+      setTimeout(() => {
+        this.setState({ loading: false });
+      }, 1000);
+    }
+  };
+
+  handleCatch = (ex) => {
+    console.log(ex);
+    if (ex?.response?.status == 400) {
+      const errors = ex?.response?.data?.errors;
+      this.setState({ errors });
+    } else if (ex?.response) {
+      const errorMessage = ex?.response?.data?.message;
+      this.setState({ errorMessage });
+      toast.error(errorMessage, {
+        autoClose: 10000,
+      });
+    }
+  };
+
   render() {
+    const { errors } = this.state;
     return (
       <Row className="m-0 justify-content-center">
         <Col
@@ -54,15 +99,37 @@ class ForgotPassword extends React.Component {
                     </CardTitle>
                   </CardHeader>
                   <p className="px-2 auth-title">
-                    Please enter your email address and we'll send you
-                    instructions on how to reset your password.
+                    Please enter your phone number and we'll send you new
+                    password .
                   </p>
                   <CardBody className="pt-1 pb-0">
-                    <Form>
+                    {errors &&
+                      errors.map((err, index) => {
+                        return (
+                          <Alert key={index} color="danger">
+                            {err}
+                          </Alert>
+                        );
+                      })}
+                    <Form onSubmit={this.doSubmit}>
                       <FormGroup className="form-label-group">
-                        <Input type="text" placeholder="Email" required />
-                        <Label>Email</Label>
+                        <Input
+                          type="number"
+                          placeholder="Phone number"
+                          required
+                        />
+                        <Label>Phone number</Label>
                       </FormGroup>
+                      <div className=" d-block mb-1">
+                        <Button.Ripple
+                          color="primary"
+                          type="submit"
+                          className="px-75 btn-block"
+                        >
+                          Recover Password
+                        </Button.Ripple>
+                      </div>
+
                       <div className="float-md-left d-block mb-1">
                         <Button.Ripple
                           color="primary"
@@ -71,19 +138,6 @@ class ForgotPassword extends React.Component {
                           onClick={() => history.push("/pages/login")}
                         >
                           Back to Login
-                        </Button.Ripple>
-                      </div>
-                      <div className="float-md-right d-block mb-1">
-                        <Button.Ripple
-                          color="primary"
-                          type="submit"
-                          className="px-75 btn-block"
-                          onClick={(e) => {
-                            e.preventDefault();
-                            history.push("/");
-                          }}
-                        >
-                          Recover Password
                         </Button.Ripple>
                       </div>
                     </Form>

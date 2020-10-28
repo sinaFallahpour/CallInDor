@@ -6,7 +6,7 @@ import {
   DropdownToggle,
   DropdownItem,
   Input,
-  Alert
+  Alert,
 } from "reactstrap";
 import DataTable from "react-data-table-component";
 import classnames from "classnames";
@@ -42,7 +42,6 @@ import agent from "../../../core/services/agent";
 // import Spinner from "../../../components/@vuexy/spinner/Loading-spinner";
 
 import Swal from "sweetalert2";
-
 
 // const chipColors = {
 //   "on hold": "warning",
@@ -85,7 +84,7 @@ const ActionsComponent = (props) => {
         className="cursor-pointer"
         size={20}
         onClick={() => {
-          props.deleteRow(props.row)
+          props.deleteRow(props.row);
         }}
       />
     </div>
@@ -261,7 +260,7 @@ class DataListConfig extends Component {
     var params = this.axiosParams();
     const { data } = await agent.User.UsersList(params);
     if (data?.result) {
-      console.log(data.result.data.users)
+      console.log(data.result.data.users);
       await this.setState({
         data: data.result.data.users,
         allData: data.result.data.users,
@@ -280,7 +279,7 @@ class DataListConfig extends Component {
     this.populatingData();
   }
 
-  async componentDidUpdate(prevProps, prevState) { }
+  async componentDidUpdate(prevProps, prevState) {}
 
   handleFilter = async (e) => {
     if (this.state.value == "" && e.target.value == "") return;
@@ -313,21 +312,12 @@ class DataListConfig extends Component {
     if (addNew === true) this.setState({ currentData: null, addNew: true });
   };
 
-
-
-
-
-
-
-
   // data: data.result.data.users,
   // allData: data.result.data.users,
 
-
-  handleDelete = async row => {
-
-    console.log(row)
-    this.setState({ loadngDelete: true })
+  handleDelete = async (row) => {
+    console.log(row);
+    this.setState({ loadngDelete: true });
 
     Swal.fire({
       title: "Delete!",
@@ -338,22 +328,28 @@ class DataListConfig extends Component {
       cancelButtonColor: "#d33",
       confirmButtonText: "Yes,it locks",
       cancelButtonText: "Cancellation",
-
-    }).then(async result => {
+    }).then(async (result) => {
       if (result.value) {
         try {
-          console.clear()
-          console.log(row)
-          console.log(row.userName)
+          console.clear();
+          console.log(row);
+          console.log(row.userName);
 
           const { data } = await agent.User.lockedUser(row.userName);
           if (data.result.status) {
-            this.handleSetNewData(row)
+            this.handleSetNewData(row);
             if (data.result.data)
-              Swal.fire("Successful locking ", "User Successfully Locked", "success");
+              Swal.fire(
+                "Successful locking ",
+                "User Successfully Locked",
+                "success"
+              );
             else
-              Swal.fire("Successful un locking ", "User Successfully un Locked", "success");
-
+              Swal.fire(
+                "Successful un locking ",
+                "User Successfully un Locked",
+                "success"
+              );
           }
         } catch (ex) {
           this.handleCatch(ex);
@@ -366,33 +362,24 @@ class DataListConfig extends Component {
   };
 
   handleSetNewData = (row) => {
-    const { data, allData } = this.state
-    console.clear()
-    console.log(this.state.data)
-    console.log(this.state.allData)
-
+    const { data, allData } = this.state;
+    console.clear();
+    console.log(this.state.data);
+    console.log(this.state.allData);
 
     // this.setState({ data: [] })
 
-    this.setState(prevState => {
+    this.setState((prevState) => {
       return {
         data: prevState.data.map((el) => {
           if (el.userName == row.userName) {
-            return { ...el, isLockOut: !el.isLockOut }
+            return { ...el, isLockOut: !el.isLockOut };
+          } else {
+            return el;
           }
-          else {
-            return el
-          }
-        })
-      }
-    })
-
-
-
-
-
-
-
+        }),
+      };
+    });
 
     // this.setState((pre) => {
     //   console.log(11)
@@ -434,16 +421,13 @@ class DataListConfig extends Component {
     // });
     Swal.fire("Successful locking ", "User Successfully Locked", "success");
 
-    console.log("=============")
-    console.log(this.state.data)
-    console.log(this.state.allData)
-
-  }
-
-
+    console.log("=============");
+    console.log(this.state.data);
+    console.log(this.state.allData);
+  };
 
   handleCatch = (ex) => {
-    console.log(ex)
+    console.log(ex);
     if (ex?.response?.status == 400) {
       const errors = ex?.response?.data?.errors;
       this.setState({ errors });
@@ -454,10 +438,10 @@ class DataListConfig extends Component {
         autoClose: 10000,
       });
     }
-  }
-
+  };
 
   handleCurrentData = (obj) => {
+    console.log(obj);
     this.setState({ currentData: obj });
     this.handleSidebar(true);
   };
@@ -466,7 +450,6 @@ class DataListConfig extends Component {
     await this.setState({ loading: true, currentPage: page.selected });
     this.populatingData();
   };
-
 
   // handleDelete = (state, value) => {
   //   this.setState({ [state]: value })
@@ -486,7 +469,7 @@ class DataListConfig extends Component {
       totalRecords,
       sortIndex,
       errorMessage,
-      errors
+      errors,
     } = this.state;
 
     // const { errorMessage, errors } = this.state;
@@ -494,18 +477,14 @@ class DataListConfig extends Component {
     return (
       <>
         <div
-          className={`data-list ${this.props.thumbView ? "thumb-view" : "list-view"
-            }`}
+          className={`data-list ${
+            this.props.thumbView ? "thumb-view" : "list-view"
+          }`}
         >
-
           {errors &&
             errors.map((err, index) => {
               return (
-                <Alert
-                  key={index}
-                  className="text-center"
-                  color="danger "
-                >
+                <Alert key={index} className="text-center" color="danger ">
                   {err}
                 </Alert>
               );
@@ -562,16 +541,14 @@ class DataListConfig extends Component {
               label: "",
               size: "sm",
             }}
-
           />
 
           <Sidebar
             show={sidebar}
             data={currentData}
-            updateData={this.props.updateData}
+            updateData={this.updateData}
             addData={this.props.addData}
             handleSidebar={this.handleSidebar}
-            thumbView={this.props.thumbView}
             getData={this.props.getData}
             dataParams={this.props.parsedFilter}
             addNew={this.state.addNew}
@@ -583,7 +560,6 @@ class DataListConfig extends Component {
             onClick={() => this.handleSidebar(false, true)}
           />
         </div>
-
       </>
     );
   }
@@ -603,8 +579,5 @@ class DataListConfig extends Component {
 //   getInitialData,
 //   filterData,
 // })(DataListConfig);
-
-
-
 
 export default DataListConfig;
