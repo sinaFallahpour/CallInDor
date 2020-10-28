@@ -71,6 +71,7 @@ const ServiceTypes = {
 const User = {
   // current: () => requests.get("/user"),
   list: () => requests.get("/Account/admin/GetAllAdminInAdmin"),
+  UsersList: () => requests.get("/Account/GetAllUsersList"),
   details: (id) => requests.get(`/Account/admin/GetAdminByIdInAdmin?id=${id}`),
   login: (user) => requests.post("/user/login", user),
   registerAdmin: (user) =>
@@ -124,7 +125,7 @@ const Test = {
 
 const Settings = {
   details: () => requests.get("/Settings/GetSettings"),
-  update: (setting) => requests.put("/Settings/UpdateSettings", setting)
+  update: (setting) => requests.put("/Settings/UpdateSettings", setting),
 };
 
 export default {
@@ -135,5 +136,5 @@ export default {
   ServiceTypes,
   Test,
   Areas,
-  Settings
+  Settings,
 };

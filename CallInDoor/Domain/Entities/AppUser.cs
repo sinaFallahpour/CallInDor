@@ -42,6 +42,7 @@ namespace Domain.Entities
         public string CountryCode { get; set; }
 
 
+        public DateTime  CreateDate { get; set; }
 
 
         #region  Relation

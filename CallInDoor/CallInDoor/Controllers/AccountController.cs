@@ -115,20 +115,55 @@ namespace CallInDoor.Controllers
               .Take((int)perPage)
               .Select(c => new
               {
-                 c.PhoneNumber,
+                  c.PhoneNumber,
                   c.Name,
                   c.LastName,
                   c.UserName,
                   c.PhoneNumberConfirmed,
                   c.ImageAddress,
+                  c.CreateDate,
+                  c.CountryCode,
                   isLockOut = (c.LockoutEnd != null && c.LockoutEnd > DateTime.Now),
-              }).ToListAsync();
+              }).OrderByDescending(c => c.CreateDate).ToListAsync();
+            var data = new { users, totalPages };
 
-            return Ok(_commonService.OkResponse(users, PubicMessages.SuccessMessage));
+            return Ok(_commonService.OkResponse(data, PubicMessages.SuccessMessage));
         }
 
 
         #endregion
+
+
+
+
+
+        #region    locked User
+
+
+        [HttpDelete("LockedUser")]
+        //[Authorize]
+        [PermissionAuthorize(PublicPermissions.User.EditUser)]
+        [PermissionDBCheck(IsAdmin = true, requiredPermission = new string[] { PublicPermissions.User.EditUser })]
+        public async Task<ActionResult> LockedUser(string userId)
+        {
+            var userFromDB = await _userManager.FindByIdAsync(userId);
+
+            if (userFromDB == null)
+                return NotFound(new ApiResponse(404, _localizerShared["NotFound"].Value.ToString()));
+
+            userFromDB.LockoutEnabled = true;
+            userFromDB.LockoutEnd = DateTime.Now.AddYears(100);
+
+            await _context.SaveChangesAsync();
+            await _context.SaveChangesAsync();
+            return Ok(_commonService.OkResponse(null, _localizerShared["SuccessMessage"].Value.ToString()));
+
+        }
+
+
+        #endregion
+
+
 
 
 
@@ -212,7 +247,8 @@ namespace CallInDoor.Controllers
                 //Role = PublicHelper.USERROLE,
                 verificationCode = code,
                 verificationCodeExpireTime = DateTime.UtcNow.AddMinutes(3),
-                CountryCode = model.CountryCode
+                CountryCode = model.CountryCode,
+                CreateDate = DateTime.Now
             };
 
 
@@ -461,15 +497,7 @@ namespace CallInDoor.Controllers
             var user = await _accountService.FindUserByPhonenumber(phoneNumber);
 
             if (user == null)
-            {
                 return Unauthorized(new ApiResponse(401, _localizerShared["InvalidPhoneNumber"].Value.ToString()));
-            }
-
-            if (!user.PhoneNumberConfirmed)
-            {
-                return Unauthorized(new ApiResponse(401, _localizerShared["ConfirmPhoneMessage"].Value.ToString()));
-            }
-
 
             var random = new Random();
             //var code = random.Next(100000, 999999);
@@ -477,10 +505,7 @@ namespace CallInDoor.Controllers
 
             user.verificationCode = code;
             user.verificationCodeExpireTime = DateTime.UtcNow.AddMinutes(3);
-
             await _context.SaveChangesAsync();
-
-
             return Ok(new ApiOkResponse(new DataFormat()
             {
                 Status = 1,
@@ -490,9 +515,6 @@ namespace CallInDoor.Controllers
             },
              _localizerShared["SuccessMessage"].Value.ToString()
             ));
-
-
-
         }
 
         #endregion
@@ -697,7 +719,8 @@ namespace CallInDoor.Controllers
                 Name = model.Name,
                 LastName = model.LastName,
                 verificationCodeExpireTime = DateTime.UtcNow.AddMinutes(3),
-                CountryCode = model.CountryCode
+                CountryCode = model.CountryCode,
+                CreateDate = DateTime.Now
             };
 
 
@@ -724,14 +747,7 @@ namespace CallInDoor.Controllers
                         {
 
                             transaction.Commit();
-                            return Ok(new ApiOkResponse(new DataFormat()
-                            {
-                                Status = 1,
-                                data = response,
-                                Message = PubicMessages.SuccessMessage
-                            },
-                                PubicMessages.SuccessMessage
-                          ));
+                            return Ok(_commonService.OkResponse(response, PubicMessages.SuccessMessage));
                         }
                         else
                         {
