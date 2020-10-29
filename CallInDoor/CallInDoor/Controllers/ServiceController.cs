@@ -125,7 +125,7 @@ namespace CallInDoor.Controllers
                       c.MinSessionTime,
                       c.MinPriceForService
                   }).ToListAsync();
-
+           
             return Ok(new ApiOkResponse(new DataFormat()
             {
                 Status = 1,

@@ -71,7 +71,7 @@ const ServiceTypes = {
 const User = {
   // current: () => requests.get("/user"),
   list: () => requests.get("/Account/admin/GetAllAdminInAdmin"),
-  UsersList: () => requests.get("/Account/GetAllUsersList"),
+  UsersList: (params) => requests.get(`/Account/GetAllUsersList?${params}`),
   details: (id) => requests.get(`/Account/admin/GetAdminByIdInAdmin?id=${id}`),
   login: (user) => requests.post("/user/login", user),
   registerAdmin: (user) =>

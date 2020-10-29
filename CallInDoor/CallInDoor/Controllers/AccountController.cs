@@ -91,13 +91,27 @@ namespace CallInDoor.Controllers
 
             if (!string.IsNullOrEmpty(searchedWord))
             {
-                QueryAble = QueryAble.Where(c =>
-                      (c.Name.ToLower().StartsWith(searchedWord.ToLower()) || c.Name.ToLower().Contains(searchedWord.ToLower())
-                      ||
-                     (c.LastName.StartsWith(searchedWord.ToLower()) || c.LastName.ToLower().Contains(searchedWord.ToLower()))
-                     ||
-                     (c.UserName.ToString().ToLower().StartsWith(searchedWord.ToLower()) || c.UserName.ToString().ToLower().Contains(searchedWord.ToLower()))
-                    ));
+                QueryAble = QueryAble
+                    .Where(c =>
+                    c.Name.ToLower().StartsWith(searchedWord.ToLower()) ||
+                    c.Name.ToLower().Contains(searchedWord.ToLower())
+
+                    ||
+                      c.LastName.ToLower().StartsWith(searchedWord.ToLower()) ||
+                      c.LastName.ToLower().Contains(searchedWord.ToLower())
+
+                    ||
+                       c.UserName.ToLower().StartsWith(searchedWord.ToLower()) ||
+                      c.UserName.ToLower().Contains(searchedWord.ToLower())
+                    );
+
+                //QueryAble = QueryAble.Where(c =>
+                //      (c.Name.ToLower().StartsWith(searchedWord.ToLower()) || c.Name.ToLower().Contains(searchedWord.ToLower())
+                //      ||
+                //     (c.LastName.StartsWith(searchedWord.ToLower()) || c.LastName.ToLower().Contains(searchedWord.ToLower()))
+                //     ||
+                //     (c.UserName.ToString().ToLower().StartsWith(searchedWord.ToLower()) || c.UserName.ToString().ToLower().Contains(searchedWord.ToLower()))
+                //    ));
             };
 
 

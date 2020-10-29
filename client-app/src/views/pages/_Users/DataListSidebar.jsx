@@ -58,7 +58,6 @@ class DataListSidebar extends Component {
       this.setState({ errors: ["Incorrect Confirm Passwwrod "] });
       return false;
     }
-
     return true;
   };
 
@@ -177,13 +176,13 @@ class DataListSidebar extends Component {
                 <span className="ml-50">Loading...</span>
               </Button>
             ) : (
-              <Button
-                color="primary"
+                <Button
+                  color="primary"
                 // onClick={() => this.handleSubmit(this.state)}
-              >
-                {data !== null ? "Update" : "Submit"}
-              </Button>
-            )}
+                >
+                  {data !== null ? "Update" : "Submit"}
+                </Button>
+              )}
 
             <Button
               className="ml-1"
