@@ -12,21 +12,26 @@ import {
   Button,
   Label,
   Alert,
+  Spinner
 } from "reactstrap";
 import fgImg from "../../../assets/img/pages/forgot-password.png";
 import { history } from "../../../history";
 import "../../../assets/scss/pages/authentication.scss";
+import Select from "react-select";
 
 // import authService from "../../../core/services/userService/authService";
 import auth from "../../../core/services/userService/authService";
 import agent from "../../../core/services/agent";
 import { toast } from "react-toastify";
+import { conutryPhoneCodes } from "../../../utility/phone-codes.data";
 
 class ForgotPassword extends React.Component {
   state = {
     phoneNumber: "",
     countryCode: "",
     loading: false,
+
+    conutryPhoneCodes: conutryPhoneCodes,
 
     errors: [],
     errorMessage: "",
@@ -41,8 +46,11 @@ class ForgotPassword extends React.Component {
   }
 
   doSubmit = async (e) => {
-    this.setState({ loading: true });
     e.preventDefault();
+    let result = this.validate(this.state)
+    if (!result)
+      return
+    this.setState({ loading: true });
     const errorMessage = "";
     const errors = [];
     this.setState({ errorMessage, errors });
@@ -72,8 +80,38 @@ class ForgotPassword extends React.Component {
     }
   };
 
+  // sdsds = async () => {
+  //   let data = await this.state.conutryPhoneCodes.filter((item) => item.dial_code === this.state.countryCode)
+  //   console.log(data)
+  // }
+
+
+  validate = (obj) => {
+    let errors = [];
+    let result = true
+    if (obj.phoneNumber.length != 10) {
+      errors.push("The minimum PhoneNumber length is 10 characters")
+      result = false
+    } if (!obj.countryCode) {
+      errors.push("Country code is required")
+      result = false
+    }
+    this.setState({ errors })
+    return result
+  }
+  getValue = () => {
+    console.clear();
+    var selectedCountry = conutryPhoneCodes.filter((item) => item.dial_code === this.state.countryCode)
+    console.log(selectedCountry)
+    var data = { value: selectedCountry[0]?.dial_code, label: selectedCountry[0]?.dial_code }
+    console.log(data)
+    return data;
+  }
+
+
+
   render() {
-    const { errors } = this.state;
+    const { errors, loading, conutryPhoneCodes, countryCode, phoneNumber } = this.state;
     return (
       <Row className="m-0 justify-content-center">
         <Col
@@ -103,23 +141,86 @@ class ForgotPassword extends React.Component {
                     password .
                   </p>
                   <CardBody className="pt-1 pb-0">
-                    {errors &&
-                      errors.map((err, index) => {
-                        return (
-                          <Alert key={index} color="danger">
-                            {err}
-                          </Alert>
-                        );
-                      })}
-                    <Form onSubmit={this.doSubmit}>
-                      <FormGroup className="form-label-group">
+                    <div className="mb-4">
+
+                      {errors &&
+                        errors.map((err, index) => {
+                          return (
+                            <Alert key={index} color="danger">
+                              {err}
+                            </Alert>
+
+                          );
+                        })}
+                    </div>
+                    <Form onSubmit={this.doSubmit} className="row">
+
+                      {console.log("new render")
+                      }
+                      <FormGroup className="form-label-group col-5">
+
+                        <Select
+                          className="React"
+                          classNamePrefix="select"
+                          // defaultValue={options[1]}
+                          value={this.getValue()}
+                          name="countryCode"
+                          // defaultValue={{ value: "", label: "" }}
+                          //value={value}
+                          isClearable={true}
+                          options={conutryPhoneCodes.map((item) => ({
+                            value: item.dial_code,
+                            label: item.dial_code,
+                          })
+                          )}
+                          onChange={(e) => {
+                            this.setState({ countryCode: e?.value })
+                          }}
+
+                        // onChange={(e) => {
+                        //   onChange({ currentTarget: { name: name, value: e?.value } });
+                        // }}
+                        />
+                        <Label>Country code</Label>
+                      </FormGroup>
+                      <FormGroup className="form-label-group col-7 p-0">
                         <Input
                           type="number"
                           placeholder="Phone number"
+                          onChange={(e) => this.setState({ phoneNumber: e.target.value })}
+                          value={phoneNumber}
                           required
                         />
                         <Label>Phone number</Label>
                       </FormGroup>
+
+
+
+
+
+                      {loading ? (
+                        <div className=" d-block mb-1 col-12">
+
+                          <Button disabled={true} color="primary" className="mb-1">
+                            <Spinner color="white" size="sm" type="grow" />
+                            <span className="ml-50">Loading...</span>
+                          </Button>
+                        </div>
+
+                      ) : (
+
+                          <div className=" d-block mb-1 col-12">
+                            <Button.Ripple
+                              color="primary"
+                              type="submit"
+                              className="px-75 btn-block"
+                            >
+                              Recover Password
+                        </Button.Ripple>
+                          </div>
+                        )}
+
+                      {/* 
                       <div className=" d-block mb-1">
                         <Button.Ripple
                           color="primary"
@@ -128,9 +229,9 @@ class ForgotPassword extends React.Component {
                         >
                           Recover Password
                         </Button.Ripple>
-                      </div>
+                      </div> */}
 
-                      <div className="float-md-left d-block mb-1">
+                      <div className=" d-block mb-1 col-12">
                         <Button.Ripple
                           color="primary"
                           outline

@@ -279,7 +279,7 @@ class DataListConfig extends Component {
     this.populatingData();
   }
 
-  async componentDidUpdate(prevProps, prevState) {}
+  async componentDidUpdate(prevProps, prevState) { }
 
   handleFilter = async (e) => {
     if (this.state.value == "" && e.target.value == "") return;
@@ -477,9 +477,8 @@ class DataListConfig extends Component {
     return (
       <>
         <div
-          className={`data-list ${
-            this.props.thumbView ? "thumb-view" : "list-view"
-          }`}
+          className={`data-list ${this.props.thumbView ? "thumb-view" : "list-view"
+            }`}
         >
           {errors &&
             errors.map((err, index) => {
