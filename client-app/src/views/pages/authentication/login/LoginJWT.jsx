@@ -14,30 +14,41 @@ import {
   Spinner,
 } from "reactstrap";
 // import Checkbox from "../../../../components/@vuexy/checkbox/CheckboxesVuexy";
-import { Lock, Phone } from "react-feather";
+import { Lock, Phone, Code } from "react-feather";
+import Select from "react-select";
+
 // import { loginWithJWT } from "../../../../redux/actions/auth/loginActions";
 // import { connect } from "react-redux";
 // import { history } from "../../../../history";
 import { toast } from "react-toastify";
 // import Spinner from "../../../../components/@vuexy/spinner/Loading-spinner";
+import { conutryPhoneCodes } from "../../../../utility/phone-codes.data";
 
 class LoginJWT extends React.Component {
   state = {
     phone: "",
     password: "",
+    countryCode: "",
     errors: [],
     errorMessage: "",
     loading: false,
+
+    conutryPhoneCodes: conutryPhoneCodes,
+
   };
 
   doSubmit = async (e) => {
-    this.setState({ loading: true });
     e.preventDefault();
+    let result = this.validate(this.state)
+    if (!result)
+      return
+    this.setState({ loading: true });
     const errorMessage = "";
     const errors = [];
     this.setState({ errorMessage, errors });
     try {
-      const { phone, password } = this.state;
+      let { phone, password, countryCode } = this.state;
+      phone = countryCode + phone
       const res = await auth.login(phone, password);
       setTimeout(() => {
         const state = this.props?.location?.state;
@@ -62,6 +73,29 @@ class LoginJWT extends React.Component {
     }
   };
 
+  validate = (obj) => {
+    let errors = [];
+    let result = true
+    if (obj.phone.length != 10) {
+      errors.push("The minimum PhoneNumber length is 10 characters")
+      result = false
+    } if (!obj.countryCode) {
+      errors.push("Country code is required")
+      result = false
+    }
+    this.setState({ errors })
+    return result
+  }
+
+
+
+  getValue = () => {
+    var selectedCountry = conutryPhoneCodes.filter((item) => item.dial_code === this.state.countryCode)
+    var data = { value: selectedCountry[0]?.dial_code, label: selectedCountry[0]?.dial_code }
+    return data;
+  }
+
+
   render() {
     // if (this.state.Loading) {
     //   return <Spinner />;
@@ -81,6 +115,32 @@ class LoginJWT extends React.Component {
             })}
 
           <Form action="/s" className="mt-3" onSubmit={this.doSubmit}>
+
+            <FormGroup className="form-label-group position-relative has-icon-left">
+              <label htmlFor="select"> Country code</label>
+
+              <Select
+                className="React"
+                classNamePrefix="select"
+                id="select"
+                // defaultValue={options[1]}
+                value={this.getValue()}
+                name="countryCode"
+                // defaultValue={{ value: "", label: "" }}
+                //value={value}
+                isClearable={true}
+                options={conutryPhoneCodes.map((item) => ({
+                  value: item.dial_code,
+                  label: item.name,
+                })
+                )}
+                onChange={(e) => {
+                  this.setState({ countryCode: e?.value })
+                }}
+              />
+
+            </FormGroup>
+
             <FormGroup className="form-label-group position-relative has-icon-left">
               <Input
                 type="number"
@@ -126,10 +186,10 @@ class LoginJWT extends React.Component {
                   <span className="ml-50">Loading...</span>
                 </Button>
               ) : (
-                <Button.Ripple color="primary" type="submit">
-                  Login
-                </Button.Ripple>
-              )}
+                  <Button.Ripple color="primary" type="submit">
+                    Login
+                  </Button.Ripple>
+                )}
             </div>
           </Form>
         </CardBody>

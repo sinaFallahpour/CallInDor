@@ -378,7 +378,7 @@ namespace CallInDoor.Controllers
 
             var roles = await _userManager.GetRolesAsync(user);
             var role = roles.FirstOrDefault();
-            if (role != PublicHelper.ADMINROLE)
+            if (role == PublicHelper.USERROLE)
                 return Unauthorized(new ApiResponse(401, "In accessibility"));
 
             var result = await _accountService.CheckPasswordAsync(user, model.Password);
@@ -579,8 +579,6 @@ namespace CallInDoor.Controllers
 
 
         #endregion
-
-
 
 
 
