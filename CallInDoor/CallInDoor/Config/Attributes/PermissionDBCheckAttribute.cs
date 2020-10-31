@@ -33,20 +33,28 @@ namespace CallInDoor.Config.Attributes
             var currentPermission = context.HttpContext?.User?.Claims?.Where(x => x.Type == PublicPermissions.Permission).ToList();
             var currentSerialNumber = context.HttpContext.User?.Claims?.FirstOrDefault(x => x.Type == PublicHelper.SerialNumberClaim)?.Value;
 
-            var userId = _context.Users.Where(c => c.UserName == currentUserName && c.SerialNumber == currentSerialNumber)
-                    .Select(c => c.Id).FirstOrDefault();
+            var userFromDB = _context.Users.Where(c => c.UserName == currentUserName && c.SerialNumber == currentSerialNumber)
+                    .Select(c => new { c.Id, c.LockoutEnd }).FirstOrDefault();
 
-            if (string.IsNullOrEmpty(userId))
+            if (string.IsNullOrEmpty(userFromDB.Id))
             {
                 context.Result = new UnauthorizedObjectResult(new ApiResponse(401, ErrorMessage(_localizerShared, IsAdmin)));
                 return;
             }
 
+            if (userFromDB.LockoutEnd != null && userFromDB.LockoutEnd > DateTime.Now)
+            {
+                var errors = new List<string>() {
+                _localizerShared["BlockUserMessage"].Value.ToString()
+                };
+                context.Result = new BadRequestObjectResult(new ApiBadRequestResponse(errors));
+                return;
+            }
 
 
             if (requiredPermission.Count() != 0)
             {
-                var query1 = (from ur in _context.UserRoles.Where(c => c.UserId == userId)
+                var query1 = (from ur in _context.UserRoles.Where(c => c.UserId == userFromDB.Id)
                               join r in _context.Roles
                               on ur.RoleId equals r.Id
                               join rp in _context.Role_Permission

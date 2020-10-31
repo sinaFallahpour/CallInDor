@@ -43,6 +43,7 @@ class ModalForm extends Form {
       minSessionTime: "",
       acceptedMinPriceForNative: "",
       acceptedMinPriceForNonNative: "",
+      sitePercent: "",
       roleId: null,
     },
     tags: [],
@@ -86,6 +87,13 @@ class ModalForm extends Form {
       .min(1)
       .max(10000000000000)
       .label("minimum Price For Non Native User"),
+
+    sitePercent: Joi.number()
+      .required()
+      .min(0)
+      .max(100)
+      .label("Site percent"),
+
 
     roleId: Joi.string().required().label("role"),
     roles: Joi.label("roles"),
@@ -157,20 +165,25 @@ class ModalForm extends Form {
 
               <form onSubmit={this.handleSubmit}>
                 {this.renderInput("name", "Name")}
-                {this.renderInput("persianName", "PersianName")}
+                {this.renderInput("persianName", "Persian Name")}
                 {this.renderInput("color", "Color")}
+                {this.renderInput("sitePercent", "Site percent(%)", "number")}
+
                 {this.renderInput(
                   "minPriceForService",
                   "Minimm Price (For Service)$"
+                  , "number"
                 )}
 
                 {this.renderInput(
                   "acceptedMinPriceForNative",
-                  "Minimm Price For Native User (For Chat,Voice,video)$"
+                  "Minimm Price For Native User (For Chat,Voice,video)$",
+                  "number"
                 )}
                 {this.renderInput(
                   "acceptedMinPriceForNonNative",
-                  "Minimm Price For Non Native User  (For Chat,Voice,video)$"
+                  "Minimm Price For Non Native User  (For Chat,Voice,video)$",
+                  "number"
                 )}
                 {this.renderInput(
                   "minSessionTime",
@@ -262,8 +275,8 @@ class ModalForm extends Form {
                     <span className="ml-50">Loading...</span>
                   </Button>
                 ) : (
-                  this.renderButton("Save")
-                )}
+                    this.renderButton("Save")
+                  )}
               </form>
             </CardBody>
           </Card>

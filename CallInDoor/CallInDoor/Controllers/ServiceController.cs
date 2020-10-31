@@ -17,6 +17,7 @@ using Service.Interfaces.ServiceType;
 using Domain.DTO.Service;
 using Domain.Enums;
 using CallInDoor.Config.Attributes;
+using Service.Interfaces.Common;
 
 namespace CallInDoor.Controllers
 {
@@ -28,17 +29,22 @@ namespace CallInDoor.Controllers
         private readonly DataContext _context;
         private readonly IAccountService _accountService;
         private readonly IServiceService _servicetypeService;
+        private readonly ICommonService _commonService;
 
         private IStringLocalizer<ShareResource> _localizerShared;
         private IStringLocalizer<ServiceController> _locaLizer;
-        public ServiceController(DataContext context,
+        public ServiceController(
+            DataContext context,
+              IAccountService accountService,
+              IServiceService servicetypeService,
+              ICommonService commonService,
              IStringLocalizer<ShareResource> localizerShared,
-              IStringLocalizer<ServiceController> locaLizer,
-             IAccountService accountService,
-              IServiceService servicetypeService
+              IStringLocalizer<ServiceController> locaLizer
+           
             )
         {
             _context = context;
+            _commonService = commonService;
             _accountService = accountService;
             _localizerShared = localizerShared;
             _locaLizer = locaLizer;
@@ -70,12 +76,13 @@ namespace CallInDoor.Controllers
                    c.Id,
                    c.Name,
                    c.PersianName,
+                   c.SitePercent,
                    c.IsEnabled,
-                   c.Color,
                    c.MinPriceForService,
                    c.MinSessionTime,
                    c.AcceptedMinPriceForNative,
                    c.AcceptedMinPriceForNonNative,
+                   c.Color,
                    RoleId = c.AppRole.Id,
                    tags = c.Tags.Where(p => p.IsEnglisTags && !string.IsNullOrEmpty(p.TagName)).Select(s => s.TagName).ToList(),
                    persinaTags = c.Tags.Where(p => p.IsEnglisTags == false && !string.IsNullOrEmpty(p.PersianTagName)).Select(s => s.PersianTagName).ToList()
@@ -103,11 +110,9 @@ namespace CallInDoor.Controllers
         // GET: api/GetAllServiceForAdmin
         [HttpGet("GetAllServiceForAdmin")]
         [Authorize(Roles = PublicHelper.ADMINROLE)]
+        [ClaimsAuthorize(IsAdmin =true)]
         public async Task<ActionResult> GetAllServiceForAdmin()
         {
-            var checkToken = await _accountService.CheckTokenIsValid();
-            if (!checkToken)
-                return Unauthorized(new ApiResponse(401, PubicMessages.UnAuthorizeMessage));
 
             var AllServices = await _context
                   .ServiceTBL
@@ -118,6 +123,7 @@ namespace CallInDoor.Controllers
                       c.IsEnabled,
                       c.Name,
                       c.PersianName,
+                      c.SitePercent,
                       c.Color,
                       RoleName = c.AppRole.Name,
                       c.AcceptedMinPriceForNative,
@@ -125,15 +131,9 @@ namespace CallInDoor.Controllers
                       c.MinSessionTime,
                       c.MinPriceForService
                   }).ToListAsync();
-           
-            return Ok(new ApiOkResponse(new DataFormat()
-            {
-                Status = 1,
-                data = AllServices,
-                Message = PubicMessages.SuccessMessage
-            },
-          PubicMessages.SuccessMessage
-         ));
+
+            return Ok(_commonService.OkResponse(AllServices, PubicMessages.SuccessMessage));
+         
 
         }
 
@@ -261,6 +261,7 @@ namespace CallInDoor.Controllers
                     c.MinSessionTime
                 }).ToList();
 
+
             return Ok(new ApiOkResponse(new DataFormat()
             {
                 Status = 1,
@@ -283,41 +284,33 @@ namespace CallInDoor.Controllers
         /// <returns></returns>
         [HttpPost("CreateForAdmin")]
         [Authorize(Roles = PublicHelper.ADMINROLE)]
+        [ClaimsAuthorize(IsAdmin = true)]
         public async Task<ActionResult> CreateForAdmin([FromBody] CreateServiceDTO model)
         {
 
-            var checkToken = await _accountService.CheckTokenIsValid();
-            if (!checkToken)
-                return Unauthorized(new ApiResponse(401, PubicMessages.UnAuthorizeMessage));
-
+            #region validation
             var roleExist = await _context.Roles.AnyAsync(c => c.Id == model.RoleId);
+            var errors = new List<string>();
             if (!roleExist)
             {
-                var errors = new List<string>();
                 errors.Add("invalid Role.");
                 return BadRequest(new ApiBadRequestResponse(errors));
             }
+            var seviceExist = await _context.ServiceTBL.AnyAsync(c => c.Name == model.Name || c.PersianName == model.PersianName);
+            if (!seviceExist)
+            {
+                errors.Add($"name Or persian Name already exist.");
+                return BadRequest(new ApiBadRequestResponse(errors));
+            }
 
-
+            #endregion 
             var result = await _servicetypeService.Create(model);
             if (result)
-            {
-                return Ok(new ApiOkResponse(new DataFormat()
-                {
-                    Status = 1,
-                    data = new { },
-                    Message = PubicMessages.SuccessMessage
-                },
-                   PubicMessages.SuccessMessage
-                  ));
-            }
+                return Ok(_commonService.OkResponse(null,PubicMessages.SuccessMessage));
 
             return StatusCode(StatusCodes.Status500InternalServerError,
               new ApiResponse(500, PubicMessages.InternalServerMessage)
             );
-
-            //return badrequest(new ApiResponse(401, _localizerShared["InvalidPhoneNumber"].Value.ToString()));
-
         }
 
 
@@ -350,16 +343,7 @@ namespace CallInDoor.Controllers
 
             var result = await _servicetypeService.Update(service, model);
             if (result)
-            {
-                return Ok(new ApiOkResponse(new DataFormat()
-                {
-                    Status = 1,
-                    data = new { },
-                    Message = PubicMessages.SuccessMessage
-                },
-                   PubicMessages.SuccessMessage
-                  ));
-            }
+                return Ok(_commonService.OkResponse(null, PubicMessages.SuccessMessage));
 
 
             return StatusCode(StatusCodes.Status500InternalServerError,
@@ -578,7 +562,7 @@ namespace CallInDoor.Controllers
                .Include(c => c.MyChatsService)
                .FirstOrDefaultAsync();
 
-        
+
             if (serviceFromDB == null)
                 return NotFound(new ApiResponse(404, _localizerShared["NotFound"].Value.ToString()));
 
@@ -656,8 +640,8 @@ namespace CallInDoor.Controllers
                .BaseMyServiceTBL
                .Where(c => c.Id == id && c.IsDeleted == false)
                .FirstOrDefaultAsync();
-            
-            
+
+
             if (serviceFromDB == null)
                 return NotFound(new ApiResponse(404, _localizerShared["NotFound"].Value.ToString()));
 

@@ -35,7 +35,7 @@ namespace Domain.DTO.Service
         /// </summary>
         public double MinPriceForService { get; set; }
 
-
+        public int SitePercent { get; set; }
 
 
         /// <summary>

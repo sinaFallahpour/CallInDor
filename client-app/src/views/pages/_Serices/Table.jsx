@@ -51,6 +51,11 @@ class Table extends React.Component {
         filter: true,
       },
       {
+        headerName: "Site Percent",
+        field: "sitePercent",
+        filter: true,
+      },
+      {
         headerName: "Minimm Price For Service($)",
         field: "minPriceForService",
         filter: true,

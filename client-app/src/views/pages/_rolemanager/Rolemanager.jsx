@@ -375,7 +375,7 @@ class RoleManager extends React.Component {
                           }}
                         />
                       </Label>
-                      {item.id}
+
                       {item.title}
                     </Col>
                   );

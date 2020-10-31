@@ -64,7 +64,7 @@ namespace Domain.DTO.Account
 
 
 
-
+    
         /// <summary>
         /// حداقل قیمت مجاز برای کاربران تیتیو برای سرویس های چت یا وویس یا ویدیو
         /// </summary>
@@ -89,6 +89,10 @@ namespace Domain.DTO.Account
 
 
 
+        [Required(ErrorMessage = "{0} is resquired")]
+        [Range(0, 100, ErrorMessage = "{0} is Invalid")]
+        [Display(Name = "Site Percent")]
+        public int SitePercent { get; set; }
 
 
         /// <summary>

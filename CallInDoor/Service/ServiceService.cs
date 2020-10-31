@@ -78,6 +78,7 @@ namespace Service
                     Name = c.Name,
                     PersianName = c.PersianName,
                     RoleName = c.AppRole.Name,
+                    SitePercent = c.SitePercent,
                     AcceptedMinPriceForNative = c.AcceptedMinPriceForNative,
                     AcceptedMinPriceForNonNative = c.AcceptedMinPriceForNonNative,
                     MinPriceForService = c.MinPriceForService,
@@ -108,7 +109,8 @@ namespace Service
                 MinPriceForService = model.MinPriceForService,
                 MinSessionTime = model.MinSessionTime,
                 AcceptedMinPriceForNative = model.AcceptedMinPriceForNative,
-                AcceptedMinPriceForNonNative = model.AcceptedMinPriceForNonNative
+                AcceptedMinPriceForNonNative = model.AcceptedMinPriceForNonNative,
+                SitePercent = model.SitePercent
             };
 
             var servicetags = new List<ServiceTagsTBL>();
@@ -181,12 +183,14 @@ namespace Service
                 serviceFromDB.PersianName = model.PersianName;
                 serviceFromDB.Name = model.Name;
                 serviceFromDB.IsEnabled = model.IsEnabled;
+                serviceFromDB.SitePercent = model.SitePercent;
                 serviceFromDB.Color = model.Color;
                 serviceFromDB.MinPriceForService = model.MinPriceForService;
                 serviceFromDB.MinSessionTime = model.MinSessionTime;
                 serviceFromDB.AcceptedMinPriceForNative = model.AcceptedMinPriceForNative;
                 serviceFromDB.AcceptedMinPriceForNonNative = model.AcceptedMinPriceForNonNative;
                 serviceFromDB.RoleId = model.RoleId;
+
                 //serviceFromDB.Tags.Clear();
 
                 var servicetags = new List<ServiceTagsTBL>();

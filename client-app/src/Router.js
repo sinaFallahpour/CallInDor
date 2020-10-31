@@ -957,13 +957,7 @@ class AppRouter extends React.Component {
               user={{ ...user }}
               component={profile}
             />
-            <RouteConfig
-              isLoggedIn={isLoggedIn}
-              path="/pages/knowledge-base"
-              role="admin"
-              user={{ ...user }}
-              exact
-            />
+
             <RouteConfig
               isLoggedIn={isLoggedIn}
               path="/pages/knowledge-base/category"

@@ -65,6 +65,12 @@ namespace Domain.Entities
 
 
 
+        /// <summary>
+        /// درصد پولی که به ادمین میرسد
+        /// برای این سرویس خواص
+        /// </summary>
+        public int SitePercent { get; set; }
+
 
 
         #region  Relation
