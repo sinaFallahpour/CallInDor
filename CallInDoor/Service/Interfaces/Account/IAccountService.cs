@@ -44,7 +44,7 @@ namespace Service.Interfaces.Account
 
         Task<ProfileGetDTO> ProfileGet();
 
-        Task<(bool succsseded, List<string> result)> ValidateUpdateProfile(UpdateProfileDTO model);
+      (bool succsseded, List<string> result) ValidateUpdateProfile(UpdateProfileDTO model);
 
 
     }

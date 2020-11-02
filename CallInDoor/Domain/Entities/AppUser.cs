@@ -47,7 +47,9 @@ namespace Domain.Entities
 
         #region  Relation
 
-        public virtual ICollection<User_FieldTBL> UsersFields { get; set; }
+        public  ICollection<FieldTBL> Fields { get; set; }
+
+        //public virtual ICollection<User_FieldTBL> UsersFields { get; set; }
 
 
         /// <summary>

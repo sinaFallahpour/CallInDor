@@ -18,6 +18,8 @@ namespace CallInDoor.Controllers
     [Route("api/[controller]")]
     public class HomeController : BaseControlle
     {
+
+        #region
         private readonly DataContext _context;
         private readonly ICommonService _commonService;
         private IStringLocalizer<ShareResource> _localizerShared;
@@ -31,6 +33,11 @@ namespace CallInDoor.Controllers
             _commonService = commonService;
             _localizerShared = localizerShared;
         }
+
+
+
+        #endregion
+
 
         //public IActionResult Index()
         //{

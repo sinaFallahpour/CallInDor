@@ -40,7 +40,7 @@ namespace CallInDoor.Controllers
               ICommonService commonService,
              IStringLocalizer<ShareResource> localizerShared,
               IStringLocalizer<ServiceController> locaLizer
-           
+
             )
         {
             _context = context;
@@ -62,11 +62,9 @@ namespace CallInDoor.Controllers
         /// <returns></returns>
         [HttpGet("GetServiceByIdForAdmin")]
         [Authorize(Roles = PublicHelper.ADMINROLE)]
+        [ClaimsAuthorize(IsAdmin = true)]
         public async Task<ActionResult> GetServiceByIdForAdmin(int Id)
         {
-            var checkToken = await _accountService.CheckTokenIsValid();
-            if (!checkToken)
-                return Unauthorized(new ApiResponse(401, PubicMessages.UnAuthorizeMessage));
 
             var Service = await _context.ServiceTBL
                .AsNoTracking()
@@ -91,14 +89,8 @@ namespace CallInDoor.Controllers
             if (Service == null)
                 return NotFound(new ApiResponse(404, PubicMessages.NotFoundMessage));
 
-            return Ok(new ApiOkResponse(new DataFormat()
-            {
-                Status = 1,
-                data = Service,
-                Message = PubicMessages.SuccessMessage
-            },
-            PubicMessages.SuccessMessage
-           ));
+            return Ok(_commonService.OkResponse(Service, PubicMessages.SuccessMessage));
+
 
         }
 
@@ -110,10 +102,9 @@ namespace CallInDoor.Controllers
         // GET: api/GetAllServiceForAdmin
         [HttpGet("GetAllServiceForAdmin")]
         [Authorize(Roles = PublicHelper.ADMINROLE)]
-        [ClaimsAuthorize(IsAdmin =true)]
+        [ClaimsAuthorize(IsAdmin = true)]
         public async Task<ActionResult> GetAllServiceForAdmin()
         {
-
             var AllServices = await _context
                   .ServiceTBL
                   .AsNoTracking()
@@ -133,7 +124,7 @@ namespace CallInDoor.Controllers
                   }).ToListAsync();
 
             return Ok(_commonService.OkResponse(AllServices, PubicMessages.SuccessMessage));
-         
+
 
         }
 
@@ -143,18 +134,11 @@ namespace CallInDoor.Controllers
 
         // GET: api/GetAllService
         [HttpGet("GetAllActiveService")]
-        [AllowAnonymous]
+        [Authorize]
         public async Task<ActionResult> GetAllActiveService()
         {
             var services = await _servicetypeService.GetAllActiveService();
-            return Ok(new ApiOkResponse(new DataFormat()
-            {
-                Status = 1,
-                data = services,
-                Message = PubicMessages.SuccessMessage
-            },
-           PubicMessages.SuccessMessage
-          ));
+            return Ok(_commonService.OkResponse(services, PubicMessages.SuccessMessage));
         }
 
 
@@ -163,16 +147,16 @@ namespace CallInDoor.Controllers
 
         [HttpGet("GetTagsForService")]
         [Authorize]
+        [ClaimsAuthorize(IsAdmin = false)]
         public async Task<ActionResult> GetTagsForService(int? Id)
         {
-            var checkToken = await _accountService.CheckTokenIsValid();
-            if (!checkToken)
-                return Unauthorized(new ApiResponse(401, PubicMessages.UnAuthorizeMessage));
-
             if (Id == null)
-                return NotFound(new ApiResponse(404, _localizerShared["NotFound"].Value.ToString()));
-
-            var tags = _context.ServiceTags
+            {
+                List<string> erros = new List<string> { _localizerShared["NotFound"].Value.ToString() };
+                return NotFound(new ApiBadRequestResponse(erros, 404));
+                //return NotFound(new ApiResponse(404, _localizerShared["NotFound"].Value.ToString()));
+            }
+            var tags =await _context.ServiceTags
                 .AsNoTracking()
                 .Where(c => c.ServiceId == Id)
                 .Select(c => new
@@ -181,16 +165,10 @@ namespace CallInDoor.Controllers
                     c.IsEnglisTags,
                     c.PersianTagName,
                     c.TagName,
-                }).ToList();
+                }).ToListAsync();
 
-            return Ok(new ApiOkResponse(new DataFormat()
-            {
-                Status = 1,
-                data = tags,
-                Message = _localizerShared["SuccessMessage"].Value.ToString()
-            },
-           _localizerShared["SuccessMessage"].Value.ToString()
-           ));
+            return Ok(_commonService.OkResponse(tags, _localizerShared["SuccessMessage"].Value.ToString()));
+          
 
         }
 
@@ -205,16 +183,17 @@ namespace CallInDoor.Controllers
         /// <returns></returns>
         [HttpGet("GetTimeAndPriceForService/{Id}")]
         [Authorize]
+        [ClaimsAuthorize(IsAdmin = false)]
         public async Task<ActionResult> GetTimeAndPriceForService(int? Id)
         {
-            var checkToken = await _accountService.CheckTokenIsValid();
-            if (!checkToken)
-                return Unauthorized(new ApiResponse(401, _localizerShared["UnauthorizedMessage"].Value.ToString()));
 
             if (Id == null)
-                return NotFound(new ApiResponse(404, _localizerShared["NotFound"].Value.ToString()));
-
-            var serviceTimsandProice = _context
+            {
+                List<string> erros = new List<string> { _localizerShared["NotFound"].Value.ToString() };
+                return NotFound(new ApiBadRequestResponse(erros, 404));
+                //return NotFound(new ApiResponse(404, _localizerShared["NotFound"].Value.ToString()));
+            }
+            var serviceTimsandProice =await _context
                 .ServiceTBL
                 .AsNoTracking()
                 .Where(c => c.Id == Id)
@@ -222,17 +201,9 @@ namespace CallInDoor.Controllers
                 {
                     c.MinPriceForService,
                     c.MinSessionTime,
-                }).ToList();
+                }).ToListAsync();
 
-            return Ok(new ApiOkResponse(new DataFormat()
-            {
-                Status = 1,
-                data = serviceTimsandProice,
-                Message = _localizerShared["SuccessMessage"].Value.ToString()
-            },
-           _localizerShared["SuccessMessage"].Value.ToString()
-           ));
-
+            return Ok(_commonService.OkResponse(serviceTimsandProice, _localizerShared["SuccessMessage"].Value.ToString()));
         }
 
 
@@ -246,31 +217,18 @@ namespace CallInDoor.Controllers
         /// <returns></returns>
         [HttpGet("GetTimeAndPriceForService")]
         [Authorize]
+        [ClaimsAuthorize(IsAdmin = false)]
         public async Task<ActionResult> GetTimeAndPriceForService()
         {
-            var checkToken = await _accountService.CheckTokenIsValid();
-            if (!checkToken)
-                return Unauthorized(new ApiResponse(401, _localizerShared["UnauthorizedMessage"].Value.ToString()));
-
-            var serviceTimsandProice = _context
+            var serviceTimsandProice =await _context
                 .ServiceTBL
                 .AsNoTracking()
                 .Select(c => new
                 {
                     c.MinPriceForService,
                     c.MinSessionTime
-                }).ToList();
-
-
-            return Ok(new ApiOkResponse(new DataFormat()
-            {
-                Status = 1,
-                data = serviceTimsandProice,
-                Message = _localizerShared["SuccessMessage"].Value.ToString()
-            },
-           _localizerShared["SuccessMessage"].Value.ToString()
-           ));
-
+                }).ToListAsync();
+            return Ok(_commonService.OkResponse(serviceTimsandProice, _localizerShared["SuccessMessage"].Value.ToString()));
         }
 
 
@@ -306,7 +264,7 @@ namespace CallInDoor.Controllers
             #endregion 
             var result = await _servicetypeService.Create(model);
             if (result)
-                return Ok(_commonService.OkResponse(null,PubicMessages.SuccessMessage));
+                return Ok(_commonService.OkResponse(null, PubicMessages.SuccessMessage));
 
             return StatusCode(StatusCodes.Status500InternalServerError,
               new ApiResponse(500, PubicMessages.InternalServerMessage)

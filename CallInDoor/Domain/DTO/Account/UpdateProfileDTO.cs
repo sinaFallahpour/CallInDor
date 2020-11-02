@@ -9,7 +9,7 @@ namespace Domain.DTO.Account
 {
     public class UpdateProfileDTO
     {
-        public string Username { get; set; }
+        //public string Username { get; set; }
 
 
         [MaxLength(80, ErrorMessage = "The maximum {0} length is {1} characters")]
@@ -41,14 +41,20 @@ namespace Domain.DTO.Account
 
 
         [NotMapped]
-        public IFormFile File { get; set; }
+        public IFormFile Image { get; set; }
+
+        [NotMapped]
+        public IFormFile Video { get; set; }
 
 
 
+        public ICollection<FiledsDTO> Fields { get; set; }
         //public List<UserFiledsDTO> UsersDegrees { get; set; }
-        public List<int> FieldsId { get; set; }
+        //public List<int> FieldsId { get; set; }
 
     }
+
+
 
 
 

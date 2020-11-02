@@ -36,9 +36,7 @@ mock.onPost("/api/authenticate/login/user").reply( request => {
   const user = users.find(user => user.email === email && user.password === password)
 
   if (user) {
-
     try {
-
       const accessToken = jwt.sign({id: user.id}, jwtConfig.secret, {expiresIn: jwtConfig.expireTime})
 
       const userData = Object.assign({}, user, {loggedInWith: "jwt"})

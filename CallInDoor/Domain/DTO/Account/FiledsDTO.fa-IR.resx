@@ -117,40 +117,13 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="BlockUserMessage" xml:space="preserve">
-    <value>حساب کاربری شما قفل شده است</value>
+  <data name="The maximum {0} length is {1} characters" xml:space="preserve">
+    <value> حدا کثر تعداد کاراکتر برای {0} {1} است</value>
   </data>
-  <data name="ConfirmPhoneMessage" xml:space="preserve">
-    <value>لطفا حساب کاربری خود را تایید </value>
+  <data name="The minimum {0} length is {1} characters" xml:space="preserve">
+    <value>حداقل تعداد کاراکتر برای {0} {1} است</value>
   </data>
-  <data name="ErrorMessage" xml:space="preserve">
-    <value>خطا در ثبت</value>
-  </data>
-  <data name="InCorrectPassword" xml:space="preserve">
-    <value>پسورد صحیح نمیباشد</value>
-  </data>
-  <data name="InternalServerMessage" xml:space="preserve">
-    <value>خطایی رخ داده است</value>
-  </data>
-  <data name="InvalidPhoneNumber" xml:space="preserve">
-    <value>شماره موبایل صحیح نمیباشد</value>
-  </data>
-  <data name="LockedOutMessage" xml:space="preserve">
-    <value>حساب کاربری قفل شده است</value>
-  </data>
-  <data name="NotFound" xml:space="preserve">
-    <value>نتیجه ایی یافت نشد</value>
-  </data>
-  <data name="PhoneNumber  already  exist." xml:space="preserve">
-    <value>شماره موبایل  تکراریست</value>
-  </data>
-  <data name="SuccessMessage" xml:space="preserve">
-    <value>ثبت موفقیت آمیز</value>
-  </data>
-  <data name="UnauthorizedMessage" xml:space="preserve">
-    <value>عدم دسترسی</value>
-  </data>
-  <data name="UnMathPhoneNumberPassword" xml:space="preserve">
-    <value>رمز عبور یا  شماره موبایل صحیح نمی باشد</value>
+  <data name="{0} is  Required" xml:space="preserve">
+    <value>{0} الزامیست</value>
   </data>
 </root>

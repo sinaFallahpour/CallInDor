@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using CallInDoor.Config.Attributes;
 using Domain;
 using Domain.DTO.Account;
 using Domain.DTO.Response;
@@ -16,6 +17,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Localization;
 using Service.Interfaces.Account;
+using Service.Interfaces.Common;
 
 namespace CallInDoor.Controllers
 {
@@ -30,6 +32,7 @@ namespace CallInDoor.Controllers
         //private readonly UserManager<AppUser> _userManager;
         //private readonly SignInManager<AppUser> _signInManager;
         private readonly IAccountService _accountService;
+        private readonly ICommonService _commonService;
 
         private readonly IHttpContextAccessor _httpContextAccessor;
         private IStringLocalizer<ProfilesController> _localizer;
@@ -41,6 +44,7 @@ namespace CallInDoor.Controllers
                 IStringLocalizer<ProfilesController> localizer,
                 IStringLocalizer<ShareResource> localizerShared,
                  IAccountService accountService,
+                 ICommonService commonService,
                  IWebHostEnvironment hostingEnvironment
             )
         {
@@ -49,73 +53,66 @@ namespace CallInDoor.Controllers
             _localizer = localizer;
             _localizerShared = localizerShared;
             _accountService = accountService;
+            _commonService = commonService;
             _hostingEnvironment = hostingEnvironment;
         }
 
 
         #endregion
-        #region get Profile
 
+        #region get Profile
 
         // /api/Profile/Profile?username=2Fsina
         [HttpGet("GetProfile")]
-        public async Task<ActionResult> GetProfile(string username)
+        [ClaimsAuthorize(IsAdmin = false)]
+        public async Task<ActionResult> GetProfile()
         {
-
-            var checkToken = await _accountService.CheckTokenIsValid();
-            if (!checkToken)
-                return Unauthorized(new ApiResponse(401, _localizerShared["UnauthorizedMessage"].Value.ToString()));
-
             try
             {
                 var profile = await _accountService.ProfileGet();
                 if (profile == null)
                     return NotFound(new ApiResponse(404, _localizerShared["NotFound"].Value.ToString()));
-
-                //نیاز به چک نیست
-                //var profile = await _accountService.CheckIsCurrentUserName(username);
-
-                //if (profile == null)
-                //    return NotFound(new ApiResponse(404, _localizerShared["NotFound"].Value.ToString()));
-
-                return Ok(new ApiOkResponse(new DataFormat()
-                {
-                    Status = 1,
-                    data = profile,
-                    Message = _localizerShared["SuccessMessage"].Value.ToString()
-                },
-                  _localizerShared["SuccessMessage"].Value.ToString()
-                 ));
+                return Ok(_commonService.OkResponse(profile, _localizerShared["SuccessMessage"].Value.ToString()));
             }
-
             catch
             {
+                List<string> erros = new List<string> { _localizerShared["InternalServerMessage"].Value.ToString() };
                 return StatusCode(StatusCodes.Status500InternalServerError,
-                             new ApiResponse(500, _localizerShared["InternalServerMessage"].Value.ToString()));
+                    new ApiBadRequestResponse(erros, 500));
+
             }
         }
         #endregion
+
+
+
         #region UpdateProfile
 
         // /api/Profile/UpdateProfile
         [HttpPut("UpdateProfile")]
-        [Authorize()]
+        [Authorize]
         public async Task<ActionResult> UpdateProfile([FromForm] UpdateProfileDTO model)
         {
+            //validate   === check kon bishtr az 3 ta nazashte bashe  madrak ra
 
             var currentSerialNumber = _accountService.GetcurrentSerialNumber();
-            var res = await _accountService.ValidateUpdateProfile(model);
+            var currentUserName = _accountService.GetCurrentUserName();
+
+            var res =  _accountService.ValidateUpdateProfile(model);
             if (!res.succsseded)
                 return BadRequest(new ApiBadRequestResponse(res.result));
 
-            var user = await _context.Users.Where(x => x.SerialNumber == currentSerialNumber && x.UserName == model.Username)
-                .Include(c => c.UsersFields)
+            var user = await _context.Users
+                .Where(x => x.SerialNumber == currentSerialNumber && x.UserName == currentUserName)
+                .Include(c => c.Fields)
                 //.ThenInclude(o => o.FieldTBL)
                 .FirstOrDefaultAsync();
 
             if (user == null)
-                return NotFound(new ApiResponse(404, _localizerShared["NotFound"].Value.ToString()));
-
+            {
+                List<string> erros = new List<string> { _localizerShared["NotFound"].Value.ToString() };
+                return NotFound(new ApiBadRequestResponse(erros, 404));
+            }
 
             user.Bio = model.Bio;
             user.Email = model.Email;
@@ -124,19 +121,19 @@ namespace CallInDoor.Controllers
 
             #region  upload Image
             string uniqueFileName = null;
-            if (model.File != null && model.File.Length > 0 && model.File.IsImage())
+            if (model.Image != null && model.Image.Length > 0 && model.Image.IsImage())
             {
                 if (string.IsNullOrWhiteSpace(_hostingEnvironment.WebRootPath))
                 {
                     _hostingEnvironment.WebRootPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot");
                 }
                 var uploadsFolder = Path.Combine(_hostingEnvironment.WebRootPath, "Upload/User");
-                uniqueFileName = (Guid.NewGuid().ToString().GetImgUrlFriendly() + "_" + model.File.FileName);
+                uniqueFileName = (Guid.NewGuid().ToString().GetImgUrlFriendly() + "_" + model.Image.FileName);
                 string filePath = Path.Combine(uploadsFolder, uniqueFileName);
 
                 using (var stream = new FileStream(filePath, FileMode.Create))
                 {
-                    await model.File.CopyToAsync(stream);
+                    await model.Image.CopyToAsync(stream);
                 }
                 //Delete LastImage Image
                 if (!string.IsNullOrEmpty(user.ImageAddress))
@@ -153,66 +150,35 @@ namespace CallInDoor.Controllers
             }
             #endregion
 
-            _context.UserField.RemoveRange(user.UsersFields);
-            if (model.FieldsId != null)
+
+            #region Upload Film
+
+
+            #endregion 
+
+            _context.FieldTBL.RemoveRange(user.Fields);
+
+            if (model.Fields != null)
             {
-                foreach (var item in model.FieldsId)
+                user.Fields = new List<FieldTBL>();
+                foreach (var item in model.Fields)
                 {
-                    user.UsersFields.Add(new User_FieldTBL()
+                    var newFiled = new FieldTBL()
                     {
-                        UserId = user.Id,
-                        FieldId = item
-                    });
+                        Title = item.Title,
+                        DegreeType = item.DegreeType
+                    };
+                    user.Fields.Add(newFiled);
                 }
             }
 
-
             await _context.SaveChangesAsync();
-            return Ok(new ApiOkResponse(new DataFormat()
-            {
-                Status = 1,
-                data = user,
-                Message = _localizerShared["SuccessMessage"].Value.ToString()
-            },
-             _localizerShared["SuccessMessage"].Value.ToString()
-            ));
-
+            return Ok(_commonService.OkResponse(null, _localizerShared["SuccessMessage"].Value.ToString()));
         }
-
-
 
 
 
         #endregion
-        #region GetAllFields
-
-
-        // GET: api/ServiceType
-        [HttpGet("getAllFields")]
-        public async Task<ActionResult> getAllFields()
-        {
-
-            var fields = await _context.FieldTBL.Select(c => new
-            {
-                c.Id,
-                c.PersianTitle,
-                c.Title,
-                c.DegreeType,
-            }).ToListAsync();
-
-
-            return Ok(new ApiOkResponse(new DataFormat()
-            {
-                Status = 1,
-                data = fields,
-                Message = _localizerShared["SuccessMessage"].Value.ToString()
-            },
-            _localizerShared["SuccessMessage"].Value.ToString()
-            ));
-
-        }
-
-        #endregion 
 
 
 

@@ -66,7 +66,6 @@ namespace Service
 
 
 
-
         /// <summary>
         ///  گرفتن نام کاربری کاربر فعلی
         /// </summary>
@@ -198,7 +197,7 @@ namespace Service
             var currentSerialNumber = _httpContextAccessor.HttpContext.User?.Claims?.FirstOrDefault(x => x.Type == PublicHelper.SerialNumberClaim)?.Value;
 
             var user = await _context.Users.Where(x => x.SerialNumber == currentSerialNumber && x.Id == Id)
-                .Include(c => c.UsersFields)
+                ////////////.Include(c => c.UsersFields)
                 .FirstOrDefaultAsync();
 
             return user;
@@ -298,12 +297,19 @@ namespace Service
             var currentusername = GetCurrentUserName();
             if (string.IsNullOrEmpty(currentusername))
                 return null;
-            var user = await _context
-                        .Users.Where(c => c.UserName == currentusername)
-                        .Include(c => c.UsersFields)
-                        .FirstOrDefaultAsync();
-            var Profile = _mapper.Map<AppUser, ProfileGetDTO>(user);
-            return Profile;
+            var userFromDB = await _context.Users.Where(c => c.UserName == currentusername)
+                .Select(c => new ProfileGetDTO
+                {
+                    Username = c.UserName,
+                    Name = c.Name,
+                    Email = c.Email,
+                    LastName = c.LastName,
+                    Bio = c.Bio,
+                    ImageAddress = c.ImageAddress,
+                    Fields = c.Fields.Select(r => new FiledsDTO { DegreeType = r.DegreeType, Title = r.Title }).ToList()
+                }).FirstOrDefaultAsync();
+
+            return userFromDB;
         }
 
 
@@ -317,20 +323,20 @@ namespace Service
         /// </summary>
         /// <param name="model"></param>
         /// <returns></returns>
-        public async Task<(bool succsseded, List<string> result)> ValidateUpdateProfile(UpdateProfileDTO model)
+        public (bool succsseded, List<string> result) ValidateUpdateProfile(UpdateProfileDTO model)
         {
             bool IsValid = true;
             List<string> Errors = new List<string>();
 
-            if (model.File != null)
+            if (model.Image != null)
             {
                 //string uniqueFileName = null;
-                if (!model.File.IsImage())
+                if (!model.Image.IsImage())
                 {
                     IsValid = false;
                     Errors.Add(_localizerAccount["InValidImageFormat"].Value.ToString());
                 }
-                if (model.File.Length > 5000000)
+                if (model.Image.Length > 5000000)
                 {
                     IsValid = false;
                     Errors.Add(_localizerAccount["FileIsTooLarge"].Value.ToString());
@@ -365,15 +371,7 @@ namespace Service
             }
 
 
-            if (model.FieldsId != null)
-            {
-                var res = await _context.FieldTBL.AnyAsync(c => model.FieldsId.Contains(c.Id));
-                if (!res)
-                {
-                    IsValid = false;
-                    Errors.Add($"Some Fields were not found");
-                }
-            }
+
             return (IsValid, Errors);
         }
 

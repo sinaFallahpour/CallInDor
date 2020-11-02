@@ -111,13 +111,6 @@ namespace Domain
 
 
 
-        /// <summary>
-        ///کاربر مدرک رشته تحصیلی
-        /// </summary>
-        public DbSet<User_FieldTBL> UserField { get; set; }
-
-
-
 
         /// <summary>
         ///  این جدول پدر مشترک های بین سرویس ها توی این قرار میگیرد

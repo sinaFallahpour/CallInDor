@@ -12,7 +12,6 @@ namespace Domain.DTO.Account
         public string LastName { get; set; }
         public string Bio { get; set; }
         public string ImageAddress { get; set; }
-
-        public List<UserFiledsDTO> UsersFields { get; set; }
+        public List<FiledsDTO> Fields { get; set; }
     }
 }

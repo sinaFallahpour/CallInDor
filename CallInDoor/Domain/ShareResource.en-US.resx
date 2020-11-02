@@ -142,7 +142,7 @@
     <value>Not Found</value>
   </data>
   <data name="PhoneNumber  already  exist." xml:space="preserve">
-    <value>PhoneNumber  already  exist.</value>
+    <value>PhoneNumber  already  exist</value>
   </data>
   <data name="SuccessMessage" xml:space="preserve">
     <value>Successful Submit</value>
@@ -151,6 +151,6 @@
     <value>You are  Unauthorized</value>
   </data>
   <data name="UnMathPhoneNumberPassword" xml:space="preserve">
-    <value>Invalid phone number or password.</value>
+    <value>Invalid phone number or password</value>
   </data>
 </root>
