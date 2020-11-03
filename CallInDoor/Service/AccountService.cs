@@ -27,7 +27,7 @@ namespace Service
         private readonly DataContext _context;
         private readonly UserManager<AppUser> _userManager;
         //private readonly ICommonService _CommonService;
-
+        
         private readonly SignInManager<AppUser> _signInManager;
         private readonly IJwtManager _jwtGenerator;
         private readonly IHttpContextAccessor _httpContextAccessor;
@@ -306,6 +306,8 @@ namespace Service
                     LastName = c.LastName,
                     Bio = c.Bio,
                     ImageAddress = c.ImageAddress,
+                    VideoAddress = c.VideoAddress,
+
                     Fields = c.Fields.Select(r => new FiledsDTO { DegreeType = r.DegreeType, Title = r.Title }).ToList()
                 }).FirstOrDefaultAsync();
 

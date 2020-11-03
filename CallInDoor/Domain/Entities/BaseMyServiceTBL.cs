@@ -24,6 +24,12 @@ namespace Domain.Entities
         public string UserName { get; set; }
 
 
+        //آیا سرویس کاربرر قابلیت ادیت کردن را دارد یا نه
+        //بعد تایید ادمیناین مقدارش فالز میشه
+        public bool IsEditableService { get; set; }
+
+        ////////////////////////////public bool IsEditableProfile { get; set; }
+
 
         /// <summary>
         /// وضعیت تایید سرویس بوسیله ادمین
@@ -35,6 +41,7 @@ namespace Domain.Entities
         /// vide or chat or service or course ,...
         /// </summary>
         public ServiceType ServiceType { get; set; }
+
 
 
 

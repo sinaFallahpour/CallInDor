@@ -46,7 +46,7 @@ namespace Domain.Entities
         /// حداقل زمان برای سرویس های Voice//VideCall//voiceCall
         /// </summary>
         public double MinSessionTime { get; set; }
-        
+
 
         /// <summary>
         /// حداقل قیمت مجاز برای کاربران تیتیو برای سرویس های چت یا وویس یا ویدیو
@@ -84,9 +84,15 @@ namespace Domain.Entities
 
         public string RoleId { get; set; }
 
+
         [ForeignKey("RoleId")]
         public AppRole AppRole { get; set; }
 
-        #endregion 
+
+        public List<ServidceTypeRequiredCertificatesTBL> ServidceTypeRequiredCertificatesTBL { get; set; }
+
+
+
+        #endregion
     }
 }

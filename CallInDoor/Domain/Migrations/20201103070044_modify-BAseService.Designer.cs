@@ -4,14 +4,16 @@ using Domain;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace Domain.Migrations
 {
     [DbContext(typeof(DataContext))]
-    partial class DataContextModelSnapshot : ModelSnapshot
+    [Migration("20201103070044_modify-BAseService")]
+    partial class modifyBAseService
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -613,26 +615,6 @@ namespace Domain.Migrations
                     b.ToTable("ServiceTags");
                 });
 
-            modelBuilder.Entity("Domain.Entities.ServidceTypeRequiredCertificatesTBL", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<string>("FileName")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int?>("ServiceId")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ServiceId");
-
-                    b.ToTable("ServidceTypeRequiredCertificates");
-                });
-
             modelBuilder.Entity("Domain.Entities.SpecialityTBL", b =>
                 {
                     b.Property<int>("Id")
@@ -922,13 +904,6 @@ namespace Domain.Migrations
                 {
                     b.HasOne("Domain.Entities.ServiceTBL", "Service")
                         .WithMany("Tags")
-                        .HasForeignKey("ServiceId");
-                });
-
-            modelBuilder.Entity("Domain.Entities.ServidceTypeRequiredCertificatesTBL", b =>
-                {
-                    b.HasOne("Domain.Entities.ServiceTBL", "Service")
-                        .WithMany("ServidceTypeRequiredCertificatesTBL")
                         .HasForeignKey("ServiceId");
                 });
 

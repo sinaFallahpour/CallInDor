@@ -75,6 +75,13 @@ namespace Domain
         public DbSet<ServiceTBL> ServiceTBL { get; set; }
 
         /// <summary>
+        /// این جدول میاد تمام فایل هایی که یک سرویس تایپ خواص لازم دارد را ذخیره میکند
+        /// </summary>
+        public DbSet<ServidceTypeRequiredCertificatesTBL> ServidceTypeRequiredCertificatesTBL { get; set; }
+
+
+
+        /// <summary>
         ///   تگ های  یک سرویس(حوضه کاری) س  
         /// </summary>
         public DbSet<ServiceTagsTBL> ServiceTags { get; set; }

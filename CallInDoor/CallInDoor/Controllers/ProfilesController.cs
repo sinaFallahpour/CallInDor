@@ -71,7 +71,11 @@ namespace CallInDoor.Controllers
             {
                 var profile = await _accountService.ProfileGet();
                 if (profile == null)
-                    return NotFound(new ApiResponse(404, _localizerShared["NotFound"].Value.ToString()));
+                {
+                    List<string> erros = new List<string> { _localizerShared["NotFound"].Value.ToString() };
+                    return NotFound(new ApiBadRequestResponse(erros, 404));
+                }
+
                 return Ok(_commonService.OkResponse(profile, _localizerShared["SuccessMessage"].Value.ToString()));
             }
             catch
