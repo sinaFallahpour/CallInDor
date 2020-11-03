@@ -46,6 +46,12 @@ namespace Domain
 
 
 
+
+        /// <summary>
+        ///مدرک هایی که کاربر آپلود کرده است در پروفایلش
+        /// </summary>
+        public DbSet<ProfileCertificateTBL> ProfileCertificateTBL { get; set; }
+        
         public DbSet<SettingTBL> SettingsTBL { get; set; }
 
 

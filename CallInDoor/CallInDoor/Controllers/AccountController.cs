@@ -10,6 +10,7 @@ using Domain;
 using Domain.DTO.Account;
 using Domain.DTO.Response;
 using Domain.Entities;
+using Domain.Enums;
 using Domain.Utilities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -240,19 +241,13 @@ namespace CallInDoor.Controllers
                     return BadRequest(new ApiBadRequestResponse(errors));
                     //return new JsonResult(new { Status = 0, Message = _localizer["PhoneNumber  already  exist."].Value.ToString() });
                 }
+                user.verificationCode = code;
+                user.verificationCodeExpireTime = DateTime.UtcNow.AddMinutes(3);
+                //send code ;
 
-                if (user.PhoneNumberConfirmed == false)
-                {
-                    user.verificationCode = code;
-                    user.verificationCodeExpireTime = DateTime.UtcNow.AddMinutes(3);
-                    //send code ;
+                await _context.SaveChangesAsync();
+                return Ok(_commonService.OkResponse(null, _localizerShared["SuccessMessage"].Value.ToString()));
 
-                    await _context.SaveChangesAsync();
-
-                    //return
-                    return Ok(_commonService.OkResponse(null, _localizerShared["SuccessMessage"].Value.ToString()));
-
-                }
             }
 
             var SerialNumber = Guid.NewGuid().ToString().GetHash();
@@ -262,6 +257,9 @@ namespace CallInDoor.Controllers
                 UserName = model.CountryCode.ToString().Trim() + model.PhoneNumber.Trim(),
                 SerialNumber = SerialNumber,
                 PhoneNumber = model.CountryCode.ToString() + model.PhoneNumber.Trim(),
+                IsEditableProfile = true,
+                IsCompany = model.IsCompany,
+                ProfileConfirmType = ProfileConfirmType.Pending,
                 //Role = PublicHelper.USERROLE,
                 verificationCode = code,
                 verificationCodeExpireTime = DateTime.UtcNow.AddMinutes(3),
@@ -286,13 +284,11 @@ namespace CallInDoor.Controllers
 
                             return Ok(_commonService.OkResponse(null, _localizerShared["SuccessMessage"].Value.ToString()));
                         }
-                        else
-                        {
-                            transaction.Rollback();
-                            List<string> erros = new List<string> { _localizerShared["InternalServerMessage"].Value.ToString() };
-                            return StatusCode(StatusCodes.Status500InternalServerError,
-                               new ApiBadRequestResponse(erros, 500));
-                        }
+
+                        transaction.Rollback();
+                        List<string> erros = new List<string> { _localizerShared["InternalServerMessage"].Value.ToString() };
+                        return StatusCode(StatusCodes.Status500InternalServerError,
+                           new ApiBadRequestResponse(erros, 500));
                     }
                     else if (res.Errors.Any(c => c.Code == "DuplicateUserName}"))
                     {
@@ -315,7 +311,7 @@ namespace CallInDoor.Controllers
             return StatusCode(StatusCodes.Status500InternalServerError,
                new ApiBadRequestResponse(erroses, 500));
 
-         
+
         }
 
         #endregion
@@ -470,7 +466,6 @@ namespace CallInDoor.Controllers
             if (res.status == 0)
                 return BadRequest(new ApiBadRequestResponse(res.erros));
 
-
             var phoneNumber = model.CountryCode.ToString().Trim() + model.PhoneNumber.Trim();
             var user = await _context.Users.Where(c => c.PhoneNumber == phoneNumber).FirstOrDefaultAsync();
 
@@ -489,20 +484,7 @@ namespace CallInDoor.Controllers
                 UserName = user.UserName,
             };
 
-
             return Ok(_commonService.OkResponse(userInfo, _localizerShared["SuccessMessage"].Value.ToString()));
-
-            // return Ok(new ApiOkResponse(new DataFormat()
-            // {
-            //     Status = 1,
-            //     data = userInfo,
-            //     Message = _localizerShared["SuccessMessage"].Value.ToString()
-            // },
-            // _localizerShared["SuccessMessage"].Value.ToString()
-            //));
-
-
-            //return new JsonResult(new { Status = 1, Message = "ورود موفقیت آمیز", Data = userInfo });
         }
 
         #endregion
@@ -755,7 +737,7 @@ namespace CallInDoor.Controllers
 
         [HttpPost("admin/RegisterAdminInAdmin")]
         [Authorize(Roles = PublicHelper.ADMINROLE)]
-        [ClaimsAuthorize]
+        [ClaimsAuthorize(IsAdmin = true)]
         public async Task<ActionResult> RegisterAdmin([FromBody] RegisterAdminDTO model)
         {
             var phonenumber = model.CountryCode.ToString().Trim() + model.PhoneNumber.Trim();
@@ -783,6 +765,9 @@ namespace CallInDoor.Controllers
             var newUser = new AppUser
             {
                 UserName = model.CountryCode.ToString().Trim() + model.PhoneNumber.Trim(),
+                IsEditableProfile = true,
+                IsCompany = model.IsCompany,
+                ProfileConfirmType =ProfileConfirmType.Pending,
                 Email = model.Email,
                 NormalizedEmail = model.Email.Normalize(),
                 EmailConfirmed = true,
@@ -795,8 +780,6 @@ namespace CallInDoor.Controllers
                 CountryCode = model.CountryCode,
                 CreateDate = DateTime.Now
             };
-
-
 
             //var userrole = await _userManager.GetRolesAsync(newUser);
             using (var transaction = _context.Database.BeginTransaction())
@@ -818,16 +801,12 @@ namespace CallInDoor.Controllers
 
                         if (roleResult.Succeeded)
                         {
-
                             transaction.Commit();
                             return Ok(_commonService.OkResponse(response, PubicMessages.SuccessMessage));
                         }
-                        else
-                        {
-                            transaction.Rollback();
-                            return StatusCode(StatusCodes.Status500InternalServerError,
-                                          new ApiResponse(500, PubicMessages.InternalServerMessage));
-                        }
+                        transaction.Rollback();
+                        return StatusCode(StatusCodes.Status500InternalServerError,
+                                      new ApiResponse(500, PubicMessages.InternalServerMessage));
                     }
                     else if (result.Errors.Any(c => c.Code == "DuplicateUserName}"))
                     {
@@ -835,7 +814,6 @@ namespace CallInDoor.Controllers
                         err.Add($" {model.PhoneNumber} is already taken");
                         return BadRequest(new ApiBadRequestResponse(err));
                     }
-
                 }
                 catch (Exception)
                 {
@@ -1007,7 +985,7 @@ namespace CallInDoor.Controllers
         // GET: api/GetAllServiceForAdmin
         [HttpGet("Role/GetAllRolesInAdmin")]
         [Authorize(Roles = PublicHelper.ADMINROLE)]
-        [ClaimsAuthorize(IsAdmin =true)]
+        [ClaimsAuthorize(IsAdmin = true)]
         public async Task<ActionResult> GetAllRoleForAdmin()
         {
             var query = await _context
@@ -1037,7 +1015,7 @@ namespace CallInDoor.Controllers
         /// <returns></returns>
         [HttpPost("Role/CreateRoleInAdmin")]
         [Authorize(Roles = PublicHelper.ADMINROLE)]
-        [ClaimsAuthorize(IsAdmin =true)]
+        [ClaimsAuthorize(IsAdmin = true)]
         public async Task<ActionResult> CreateRoleInAdmin([FromBody] RoleDTO model)
         {
 
@@ -1073,7 +1051,7 @@ namespace CallInDoor.Controllers
                 };
 
                 return Ok(_commonService.OkResponse(reponse, PubicMessages.SuccessMessage));
-             
+
             }
 
             if (roleResult.Errors.Any(c => c.Code == "DuplicateRoleName"))
@@ -1101,7 +1079,7 @@ namespace CallInDoor.Controllers
         /// <returns></returns>
         [HttpPut("Role/UpdateRoleInAdmin")]
         [Authorize(Roles = PublicHelper.ADMINROLE)]
-        [ClaimsAuthorize(IsAdmin =true)]
+        [ClaimsAuthorize(IsAdmin = true)]
         public async Task<ActionResult> UpdateRoleInAdmin([FromBody] RoleDTO model)
         {
 
@@ -1154,7 +1132,7 @@ namespace CallInDoor.Controllers
                 };
 
                 return Ok(_commonService.OkResponse(reposne, PubicMessages.SuccessMessage));
-          
+
             }
             catch
             {

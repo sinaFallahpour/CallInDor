@@ -11,7 +11,6 @@ namespace Domain.Entities
     public class BaseMyServiceTBL : BaseEntity<int>
     {
 
-
         [MaxLength(200)]
         public string ServiceName { get; set; }
 

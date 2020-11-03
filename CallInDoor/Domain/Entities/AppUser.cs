@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using Domain.Enums;
+using Microsoft.AspNetCore.Identity;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -13,7 +14,16 @@ namespace Domain.Entities
         public string LastName { get; set; }
         public string Bio { get; set; }
         public string ImageAddress { get; set; }
+        public string VideoAddress { get; set; }
 
+        //آیا پروفایل کاربرر قابلیت ادیت کردن را دارد یا نه
+        public bool IsEditableProfile { get; set; }
+
+        //آیا کاربر سازمانیست؟
+        public bool IsCompany { get; set; }
+
+        //وضعیت تایید پروفایل
+        public ProfileConfirmType ProfileConfirmType { get; set; }
 
 
         /// <summary>
@@ -35,19 +45,19 @@ namespace Domain.Entities
         /// تاریخ انقضا کد تایید
         /// </summary>
         public DateTime verificationCodeExpireTime { get; set; }
-        
+
         /// <summary>
         /// کد کشور
         /// </summary>
         public string CountryCode { get; set; }
 
 
-        public DateTime  CreateDate { get; set; }
+        public DateTime CreateDate { get; set; }
 
 
         #region  Relation
 
-        public  ICollection<FieldTBL> Fields { get; set; }
+        public ICollection<FieldTBL> Fields { get; set; }
 
         //public virtual ICollection<User_FieldTBL> UsersFields { get; set; }
 

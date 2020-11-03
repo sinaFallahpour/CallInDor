@@ -4,14 +4,16 @@ using Domain;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace Domain.Migrations
 {
     [DbContext(typeof(DataContext))]
-    partial class DataContextModelSnapshot : ModelSnapshot
+    [Migration("20201102194653_adding-EditableProfile-ConfirmProfile-Iscompany-toAppUse")]
+    partial class addingEditableProfileConfirmProfileIscompanytoAppUse
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -483,35 +485,6 @@ namespace Domain.Migrations
                     b.ToTable("Permissions");
                 });
 
-            modelBuilder.Entity("Domain.Entities.ProfileCertificateTBL", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<string>("FileAddress")
-                        .HasColumnType("nvarchar(2000)")
-                        .HasMaxLength(2000);
-
-                    b.Property<int?>("ServiceId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Title")
-                        .HasColumnType("nvarchar(100)")
-                        .HasMaxLength(100);
-
-                    b.Property<string>("UserName")
-                        .HasColumnType("nvarchar(100)")
-                        .HasMaxLength(100);
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ServiceId");
-
-                    b.ToTable("ProfileCertificateTBL");
-                });
-
             modelBuilder.Entity("Domain.Entities.Role_Permission", b =>
                 {
                     b.Property<int>("Id")
@@ -868,13 +841,6 @@ namespace Domain.Migrations
                     b.HasOne("Domain.Entities.SpecialityTBL", "SpecialityTBL")
                         .WithMany()
                         .HasForeignKey("SpecialityId");
-                });
-
-            modelBuilder.Entity("Domain.Entities.ProfileCertificateTBL", b =>
-                {
-                    b.HasOne("Domain.Entities.ServiceTBL", "Service")
-                        .WithMany()
-                        .HasForeignKey("ServiceId");
                 });
 
             modelBuilder.Entity("Domain.Entities.Role_Permission", b =>

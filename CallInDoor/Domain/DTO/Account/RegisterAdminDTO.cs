@@ -48,6 +48,7 @@ namespace Domain.DTO.Account
         [MaxLength(200, ErrorMessage = "The maximum {0} length is {1} characters")]
         public string LastName { get; set; }
 
+        public bool IsCompany { get; set; }
 
         [Required(ErrorMessage = "{0} is  Required")]
         public string  RoleId { get; set; }

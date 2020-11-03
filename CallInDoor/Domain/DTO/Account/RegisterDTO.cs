@@ -28,5 +28,7 @@ namespace Domain.DTO.Account
         [Display(Name = "CountryCode")]
         public string CountryCode { get; set; }
 
+
+        public bool IsCompany { get; set; }
     }
 }
