@@ -190,7 +190,6 @@ namespace CallInDoor.Controllers
             {
                 List<string> erros = new List<string> { _localizerShared["NotFound"].Value.ToString() };
                 return NotFound(new ApiBadRequestResponse(erros, 404));
-                //return NotFound(new ApiResponse(404, _localizerShared["NotFound"].Value.ToString()));
             }
             var serviceTimsandProice = await _context
                 .ServiceTBL
@@ -749,7 +748,7 @@ namespace CallInDoor.Controllers
                  _locaLizer["SuccesfullAddServiceMessage"].Value.ToString()
                 ));
             }
-            catch
+            catch (Exception ex)
             {
                 return StatusCode(StatusCodes.Status500InternalServerError,
                         new ApiResponse(500, _localizerShared["InternalServerMessage"].Value.ToString()));

@@ -27,7 +27,7 @@ namespace Service
         private readonly DataContext _context;
         private readonly UserManager<AppUser> _userManager;
         //private readonly ICommonService _CommonService;
-        
+
         private readonly SignInManager<AppUser> _signInManager;
         private readonly IJwtManager _jwtGenerator;
         private readonly IHttpContextAccessor _httpContextAccessor;
@@ -297,6 +297,34 @@ namespace Service
             var currentusername = GetCurrentUserName();
             if (string.IsNullOrEmpty(currentusername))
                 return null;
+
+            var servicetypesids = await _context.BaseMyServiceTBL.Where(c => c.UserName == currentusername && c.IsDeleted == false && c.ServiceId != null)
+                  .Select(c => c.ServiceId).Distinct().ToListAsync();
+
+            ////////var servicetypesid = new list<int> { 1, 2, 3, 4 };
+
+            var profilecertificates = new List<ProfileCertificateDTO>();
+
+            foreach (var id in servicetypesids)
+            {
+                var result = await _context.ServiceTBL.Where(c => c.Id == id).FirstOrDefaultAsync();
+                profilecertificates.Add(new ProfileCertificateDTO()
+                {
+                    ServiceId = result?.Id,
+                    ServiceName = result?.Name,
+                    ServicePersianName = result?.PersianName,
+                  RequiredCertificate = result?.ServidceTypeRequiredCertificatesTBL.Select(c => new RequiredCertificate { FileName = c.FileName, PersianFileName = c.PersianFileName }).ToList()
+                });
+            }
+
+
+
+            //////var servicetypesIds = (from bs in _context.BaseMyServiceTBL.Where(c => c.UserName == currentusername && c.IsDeleted == false && c.ServiceId != null)
+            //////                       join s in _context.ServiceTBL
+            //////                       on bs.ServiceId equals s.Id
+            //////                       select bs.ServiceId).Distinct().ToList();
+
+
             var userFromDB = await _context.Users.Where(c => c.UserName == currentusername)
                 .Select(c => new ProfileGetDTO
                 {
@@ -307,7 +335,7 @@ namespace Service
                     Bio = c.Bio,
                     ImageAddress = c.ImageAddress,
                     VideoAddress = c.VideoAddress,
-
+                    ProfileCertificate = profilecertificates,
                     Fields = c.Fields.Select(r => new FiledsDTO { DegreeType = r.DegreeType, Title = r.Title }).ToList()
                 }).FirstOrDefaultAsync();
 

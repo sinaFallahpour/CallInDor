@@ -75,7 +75,6 @@ namespace CallInDoor.Controllers
                     List<string> erros = new List<string> { _localizerShared["NotFound"].Value.ToString() };
                     return NotFound(new ApiBadRequestResponse(erros, 404));
                 }
-
                 return Ok(_commonService.OkResponse(profile, _localizerShared["SuccessMessage"].Value.ToString()));
             }
             catch
@@ -83,7 +82,6 @@ namespace CallInDoor.Controllers
                 List<string> erros = new List<string> { _localizerShared["InternalServerMessage"].Value.ToString() };
                 return StatusCode(StatusCodes.Status500InternalServerError,
                     new ApiBadRequestResponse(erros, 500));
-
             }
         }
         #endregion
