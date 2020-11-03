@@ -9,6 +9,10 @@ namespace Domain.Entities
     public class ServidceTypeRequiredCertificatesTBL : BaseEntity<int>
     {
         public string FileName { get; set; }
+        public string  PersianFileName { get; set; }
+
+        public bool Isdeleted { get; set; }
+
         #region  Relation 
 
         /// آیدی سرویس

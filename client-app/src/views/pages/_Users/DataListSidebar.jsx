@@ -55,7 +55,7 @@ class DataListSidebar extends Component {
   handleValidate = () => {
     const { newPassword, confirmPassword } = this.state;
     if (newPassword !== confirmPassword) {
-      this.setState({ errors: ["Incorrect Confirm Passwwrod "] });
+      this.setState({ errors: ["Incorrect Confirm Passwrod "] });
       return false;
     }
     return true;

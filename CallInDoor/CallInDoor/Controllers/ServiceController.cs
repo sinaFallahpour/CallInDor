@@ -54,7 +54,6 @@ namespace CallInDoor.Controllers
         #endregion
         #region ServiceType
 
-
         /// <summary>
         /// گرفتن یک سرویس تایپ مثل Translate
         /// </summary>
@@ -82,6 +81,7 @@ namespace CallInDoor.Controllers
                    c.AcceptedMinPriceForNonNative,
                    c.Color,
                    RoleId = c.AppRole.Id,
+                   RequiredCertificates = c.ServidceTypeRequiredCertificatesTBL.Where(c => c.Isdeleted == false).Select(c => new {c.Id, c.FileName, c.PersianFileName }),
                    tags = c.Tags.Where(p => p.IsEnglisTags && !string.IsNullOrEmpty(p.TagName)).Select(s => s.TagName).ToList(),
                    persinaTags = c.Tags.Where(p => p.IsEnglisTags == false && !string.IsNullOrEmpty(p.PersianTagName)).Select(s => s.PersianTagName).ToList()
                }).FirstOrDefaultAsync();
@@ -156,7 +156,7 @@ namespace CallInDoor.Controllers
                 return NotFound(new ApiBadRequestResponse(erros, 404));
                 //return NotFound(new ApiResponse(404, _localizerShared["NotFound"].Value.ToString()));
             }
-            var tags =await _context.ServiceTags
+            var tags = await _context.ServiceTags
                 .AsNoTracking()
                 .Where(c => c.ServiceId == Id)
                 .Select(c => new
@@ -168,7 +168,6 @@ namespace CallInDoor.Controllers
                 }).ToListAsync();
 
             return Ok(_commonService.OkResponse(tags, _localizerShared["SuccessMessage"].Value.ToString()));
-          
 
         }
 
@@ -193,7 +192,7 @@ namespace CallInDoor.Controllers
                 return NotFound(new ApiBadRequestResponse(erros, 404));
                 //return NotFound(new ApiResponse(404, _localizerShared["NotFound"].Value.ToString()));
             }
-            var serviceTimsandProice =await _context
+            var serviceTimsandProice = await _context
                 .ServiceTBL
                 .AsNoTracking()
                 .Where(c => c.Id == Id)
@@ -220,7 +219,7 @@ namespace CallInDoor.Controllers
         [ClaimsAuthorize(IsAdmin = false)]
         public async Task<ActionResult> GetTimeAndPriceForService()
         {
-            var serviceTimsandProice =await _context
+            var serviceTimsandProice = await _context
                 .ServiceTBL
                 .AsNoTracking()
                 .Select(c => new
@@ -251,15 +250,34 @@ namespace CallInDoor.Controllers
             var errors = new List<string>();
             if (!roleExist)
             {
-                errors.Add("invalid Role.");
+                errors.Add("invalid Roles");
                 return BadRequest(new ApiBadRequestResponse(errors));
             }
-            var seviceExist = await _context.ServiceTBL.AnyAsync(c => c.Name == model.Name || c.PersianName == model.PersianName);
-            if (!seviceExist)
+
+            if (model.RequiredFiles != null)
             {
-                errors.Add($"name Or persian Name already exist.");
+                foreach (var item in model.RequiredFiles)
+                {
+                    if (string.IsNullOrEmpty(item.FileName))
+                    {
+                        errors.Add("file name is required");
+                        return BadRequest(new ApiBadRequestResponse(errors));
+                    }
+                    if (string.IsNullOrEmpty(item.PersianFileName))
+                    {
+                        errors.Add("persian file name is required");
+                        return BadRequest(new ApiBadRequestResponse(errors));
+                    }
+                }
+            }
+
+            var seviceExist = await _context.ServiceTBL.AnyAsync(c => c.Name == model.Name || c.PersianName == model.PersianName);
+            if (seviceExist)
+            {
+                errors.Add($"name Or persian Name already exist");
                 return BadRequest(new ApiBadRequestResponse(errors));
             }
+
 
             #endregion 
             var result = await _servicetypeService.Create(model);
@@ -277,37 +295,58 @@ namespace CallInDoor.Controllers
 
         [HttpPut("UpdateServiceForAdmin")]
         [Authorize(Roles = PublicHelper.ADMINROLE)]
+        [ClaimsAuthorize(IsAdmin = true)]
         public async Task<IActionResult> UpdateServiceForAdmin([FromBody] CreateServiceDTO model)
         {
-            var checkToken = await _accountService.CheckTokenIsValid();
-            if (!checkToken)
-                return Unauthorized(new ApiResponse(401, PubicMessages.UnAuthorizeMessage));
-
-
+            #region validation
             var roleExist = await _context.Roles.AnyAsync(c => c.Id == model.RoleId);
+            var errors = new List<string>();
             if (!roleExist)
             {
-                var errors = new List<string>();
+                //var errors = new List<string>();
                 errors.Add("invalid Role.");
+                return BadRequest(new ApiBadRequestResponse(errors));
+            }
+
+            if (model.RequiredFiles != null)
+            {
+                foreach (var item in model.RequiredFiles)
+                {
+                    if (string.IsNullOrEmpty(item.FileName))
+                    {
+                        errors.Add("file name is required");
+                        return BadRequest(new ApiBadRequestResponse(errors));
+                    }
+                    if (string.IsNullOrEmpty(item.PersianFileName))
+                    {
+                        errors.Add("persian file name is required");
+                        return BadRequest(new ApiBadRequestResponse(errors));
+                    }
+                }
+            }
+
+            var seviceExist = await _context.ServiceTBL.AnyAsync(c => (c.Name == model.Name || c.PersianName == model.PersianName) && c.Id != model.Id);
+            if (seviceExist)
+            {
+                errors.Add($"name Or persian Name already exist");
                 return BadRequest(new ApiBadRequestResponse(errors));
             }
 
             var service = await _servicetypeService.GetByIdWithJoin(model.Id);
             if (service == null)
-            {
                 return NotFound(new ApiResponse(404, "service " + PubicMessages.NotFoundMessage));
-            }
+
+
+            #endregion
 
 
             var result = await _servicetypeService.Update(service, model);
             if (result)
                 return Ok(_commonService.OkResponse(null, PubicMessages.SuccessMessage));
 
-
             return StatusCode(StatusCodes.Status500InternalServerError,
               new ApiResponse(500, PubicMessages.InternalServerMessage)
             );
-
         }
 
 

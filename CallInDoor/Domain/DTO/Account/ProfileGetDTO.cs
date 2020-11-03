@@ -15,8 +15,5 @@ namespace Domain.DTO.Account
         public string VideoAddress { get; set; }
         public List<FiledsDTO> Fields { get; set; }
         public List<ProfileCertificateDTO> ProfileCertificate { get; set; }
-
-
-
     }
 }

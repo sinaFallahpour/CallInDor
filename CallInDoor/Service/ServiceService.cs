@@ -56,7 +56,11 @@ namespace Service
 
         public async Task<ServiceTBL> GetByIdWithJoin(int Id)
         {
-            return await _context.ServiceTBL.Where(c => c.Id == Id).Include(c => c.Tags).FirstOrDefaultAsync();
+            return await _context.ServiceTBL
+                .Where(c => c.Id == Id)
+                .Include(c => c.Tags)
+                .Include(c => c.ServidceTypeRequiredCertificatesTBL)
+                .FirstOrDefaultAsync();
         }
 
 
@@ -154,13 +158,29 @@ namespace Service
             }
             serviceType.Tags = servicetags;
 
+            if (model.RequiredFiles != null)
+            {
+                serviceType.ServidceTypeRequiredCertificatesTBL = new List<ServidceTypeRequiredCertificatesTBL>();
+                foreach (var item in model.RequiredFiles)
+                {
+                    var requiredFile = new ServidceTypeRequiredCertificatesTBL()
+                    {
+                        FileName = item.FileName,
+                        PersianFileName = item.PersianFileName,
+                        Isdeleted = false,
+                        Service = serviceType
+                    };
+                    serviceType.ServidceTypeRequiredCertificatesTBL.Add(requiredFile);
+                }
+            }
+            
             try
             {
                 await _context.ServiceTBL.AddAsync(serviceType);
                 await _context.SaveChangesAsync();
                 return true;
             }
-            catch
+            catch(Exception ex)
             {
                 return false;
             }
@@ -240,9 +260,27 @@ namespace Service
                 var allPersianTags = serviceFromDB.Tags.Where(c => c.IsEnglisTags == false).ToList();
                 alltags.AddRange(allPersianTags);
                 _context.ServiceTags.RemoveRange(alltags);
-
-
                 serviceFromDB.Tags = servicetags;
+
+
+                _context.ServidceTypeRequiredCertificatesTBL.RemoveRange(serviceFromDB.ServidceTypeRequiredCertificatesTBL);
+
+                if (model.RequiredFiles != null)
+                {
+                    var requirecertification = new List<ServidceTypeRequiredCertificatesTBL>();
+                    foreach (var item in model.RequiredFiles)
+                    {
+                        var newFile = new ServidceTypeRequiredCertificatesTBL()
+                        {
+                            FileName = item.FileName,
+                            PersianFileName = item.PersianFileName,
+                            Isdeleted = false,
+                            Service = serviceFromDB,
+                        };
+                        requirecertification.Add(newFile);
+                    }
+                    serviceFromDB.ServidceTypeRequiredCertificatesTBL = requirecertification;
+                }
 
 
                 var result = await _context.SaveChangesAsync();
@@ -350,7 +388,6 @@ namespace Service
                     IsValid = false;
                     Errors.Add($"Invalid category");
                 }
-
             }
             if (model.SubCatId != null)
             {

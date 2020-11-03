@@ -11,6 +11,8 @@ namespace Domain.DTO.Account
         public int Id { get; set; }
 
 
+        public List<RequiredFiles> RequiredFiles { get; set; }
+
 
         [Required(ErrorMessage = "{0} is resquired")]
         [MinLength(1, ErrorMessage = "The minimum {0} length is {1} characters")]
@@ -64,7 +66,7 @@ namespace Domain.DTO.Account
 
 
 
-    
+
         /// <summary>
         /// حداقل قیمت مجاز برای کاربران تیتیو برای سرویس های چت یا وویس یا ویدیو
         /// </summary>
@@ -118,5 +120,15 @@ namespace Domain.DTO.Account
         public string RoleId { get; set; }
 
 
+    }
+
+
+
+    public class RequiredFiles
+    {
+
+        public int? Id { get; set; }
+        public string FileName { get; set; }
+        public string PersianFileName { get; set; }
     }
 }
