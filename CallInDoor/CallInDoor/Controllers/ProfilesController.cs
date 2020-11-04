@@ -100,7 +100,7 @@ namespace CallInDoor.Controllers
             var currentSerialNumber = _accountService.GetcurrentSerialNumber();
             var currentUserName = _accountService.GetCurrentUserName();
 
-            var res =  _accountService.ValidateUpdateProfile(model);
+            var res = await _accountService.ValidateUpdateProfile(model);
             if (!res.succsseded)
                 return BadRequest(new ApiBadRequestResponse(res.result));
 
@@ -115,48 +115,39 @@ namespace CallInDoor.Controllers
                 List<string> erros = new List<string> { _localizerShared["NotFound"].Value.ToString() };
                 return NotFound(new ApiBadRequestResponse(erros, 404));
             }
+            if (!user.IsEditableProfile)
+            {
+                List<string> erros = new List<string> { _localizerShared["EditableProfileNotAllowed"].Value.ToString() };
+                return BadRequest(new ApiBadRequestResponse(erros));
+            }
 
             user.Bio = model.Bio;
             user.Email = model.Email;
             user.Name = model.Name;
             user.LastName = model.LastName;
+            user.BirthDate = model.BirthDate;
+            user.Gender = model.Gender;
+            user.NationalCode = model.NationalCode;
 
-            #region  upload Image
-            string uniqueFileName = null;
+
+
+
+
+            //upload immage
             if (model.Image != null && model.Image.Length > 0 && model.Image.IsImage())
             {
-                if (string.IsNullOrWhiteSpace(_hostingEnvironment.WebRootPath))
-                {
-                    _hostingEnvironment.WebRootPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot");
-                }
-                var uploadsFolder = Path.Combine(_hostingEnvironment.WebRootPath, "Upload/User");
-                uniqueFileName = (Guid.NewGuid().ToString().GetImgUrlFriendly() + "_" + model.Image.FileName);
-                string filePath = Path.Combine(uploadsFolder, uniqueFileName);
-
-                using (var stream = new FileStream(filePath, FileMode.Create))
-                {
-                    await model.Image.CopyToAsync(stream);
-                }
-                //Delete LastImage Image
-                if (!string.IsNullOrEmpty(user.ImageAddress))
-                {
-                    var LastImagePath = user?.ImageAddress?.Substring(1);
-                    LastImagePath = Path.Combine(_hostingEnvironment.WebRootPath, LastImagePath);
-                    if (System.IO.File.Exists(LastImagePath))
-                    {
-                        System.IO.File.Delete(LastImagePath);
-                    }
-                }
-                //update Newe Pic Address To database
-                user.ImageAddress = "/Upload/User/" + uniqueFileName;
+                var imageAddress = await _accountService.SvaeFileToHost("Upload/User", user.ImageAddress, model.Image);
+                user.ImageAddress = imageAddress;
             }
-            #endregion
+
+            //upload video
+            if (model.Video != null && model.Video.Length > 0 && model.Video.IsVideo())
+            {
+                var videoAddress = await _accountService.SvaeFileToHost("Upload/User", user.VideoAddress, model.Video);
+                user.VideoAddress = videoAddress;
+            }
 
 
-            #region Upload Film
-
-
-            #endregion 
 
             _context.FieldTBL.RemoveRange(user.Fields);
 
@@ -171,6 +162,31 @@ namespace CallInDoor.Controllers
                         DegreeType = item.DegreeType
                     };
                     user.Fields.Add(newFiled);
+                }
+            }
+
+
+            var certifications = new List<ProfileCertificateTBL>();
+            if (model.RequiredFile != null)
+            {
+                foreach (var item in model.RequiredFile)
+                {
+                    if (item.RequiredCertificate != null)
+                    {
+                        foreach (var item2 in item?.RequiredCertificate)
+                        {
+                            var fileaddress = await _accountService.SvaeFileToHost("Upload/ProfileCertificate", null, item2.File);
+                            _context.ProfileCertificateTBL.Add(
+                                new ProfileCertificateTBL()
+                                {
+                                    ServiceId = item.ServiceId,
+                                    UserName = currentUserName,
+                                    ///uploadFile
+                                    FileAddress =await _accountService.SvaeFileToHost("Upload/ProfileCertificate", null, item2.File)
+
+                                });
+                        }
+                    }
                 }
             }
 

@@ -21,6 +21,8 @@ namespace Domain.DTO.Account
 
     public class RequiredCertificate
     {
+
+        public int? Id { get; set; }
         public string FileName { get; set; }
         public string PersianFileName { get; set; }
     }

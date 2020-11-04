@@ -1,5 +1,6 @@
 ﻿using Domain.DTO.Account;
 using Domain.Entities;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using System;
 using System.Collections.Generic;
@@ -44,7 +45,9 @@ namespace Service.Interfaces.Account
 
         Task<ProfileGetDTO> ProfileGet();
 
-      (bool succsseded, List<string> result) ValidateUpdateProfile(UpdateProfileDTO model);
+        Task<string> SvaeFileToHost(string path, string lastPath, IFormFile file);
+
+        Task<(bool succsseded, List<string> result)> ValidateUpdateProfile(UpdateProfileDTO model);
 
 
     }

@@ -60,6 +60,10 @@ namespace Domain.Migrations
                     b.Property<string>("Bio")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("BirthDate")
+                        .HasColumnType("nvarchar(40)")
+                        .HasMaxLength(40);
+
                     b.Property<string>("ConcurrencyStamp")
                         .IsConcurrencyToken()
                         .HasColumnType("nvarchar(max)");
@@ -76,6 +80,9 @@ namespace Domain.Migrations
 
                     b.Property<bool>("EmailConfirmed")
                         .HasColumnType("bit");
+
+                    b.Property<int>("Gender")
+                        .HasColumnType("int");
 
                     b.Property<string>("ImageAddress")
                         .HasColumnType("nvarchar(max)");
@@ -96,6 +103,9 @@ namespace Domain.Migrations
                         .HasColumnType("datetimeoffset");
 
                     b.Property<string>("Name")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("NationalCode")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("NormalizedEmail")

@@ -118,16 +118,22 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="Bio" xml:space="preserve">
-    <value>Bio</value>
+    <value>bio</value>
   </data>
   <data name="Email" xml:space="preserve">
-    <value>Email</value>
+    <value>email</value>
   </data>
   <data name="ImageAddress" xml:space="preserve">
-    <value>ImageAddress</value>
+    <value>imageAddress</value>
+  </data>
+  <data name="Invalid email address" xml:space="preserve">
+    <value>Invalid email address</value>
   </data>
   <data name="LastName" xml:space="preserve">
-    <value>LastName</value>
+    <value>lastName</value>
+  </data>
+  <data name="NationalCode" xml:space="preserve">
+    <value>national code</value>
   </data>
   <data name="The maximum {0} length is {1} characters" xml:space="preserve">
     <value>The maximum {0} length is {1} characters</value>
@@ -136,9 +142,12 @@
     <value>The minimum {0} length is {1} characters</value>
   </data>
   <data name="UserName" xml:space="preserve">
-    <value>UserName</value>
+    <value>userName</value>
   </data>
   <data name="{0} is  Required" xml:space="preserve">
     <value>{0} is  Required</value>
+  </data>
+  <data name="{0} must be numeric" xml:space="preserve">
+    <value>Invalid  {0} </value>
   </data>
 </root>

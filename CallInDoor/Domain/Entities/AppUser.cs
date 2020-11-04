@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Identity;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Text;
 
@@ -16,6 +17,10 @@ namespace Domain.Entities
         public string ImageAddress { get; set; }
         public string VideoAddress { get; set; }
 
+        public Gender Gender { get; set; }
+        public string NationalCode { get; set; }
+        [MaxLength(40)]
+        public string BirthDate { get; set; }
         //آیا پروفایل کاربرر قابلیت ادیت کردن را دارد یا نه
         public bool IsEditableProfile { get; set; }
 
@@ -50,6 +55,8 @@ namespace Domain.Entities
         /// کد کشور
         /// </summary>
         public string CountryCode { get; set; }
+
+
 
 
         public DateTime CreateDate { get; set; }

@@ -2,6 +2,7 @@
 using Domain;
 using Domain.DTO.Account;
 using Domain.Entities;
+using Domain.Enums;
 using Domain.Utilities;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -13,6 +14,7 @@ using Service.Interfaces.Common;
 using Service.Interfaces.JwtManager;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IdentityModel.Tokens.Jwt;
 using System.IO;
 using System.Linq;
@@ -289,7 +291,7 @@ namespace Service
 
 
         /// <summary>
-        /// get current user username
+        /// get ProfileInformation
         /// </summary>
         /// <returns></returns>
         public async Task<ProfileGetDTO> ProfileGet()
@@ -298,7 +300,8 @@ namespace Service
             if (string.IsNullOrEmpty(currentusername))
                 return null;
 
-            var servicetypesids = await _context.BaseMyServiceTBL.Where(c => c.UserName == currentusername && c.IsDeleted == false && c.ServiceId != null)
+            var servicetypesids = await _context.BaseMyServiceTBL
+                .Where(c => c.UserName == currentusername && c.IsDeleted == false && c.ServiceId != null)
                   .Select(c => c.ServiceId).Distinct().ToListAsync();
 
             ////////var servicetypesid = new list<int> { 1, 2, 3, 4 };
@@ -307,16 +310,30 @@ namespace Service
 
             foreach (var id in servicetypesids)
             {
-                var result = await _context.ServiceTBL.Where(c => c.Id == id).FirstOrDefaultAsync();
+                var result = await _context.ServiceTBL
+                    .Where(c => c.Id == id)
+                  .Select(c => new
+                  {
+                      c.Id,
+                      c.Name,
+                      c.PersianName,
+                      c.ServidceTypeRequiredCertificatesTBL
+                  }).FirstOrDefaultAsync();
+
+
+                //.Include(c=>c.ServidceTypeRequiredCertificatesTBL)
+                //.FirstOrDefaultAsync();
+
                 profilecertificates.Add(new ProfileCertificateDTO()
                 {
+
                     ServiceId = result?.Id,
                     ServiceName = result?.Name,
                     ServicePersianName = result?.PersianName,
-                  RequiredCertificate = result?.ServidceTypeRequiredCertificatesTBL.Select(c => new RequiredCertificate { FileName = c.FileName, PersianFileName = c.PersianFileName }).ToList()
+                    RequiredCertificate = result?.ServidceTypeRequiredCertificatesTBL.Select(c => new RequiredCertificate
+                    { Id = c.Id, FileName = c.FileName, PersianFileName = c.PersianFileName }).ToList()
                 });
             }
-
 
 
             //////var servicetypesIds = (from bs in _context.BaseMyServiceTBL.Where(c => c.UserName == currentusername && c.IsDeleted == false && c.ServiceId != null)
@@ -336,6 +353,12 @@ namespace Service
                     ImageAddress = c.ImageAddress,
                     VideoAddress = c.VideoAddress,
                     ProfileCertificate = profilecertificates,
+                    BirthDate = c.BirthDate,
+                    IsCompany = c.IsCompany,
+                    IsEditableProfile = c.IsEditableProfile,
+                    NationalCode = c.NationalCode,
+                    Gender = c.Gender,
+                    ProfileConfirmType = c.ProfileConfirmType,
                     Fields = c.Fields.Select(r => new FiledsDTO { DegreeType = r.DegreeType, Title = r.Title }).ToList()
                 }).FirstOrDefaultAsync();
 
@@ -345,6 +368,13 @@ namespace Service
 
 
 
+        //string err = "";
+        //        if (IsPersianLanguage())
+        //            err = $"قیمت برای کاربران بومی باید بیشتر از {serviceFromDb.AcceptedMinPriceForNative} باشد";
+        //        else
+        //            err = string.Format($"Price For Native Customer must be more than {serviceFromDb.AcceptedMinPriceForNative}");
+        //IsValid = false;
+        //        Errors.Add(err);
 
 
 
@@ -353,11 +383,84 @@ namespace Service
         /// </summary>
         /// <param name="model"></param>
         /// <returns></returns>
-        public (bool succsseded, List<string> result) ValidateUpdateProfile(UpdateProfileDTO model)
+        public async Task<(bool succsseded, List<string> result)> ValidateUpdateProfile(UpdateProfileDTO model)
         {
             bool IsValid = true;
             List<string> Errors = new List<string>();
 
+
+            var IsInGender = Enum.IsDefined(typeof(Gender), model.Gender);
+            if (!IsInGender)
+            {
+                IsValid = false;
+                Errors.Add(_localizerAccount["InValidGender"].Value.ToString());
+            }
+
+
+            if (model.Fields != null)
+            {
+                if (model.Fields.Count > 2)
+                {
+                    IsValid = false;
+                    Errors.Add("Fields count is too much");
+                }
+            }
+
+            //validate RequiredCertificate
+            if (model.RequiredFile != null)
+            {
+                foreach (var item in model.RequiredFile)
+                {
+                    if (item.ServiceId == null)
+                    {
+                        IsValid = false;
+                        Errors.Add(_localizerAccount["Service Is required"].Value.ToString());
+                    }
+                    var exist = await _context.ServiceTBL.AnyAsync(c => c.Id == item.ServiceId);
+                    if (!exist)
+                    {
+                        IsValid = false;
+                        Errors.Add(_localizerAccount["InvalidServiceType"].Value.ToString());
+                    }
+                    if (item.RequiredCertificate != null)
+                    {
+                        foreach (var item2 in item.RequiredCertificate)
+                        {
+                            if (item2.File == null)
+                            {
+                                IsValid = false;
+                                Errors.Add(_localizerAccount["FileIsRequired"].Value.ToString());
+                            }
+                            else
+                            {
+                                if (!item2.File.IsPdfOrImage())
+                                {
+                                    IsValid = false;
+                                    Errors.Add(_localizerAccount["InValidFileFormat"].Value.ToString());
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            //validate video 
+            if (model.Video != null)
+            {
+                if (!model.Video.IsVideo())
+                {
+                    IsValid = false;
+                    Errors.Add(_localizerAccount["InValidVideoFormat"].Value.ToString());
+                }
+                if (model.Image.Length > 50000000)
+                {
+                    IsValid = false;
+                    Errors.Add(_localizerAccount["FileIsTooLarge"].Value.ToString());
+                }
+            }
+
+
+            //validate Image
             if (model.Image != null)
             {
                 //string uniqueFileName = null;
@@ -366,7 +469,7 @@ namespace Service
                     IsValid = false;
                     Errors.Add(_localizerAccount["InValidImageFormat"].Value.ToString());
                 }
-                if (model.Image.Length > 5000000)
+                if (model.Image.Length > 4000000)
                 {
                     IsValid = false;
                     Errors.Add(_localizerAccount["FileIsTooLarge"].Value.ToString());
@@ -401,12 +504,68 @@ namespace Service
             }
 
 
-
             return (IsValid, Errors);
         }
 
 
 
+
+        public async Task<string> SvaeFileToHost(string path, string lastPath, IFormFile file)
+        {
+
+            try
+            {
+                string uniqueVideoFileName = null;
+                if (string.IsNullOrWhiteSpace(_hostingEnvironment.WebRootPath))
+                {
+                    _hostingEnvironment.WebRootPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot");
+                }
+                var uploadsFolder = Path.Combine(_hostingEnvironment.WebRootPath, path);
+                uniqueVideoFileName = (Guid.NewGuid().ToString().GetImgUrlFriendly() + "_" + file.FileName);
+                string filePath = Path.Combine(uploadsFolder, uniqueVideoFileName);
+
+                using (var stream = new FileStream(filePath, FileMode.Create))
+                {
+                    await file.CopyToAsync(stream);
+                }
+
+                //Delete LastImage Image
+                if (!string.IsNullOrEmpty(lastPath))
+                {
+                    var LastVideoPath = lastPath?.Substring(1);
+                    LastVideoPath = Path.Combine(_hostingEnvironment.WebRootPath, LastVideoPath);
+                    if (System.IO.File.Exists(LastVideoPath))
+                    {
+                        System.IO.File.Delete(LastVideoPath);
+                    }
+                }
+                //update Newe video Address To database
+                //user.VideoAddress = "/Upload/User/" + uniqueVideoFileName;
+
+                lastPath = lastPath + uniqueVideoFileName;
+                return lastPath;
+
+            }
+            catch
+            {
+                return null;
+            }
+        }
+
+
+
+
+
+
+
+
+
+        public bool IsPersianLanguage()
+        {
+            if (CultureInfo.CurrentCulture.Name == PublicHelper.persianCultureName)
+                return true;
+            return false;
+        }
 
 
     }

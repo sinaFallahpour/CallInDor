@@ -123,6 +123,9 @@
   <data name="ConfirmPhoneMessage" xml:space="preserve">
     <value>Please confirm Your Account</value>
   </data>
+  <data name="EditableProfileNotAllowed" xml:space="preserve">
+    <value>You are not allowed to edit profiles</value>
+  </data>
   <data name="ErrorMessage" xml:space="preserve">
     <value>Operation Failed</value>
   </data>

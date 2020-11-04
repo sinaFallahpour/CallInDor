@@ -61,22 +61,23 @@ namespace CallInDoor
 
                 opt.AddPolicy("CorsPolicy", policy =>
                 {
-                    policy.AllowAnyHeader().AllowAnyMethod().WithOrigins(
-                               "http://localhost:4200",
-                               "http://localhost:443",
-                               "http://localhost:80",
-                                "https://localhost:4200",
-                               "https://localhost:443",
-                               "https://localhost:80",
-                               "http://localhost:3000",
-                               "http://localhost:3001",
-                               "http://localhost:4321",
-                               "https://localhost:44374",
-                               "http://panel.callindoor.ir",
-                                "https://panel.callindoor.ir"
+                    policy.AllowAnyHeader().AllowAnyMethod().AllowAnyOrigin();
+                    //policy.AllowAnyHeader().AllowAnyMethod().AllowAnyOrigin().WithOrigins(
+                    //           "http://localhost:4200",
+                    //           "http://localhost:443",
+                    //           "http://localhost:80",
+                    //            "https://localhost:4200",
+                    //           "https://localhost:443",
+                    //           "https://localhost:80",
+                    //           "http://localhost:3000",
+                    //           "http://localhost:3001",
+                    //           "http://localhost:4321",
+                    //           "https://localhost:44374",
+                    //           "http://panel.callindoor.ir",
+                    //            "https://panel.callindoor.ir"
 
-                               )
-                    .AllowCredentials();
+                    //           )
+                    //.AllowCredentials();
                 });
 
             });

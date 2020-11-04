@@ -748,7 +748,7 @@ namespace CallInDoor.Controllers
                  _locaLizer["SuccesfullAddServiceMessage"].Value.ToString()
                 ));
             }
-            catch (Exception ex)
+            catch 
             {
                 return StatusCode(StatusCodes.Status500InternalServerError,
                         new ApiResponse(500, _localizerShared["InternalServerMessage"].Value.ToString()));

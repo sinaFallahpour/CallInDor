@@ -123,6 +123,9 @@
   <data name="ConfirmPhoneMessage" xml:space="preserve">
     <value>لطفا حساب کاربری خود را تایید </value>
   </data>
+  <data name="EditableProfileNotAllowed" xml:space="preserve">
+    <value>شما اجازه تصحیح پروفایل را ندارید</value>
+  </data>
   <data name="ErrorMessage" xml:space="preserve">
     <value>خطا در ثبت</value>
   </data>

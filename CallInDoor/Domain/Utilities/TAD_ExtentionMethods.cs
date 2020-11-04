@@ -64,8 +64,25 @@ namespace Domain.Utilities
         public static bool IsVideo(this IFormFile file)
         {
             var extention = Path.GetExtension(file.FileName).ToLower();
-            return (extention == ".mp4" || extention == ".avi" || extention == ".hd" || extention == ".mpg" || extention == ".gif" || extention == ".vtt" || extention == ".mov" || extention == ".mkv" || extention == ".wmv");
+            return (extention == ".mp4" ||  extention == ".avi" || extention == ".hd" || extention == ".mpg" || extention == ".gif" || extention == ".vtt" || extention == ".mov" || extention == ".mkv" || extention == ".wmv");
         }
+
+
+
+        /// <summary>
+        /// آیا فایل  پی دی اف یا عکس است؟
+        /// </summary>
+        /// <param name="file"></param>
+        /// <returns></returns>
+        /// 
+        public static bool IsPdfOrImage(this IFormFile file)
+        {
+            var extention = Path.GetExtension(file.FileName).ToLower();
+            return (extention==".pdf" || extention == ".jpg" || extention == ".png" || extention == ".jpeg");
+        }
+
+
+
 
         //public static bool IsVideo(this IFormFile file)
         //{

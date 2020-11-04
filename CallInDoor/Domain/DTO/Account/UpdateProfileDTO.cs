@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Domain.Enums;
+using Microsoft.AspNetCore.Http;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -13,7 +14,7 @@ namespace Domain.DTO.Account
 
 
         [MaxLength(80, ErrorMessage = "The maximum {0} length is {1} characters")]
-        [EmailAddress(ErrorMessage = "Invalid email address.")]
+        [EmailAddress(ErrorMessage = "Invalid email address")]
         [Display(Name = "Email")]
         public string Email { get; set; }
 
@@ -36,9 +37,7 @@ namespace Domain.DTO.Account
         public string Bio { get; set; }
 
 
-        [Display(Name = "ImageAddress")]
-        public string ImageAddress { get; set; }
-
+        public List<int> lis { get; set; }
 
         [NotMapped]
         public IFormFile Image { get; set; }
@@ -47,16 +46,42 @@ namespace Domain.DTO.Account
         public IFormFile Video { get; set; }
 
 
+        public Gender Gender { get; set; }
+
+            
+
+        [MinLength(10, ErrorMessage = "The minimum {0} length is {1} characters")]
+        [MaxLength(10, ErrorMessage = "The maximum {0} length is {1} characters")]
+        [RegularExpression("^[0-9]*$", ErrorMessage = "{0} must be numeric")]
+        [Display(Name = "NationalCode")]
+        public string NationalCode { get; set; }
+
+        [MaxLength(40)]
+        public string BirthDate { get; set; }
 
         public ICollection<FiledsDTO> Fields { get; set; }
-        //public List<UserFiledsDTO> UsersDegrees { get; set; }
-        //public List<int> FieldsId { get; set; }
+
+        public List<RequiredFile> RequiredFile { get; set; }
 
     }
 
 
 
+   
+    public class RequiredFile
+    {
+        public int? ServiceId { get; set; }
 
+        public List<RequireCertitications> RequiredCertificate { get; set; }
+    }
+
+
+    public class RequireCertitications
+    {
+        public int FileId { get; set; }
+        //public string FileAddress { get; set; }
+        public IFormFile File { get; set; }
+    }
 
 
 }

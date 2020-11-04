@@ -126,8 +126,14 @@
   <data name="ImageAddress" xml:space="preserve">
     <value>آدرس عکس</value>
   </data>
+  <data name="Invalid email address" xml:space="preserve">
+    <value>ایمیل نامعتبر است</value>
+  </data>
   <data name="LastName" xml:space="preserve">
     <value>نام خانوادگی</value>
+  </data>
+  <data name="NationalCode" xml:space="preserve">
+    <value>کد ملی</value>
   </data>
   <data name="The maximum {0} length is {1} characters" xml:space="preserve">
     <value> حدا کثر تعداد کاراکتر برای {0} {1} میباشد</value>
@@ -140,5 +146,8 @@
   </data>
   <data name="{0} is  Required" xml:space="preserve">
     <value>{0} الزامیست</value>
+  </data>
+  <data name="{0} must be numeric" xml:space="preserve">
+    <value>{0} نامعتبر است</value>
   </data>
 </root>

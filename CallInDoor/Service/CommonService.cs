@@ -1,7 +1,11 @@
 ﻿using Domain.DTO.Response;
+using Domain.Utilities;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Service.Interfaces.Common;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Text;
 using System.Web.Http.ModelBinding;
 
@@ -9,8 +13,12 @@ namespace Service
 {
     public class CommonService : ICommonService
     {
+        private readonly IHostingEnvironment _hostingEnvironment;
 
-
+        public CommonService(IHostingEnvironment hostingEnvironment)
+        {
+            _hostingEnvironment = hostingEnvironment;
+        }
 
         /// <summary>
         /// Ok Response
@@ -80,5 +88,29 @@ namespace Service
         }
 
 
+
+        public string SvaeFileToHost(string path, IFormFile file)
+        {
+            try
+            {
+                if (file == null)
+                    return null;
+                string uniqueFileName = null;
+                var uploadsFolder = Path.Combine(_hostingEnvironment.WebRootPath, path);
+                uniqueFileName = (Guid.NewGuid().ToString().GetImgUrlFriendly() + "_" + file.FileName);
+                string filePath = Path.Combine(uploadsFolder, uniqueFileName);
+
+                using (var stream = new FileStream(filePath, FileMode.Create))
+                {
+                    file.CopyTo(stream);
+                }
+                //model.PhotoAddress = "/Upload/Slider/" + uniqueFileName;
+                return path + uniqueFileName;
+            }
+            catch
+            {
+                return null;
+            }
+        }
     }
 }
