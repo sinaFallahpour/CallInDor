@@ -25,7 +25,6 @@ namespace CallInDoor.Controllers
     public class ProfilesController : BaseControlle
     {
 
-
         #region CTOR
 
         private readonly DataContext _context;
@@ -86,8 +85,6 @@ namespace CallInDoor.Controllers
         }
         #endregion
 
-
-
         #region UpdateProfile
 
         [HttpPut("UpdateProfile")]
@@ -119,7 +116,6 @@ namespace CallInDoor.Controllers
                 return Ok(_commonService.OkResponse(null, _localizerShared["SuccessMessage"].Value.ToString()));
 
 
-
             List<string> erroses = new List<string> { _localizerShared["InternalServerMessage"].Value.ToString() };
             return StatusCode(StatusCodes.Status500InternalServerError,
                 new ApiBadRequestResponse(erroses, 500));
@@ -129,9 +125,6 @@ namespace CallInDoor.Controllers
 
 
         #endregion
-
-
-
 
         #region get RequiredFile For Profile
 
@@ -160,9 +153,6 @@ namespace CallInDoor.Controllers
 
         }
         #endregion
-
-
-
 
     }
 }

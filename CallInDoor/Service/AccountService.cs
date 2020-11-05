@@ -461,15 +461,17 @@ namespace Service
                             {
                                 idsShouldBeRemoved.Remove(existcertificate.Id);
                                 var fileaddress = await SaveFileToHost("Upload/ProfileCertificate/", existcertificate.FileAddress, item.File);
-                                _context.ProfileCertificateTBL.Remove(existcertificate);
-                                var newCertificate = new ProfileCertificateTBL()
-                                {
-                                    ServiceId = item.ServiceId,
-                                    UserName = currentUserName,
-                                    ///uploadFile
-                                    FileAddress = fileaddress,
-                                };
-                                await _context.ProfileCertificateTBL.AddAsync(newCertificate);
+                                //_context.ProfileCertificateTBL.Remove(existcertificate);
+                                existcertificate.FileAddress = fileaddress;
+                                
+                                //var newCertificate = new ProfileCertificateTBL()
+                                //{
+                                //    ServiceId = item.ServiceId,
+                                //    UserName = currentUserName,
+                                //    ///uploadFile
+                                //    FileAddress = fileaddress,
+                                //};
+                                //await _context.ProfileCertificateTBL.AddAsync(newCertificate);
                             }
                             //else
                             //{
@@ -563,11 +565,11 @@ namespace Service
             {
                 foreach (var item in model.RequiredFile)
                 {
-                    if (item.ServiceId == null)
-                    {
-                        IsValid = false;
-                        Errors.Add(_localizerAccount["Service Is required"].Value.ToString());
-                    }
+                    //if (item.ServiceId == null)
+                    //{
+                    //    IsValid = false;
+                    //    Errors.Add(_localizerAccount["Service Is required"].Value.ToString());
+                    //}
                     var exist = await _context.ServiceTBL.AnyAsync(c => c.Id == item.ServiceId);
                     if (!exist)
                     {
@@ -680,11 +682,11 @@ namespace Service
                 //Delete LastImage Image
                 if (!string.IsNullOrEmpty(lastPath))
                 {
-                    var LastVideoPath = lastPath?.Substring(1);
-                    LastVideoPath = Path.Combine(_hostingEnvironment.WebRootPath, LastVideoPath);
-                    if (System.IO.File.Exists(LastVideoPath))
+                    //var LastVideoPath = lastPath?.Substring(1);
+                  var  LastPath = Path.Combine(_hostingEnvironment.WebRootPath, lastPath);
+                    if (System.IO.File.Exists(LastPath))
                     {
-                        System.IO.File.Delete(LastVideoPath);
+                        System.IO.File.Delete(LastPath);
                     }
                 }
                 //update Newe video Address To database
@@ -715,8 +717,8 @@ namespace Service
                 //Delete LastImage Image
                 if (!string.IsNullOrEmpty(path))
                 {
-                    var LastPath = path?.Substring(1);
-                    LastPath = Path.Combine(_hostingEnvironment.WebRootPath, LastPath);
+                    //var LastPath = path?.Substring(1);
+                   var LastPath = Path.Combine(_hostingEnvironment.WebRootPath, path);
                     if (System.IO.File.Exists(LastPath))
                     {
                         System.IO.File.Delete(LastPath);
