@@ -109,34 +109,19 @@ class ModalForm extends Form {
   }
 
   updateRequiredFileChanged = async (index, e) => {
-    // this.state.requiredFiles.map(item => {
-    //   alert(index)
-    //   alert(item.id)
-    // })
-
-    await this.setState(
-      {
-        requiredFiles: this.state.requiredFiles.map((item) =>
-          item?._id == index ? { ...item, fileName: e.target.value } : item
-        ),
-      },
-      () => {}
-    );
-    console.log(this.state.requiredFiles);
+    this.setState({
+      requiredFiles: this.state.requiredFiles.map((item) =>
+        item?._id == index ? { ...item, fileName: e.target.value } : item
+      ),
+    });
   };
 
   updateRequiredFilePersianChanged = async (index, e) => {
-    await this.setState(
-      {
-        requiredFiles: this.state.requiredFiles.map((item) =>
-          item?._id == index
-            ? { ...item, persianFileName: e.target.value }
-            : item
-        ),
-      },
-      () => {}
-    );
-    console.log(this.state.requiredFiles);
+    this.setState({
+      requiredFiles: this.state.requiredFiles.map((item) =>
+        item?._id == index ? { ...item, persianFileName: e.target.value } : item
+      ),
+    });
   };
 
   addRequredFile = () => {
@@ -146,7 +131,6 @@ class ModalForm extends Form {
         { persianFileName: "", fileName: "", _id: Math.random() * 1000 },
       ],
     });
-    console.log(this.state.requiredFiles);
   };
 
   removeRequredFile = (index) => {

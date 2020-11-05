@@ -174,7 +174,7 @@ namespace Service
                     serviceType.ServidceTypeRequiredCertificatesTBL.Add(requiredFile);
                 }
             }
-            
+
             try
             {
                 await _context.ServiceTBL.AddAsync(serviceType);
@@ -213,14 +213,12 @@ namespace Service
                 serviceFromDB.RoleId = model.RoleId;
 
                 //serviceFromDB.Tags.Clear();
-
+                #region add update Tags
                 var servicetags = new List<ServiceTagsTBL>();
                 List<string> tags = null;
                 if (model.Tags != null)
                 {
                     tags = model.Tags.Split(",").ToList();
-
-
                     foreach (var item in tags)
                     {
                         if (!string.IsNullOrEmpty(item))
@@ -236,7 +234,7 @@ namespace Service
                     }
                 }
 
-               
+
 
                 var persinaTags = model?.PersinaTags?.Split(",").ToList();
                 if (persinaTags != null)
@@ -262,26 +260,73 @@ namespace Service
                 alltags.AddRange(allPersianTags);
                 _context.ServiceTags.RemoveRange(alltags);
                 serviceFromDB.Tags = servicetags;
+                #endregion
 
+                //_context.ServidceTypeRequiredCertificatesTBL.RemoveRange(serviceFromDB.ServidceTypeRequiredCertificatesTBL);
 
-                _context.ServidceTypeRequiredCertificatesTBL.RemoveRange(serviceFromDB.ServidceTypeRequiredCertificatesTBL);
+                #region Update  ServidceTypeRequiredCertificatesTBL
+                var idsShouldBeRemoved = new List<int>();
+                idsShouldBeRemoved = serviceFromDB.ServidceTypeRequiredCertificatesTBL.Select(c => c.Id).ToList();
 
                 if (model.RequiredFiles != null)
                 {
-                    var requirecertification = new List<ServidceTypeRequiredCertificatesTBL>();
+
                     foreach (var item in model.RequiredFiles)
                     {
-                        var newFile = new ServidceTypeRequiredCertificatesTBL()
+                        if (item.Id != null)
                         {
-                            FileName = item.FileName,
-                            PersianFileName = item.PersianFileName,
-                            Isdeleted = false,
-                            Service = serviceFromDB,
-                        };
-                        requirecertification.Add(newFile);
+                            //in dar ram ast
+                            var currentRequireFile = serviceFromDB.ServidceTypeRequiredCertificatesTBL.Where(c => c.Id == item.Id).FirstOrDefault();
+
+                            //In yani agar RequireFile  ferestade  ghablan bood faghat FileName,PersianFileName dare change mikone   
+                            if (currentRequireFile != null)
+                            {
+                                idsShouldBeRemoved.Remove(currentRequireFile.Id);
+                                currentRequireFile.FileName = item.FileName;
+                                currentRequireFile.PersianFileName = item.PersianFileName;
+                            }
+                        }
+                        //new requireFile added 
+                        else
+                        {
+                            var newRequiredCertificatesTBL = new ServidceTypeRequiredCertificatesTBL()
+                            {
+                                FileName = item.FileName,
+                                PersianFileName = item.PersianFileName,
+                                ServiceId = model.Id,
+                            };
+                            await _context.ServidceTypeRequiredCertificatesTBL.AddAsync(newRequiredCertificatesTBL);
+                        }
                     }
-                    serviceFromDB.ServidceTypeRequiredCertificatesTBL = requirecertification;
                 }
+
+                //delete requredFile from db
+                foreach (var item in idsShouldBeRemoved)
+                {
+                    var reqFile = serviceFromDB.ServidceTypeRequiredCertificatesTBL.Where(c => c.Id == item).FirstOrDefault();
+                    reqFile.Isdeleted = true;
+                    //_context.ServidceTypeRequiredCertificatesTBL.Remove(reqFile);
+                }
+
+                #endregion
+
+
+                ////////////if (model.RequiredFiles != null)
+                ////////////{
+                ////////////    var requirecertification = new List<ServidceTypeRequiredCertificatesTBL>();
+                ////////////    foreach (var item in model.RequiredFiles)
+                ////////////    {
+                ////////////        var newFile = new ServidceTypeRequiredCertificatesTBL()
+                ////////////        {
+                ////////////            FileName = item.FileName,
+                ////////////            PersianFileName = item.PersianFileName,
+                ////////////            Isdeleted = false,
+                ////////////            Service = serviceFromDB,
+                ////////////        };
+                ////////////        requirecertification.Add(newFile);
+                ////////////    }
+                ////////////    serviceFromDB.ServidceTypeRequiredCertificatesTBL = requirecertification;
+                ////////////}
 
 
                 var result = await _context.SaveChangesAsync();

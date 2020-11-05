@@ -13,6 +13,7 @@ import {
 } from "reactstrap";
 
 import Spinner from "../../../components/@vuexy/spinner/Loading-spinner";
+import { PlusSquare } from "react-feather";
 
 import ReactTagInput from "@pathofdev/react-tag-input";
 import "@pathofdev/react-tag-input/build/index.css";
@@ -51,6 +52,7 @@ class EditService extends Form {
 
     tags: [],
     persinaTags: [],
+    requiredFiles: [],
     isEnabled: true,
     errors: {},
     errorscustom: [],
@@ -112,6 +114,7 @@ class EditService extends Form {
         acceptedMinPriceForNative,
         acceptedMinPriceForNonNative,
         roleId,
+        requiredCertificates,
       } = data.result.data;
       this.setState({
         data: {
@@ -125,6 +128,9 @@ class EditService extends Form {
           acceptedMinPriceForNonNative,
           roleId,
         },
+        requiredFiles: requiredCertificates?.map((item) => {
+          return { ...item, _id: Math.random() * 100 };
+        }),
         isEnabled,
         tags,
         persinaTags,
@@ -149,18 +155,52 @@ class EditService extends Form {
     this.populatingRoles();
   }
 
+  updateRequiredFileChanged = async (index, e) => {
+    this.setState({
+      requiredFiles: this.state.requiredFiles.map((item) =>
+        item?._id == index ? { ...item, fileName: e.target.value } : item
+      ),
+    });
+  };
+
+  updateRequiredFilePersianChanged = async (index, e) => {
+    this.setState({
+      requiredFiles: this.state.requiredFiles.map((item) =>
+        item?._id == index ? { ...item, persianFileName: e.target.value } : item
+      ),
+    });
+  };
+
+  addRequredFile = () => {
+    this.setState({
+      requiredFiles: [
+        ...this.state.requiredFiles,
+        { persianFileName: "", fileName: "", _id: Math.random() * 1000 },
+      ],
+    });
+  };
+
+  removeRequredFile = (index) => {
+    this.setState({
+      requiredFiles: this.state.requiredFiles.filter(function (reqFile) {
+        return reqFile._id !== index;
+      }),
+    });
+  };
+
   doSubmit = async () => {
     this.setState({ Loading: true });
     const errorMessage = "";
     const errorscustom = [];
     this.setState({ errorMessage, errorscustom });
     try {
-      const { isEnabled, tags, persinaTags } = this.state;
+      const { isEnabled, tags, persinaTags, requiredFiles } = this.state;
       const obj = {
         ...this.state.data,
         isEnabled,
         tags: tags?.length == 0 ? null : tags.join(),
         persinaTags: persinaTags?.length == 0 ? null : persinaTags.join(),
+        requiredFiles,
       };
       const { data } = await agent.ServiceTypes.update(obj);
       if (data.result.status) toast.success(data.result.message);
@@ -302,6 +342,83 @@ class EditService extends Form {
                   type="checkbox"
                   className="ml-1"
                 />
+              </div>
+
+              <hr></hr>
+              <h3>required file for user </h3>
+              {this.state.requiredFiles?.map((requireFIle, index) => (
+                <>
+                  <div key={index} className="row">
+                    <input type="hidden" value={requireFIle?._id} />
+                    <div className="form-group col-12 col-md-4">
+                      <label htmlFor={`PersianFileName${index}`}>
+                        File name (persian)
+                      </label>
+                      <input
+                        required
+                        minLength={3}
+                        maxLength={120}
+                        onChange={(e) => {
+                          this.updateRequiredFilePersianChanged(
+                            requireFIle?._id,
+                            e
+                          );
+                        }}
+                        value={`${requireFIle?.persianFileName}`}
+                        name={`PersianFileName${index}`}
+                        id={`PersianFileName${index}`}
+                        className={`form-control `}
+                      />
+                      {/* {error && <div className="  alert alert-danger">{error}</div>} */}
+                    </div>
+
+                    <div className="form-group col-12 col-md-4">
+                      <label htmlFor={`FileName${index}`}>
+                        File name (english)
+                      </label>
+                      <input
+                        required
+                        minLength={3}
+                        maxLength={120}
+                        onChange={(e) => {
+                          this.updateRequiredFileChanged(requireFIle?._id, e);
+                        }}
+                        // onChange={this.setState({
+                        //   requireFIle: this.state.requiredFiles
+                        // })}
+                        value={`${requireFIle?.fileName}`}
+                        name={`FileName${index}`}
+                        id={`FileName${index}`}
+                        className={`form-control `}
+                      />
+                      {/* {error && <div className="  alert alert-danger">{error}</div>} */}
+                    </div>
+
+                    <div className="form-group col-4  col-md-3">
+                      <label></label>
+                      <Button
+                        type="button"
+                        onClick={() => {
+                          this.removeRequredFile(requireFIle?._id);
+                        }}
+                        className="form-control btn-danger"
+                      >
+                        remove
+                      </Button>
+                      {/* {error && <div className="  alert alert-danger">{error}</div>} */}
+                    </div>
+                  </div>
+                </>
+              ))}
+
+              <div className="form-group col-5  col-md-3">
+                <button
+                  type="button"
+                  className="mt-1 btn btn-warning"
+                  onClick={this.addRequredFile}
+                >
+                  <PlusSquare />
+                </button>
               </div>
 
               {this.state.Loading ? (
