@@ -51,7 +51,9 @@ class ModalForm extends Form {
     tags: [],
     persinaTags: [],
     roles: [],
-    requiredFiles: [{ id: 1, persianFileName: '1', fileName: '21' }, { id: 2, persianFileName: '3', fileName: '33333' }],
+    requiredFiles: [
+      // { id: 1, persianFileName: "1", fileName: "21" },
+    ],
     isEnabled: true,
     errors: {},
     errorscustom: [],
@@ -90,12 +92,7 @@ class ModalForm extends Form {
       .max(10000000000000)
       .label("minimum Price For Non Native User"),
 
-    sitePercent: Joi.number()
-      .required()
-      .min(0)
-      .max(100)
-      .label("Site percent"),
-
+    sitePercent: Joi.number().required().min(0).max(100).label("Site percent"),
 
     roleId: Joi.string().required().label("role"),
     roles: Joi.label("roles"),
@@ -111,50 +108,54 @@ class ModalForm extends Form {
     this.populatingRoles();
   }
 
-
-
   updateRequiredFileChanged = async (index, e) => {
     // this.state.requiredFiles.map(item => {
     //   alert(index)
     //   alert(item.id)
     // })
 
-    await this.setState({
-      requiredFiles: this.state.requiredFiles.map(item =>
-        item?.id == index
-          ? { ...item, fileName: e.target.value }
-          : item
-      )
-    }, () => {
-
-    })
-    console.log(this.state.requiredFiles)
-
-
-
-  }
+    await this.setState(
+      {
+        requiredFiles: this.state.requiredFiles.map((item) =>
+          item?.id == index ? { ...item, fileName: e.target.value } : item
+        ),
+      },
+      () => {}
+    );
+    console.log(this.state.requiredFiles);
+  };
 
   updateRequiredFilePersianChanged = async (index, e) => {
-    // this.state.requiredFiles.map(item => {
-    //   alert(index)
-    //   alert(item.id)
-    // })
+    await this.setState(
+      {
+        requiredFiles: this.state.requiredFiles.map((item) =>
+          item?.id == index
+            ? { ...item, persianFileName: e.target.value }
+            : item
+        ),
+      },
+      () => {}
+    );
+    console.log(this.state.requiredFiles);
+  };
 
-    await this.setState({
-      requiredFiles: this.state.requiredFiles.map(item =>
-        item?.id == index
-          ? { ...item, persianFileName: e.target.value }
-          : item
-      )
-    }, () => {
+  addRequredFile = () => {
+    this.setState({
+      requiredFiles: [
+        ...this.state.requiredFiles,
+        { persianFileName: "", fileName: "", id: Math.random() * 1000 },
+      ],
+    });
+    console.log(this.state.requiredFiles);
+  };
 
-    })
-    console.log(this.state.requiredFiles)
-
-
-
-  }
-
+  removeRequredFile = (index) => {
+    this.setState({
+      requiredFiles: this.state.requiredFiles.filter(function (reqFile) {
+        return reqFile.id !== index;
+      }),
+    });
+  };
 
   doSubmit = async (e) => {
     this.setState({ Loading: true });
@@ -169,7 +170,7 @@ class ModalForm extends Form {
         isEnabled,
         tags: tags.join(),
         persinaTags: persinaTags.join(),
-        requiredFiles
+        requiredFiles,
       };
 
       const { data } = await agent.ServiceTypes.create(obj);
@@ -219,8 +220,8 @@ class ModalForm extends Form {
 
                 {this.renderInput(
                   "minPriceForService",
-                  "Minimm Price (For Service)$"
-                  , "number"
+                  "Minimm Price (For Service)$",
+                  "number"
                 )}
 
                 {this.renderInput(
@@ -317,35 +318,45 @@ class ModalForm extends Form {
                   />
                 </div>
 
-
+                <hr></hr>
+                <h3>required file for user </h3>
                 {this.state.requiredFiles?.map((requireFIle, index) => (
                   <>
-                    {console.log(requireFIle)}
                     <div key={index} className="row">
-
                       <input type="hidden" value={requireFIle?.id} />
-                      <div className="form-group col-12 col-md-4" >
-                        <label htmlFor={`PersianFileName${index}`}>File name (persian)</label>
+                      <div className="form-group col-12 col-md-4">
+                        <label htmlFor={`PersianFileName${index}`}>
+                          File name (persian)
+                        </label>
                         <input
                           required
                           minLength={3}
                           maxLength={120}
-                          onChange={(e) => { this.updateRequiredFilePersianChanged(requireFIle?.id, e) }}
+                          onChange={(e) => {
+                            this.updateRequiredFilePersianChanged(
+                              requireFIle?.id,
+                              e
+                            );
+                          }}
                           value={`${requireFIle?.persianFileName}`}
                           name={`PersianFileName${index}`}
                           id={`PersianFileName${index}`}
-                          className={`form-control `} />
+                          className={`form-control `}
+                        />
                         {/* {error && <div className="  alert alert-danger">{error}</div>} */}
-                      </div >
+                      </div>
 
-                      <div className="form-group col-12 col-md-4" >
-                        <label htmlFor={`FileName${index}`}>File name (english)</label>
+                      <div className="form-group col-12 col-md-4">
+                        <label htmlFor={`FileName${index}`}>
+                          File name (english)
+                        </label>
                         <input
                           required
                           minLength={3}
                           maxLength={120}
-                          onChange={(e) => { this.updateRequiredFileChanged(requireFIle?.id, e) }}
-
+                          onChange={(e) => {
+                            this.updateRequiredFileChanged(requireFIle?.id, e);
+                          }}
                           // onChange={this.setState({
                           //   requireFIle: this.state.requiredFiles
                           // })}
@@ -355,68 +366,57 @@ class ModalForm extends Form {
                           className={`form-control `}
                         />
                         {/* {error && <div className="  alert alert-danger">{error}</div>} */}
-                      </div >
+                      </div>
 
-                      <div className="form-group col-4  col-md-3" >
-                        <label ></label>
-                        <Button type="button" className="form-control btn-danger" > remove </Button>
+                      <div className="form-group col-4  col-md-3">
+                        <label></label>
+                        <Button
+                          type="button"
+                          onClick={() => {
+                            this.removeRequredFile(requireFIle?.id);
+                          }}
+                          className="form-control btn-danger"
+                        >
+                          remove
+                        </Button>
                         {/* {error && <div className="  alert alert-danger">{error}</div>} */}
-                      </div >
+                      </div>
                     </div>
                   </>
                 ))}
 
-                <div className="row">
-
+                {/* <div className="row">
                   <input type="hidden" value="1" />
-                  <div className="form-group col-12 col-md-4" >
+                  <div className="form-group col-12 col-md-4">
                     <label htmlFor="sa">File name (persian)</label>
                     <input name="sa" id="sa" className={`form-control `} />
-                    {/* {error && <div className="  alert alert-danger">{error}</div>} */}
-                  </div >
+                    {error && (
+                      <div className="  alert alert-danger">{error}</div>
+                    )}
+                  </div>
 
-                  <div className="form-group col-12 col-md-4" >
+                  <div className="form-group col-12 col-md-4">
                     <label htmlFor="sa">File name (english)</label>
                     <input name="sa" id="sa" className={`form-control `} />
-                    {/* {error && <div className="  alert alert-danger">{error}</div>} */}
-                  </div >
+                    {error && (
+                      <div className="  alert alert-danger">{error}</div>
+                    )}
+                  </div>
 
-                  <div className="form-group col-4  col-md-3" >
-                    <label ></label>
-                    <Button type="button" className="form-control btn-danger" > remove </Button>
-                    {/* {error && <div className="  alert alert-danger">{error}</div>} */}
-                  </div >
-                </div>
-
-
-                {/* 
-                <div className="row">
-
-                  <input type="hidden" value="1" />
-                  <div className="form-group col-12 col-md-4" >
-                    <label htmlFor="sa">File name (persian)</label>
-                    <input name="sa" id="sa" className={`form-control `} />
-                  </div >
-
-                  <div className="form-group col-12 col-md-4" >
-                    <label htmlFor="sa">File name (english)</label>
-                    <input name="sa" id="sa" className={`form-control `} />
-                  </div >
-
-                  <div className="form-group col-4  col-md-3" >
-                    <label ></label>
-                    <Button type="button" className="form-control btn-danger" > remove </Button>
-                  </div >
+                  <div className="form-group col-4  col-md-3">
+                    <label></label>
+                    <Button type="button" className="form-control btn-danger">
+                      remove
+                    </Button>
+                  </div>
                 </div> */}
 
-
-
-
-                <div className="form-group col-5  col-md-3" >
+                <div className="form-group col-5  col-md-3">
                   <button
+                    type="button"
                     // disabled={!props.isProfessional}
                     className="mt-1 btn btn-warning"
-                  // onClick={addTags}
+                    onClick={this.addRequredFile}
                   >
                     <PlusSquare />
                   </button>
@@ -428,8 +428,8 @@ class ModalForm extends Form {
                     <span className="ml-50">Loading...</span>
                   </Button>
                 ) : (
-                    this.renderButton("Save")
-                  )}
+                  this.renderButton("Save")
+                )}
               </form>
             </CardBody>
           </Card>
