@@ -90,26 +90,20 @@ namespace CallInDoor.Controllers
 
         #region UpdateProfile
 
-        // /api/Profile/UpdateProfile
         [HttpPut("UpdateProfile")]
-        [Authorize]
+        [ClaimsAuthorize(IsAdmin = false)]
         public async Task<ActionResult> UpdateProfile([FromForm] UpdateProfileDTO model)
         {
-            //validate   === check kon bishtr az 3 ta nazashte bashe  madrak ra
-
             var currentSerialNumber = _accountService.GetcurrentSerialNumber();
             var currentUserName = _accountService.GetCurrentUserName();
-
             var res = await _accountService.ValidateUpdateProfile(model);
             if (!res.succsseded)
                 return BadRequest(new ApiBadRequestResponse(res.result));
-
             var user = await _context.Users
                 .Where(x => x.SerialNumber == currentSerialNumber && x.UserName == currentUserName)
                 .Include(c => c.Fields)
-                //.ThenInclude(o => o.FieldTBL)
                 .FirstOrDefaultAsync();
-
+            var certificationFromDB = await _context.ProfileCertificateTBL.Where(c => c.UserName == currentUserName).ToListAsync();
             if (user == null)
             {
                 List<string> erros = new List<string> { _localizerShared["NotFound"].Value.ToString() };
@@ -120,83 +114,53 @@ namespace CallInDoor.Controllers
                 List<string> erros = new List<string> { _localizerShared["EditableProfileNotAllowed"].Value.ToString() };
                 return BadRequest(new ApiBadRequestResponse(erros));
             }
-
-            user.Bio = model.Bio;
-            user.Email = model.Email;
-            user.Name = model.Name;
-            user.LastName = model.LastName;
-            user.BirthDate = model.BirthDate;
-            user.Gender = model.Gender;
-            user.NationalCode = model.NationalCode;
+            var result = await _accountService.UpdateProfile(user, certificationFromDB, model);
+            if (result)
+                return Ok(_commonService.OkResponse(null, _localizerShared["SuccessMessage"].Value.ToString()));
 
 
 
+            List<string> erroses = new List<string> { _localizerShared["InternalServerMessage"].Value.ToString() };
+            return StatusCode(StatusCodes.Status500InternalServerError,
+                new ApiBadRequestResponse(erroses, 500));
 
-
-            //upload immage
-            if (model.Image != null && model.Image.Length > 0 && model.Image.IsImage())
-            {
-                var imageAddress = await _accountService.SvaeFileToHost("Upload/User", user.ImageAddress, model.Image);
-                user.ImageAddress = imageAddress;
-            }
-
-            //upload video
-            if (model.Video != null && model.Video.Length > 0 && model.Video.IsVideo())
-            {
-                var videoAddress = await _accountService.SvaeFileToHost("Upload/User", user.VideoAddress, model.Video);
-                user.VideoAddress = videoAddress;
-            }
-
-
-
-            _context.FieldTBL.RemoveRange(user.Fields);
-
-            if (model.Fields != null)
-            {
-                user.Fields = new List<FieldTBL>();
-                foreach (var item in model.Fields)
-                {
-                    var newFiled = new FieldTBL()
-                    {
-                        Title = item.Title,
-                        DegreeType = item.DegreeType
-                    };
-                    user.Fields.Add(newFiled);
-                }
-            }
-
-
-            var certifications = new List<ProfileCertificateTBL>();
-            if (model.RequiredFile != null)
-            {
-                foreach (var item in model.RequiredFile)
-                {
-                    if (item.RequiredCertificate != null)
-                    {
-                        foreach (var item2 in item?.RequiredCertificate)
-                        {
-                            var fileaddress = await _accountService.SvaeFileToHost("Upload/ProfileCertificate", null, item2.File);
-                            _context.ProfileCertificateTBL.Add(
-                                new ProfileCertificateTBL()
-                                {
-                                    ServiceId = item.ServiceId,
-                                    UserName = currentUserName,
-                                    ///uploadFile
-                                    FileAddress =await _accountService.SvaeFileToHost("Upload/ProfileCertificate", null, item2.File)
-
-                                });
-                        }
-                    }
-                }
-            }
-
-            await _context.SaveChangesAsync();
-            return Ok(_commonService.OkResponse(null, _localizerShared["SuccessMessage"].Value.ToString()));
         }
 
 
 
         #endregion
+
+
+
+
+        #region get RequiredFile For Profile
+
+        [HttpGet("GetUsersRequiredFile")]
+        [ClaimsAuthorize(IsAdmin = false)]
+        public async Task<ActionResult> GetUsersRequiredFile()
+        {
+            var currentusername = _accountService.GetCurrentUserName();
+
+            var query = (from bs in _context.BaseMyServiceTBL.Where(c => c.UserName == currentusername && c.IsDeleted == false && c.ServiceId != null)
+                         join s in _context.ServiceTBL
+                         on bs.ServiceId equals s.Id
+                         join req in _context.ServidceTypeRequiredCertificatesTBL
+                          on s.Id equals req.ServiceId
+                         select new
+                         {
+                             serviceId = s.Id,
+                             serviceName = s.Name,
+                             ServicePersianName = s.PersianName,
+                             ServidceTypeRequiredCertificatesTBL = s.ServidceTypeRequiredCertificatesTBL.Select(c => new { c.Id, c.FileName, c.PersianFileName, c.ServiceId })
+                         }).Distinct()
+                          .AsQueryable();
+
+            var requiredServiceForUser = await query.ToListAsync();
+            return Ok(_commonService.OkResponse(requiredServiceForUser, _localizerShared["SuccessMessage"].Value.ToString()));
+
+        }
+        #endregion
+
 
 
 

@@ -37,7 +37,6 @@ namespace Domain.DTO.Account
         public string Bio { get; set; }
 
 
-        public List<int> lis { get; set; }
 
         [NotMapped]
         public IFormFile Image { get; set; }
@@ -48,7 +47,7 @@ namespace Domain.DTO.Account
 
         public Gender Gender { get; set; }
 
-            
+
 
         [MinLength(10, ErrorMessage = "The minimum {0} length is {1} characters")]
         [MaxLength(10, ErrorMessage = "The maximum {0} length is {1} characters")]
@@ -66,22 +65,22 @@ namespace Domain.DTO.Account
     }
 
 
-
-   
     public class RequiredFile
     {
         public int? ServiceId { get; set; }
-
-        public List<RequireCertitications> RequiredCertificate { get; set; }
-    }
-
-
-    public class RequireCertitications
-    {
-        public int FileId { get; set; }
+        public int? FileId { get; set; }
         //public string FileAddress { get; set; }
         public IFormFile File { get; set; }
+        //public List<RequireCertitications> RequiredCertificate { get; set; }
     }
+
+
+    //public class RequireCertitications
+    //{
+    //    public int FileId { get; set; }
+    //    //public string FileAddress { get; set; }
+    //    public IFormFile File { get; set; }
+    //}
 
 
 }

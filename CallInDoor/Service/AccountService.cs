@@ -300,40 +300,40 @@ namespace Service
             if (string.IsNullOrEmpty(currentusername))
                 return null;
 
-            var servicetypesids = await _context.BaseMyServiceTBL
-                .Where(c => c.UserName == currentusername && c.IsDeleted == false && c.ServiceId != null)
-                  .Select(c => c.ServiceId).Distinct().ToListAsync();
+            //////////////var servicetypesids = await _context.BaseMyServiceTBL
+            //////////////    .Where(c => c.UserName == currentusername && c.IsDeleted == false && c.ServiceId != null)
+            //////////////      .Select(c => c.ServiceId).Distinct().ToListAsync();
 
-            ////////var servicetypesid = new list<int> { 1, 2, 3, 4 };
+            //////////////////////var servicetypesid = new list<int> { 1, 2, 3, 4 };
 
-            var profilecertificates = new List<ProfileCertificateDTO>();
+            //////////////var profilecertificates = new List<ProfileCertificateDTO>();
 
-            foreach (var id in servicetypesids)
-            {
-                var result = await _context.ServiceTBL
-                    .Where(c => c.Id == id)
-                  .Select(c => new
-                  {
-                      c.Id,
-                      c.Name,
-                      c.PersianName,
-                      c.ServidceTypeRequiredCertificatesTBL
-                  }).FirstOrDefaultAsync();
+            //////////////foreach (var id in servicetypesids)
+            //////////////{
+            //////////////    var result = await _context.ServiceTBL
+            //////////////        .Where(c => c.Id == id)
+            //////////////      .Select(c => new
+            //////////////      {
+            //////////////          c.Id,
+            //////////////          c.Name,
+            //////////////          c.PersianName,
+            //////////////          c.ServidceTypeRequiredCertificatesTBL
+            //////////////      }).FirstOrDefaultAsync();
 
 
-                //.Include(c=>c.ServidceTypeRequiredCertificatesTBL)
-                //.FirstOrDefaultAsync();
+            //////////////    //.Include(c=>c.ServidceTypeRequiredCertificatesTBL)
+            //////////////    //.FirstOrDefaultAsync();
 
-                profilecertificates.Add(new ProfileCertificateDTO()
-                {
+            //////////////    profilecertificates.Add(new ProfileCertificateDTO()
+            //////////////    {
 
-                    ServiceId = result?.Id,
-                    ServiceName = result?.Name,
-                    ServicePersianName = result?.PersianName,
-                    RequiredCertificate = result?.ServidceTypeRequiredCertificatesTBL.Select(c => new RequiredCertificate
-                    { Id = c.Id, FileName = c.FileName, PersianFileName = c.PersianFileName }).ToList()
-                });
-            }
+            //////////////        ServiceId = result?.Id,
+            //////////////        ServiceName = result?.Name,
+            //////////////        ServicePersianName = result?.PersianName,
+            //////////////        RequiredCertificate = result?.ServidceTypeRequiredCertificatesTBL.Select(c => new RequiredCertificate
+            //////////////        { Id = c.Id, FileName = c.FileName, PersianFileName = c.PersianFileName }).ToList()
+            //////////////    });
+            //////////////}
 
 
             //////var servicetypesIds = (from bs in _context.BaseMyServiceTBL.Where(c => c.UserName == currentusername && c.IsDeleted == false && c.ServiceId != null)
@@ -352,12 +352,20 @@ namespace Service
                     Bio = c.Bio,
                     ImageAddress = c.ImageAddress,
                     VideoAddress = c.VideoAddress,
-                    ProfileCertificate = profilecertificates,
                     BirthDate = c.BirthDate,
                     IsCompany = c.IsCompany,
                     IsEditableProfile = c.IsEditableProfile,
                     NationalCode = c.NationalCode,
                     Gender = c.Gender,
+                    ProfileCertificate = _context.ProfileCertificateTBL
+                                .Where(c => c.UserName == currentusername)
+                                    .Select(c => new ProfileCertificateDTO
+                                    {
+                                        Id = c.Id,
+                                        FileAdress = c.FileAddress,
+                                        ServiceId = c.ServiceId,
+                                        Username = c.UserName
+                                    }).ToList(),
                     ProfileConfirmType = c.ProfileConfirmType,
                     Fields = c.Fields.Select(r => new FiledsDTO { DegreeType = r.DegreeType, Title = r.Title }).ToList()
                 }).FirstOrDefaultAsync();
@@ -378,6 +386,151 @@ namespace Service
 
 
 
+
+
+
+
+
+        /// <summary>
+        ///Update
+        /// </summary>
+        /// <param name="Service"></param>
+        /// <returns></returns>
+        public async Task<bool> UpdateProfile(AppUser userFromDB, List<ProfileCertificateTBL> certificationFromDB, UpdateProfileDTO model)
+        {
+            try
+            {
+                //var serviceFromDb = await _context.ServiceTBL.FindAsync(model.Id);
+                if (model == null) return false;
+
+                userFromDB.Bio = model.Bio;
+                userFromDB.Email = model.Email;
+                userFromDB.Name = model.Name;
+                userFromDB.LastName = model.LastName;
+                userFromDB.BirthDate = model.BirthDate;
+                userFromDB.Gender = model.Gender;
+                userFromDB.NationalCode = model.NationalCode;
+
+                //upload immage
+                if (model.Image != null && model.Image.Length > 0 && model.Image.IsImage())
+                {
+                    var imageAddress = await SaveFileToHost("Upload/User/", userFromDB.ImageAddress, model.Image);
+                    userFromDB.ImageAddress = imageAddress;
+                }
+
+                //upload video
+                if (model.Video != null && model.Video.Length > 0 && model.Video.IsVideo())
+                {
+                    var videoAddress = await SaveFileToHost("Upload/User/", userFromDB.VideoAddress, model.Video);
+                    userFromDB.VideoAddress = videoAddress;
+                }
+
+                _context.FieldTBL.RemoveRange(userFromDB.Fields);
+                if (model.Fields != null)
+                {
+                    userFromDB.Fields = new List<FieldTBL>();
+                    foreach (var item in model.Fields)
+                    {
+                        var newFiled = new FieldTBL()
+                        {
+                            Title = item.Title,
+                            DegreeType = item.DegreeType
+                        };
+                        userFromDB.Fields.Add(newFiled);
+                    }
+                }
+
+
+                var certifications = new List<ProfileCertificateTBL>();
+                var currentUserName = GetCurrentUserName();
+
+                var idsShouldBeRemoved = new List<int>();
+                idsShouldBeRemoved = certificationFromDB.Select(c => c.Id).ToList();
+                if (model.RequiredFile != null)
+                {
+
+                    foreach (var item in model.RequiredFile)
+                    {
+                        if (item.FileId != null)
+                        {
+                            //in dar ram ast
+                            var existcertificate = certificationFromDB.Where(c => c.Id == item.FileId && c.ServiceId == item.ServiceId).FirstOrDefault();
+
+                            //In yani agar certificate fetestade  ghablan bood faghat filesho dare change mikone   
+                            if (existcertificate != null && item.File != null)
+                            {
+                                idsShouldBeRemoved.Remove(existcertificate.Id);
+                                var fileaddress = await SaveFileToHost("Upload/ProfileCertificate/", existcertificate.FileAddress, item.File);
+                                _context.ProfileCertificateTBL.Remove(existcertificate);
+                                var newCertificate = new ProfileCertificateTBL()
+                                {
+                                    ServiceId = item.ServiceId,
+                                    UserName = currentUserName,
+                                    ///uploadFile
+                                    FileAddress = fileaddress,
+                                };
+                                await _context.ProfileCertificateTBL.AddAsync(newCertificate);
+                            }
+                            //else
+                            //{
+                            //    //in certificate haee ast ke ghablan vared kard alan nist
+                            //    var notExistCertificate = certificationFromDB.Where(c => c.Id != item.FileId & c.ServiceId == item.ServiceId).FirstOrDefault();
+                            //    DeleteFileFromHost("Upload/ProfileCertificate", notExistCertificate.FileAddress);
+                            //    _context.ProfileCertificateTBL.Remove(notExistCertificate);
+                            //    //foreach (var item2 in notExistCertificate)
+                            //    //{
+                            //    //    DeleteFileFromHost("Upload/ProfileCertificate", item2.FileAddress);
+                            //    //    _context.ProfileCertificateTBL.Remove(item2);
+                            //    //}
+                            //}
+                        }
+                        //new Certifivcaatefile added 
+                        else
+                        {
+                            //var certificate = certificationFromDB.Where(c => c.Id == item.FileId).FirstOrDefault();
+                            var fileaddress = await SaveFileToHost("Upload/ProfileCertificate/", null, item.File);
+                            var newCertificate = new ProfileCertificateTBL()
+                            {
+                                ServiceId = item.ServiceId,
+                                UserName = currentUserName,
+                                ///uploadFile
+                                FileAddress = fileaddress,
+                            };
+                            await _context.ProfileCertificateTBL.AddAsync(newCertificate);
+                        }
+                    }
+                }
+
+
+
+                //var existcertificate = certificationFromDB.Where(c => c.Id == item.FileId && c.ServiceId == item.ServiceId).FirstOrDefault();
+                foreach (var item in idsShouldBeRemoved)
+                {
+                    var certi = certificationFromDB.Where(c => c.Id == item).FirstOrDefault();
+                    DeleteFileFromHost( certi.FileAddress);
+                    _context.ProfileCertificateTBL.Remove(certi);
+                }
+
+                await _context.SaveChangesAsync();
+                return true;
+
+
+
+            }
+            catch
+            {
+                return false;
+            }
+
+
+
+        }
+
+
+
+
+
+
         /// <summary>
         /// ولیدیت کردن آبجکت آپدیت پروفابل
         /// </summary>
@@ -387,7 +540,6 @@ namespace Service
         {
             bool IsValid = true;
             List<string> Errors = new List<string>();
-
 
             var IsInGender = Enum.IsDefined(typeof(Gender), model.Gender);
             if (!IsInGender)
@@ -422,25 +574,21 @@ namespace Service
                         IsValid = false;
                         Errors.Add(_localizerAccount["InvalidServiceType"].Value.ToString());
                     }
-                    if (item.RequiredCertificate != null)
+
+                    if (item.File == null)
                     {
-                        foreach (var item2 in item.RequiredCertificate)
+                        IsValid = false;
+                        Errors.Add(_localizerAccount["FileIsRequired"].Value.ToString());
+                    }
+                    else
+                    {
+                        if (!item.File.IsPdfOrImage())
                         {
-                            if (item2.File == null)
-                            {
-                                IsValid = false;
-                                Errors.Add(_localizerAccount["FileIsRequired"].Value.ToString());
-                            }
-                            else
-                            {
-                                if (!item2.File.IsPdfOrImage())
-                                {
-                                    IsValid = false;
-                                    Errors.Add(_localizerAccount["InValidFileFormat"].Value.ToString());
-                                }
-                            }
+                            IsValid = false;
+                            Errors.Add(_localizerAccount["InValidFileFormat"].Value.ToString());
                         }
                     }
+
                 }
             }
 
@@ -510,7 +658,7 @@ namespace Service
 
 
 
-        public async Task<string> SvaeFileToHost(string path, string lastPath, IFormFile file)
+        public async Task<string> SaveFileToHost(string path, string lastPath, IFormFile file)
         {
 
             try
@@ -542,15 +690,51 @@ namespace Service
                 //update Newe video Address To database
                 //user.VideoAddress = "/Upload/User/" + uniqueVideoFileName;
 
-                lastPath = lastPath + uniqueVideoFileName;
-                return lastPath;
+               return  path + uniqueVideoFileName;
 
             }
-            catch
+            catch (Exception ex)
             {
                 return null;
             }
         }
+
+
+
+
+        public bool DeleteFileFromHost( string path)
+        {
+
+            try
+            {
+                if (string.IsNullOrWhiteSpace(_hostingEnvironment.WebRootPath))
+                {
+                    _hostingEnvironment.WebRootPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot");
+                }
+
+                //Delete LastImage Image
+                if (!string.IsNullOrEmpty(path))
+                {
+                    var LastPath = path?.Substring(1);
+                    LastPath = Path.Combine(_hostingEnvironment.WebRootPath, LastPath);
+                    if (System.IO.File.Exists(LastPath))
+                    {
+                        System.IO.File.Delete(LastPath);
+                    }
+                }
+                //update Newe video Address To database
+                //user.VideoAddress = "/Upload/User/" + uniqueVideoFileName;
+                return true;
+
+            }
+            catch (Exception ex)
+            {
+                return false;
+            }
+        }
+
+
+
 
 
 
