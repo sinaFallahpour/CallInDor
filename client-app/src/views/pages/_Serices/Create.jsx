@@ -23,6 +23,8 @@ import {
   Col,
 } from "reactstrap";
 
+import { PlusSquare } from "react-feather";
+
 // import { modalForm } from "./ModalSourceCode"
 import { toast } from "react-toastify";
 import ReactTagInput from "@pathofdev/react-tag-input";
@@ -49,7 +51,7 @@ class ModalForm extends Form {
     tags: [],
     persinaTags: [],
     roles: [],
-
+    requiredFiles: [{ id: 1, persianFileName: '1', fileName: '21' }, { id: 2, persianFileName: '3', fileName: '33333' }],
     isEnabled: true,
     errors: {},
     errorscustom: [],
@@ -109,6 +111,51 @@ class ModalForm extends Form {
     this.populatingRoles();
   }
 
+
+
+  updateRequiredFileChanged = async (index, e) => {
+    // this.state.requiredFiles.map(item => {
+    //   alert(index)
+    //   alert(item.id)
+    // })
+
+    await this.setState({
+      requiredFiles: this.state.requiredFiles.map(item =>
+        item?.id == index
+          ? { ...item, fileName: e.target.value }
+          : item
+      )
+    }, () => {
+
+    })
+    console.log(this.state.requiredFiles)
+
+
+
+  }
+
+  updateRequiredFilePersianChanged = async (index, e) => {
+    // this.state.requiredFiles.map(item => {
+    //   alert(index)
+    //   alert(item.id)
+    // })
+
+    await this.setState({
+      requiredFiles: this.state.requiredFiles.map(item =>
+        item?.id == index
+          ? { ...item, persianFileName: e.target.value }
+          : item
+      )
+    }, () => {
+
+    })
+    console.log(this.state.requiredFiles)
+
+
+
+  }
+
+
   doSubmit = async (e) => {
     this.setState({ Loading: true });
 
@@ -116,12 +163,13 @@ class ModalForm extends Form {
     const errorscustom = [];
     this.setState({ errorMessage, errorscustom });
     try {
-      const { isEnabled, tags, persinaTags } = this.state;
+      const { isEnabled, tags, persinaTags, requiredFiles } = this.state;
       const obj = {
         ...this.state.data,
         isEnabled,
         tags: tags.join(),
         persinaTags: persinaTags.join(),
+        requiredFiles
       };
 
       const { data } = await agent.ServiceTypes.create(obj);
@@ -267,6 +315,111 @@ class ModalForm extends Form {
                     type="checkbox"
                     className="ml-1"
                   />
+                </div>
+
+
+                {this.state.requiredFiles?.map((requireFIle, index) => (
+                  <>
+                    {console.log(requireFIle)}
+                    <div key={index} className="row">
+
+                      <input type="hidden" value={requireFIle?.id} />
+                      <div className="form-group col-12 col-md-4" >
+                        <label htmlFor={`PersianFileName${index}`}>File name (persian)</label>
+                        <input
+                          required
+                          minLength={3}
+                          maxLength={120}
+                          onChange={(e) => { this.updateRequiredFilePersianChanged(requireFIle?.id, e) }}
+                          value={`${requireFIle?.persianFileName}`}
+                          name={`PersianFileName${index}`}
+                          id={`PersianFileName${index}`}
+                          className={`form-control `} />
+                        {/* {error && <div className="  alert alert-danger">{error}</div>} */}
+                      </div >
+
+                      <div className="form-group col-12 col-md-4" >
+                        <label htmlFor={`FileName${index}`}>File name (english)</label>
+                        <input
+                          required
+                          minLength={3}
+                          maxLength={120}
+                          onChange={(e) => { this.updateRequiredFileChanged(requireFIle?.id, e) }}
+
+                          // onChange={this.setState({
+                          //   requireFIle: this.state.requiredFiles
+                          // })}
+                          value={`${requireFIle?.fileName}`}
+                          name={`FileName${index}`}
+                          id={`FileName${index}`}
+                          className={`form-control `}
+                        />
+                        {/* {error && <div className="  alert alert-danger">{error}</div>} */}
+                      </div >
+
+                      <div className="form-group col-4  col-md-3" >
+                        <label ></label>
+                        <Button type="button" className="form-control btn-danger" > remove </Button>
+                        {/* {error && <div className="  alert alert-danger">{error}</div>} */}
+                      </div >
+                    </div>
+                  </>
+                ))}
+
+                <div className="row">
+
+                  <input type="hidden" value="1" />
+                  <div className="form-group col-12 col-md-4" >
+                    <label htmlFor="sa">File name (persian)</label>
+                    <input name="sa" id="sa" className={`form-control `} />
+                    {/* {error && <div className="  alert alert-danger">{error}</div>} */}
+                  </div >
+
+                  <div className="form-group col-12 col-md-4" >
+                    <label htmlFor="sa">File name (english)</label>
+                    <input name="sa" id="sa" className={`form-control `} />
+                    {/* {error && <div className="  alert alert-danger">{error}</div>} */}
+                  </div >
+
+                  <div className="form-group col-4  col-md-3" >
+                    <label ></label>
+                    <Button type="button" className="form-control btn-danger" > remove </Button>
+                    {/* {error && <div className="  alert alert-danger">{error}</div>} */}
+                  </div >
+                </div>
+
+
+                {/* 
+                <div className="row">
+
+                  <input type="hidden" value="1" />
+                  <div className="form-group col-12 col-md-4" >
+                    <label htmlFor="sa">File name (persian)</label>
+                    <input name="sa" id="sa" className={`form-control `} />
+                  </div >
+
+                  <div className="form-group col-12 col-md-4" >
+                    <label htmlFor="sa">File name (english)</label>
+                    <input name="sa" id="sa" className={`form-control `} />
+                  </div >
+
+                  <div className="form-group col-4  col-md-3" >
+                    <label ></label>
+                    <Button type="button" className="form-control btn-danger" > remove </Button>
+                  </div >
+                </div> */}
+
+
+
+
+                <div className="form-group col-5  col-md-3" >
+                  <button
+                    // disabled={!props.isProfessional}
+                    className="mt-1 btn btn-warning"
+                  // onClick={addTags}
+                  >
+                    <PlusSquare />
+                  </button>
                 </div>
 
                 {this.state.Loading ? (
