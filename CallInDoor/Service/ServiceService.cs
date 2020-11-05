@@ -21,6 +21,7 @@ namespace Service
 {
     public class ServiceService : IServiceService
     {
+        #region ctor
         private readonly DataContext _context;
         private IStringLocalizer<ServiceService> _localizer;
         private readonly IHostingEnvironment _hostingEnvironment;
@@ -36,7 +37,7 @@ namespace Service
             _localizer = localizer;
         }
 
-
+        #endregion
 
 
 
@@ -235,7 +236,7 @@ namespace Service
                     }
                 }
 
-
+               
 
                 var persinaTags = model?.PersinaTags?.Split(",").ToList();
                 if (persinaTags != null)
@@ -588,11 +589,6 @@ namespace Service
 
             return (IsValid, Errors);
         }
-
-
-
-
-
 
 
 

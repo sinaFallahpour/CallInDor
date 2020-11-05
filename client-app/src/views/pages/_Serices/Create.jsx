@@ -52,7 +52,7 @@ class ModalForm extends Form {
     persinaTags: [],
     roles: [],
     requiredFiles: [
-      // { id: 1, persianFileName: "1", fileName: "21" },
+      // { _id: 1, persianFileName: "1", fileName: "21" },
     ],
     isEnabled: true,
     errors: {},
@@ -117,7 +117,7 @@ class ModalForm extends Form {
     await this.setState(
       {
         requiredFiles: this.state.requiredFiles.map((item) =>
-          item?.id == index ? { ...item, fileName: e.target.value } : item
+          item?._id == index ? { ...item, fileName: e.target.value } : item
         ),
       },
       () => {}
@@ -129,7 +129,7 @@ class ModalForm extends Form {
     await this.setState(
       {
         requiredFiles: this.state.requiredFiles.map((item) =>
-          item?.id == index
+          item?._id == index
             ? { ...item, persianFileName: e.target.value }
             : item
         ),
@@ -143,7 +143,7 @@ class ModalForm extends Form {
     this.setState({
       requiredFiles: [
         ...this.state.requiredFiles,
-        { persianFileName: "", fileName: "", id: Math.random() * 1000 },
+        { persianFileName: "", fileName: "", _id: Math.random() * 1000 },
       ],
     });
     console.log(this.state.requiredFiles);
@@ -152,7 +152,7 @@ class ModalForm extends Form {
   removeRequredFile = (index) => {
     this.setState({
       requiredFiles: this.state.requiredFiles.filter(function (reqFile) {
-        return reqFile.id !== index;
+        return reqFile._id !== index;
       }),
     });
   };
@@ -323,7 +323,7 @@ class ModalForm extends Form {
                 {this.state.requiredFiles?.map((requireFIle, index) => (
                   <>
                     <div key={index} className="row">
-                      <input type="hidden" value={requireFIle?.id} />
+                      <input type="hidden" value={requireFIle?._id} />
                       <div className="form-group col-12 col-md-4">
                         <label htmlFor={`PersianFileName${index}`}>
                           File name (persian)
@@ -334,7 +334,7 @@ class ModalForm extends Form {
                           maxLength={120}
                           onChange={(e) => {
                             this.updateRequiredFilePersianChanged(
-                              requireFIle?.id,
+                              requireFIle?._id,
                               e
                             );
                           }}
@@ -355,7 +355,7 @@ class ModalForm extends Form {
                           minLength={3}
                           maxLength={120}
                           onChange={(e) => {
-                            this.updateRequiredFileChanged(requireFIle?.id, e);
+                            this.updateRequiredFileChanged(requireFIle?._id, e);
                           }}
                           // onChange={this.setState({
                           //   requireFIle: this.state.requiredFiles
@@ -373,7 +373,7 @@ class ModalForm extends Form {
                         <Button
                           type="button"
                           onClick={() => {
-                            this.removeRequredFile(requireFIle?.id);
+                            this.removeRequredFile(requireFIle?._id);
                           }}
                           className="form-control btn-danger"
                         >

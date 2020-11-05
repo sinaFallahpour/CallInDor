@@ -739,13 +739,6 @@ namespace Service
 
 
 
-
-
-
-
-
-
-
         public bool IsPersianLanguage()
         {
             if (CultureInfo.CurrentCulture.Name == PublicHelper.persianCultureName)
