@@ -13,6 +13,7 @@ namespace Service.Interfaces.Account
     {
         string GetCurrentUserName();
         string GetcurrentSerialNumber();
+        string GetCurrentRole();
         Task<AppUser> FindUserByPhonenumber(string PhoneNumber);
         Task<(int status, List<string> erros)> CheckVeyficatioCode(VerifyDTO model);
         Task<SignInResult> CheckPasswordAsync(AppUser User, string Password);

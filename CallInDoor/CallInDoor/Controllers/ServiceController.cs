@@ -207,7 +207,6 @@ namespace CallInDoor.Controllers
 
 
 
-
         /// <summary>
         /// قیمت هر حوضه وزمان جلسه
         /// </summary>
@@ -228,7 +227,6 @@ namespace CallInDoor.Controllers
                 }).ToListAsync();
             return Ok(_commonService.OkResponse(serviceTimsandProice, _localizerShared["SuccessMessage"].Value.ToString()));
         }
-
 
 
 

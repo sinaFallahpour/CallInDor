@@ -70,8 +70,9 @@ namespace CallInDoor.Controllers
 
 
 
-
         #region GetAllUsers 
+
+
 
 
         /// <summary>
@@ -87,8 +88,33 @@ namespace CallInDoor.Controllers
                    string searchedWord)
         {
 
+            var currentRole = _accountService.GetCurrentRole();
+            var currentUsername = _accountService.GetCurrentUserName();
+
             var QueryAble = _context.Users.AsNoTracking()
                 .AsQueryable();
+
+
+            //var roles = new List<(string RoleId)>();
+            List<string> roles = new List<string>();
+
+            if (currentRole != PublicHelper.ADMINROLE)
+            {
+                var allRoles = await (from bs in _context.BaseMyServiceTBL.Where(c => c.IsDeleted == false && c.ServiceId != null)
+                                      join s in _context.ServiceTBL.Where(c => c.RoleId == currentRole)
+                                      on bs.ServiceId equals s.Id
+                                      select new
+                                      {
+                                          s.RoleId
+                                      }).Distinct()
+                             .ToListAsync();
+
+                foreach (var item in allRoles)
+                {
+                    roles.Add(item.RoleId);
+                }
+            }
+
 
             if (!string.IsNullOrEmpty(searchedWord))
             {
@@ -105,15 +131,37 @@ namespace CallInDoor.Controllers
                        c.UserName.ToLower().StartsWith(searchedWord.ToLower()) ||
                       c.UserName.ToLower().Contains(searchedWord.ToLower())
                     );
-
-                //QueryAble = QueryAble.Where(c =>
-                //      (c.Name.ToLower().StartsWith(searchedWord.ToLower()) || c.Name.ToLower().Contains(searchedWord.ToLower())
-                //      ||
-                //     (c.LastName.StartsWith(searchedWord.ToLower()) || c.LastName.ToLower().Contains(searchedWord.ToLower()))
-                //     ||
-                //     (c.UserName.ToString().ToLower().StartsWith(searchedWord.ToLower()) || c.UserName.ToString().ToLower().Contains(searchedWord.ToLower()))
-                //    ));
             };
+
+
+
+
+            ////////var query = (from bs in _context.BaseMyServiceTBL.Where(c => c.UserName == currentUsername && c.IsDeleted == false && c.ServiceId != null)
+            ////////             join s in _context.ServiceTBL
+            ////////             on bs.ServiceId equals s.Id
+            ////////             join req in _context.ServidceTypeRequiredCertificatesTBL
+            ////////              on s.Id equals req.ServiceId
+            ////////             select new
+            ////////             {
+            ////////                 serviceId = s.Id,
+            ////////                 serviceName = s.Name,
+            ////////                 ServicePersianName = s.PersianName,
+            ////////                 ServidceTypeRequiredCertificatesTBL = s.ServidceTypeRequiredCertificatesTBL.Select(c => new { c.Id, c.FileName, c.PersianFileName, c.ServiceId })
+            ////////             }).Distinct()
+            ////////            .AsQueryable();
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
             if (perPage == 0)
@@ -144,6 +192,80 @@ namespace CallInDoor.Controllers
 
             return Ok(_commonService.OkResponse(data, PubicMessages.SuccessMessage));
         }
+
+
+
+
+
+
+
+
+
+
+
+
+        /////// <summary>
+        /////// گرفتن کاربران با استفاده از پیجینیشن
+        /////// </summary>
+        /////// <param name="Id"></param>
+        /////// <returns></returns>
+        ////[HttpGet("GetAllUsersList")]
+        //////[Authorize]
+        ////[PermissionAuthorize(PublicPermissions.User.GetAllUsersList)]
+        ////[PermissionDBCheck(IsAdmin = true, requiredPermission = new string[] { PublicPermissions.User.GetAllUsersList })]
+        ////public async Task<ActionResult> GetAllUsersList(int? page, int? perPage,
+        ////           string searchedWord)
+        ////{
+
+        ////    var QueryAble = _context.Users.AsNoTracking()
+        ////        .AsQueryable();
+
+        ////    if (!string.IsNullOrEmpty(searchedWord))
+        ////    {
+        ////        QueryAble = QueryAble
+        ////            .Where(c =>
+        ////            c.Name.ToLower().StartsWith(searchedWord.ToLower()) ||
+        ////            c.Name.ToLower().Contains(searchedWord.ToLower())
+
+        ////            ||
+        ////              c.LastName.ToLower().StartsWith(searchedWord.ToLower()) ||
+        ////              c.LastName.ToLower().Contains(searchedWord.ToLower())
+
+        ////            ||
+        ////               c.UserName.ToLower().StartsWith(searchedWord.ToLower()) ||
+        ////              c.UserName.ToLower().Contains(searchedWord.ToLower())
+        ////            );
+        ////    };
+
+
+        ////    if (perPage == 0)
+        ////        perPage = 1;
+        ////    page = page ?? 0;
+        ////    perPage = perPage ?? 10;
+
+        ////    var count = QueryAble.Count();
+        ////    double len = (double)count / (double)perPage;
+        ////    var totalPages = Math.Ceiling((double)len);
+
+        ////    var users = await QueryAble
+        ////      .Skip((int)page * (int)perPage)
+        ////      .Take((int)perPage)
+        ////      .Select(c => new
+        ////      {
+        ////          c.PhoneNumber,
+        ////          c.Name,
+        ////          c.LastName,
+        ////          c.UserName,
+        ////          c.PhoneNumberConfirmed,
+        ////          c.ImageAddress,
+        ////          c.CreateDate,
+        ////          c.CountryCode,
+        ////          isLockOut = (c.LockoutEnd != null && c.LockoutEnd > DateTime.Now),
+        ////      }).OrderByDescending(c => c.CreateDate).ToListAsync();
+        ////    var data = new { users, totalPages };
+
+        ////    return Ok(_commonService.OkResponse(data, PubicMessages.SuccessMessage));
+        ////}
 
 
         #endregion
@@ -767,7 +889,7 @@ namespace CallInDoor.Controllers
                 UserName = model.CountryCode.ToString().Trim() + model.PhoneNumber.Trim(),
                 IsEditableProfile = true,
                 IsCompany = model.IsCompany,
-                ProfileConfirmType =ProfileConfirmType.Pending,
+                ProfileConfirmType = ProfileConfirmType.Pending,
                 Email = model.Email,
                 NormalizedEmail = model.Email.Normalize(),
                 EmailConfirmed = true,

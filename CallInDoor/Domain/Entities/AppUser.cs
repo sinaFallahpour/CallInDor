@@ -66,6 +66,14 @@ namespace Domain.Entities
 
         public ICollection<FieldTBL> Fields { get; set; }
 
+
+
+
+
+        //-------------------  Relation with ProfileCertificateTBL ----------------
+
+
+
         //public virtual ICollection<User_FieldTBL> UsersFields { get; set; }
 
 
@@ -74,7 +82,8 @@ namespace Domain.Entities
         /// </summary>
         //public virtual ICollection<BaseMyServiceTBL> MyChatServices { get; set; }
 
+        public List<IdentityUserRole<string>> UserRolesTBL { get; set; }
 
-        #endregion 
+        #endregion
     }
 }

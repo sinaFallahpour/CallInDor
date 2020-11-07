@@ -91,6 +91,20 @@ namespace Service
 
 
 
+        /// <summary>
+        ///  گرفتن نقش فعلی
+        /// </summary>
+        /// <returns></returns>
+        public string GetCurrentRole()
+        {
+            var currentRole = _httpContextAccessor.HttpContext.User?.Claims?.FirstOrDefault(x => x.Type == "role")?.Value;
+            return currentRole;
+        }
+
+
+
+
+
         /// check Token paload(serialNUmber) Is valid
         public async Task<bool> CheckTokenIsValid()
         {

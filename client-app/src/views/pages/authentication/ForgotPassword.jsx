@@ -156,9 +156,6 @@ class ForgotPassword extends React.Component {
                         })}
                     </div>
                     <Form onSubmit={this.doSubmit} className="row">
-
-                      {console.log("new render")
-                      }
                       <FormGroup className="form-label-group col-5">
 
                         <Select
