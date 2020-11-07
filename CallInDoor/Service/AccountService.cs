@@ -28,6 +28,8 @@ namespace Service
     {
         private readonly DataContext _context;
         private readonly UserManager<AppUser> _userManager;
+        private readonly RoleManager<AppRole> _roleManager;
+
         //private readonly ICommonService _CommonService;
 
         private readonly SignInManager<AppUser> _signInManager;
@@ -43,6 +45,7 @@ namespace Service
 
         public AccountService(
             UserManager<AppUser> userManager,
+            RoleManager<AppRole> roleManager,
             SignInManager<AppUser> signInManager,
             DataContext context,
                IJwtManager jwtGenerator,
@@ -55,6 +58,7 @@ namespace Service
         {
             _context = context;
             _userManager = userManager;
+            _roleManager = roleManager;
             _signInManager = signInManager;
             _jwtGenerator = jwtGenerator;
             _hostingEnvironment = hostingEnvironment;
@@ -97,9 +101,10 @@ namespace Service
         /// <returns></returns>
         public string GetCurrentRole()
         {
-            var currentRole = _httpContextAccessor.HttpContext.User?.Claims?.FirstOrDefault(x => x.Type == "role")?.Value;
+            var currentRole = _httpContextAccessor.HttpContext.User?.Claims?.FirstOrDefault(x => x.Type == ClaimTypes.Role)?.Value;
             return currentRole;
         }
+
 
 
 
@@ -236,6 +241,146 @@ namespace Service
         //}
 
 
+
+        public async Task<ResponseType> GetListOfUserForVerification(int? page, int? perPage, string searchedWord)
+        {
+            var currentRole = GetCurrentRole();
+            var currentUsername = GetCurrentUserName();
+
+            var roleFromDB = await _roleManager.FindByNameAsync(currentRole);
+            var QueryAble = (from us in _context.Users
+                             join bm in _context.BaseMyServiceTBL
+                             on us.UserName equals bm.UserName
+                             join bs in _context.ServiceTBL.Where(c => c.RoleId == roleFromDB.Name)
+                            on bm.ServiceId equals bs.Id
+                             select new GetListOfUsersForVerification()
+                             {
+                                 UserName = us.UserName,
+                                 Name = us.Name,
+                                 CreateDate = us.CreateDate,
+                                 LastName = us.LastName,
+                                 IsCompany = us.IsCompany,
+                                 ProfileConfirmType = us.ProfileConfirmType,
+                                 IsEditableProfile = us.IsEditableProfile,
+                                 //PhoneNumber = us.PhoneNumber,
+                                 PhoneNumberConfirmed = us.PhoneNumberConfirmed,
+                                 CountryCode = us.CountryCode,
+                                 ImageAddress = us.ImageAddress,
+                                 isLockOut = (us.LockoutEnd != null && us.LockoutEnd > DateTime.Now),
+
+                             }).AsQueryable();
+
+
+            if (!string.IsNullOrEmpty(searchedWord))
+            {
+                QueryAble = QueryAble
+                    .Where(c =>
+                    c.Name.ToLower().StartsWith(searchedWord.ToLower()) ||
+                    c.Name.ToLower().Contains(searchedWord.ToLower())
+
+                    ||
+                      c.LastName.ToLower().StartsWith(searchedWord.ToLower()) ||
+                      c.LastName.ToLower().Contains(searchedWord.ToLower())
+
+                    ||
+                       c.UserName.ToLower().StartsWith(searchedWord.ToLower()) ||
+                      c.UserName.ToLower().Contains(searchedWord.ToLower())
+                    );
+            };
+
+            if (perPage == 0)
+                perPage = 1;
+            page = page ?? 0;
+            perPage = perPage ?? 10;
+
+            var count = QueryAble.Count();
+            double len = (double)count / (double)perPage;
+            var totalPages = Math.Ceiling((double)len);
+
+            var users = await QueryAble
+             .Skip((int)page * (int)perPage)
+             .Take((int)perPage)
+             .OrderByDescending(c => c.CreateDate).ToListAsync();
+
+            var data = new ResponseType()
+            {
+                Users = users,
+                TotalPages = totalPages
+            };
+            return data;
+        }
+
+
+
+
+
+        public async Task<ResponseType> GetListOfUserForVerificationForAdmin(int? page, int? perPage,
+            string searchedWord, ProfileConfirmType? ProfileConfirmType)
+        {
+            var currentRole = GetCurrentRole();
+            var currentUsername = GetCurrentUserName();
+
+            var QueryAble = _context.Users.Select(c => new GetListOfUsersForVerification()
+            {
+                UserName = c.UserName,
+                Name = c.Name,
+                CreateDate = c.CreateDate,
+                LastName = c.LastName,
+                IsCompany = c.IsCompany,
+                ProfileConfirmType = c.ProfileConfirmType,
+                IsEditableProfile = c.IsEditableProfile,
+                //PhoneNumber = c.PhoneNumber,
+                PhoneNumberConfirmed = c.PhoneNumberConfirmed,
+                CountryCode = c.CountryCode,
+                ImageAddress = c.ImageAddress,
+                isLockOut = (c.LockoutEnd != null && c.LockoutEnd > DateTime.Now),
+            }).AsQueryable();
+
+            if (!string.IsNullOrEmpty(searchedWord))
+            {
+                QueryAble = QueryAble
+                    .Where(c =>
+                    c.Name.ToLower().StartsWith(searchedWord.ToLower()) ||
+                    c.Name.ToLower().Contains(searchedWord.ToLower())
+
+                    ||
+                      c.LastName.ToLower().StartsWith(searchedWord.ToLower()) ||
+                      c.LastName.ToLower().Contains(searchedWord.ToLower())
+
+                    ||
+                       c.UserName.ToLower().StartsWith(searchedWord.ToLower()) ||
+                      c.UserName.ToLower().Contains(searchedWord.ToLower())
+                    );
+            };
+
+            if (ProfileConfirmType != null)
+            {
+                QueryAble = QueryAble.Where(c => c.ProfileConfirmType == ProfileConfirmType);
+            }
+
+
+
+            if (perPage == 0)
+                perPage = 1;
+            page = page ?? 0;
+            perPage = perPage ?? 10;
+
+            var count = QueryAble.Count();
+            double len = (double)count / (double)perPage;
+            var totalPages = Math.Ceiling((double)len);
+
+            var users = await QueryAble
+             .Skip((int)page * (int)perPage)
+             .Take((int)perPage)
+             .OrderByDescending(c => c.CreateDate).ToListAsync();
+
+            var data = new ResponseType()
+            {
+                Users = users,
+                TotalPages = totalPages
+            };
+            return data;
+        }
 
 
 
@@ -477,7 +622,7 @@ namespace Service
                                 var fileaddress = await SaveFileToHost("Upload/ProfileCertificate/", existcertificate.FileAddress, item.File);
                                 //_context.ProfileCertificateTBL.Remove(existcertificate);
                                 existcertificate.FileAddress = fileaddress;
-                                
+
                                 //var newCertificate = new ProfileCertificateTBL()
                                 //{
                                 //    ServiceId = item.ServiceId,
@@ -523,7 +668,7 @@ namespace Service
                 foreach (var item in idsShouldBeRemoved)
                 {
                     var certi = certificationFromDB.Where(c => c.Id == item).FirstOrDefault();
-                    DeleteFileFromHost( certi.FileAddress);
+                    DeleteFileFromHost(certi.FileAddress);
                     _context.ProfileCertificateTBL.Remove(certi);
                 }
 
@@ -697,7 +842,7 @@ namespace Service
                 if (!string.IsNullOrEmpty(lastPath))
                 {
                     //var LastVideoPath = lastPath?.Substring(1);
-                  var  LastPath = Path.Combine(_hostingEnvironment.WebRootPath, lastPath);
+                    var LastPath = Path.Combine(_hostingEnvironment.WebRootPath, lastPath);
                     if (System.IO.File.Exists(LastPath))
                     {
                         System.IO.File.Delete(LastPath);
@@ -706,7 +851,7 @@ namespace Service
                 //update Newe video Address To database
                 //user.VideoAddress = "/Upload/User/" + uniqueVideoFileName;
 
-               return  path + uniqueVideoFileName;
+                return path + uniqueVideoFileName;
 
             }
             catch (Exception ex)
@@ -718,7 +863,7 @@ namespace Service
 
 
 
-        public bool DeleteFileFromHost( string path)
+        public bool DeleteFileFromHost(string path)
         {
 
             try
@@ -732,7 +877,7 @@ namespace Service
                 if (!string.IsNullOrEmpty(path))
                 {
                     //var LastPath = path?.Substring(1);
-                   var LastPath = Path.Combine(_hostingEnvironment.WebRootPath, path);
+                    var LastPath = Path.Combine(_hostingEnvironment.WebRootPath, path);
                     if (System.IO.File.Exists(LastPath))
                     {
                         System.IO.File.Delete(LastPath);

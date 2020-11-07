@@ -24,6 +24,7 @@ namespace Domain.Entities
 
         public ICollection<Role_Permission> Role_Permissions { get; set; }
 
+        public List<IdentityUserRole<string>> UserRolesTBL { get; set; }
         #endregion
 
 

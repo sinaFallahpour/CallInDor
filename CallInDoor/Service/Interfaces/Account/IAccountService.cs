@@ -23,6 +23,8 @@ namespace Service.Interfaces.Account
         Task<bool> CheckTokenIsValid();
         Task<bool> CheckHasPermission(List<string> requiredPermissions);
         Task<(bool status, string username)> CheckTokenIsValidForAdminRole();
+        Task<ResponseType> GetListOfUserForVerification(int? page, int? perPage, string searchedWord);
+        Task<ResponseType> GetListOfUserForVerificationForAdmin(int? page, int? perPage, string searchedWord);
         Task<AppUser> CheckIsCurrentUserName(string Id);
         //Task<string> CheckTokenIsValid2();
         Task<ProfileGetDTO> ProfileGet();

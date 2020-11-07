@@ -201,6 +201,8 @@ const Areas = lazy(() => import("./views/pages/_Areas/Areas"));
 // const CreateArea = lazy(() => import("./views/pages/_Areas/Create"));
 const EditArea = lazy(() => import("./views/pages/_Areas/EditService"));
 
+const UsersVerification = lazy(() => import("./views/pages/_UsersVerification/_Users"));
+
 const Test = lazy(() => import("./views/pages/_test/Test"));
 const Settings = lazy(() => import("./views/pages/_Settings/Settings"));
 
@@ -518,6 +520,19 @@ class AppRouter extends React.Component {
 
             <RouteConfig
               isLoggedIn={isLoggedIn}
+              title="Users"
+              exact
+              path="/pages/UsersVerification"
+              // role="admin"
+              permission={[Permissoin.getAllUsersList]}
+              user={{ ...user }}
+              component={UsersVerification}
+            />
+
+
+
+            <RouteConfig
+              isLoggedIn={isLoggedIn}
               exact
               path="/pages/Test"
               // role="admin"
@@ -525,6 +540,30 @@ class AppRouter extends React.Component {
               permission={[Permissoin.getAllUsersList, Permissoin.editUser]}
               component={Test}
             />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
             <RouteConfig
               isLoggedIn={isLoggedIn}

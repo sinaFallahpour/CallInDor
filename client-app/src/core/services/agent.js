@@ -1,7 +1,7 @@
 import axios from "axios";
 // import { history } from "../..";
 import { toast } from "react-toastify";
-
+export const baseUrl = "https://localhost:44377/";
 axios.defaults.baseURL = "https://localhost:44377/api";
 // axios.defaults.baseURL = "https://api.callindoor.ir/api";
 
@@ -72,6 +72,16 @@ const User = {
   // current: () => requests.get("/user"),
   list: () => requests.get("/Account/admin/GetAllAdminInAdmin"),
   UsersList: (params) => requests.get(`/Account/GetAllUsersList?${params}`),
+  UsersListForVerification: (params) => requests.get(`/Account/GetAllUsersListForVerification?${params}`),
+  UsersDetails: (username) => requests.get(`/Account/admin/GetAdminByIdInAdmin?id=${username}`),
+
+
+
+
+
+
+
+
   details: (id) => requests.get(`/Account/admin/GetAdminByIdInAdmin?id=${id}`),
   login: (user) => requests.post("/user/login", user),
   registerAdmin: (user) =>

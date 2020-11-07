@@ -116,7 +116,16 @@ const navigationConfig = [
       },
     ],
   },
-
+  {
+    id: "UsersVerification",
+    title: "UsersVerification",
+    type: "item",
+    // role: "Admin",
+    permissions: [Permission.getAllUsersList],
+    icon: <Icon.Tablet size={20} />,
+    navLink: "/pages/UsersVerification",
+    parentOf: ["/pages/test"],
+  },
   {
     id: "Test",
     title: "test",
