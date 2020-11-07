@@ -17,7 +17,6 @@ import { Edit, Trash2, ChevronDown, Check } from "react-feather";
 
 import Checkbox from "../../../components/@vuexy/checkbox/CheckboxesVuexy";
 
-
 import "../../../assets/scss/plugins/tables/_agGridStyleOverride.scss";
 import { toast } from "react-toastify";
 
@@ -89,14 +88,13 @@ class Table extends React.Component {
         field: "isEnabled",
         filter: true,
         cellRendererFramework: (params) => {
-          console.log(params);
           return params.value === true ? (
             <div className="badge badge-pill badge-light-success">Active</div>
           ) : (
-              <div className="badge badge-pill badge-light-warning">
-                DeActivated
-              </div>
-            );
+            <div className="badge badge-pill badge-light-warning">
+              DeActivated
+            </div>
+          );
         },
       },
       {
@@ -113,16 +111,15 @@ class Table extends React.Component {
               label=""
               defaultChecked={true}
             />
-
           ) : (
-              <Checkbox
-                disabled
-                color="primary"
-                icon={<Check className="vx-icon" size={16} />}
-                label=""
-                defaultChecked={false}
-              />
-            );
+            <Checkbox
+              disabled
+              color="primary"
+              icon={<Check className="vx-icon" size={16} />}
+              label=""
+              defaultChecked={false}
+            />
+          );
         },
       },
       {
@@ -139,18 +136,15 @@ class Table extends React.Component {
               label=""
               defaultChecked={true}
             />
-
           ) : (
-              <Checkbox
-                disabled
-                color="primary"
-                icon={<Check className="vx-icon" size={16} />}
-                label=""
-                defaultChecked={false}
-              />
-
-
-            );
+            <Checkbox
+              disabled
+              color="primary"
+              icon={<Check className="vx-icon" size={16} />}
+              label=""
+              defaultChecked={false}
+            />
+          );
         },
       },
 
@@ -242,11 +236,11 @@ class Table extends React.Component {
                         {this.gridApi
                           ? this.state.currenPageSize
                           : "" * this.state.getPageSize -
-                          (this.state.getPageSize - 1)}{" "}
+                            (this.state.getPageSize - 1)}{" "}
                         -{" "}
                         {this.state.rowData.length -
                           this.state.currenPageSize * this.state.getPageSize >
-                          0
+                        0
                           ? this.state.currenPageSize * this.state.getPageSize
                           : this.state.rowData.length}{" "}
                         of {this.state.rowData.length}
@@ -311,26 +305,26 @@ class Table extends React.Component {
                 {this.state.loading ? (
                   <Spinner></Spinner>
                 ) : (
-                    <ContextLayout.Consumer>
-                      {(context) => (
-                        <AgGridReact
-                          gridOptions={{}}
-                          // rowSelection="multiple"
-                          defaultColDef={defaultColDef}
-                          columnDefs={columnDefs}
-                          rowData={rowData}
-                          onGridReady={this.onGridReady}
-                          colResizeDefault={"shift"}
-                          animateRows={true}
-                          floatingFilter={true}
-                          pagination={true}
-                          paginationPageSize={this.state.paginationPageSize}
-                          pivotPanelShow="always"
-                          enableRtl={context.state.direction === "rtl"}
-                        />
-                      )}
-                    </ContextLayout.Consumer>
-                  )}
+                  <ContextLayout.Consumer>
+                    {(context) => (
+                      <AgGridReact
+                        gridOptions={{}}
+                        // rowSelection="multiple"
+                        defaultColDef={defaultColDef}
+                        columnDefs={columnDefs}
+                        rowData={rowData}
+                        onGridReady={this.onGridReady}
+                        colResizeDefault={"shift"}
+                        animateRows={true}
+                        floatingFilter={true}
+                        pagination={true}
+                        paginationPageSize={this.state.paginationPageSize}
+                        pivotPanelShow="always"
+                        enableRtl={context.state.direction === "rtl"}
+                      />
+                    )}
+                  </ContextLayout.Consumer>
+                )}
               </div>
             )}
           </CardBody>

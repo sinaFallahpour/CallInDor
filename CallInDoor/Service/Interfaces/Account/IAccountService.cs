@@ -1,5 +1,6 @@
 ﻿using Domain.DTO.Account;
 using Domain.Entities;
+using Domain.Enums;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using System;
@@ -23,8 +24,8 @@ namespace Service.Interfaces.Account
         Task<bool> CheckTokenIsValid();
         Task<bool> CheckHasPermission(List<string> requiredPermissions);
         Task<(bool status, string username)> CheckTokenIsValidForAdminRole();
-        Task<ResponseType> GetListOfUserForVerification(int? page, int? perPage, string searchedWord);
-        Task<ResponseType> GetListOfUserForVerificationForAdmin(int? page, int? perPage, string searchedWord);
+        Task<ResponseType> GetListOfUserForVerification(int? page, int? perPage, string searchedWord, ProfileConfirmType? ProfileConfirmType);
+        Task<ResponseType> GetListOfUserForVerificationForAdmin(int? page, int? perPage, string searchedWord, ProfileConfirmType? ProfileConfirmType);
         Task<AppUser> CheckIsCurrentUserName(string Id);
         //Task<string> CheckTokenIsValid2();
         Task<ProfileGetDTO> ProfileGet();

@@ -70,156 +70,10 @@ namespace CallInDoor.Controllers
 
 
 
-        #region GetAllUsers 
 
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-        /// <summary>
-        /// گرفتن کاربران با استفاده از پیجینیشن
-        /// </summary>
-        /// <param name="Id"></param>
-        /// <returns></returns>
-        [HttpGet("GetAllUsersList")]
-        //[Authorize]
-        [PermissionAuthorize(PublicPermissions.User.GetAllUsersList)]
-        [PermissionDBCheck(IsAdmin = true, requiredPermission = new string[] { PublicPermissions.User.GetAllUsersList })]
-        public async Task<ActionResult> GetAllUsersList(int? page, int? perPage,
-                   string searchedWord)
-        {
-
-            var QueryAble = _context.Users.AsNoTracking()
-                .AsQueryable();
-
-            if (!string.IsNullOrEmpty(searchedWord))
-            {
-                QueryAble = QueryAble
-                    .Where(c =>
-                    c.Name.ToLower().StartsWith(searchedWord.ToLower()) ||
-                    c.Name.ToLower().Contains(searchedWord.ToLower())
-
-                    ||
-                      c.LastName.ToLower().StartsWith(searchedWord.ToLower()) ||
-                      c.LastName.ToLower().Contains(searchedWord.ToLower())
-
-                    ||
-                       c.UserName.ToLower().StartsWith(searchedWord.ToLower()) ||
-                      c.UserName.ToLower().Contains(searchedWord.ToLower())
-                    );
-            };
-
-
-            if (perPage == 0)
-                perPage = 1;
-            page = page ?? 0;
-            perPage = perPage ?? 10;
-
-            var count = QueryAble.Count();
-            double len = (double)count / (double)perPage;
-            var totalPages = Math.Ceiling((double)len);
-
-            var users = await QueryAble
-              .Skip((int)page * (int)perPage)
-              .Take((int)perPage)
-              .Select(c => new
-              {
-                  c.PhoneNumber,
-                  c.Name,
-                  c.LastName,
-                  c.UserName,
-                  c.PhoneNumberConfirmed,
-                  c.ImageAddress,
-                  c.CreateDate,
-                  c.CountryCode,
-                  isLockOut = (c.LockoutEnd != null && c.LockoutEnd > DateTime.Now),
-              }).OrderByDescending(c => c.CreateDate).ToListAsync();
-            var data = new { users, totalPages };
-
-            return Ok(_commonService.OkResponse(data, PubicMessages.SuccessMessage));
-        }
-
-
-        #endregion
-
-
-
-
-        /// <summary>
-        /// گرفتن کاربران با استفاده از پیجینیشن برای وریفیکیشن
-        /// </summary>
-        /// <param name="Id"></param>
-        /// <returns></returns>
-        [HttpGet("GetAllUsersListForVerification")]
-        [Authorize]
-        [PermissionAuthorize(PublicPermissions.User.GetAllUsersList)]
-        [PermissionDBCheck(IsAdmin = true, requiredPermission = new string[] { PublicPermissions.User.GetAllUsersList })]
-        public async Task<ActionResult> GetAllUsersListForVerification(int? page, int? perPage,
-                   string searchedWord)
-        {
-            var currentRole = _accountService.GetCurrentRole();
-            if (currentRole != PublicHelper.ADMINROLE)
-            {
-                var res = await _accountService.GetListOfUserForVerification(page, perPage, searchedWord);
-                return Ok(_commonService.OkResponse(res, PubicMessages.SuccessMessage));
-            }
-            var result =await _accountService.GetListOfUserForVerificationForAdmin(page, perPage, searchedWord);
-            return Ok(_commonService.OkResponse(result, PubicMessages.SuccessMessage));
-        }
-
-
-
-        #region    locked User
-
-
-        [HttpPost("LockedUser")]
-        //[Authorize]
-        [PermissionAuthorize(PublicPermissions.User.EditUser)]
-        [PermissionDBCheck(IsAdmin = true, requiredPermission = new string[] { PublicPermissions.User.EditUser })]
-        public async Task<ActionResult> LockedUser([FromBody] LockedUser model)
-        {
-            if (string.IsNullOrEmpty(model.Username))
-                return NotFound(new ApiResponse(404, "User Not Found"));
-            //if (username.StartsWith(" "))
-            //{
-            //    username = username.Trim();
-            //}
-
-            var userFromDB = await _context.Users.Where(c => c.UserName == model.Username).FirstOrDefaultAsync();
-            if (userFromDB == null)
-                return NotFound(new ApiResponse(404, _localizerShared["NotFound"].Value.ToString()));
-
-            var locked = true;
-            var LockoutEnd = userFromDB.LockoutEnd;
-            if (LockoutEnd != null && LockoutEnd > DateTime.Now)
-            {
-                userFromDB.LockoutEnd = null;
-                userFromDB.LockoutEnd = DateTime.Now.AddYears(-1000);
-                locked = false;
-            }
-            if (LockoutEnd == null || LockoutEnd < DateTime.Now)
-            {
-                userFromDB.LockoutEnd = DateTime.Now.AddYears(1000);
-                //userFromDB.LockoutEnd = DateTime.Now.AddYears(1000);
-                locked = true;
-            }
-
-            await _context.SaveChangesAsync();
-            return Ok(_commonService.OkResponse(locked, _localizerShared["SuccessMessage"].Value.ToString()));
-
-        }
-
-        #endregion
 
 
 
@@ -670,6 +524,259 @@ namespace CallInDoor.Controllers
         #endregion
 
         #region Admin 
+
+
+
+        #region  GetUSerByUSername
+        /// <summary>
+        /// گرفتن یک سرویس تایپ مثل Translate
+        /// </summary>
+        /// <param name="Id"></param>
+        /// <returns></returns>
+        [HttpPost("admin/GetUserByUsernameInAdmin")]
+        [Authorize]
+        [PermissionAuthorize(PublicPermissions.User.EditUser)]
+        [PermissionDBCheck(IsAdmin = true, requiredPermission = new string[] { PublicPermissions.User.EditUser })]
+        //[ClaimsAuthorize(IsAdmin = true)]
+        public async Task<ActionResult> GetUserByUsernameInAdmin([FromBody] UsernameDTO model)
+        {
+
+            //var authors = _context.Users.GroupJoin(_context.ProfileCertificateTBL,
+            //        a => a.UserName,      //	key	on	the	left	side	
+            //        c => c.UserName,            //	key	on	the	right	side,
+            //        (c, list) =>            //	what	to	do	once	matched
+            //                    new
+            //                    {
+            //                        c.Email,
+            //                        c.UserName,
+            //                        c.Name,
+            //                        c.LastName,
+            //                        c.CreateDate,
+            //                        c.Bio,
+            //                        c.CountryCode,
+            //                        c.PhoneNumber,
+            //                        c.PhoneNumberConfirmed,
+            //                        c.VideoAddress,
+            //                        c.ImageAddress,
+            //                        c.IsCompany,
+            //                        c.Gender,
+            //                        c.IsEditableProfile,
+            //                        //Fields = c.Fields.Select(c => new { c.Title, c.DegreeType }),
+            //                        ProfileCertificates = list.Select(c => new { c.FileAddress, c.Service.Name })
+            //                        //g.Select(c => new { c.FileAddress, c.Service.Name })
+
+            //                        //AuthorName = author.Name,
+            //                        //Courses = courses
+            //                    }
+            //            ).FirstOrDefault();
+
+
+
+            var userFromDB = await (from c in _context.Users.Include(c => c.Fields)
+                                        //join ur in _context.ProfileCertificateTBL
+                                        //on c.UserName equals ur.UserName 
+                                    select new GetUserByUsernameInAdminDTO
+                                    {
+                                        Email = c.Email,
+                                        UserName = c.UserName,
+                                        Name = c.Name,
+                                        LastName = c.LastName,
+                                        CreateDate = c.CreateDate,
+
+
+                                        Bio = c.Bio,
+                                        CountryCode = c.CountryCode,
+                                       
+                                        PhoneNumberConfirmed = c.PhoneNumberConfirmed,
+                                        VideoAddress = c.VideoAddress,
+                                        ImageAddress = c.ImageAddress,
+                                        
+                                        IsCompany = c.IsCompany,
+                                        IsEditableProfile = c.IsEditableProfile,
+
+                                        isLockOut = (c.LockoutEnd != null && c.LockoutEnd > DateTime.Now),
+                                        Gender = c.Gender,
+                                        Fields = c.Fields.Select(c => new Fields { Title = c.Title, DegreeType = c.DegreeType }).ToList(),
+                                        //ProfileCertificates = g.Select(c => new { c.FileAddress, c.Service.Name })
+                                    }).FirstOrDefaultAsync();
+
+            //var userFromDB = await query.FirstOrDefaultAsync();
+            if (userFromDB == null)
+                return NotFound(new ApiResponse(404, PubicMessages.NotFoundMessage));
+
+            var Profiles = await _context
+                .ProfileCertificateTBL
+                .Where(c => c.UserName == userFromDB.UserName)
+                .Select(c => new
+                {
+                    c.FileAddress,
+                    ServiceName = c.Service.Name,
+                })
+                .ToListAsync();
+            userFromDB.requiredFiles = new List<ProfileCertificates>();
+            foreach (var item in Profiles)
+            {
+                userFromDB.requiredFiles.Add(new ProfileCertificates()
+                {
+                    FileAddress = item.FileAddress,
+                    ServiceName = item.ServiceName
+                });
+            }
+
+
+            return Ok(_commonService.OkResponse(userFromDB, PubicMessages.SuccessMessage));
+        }
+
+        #endregion
+
+
+
+
+
+
+
+
+        #region GetAllUsers 
+
+        /// <summary>
+        /// گرفتن کاربران با استفاده از پیجینیشن
+        /// </summary>
+        /// <param name="Id"></param>
+        /// <returns></returns>
+        [HttpGet("GetAllUsersList")]
+        //[Authorize]
+        [PermissionAuthorize(PublicPermissions.User.GetAllUsersList)]
+        [PermissionDBCheck(IsAdmin = true, requiredPermission = new string[] { PublicPermissions.User.GetAllUsersList })]
+        public async Task<ActionResult> GetAllUsersList(int? page, int? perPage,
+                   string searchedWord)
+        {
+
+            var QueryAble = _context.Users.AsNoTracking()
+                .AsQueryable();
+
+            if (!string.IsNullOrEmpty(searchedWord))
+            {
+                QueryAble = QueryAble
+                    .Where(c =>
+                    c.Name.ToLower().StartsWith(searchedWord.ToLower()) ||
+                    c.Name.ToLower().Contains(searchedWord.ToLower())
+
+                    ||
+                      c.LastName.ToLower().StartsWith(searchedWord.ToLower()) ||
+                      c.LastName.ToLower().Contains(searchedWord.ToLower())
+
+                    ||
+                       c.UserName.ToLower().StartsWith(searchedWord.ToLower()) ||
+                      c.UserName.ToLower().Contains(searchedWord.ToLower())
+                    );
+            };
+
+
+            if (perPage == 0)
+                perPage = 1;
+            page = page ?? 0;
+            perPage = perPage ?? 10;
+
+            var count = QueryAble.Count();
+            double len = (double)count / (double)perPage;
+            var totalPages = Math.Ceiling((double)len);
+
+            var users = await QueryAble
+              .Skip((int)page * (int)perPage)
+              .Take((int)perPage)
+              .Select(c => new
+              {
+                  c.PhoneNumber,
+                  c.Name,
+                  c.LastName,
+                  c.UserName,
+                  c.PhoneNumberConfirmed,
+                  c.ImageAddress,
+                  c.CreateDate,
+                  c.CountryCode,
+                  isLockOut = (c.LockoutEnd != null && c.LockoutEnd > DateTime.Now),
+              }).OrderByDescending(c => c.CreateDate).ToListAsync();
+            var data = new { users, totalPages };
+
+            return Ok(_commonService.OkResponse(data, PubicMessages.SuccessMessage));
+        }
+
+
+        #endregion
+
+
+
+        #region   GetAllUsersListForVerification
+        /// <summary>
+        /// گرفتن کاربران با استفاده از پیجینیشن برای وریفیکیشن
+        /// </summary>
+        /// <param name="Id"></param>
+        /// <returns></returns>
+        [HttpGet("GetAllUsersListForVerification")]
+        [Authorize]
+        [PermissionAuthorize(PublicPermissions.User.GetAllUsersList)]
+        [PermissionDBCheck(IsAdmin = true, requiredPermission = new string[] { PublicPermissions.User.GetAllUsersList })]
+        public async Task<ActionResult> GetAllUsersListForVerification(int? page, int? perPage,
+                   string searchedWord, ProfileConfirmType? profileConfirmType)
+        {
+            var currentRole = _accountService.GetCurrentRole();
+            if (currentRole != PublicHelper.ADMINROLE)
+            {
+                var res = await _accountService.GetListOfUserForVerification(page, perPage, searchedWord, profileConfirmType);
+                return Ok(_commonService.OkResponse(res, PubicMessages.SuccessMessage));
+            }
+            var result = await _accountService.GetListOfUserForVerificationForAdmin(page, perPage, searchedWord, profileConfirmType);
+            return Ok(_commonService.OkResponse(result, PubicMessages.SuccessMessage));
+        }
+
+        #endregion
+
+        #region    locked User
+
+
+        [HttpPost("LockedUser")]
+        //[Authorize]
+        [PermissionAuthorize(PublicPermissions.User.EditUser)]
+        [PermissionDBCheck(IsAdmin = true, requiredPermission = new string[] { PublicPermissions.User.EditUser })]
+        public async Task<ActionResult> LockedUser([FromBody] LockedUser model)
+        {
+            if (string.IsNullOrEmpty(model.Username))
+                return NotFound(new ApiResponse(404, "User Not Found"));
+            //if (username.StartsWith(" "))
+            //{
+            //    username = username.Trim();
+            //}
+
+            var userFromDB = await _context.Users.Where(c => c.UserName == model.Username).FirstOrDefaultAsync();
+            if (userFromDB == null)
+                return NotFound(new ApiResponse(404, _localizerShared["NotFound"].Value.ToString()));
+
+            var locked = true;
+            var LockoutEnd = userFromDB.LockoutEnd;
+            if (LockoutEnd != null && LockoutEnd > DateTime.Now)
+            {
+                userFromDB.LockoutEnd = null;
+                userFromDB.LockoutEnd = DateTime.Now.AddYears(-1000);
+                locked = false;
+            }
+            if (LockoutEnd == null || LockoutEnd < DateTime.Now)
+            {
+                userFromDB.LockoutEnd = DateTime.Now.AddYears(1000);
+                //userFromDB.LockoutEnd = DateTime.Now.AddYears(1000);
+                locked = true;
+            }
+
+            await _context.SaveChangesAsync();
+            return Ok(_commonService.OkResponse(locked, _localizerShared["SuccessMessage"].Value.ToString()));
+
+        }
+
+        #endregion
+
+
+
+
+
 
 
         #region GetAdminByIdInAdmin

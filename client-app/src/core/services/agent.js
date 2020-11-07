@@ -72,16 +72,11 @@ const User = {
   // current: () => requests.get("/user"),
   list: () => requests.get("/Account/admin/GetAllAdminInAdmin"),
   UsersList: (params) => requests.get(`/Account/GetAllUsersList?${params}`),
-  UsersListForVerification: (params) => requests.get(`/Account/GetAllUsersListForVerification?${params}`),
-  UsersDetails: (username) => requests.get(`/Account/admin/GetAdminByIdInAdmin?id=${username}`),
-
-
-
-
-
-
-
-
+  UsersListForVerification: (params) =>
+    requests.get(`/Account/GetAllUsersListForVerification?${params}`),
+  UsersDetails: (obj) => {
+    return requests.post("/Account/admin/GetUserByUsernameInAdmin", obj);
+  },
   details: (id) => requests.get(`/Account/admin/GetAdminByIdInAdmin?id=${id}`),
   login: (user) => requests.post("/user/login", user),
   registerAdmin: (user) =>

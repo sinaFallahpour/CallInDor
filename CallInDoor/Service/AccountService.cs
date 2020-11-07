@@ -10,22 +10,21 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Localization;
 using Service.Interfaces.Account;
-using Service.Interfaces.Common;
 using Service.Interfaces.JwtManager;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
-using System.IdentityModel.Tokens.Jwt;
 using System.IO;
 using System.Linq;
 using System.Security.Claims;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace Service
 {
     public class AccountService : IAccountService
     {
+        #region ctor
+
         private readonly DataContext _context;
         private readonly UserManager<AppUser> _userManager;
         private readonly RoleManager<AppRole> _roleManager;
@@ -69,7 +68,7 @@ namespace Service
         }
 
 
-
+        #endregion 
 
 
         /// <summary>
@@ -242,7 +241,7 @@ namespace Service
 
 
 
-        public async Task<ResponseType> GetListOfUserForVerification(int? page, int? perPage, string searchedWord)
+        public async Task<ResponseType> GetListOfUserForVerification(int? page, int? perPage, string searchedWord, ProfileConfirmType? ProfileConfirmType)
         {
             var currentRole = GetCurrentRole();
             var currentUsername = GetCurrentUserName();
@@ -312,7 +311,7 @@ namespace Service
 
 
 
-
+     
 
         public async Task<ResponseType> GetListOfUserForVerificationForAdmin(int? page, int? perPage,
             string searchedWord, ProfileConfirmType? ProfileConfirmType)
@@ -542,8 +541,6 @@ namespace Service
         //            err = string.Format($"Price For Native Customer must be more than {serviceFromDb.AcceptedMinPriceForNative}");
         //IsValid = false;
         //        Errors.Add(err);
-
-
 
 
 
@@ -905,6 +902,6 @@ namespace Service
             return false;
         }
 
-
+ 
     }
 }

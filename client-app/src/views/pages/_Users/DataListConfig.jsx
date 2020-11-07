@@ -159,7 +159,10 @@ class DataListConfig extends Component {
         sortable: true,
         // minWidth: "200px",
         cell: (row) => (
-          <p title={row.name + "_" + row?.lastName} className="text-truncate text-bold-500 mb-0">
+          <p
+            title={row.name + "_" + row?.lastName}
+            className="text-truncate text-bold-500 mb-0"
+          >
             {row?.name + "-" + row?.lastName}
           </p>
         ),
@@ -279,7 +282,7 @@ class DataListConfig extends Component {
     this.populatingData();
   }
 
-  async componentDidUpdate(prevProps, prevState) { }
+  async componentDidUpdate(prevProps, prevState) {}
 
   handleFilter = async (e) => {
     if (this.state.value == "" && e.target.value == "") return;
@@ -331,10 +334,6 @@ class DataListConfig extends Component {
     }).then(async (result) => {
       if (result.value) {
         try {
-          console.clear();
-          console.log(row);
-          console.log(row.userName);
-
           const { data } = await agent.User.lockedUser(row.userName);
           if (data.result.status) {
             this.handleSetNewData(row);
@@ -477,8 +476,9 @@ class DataListConfig extends Component {
     return (
       <>
         <div
-          className={`data-list ${this.props.thumbView ? "thumb-view" : "list-view"
-            }`}
+          className={`data-list ${
+            this.props.thumbView ? "thumb-view" : "list-view"
+          }`}
         >
           {errors &&
             errors.map((err, index) => {

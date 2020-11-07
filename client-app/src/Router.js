@@ -201,7 +201,12 @@ const Areas = lazy(() => import("./views/pages/_Areas/Areas"));
 // const CreateArea = lazy(() => import("./views/pages/_Areas/Create"));
 const EditArea = lazy(() => import("./views/pages/_Areas/EditService"));
 
-const UsersVerification = lazy(() => import("./views/pages/_UsersVerification/_Users"));
+const UsersVerification = lazy(() =>
+  import("./views/pages/_UsersVerification/_Users")
+);
+const UsersDetails = lazy(() =>
+  import("./views/pages/_UsersVerification/_DetailsUser")
+);
 
 const Test = lazy(() => import("./views/pages/_test/Test"));
 const Settings = lazy(() => import("./views/pages/_Settings/Settings"));
@@ -217,43 +222,26 @@ const RouteConfig = ({
   title,
   ...rest
 }) => (
-    <Route
-      {...rest}
-      render={(props) => {
-        if (!user.isLoggedIn) {
-          return (
-            <Redirect
-              exact
-              to={{
-                pathname: "/pages/login",
-                state: { from: props.location },
-              }}
-            />
-          );
-        } else if (permission || role) {
-          if (role) {
-            if (user?.userRole?.toLowerCase() != role.toLowerCase()) {
-              history.push("/misc/not-authorized");
-
-              // return (
-
-              //   <Redirect
-              //     exact
-              //     to={{
-              //       pathname: "/pages/Accesdenied",
-              //       state: { from: props.location },
-              //     }}
-              //   />
-              // );
-            }
-          }
-          if (
-            permission &&
-            !user?.userPermissions?.some((v) => permission?.includes(v))
-          ) {
+  <Route
+    {...rest}
+    render={(props) => {
+      if (!user.isLoggedIn) {
+        return (
+          <Redirect
+            exact
+            to={{
+              pathname: "/pages/login",
+              state: { from: props.location },
+            }}
+          />
+        );
+      } else if (permission || role) {
+        if (role) {
+          if (user?.userRole?.toLowerCase() != role.toLowerCase()) {
             history.push("/misc/not-authorized");
 
             // return (
+
             //   <Redirect
             //     exact
             //     to={{
@@ -262,35 +250,52 @@ const RouteConfig = ({
             //     }}
             //   />
             // );
-          } else {
-            // return Component ? <Component {...props} /> : render(props)
-            return (
-              <ContextLayout.Consumer>
-                {(context) => {
-                  const LayoutTag =
-                    fullLayout === true
-                      ? context.fullLayout
-                      : context.state.activeLayout === "horizontal"
-                        ? context.horizontalLayout
-                        : context.VerticalLayout;
-                  return (
-                    // permission={}
-                    <LayoutTag {...props}>
-                      <Suspense fallback={<Spinner />}>
-                        <PageTitle title={title}>
-                          <Component {...props} />
-                        </PageTitle>
-                      </Suspense>
-                    </LayoutTag>
-                  );
-                }}
-              </ContextLayout.Consumer>
-            );
           }
         }
-      }}
-    />
-  );
+        if (
+          permission &&
+          !user?.userPermissions?.some((v) => permission?.includes(v))
+        ) {
+          history.push("/misc/not-authorized");
+
+          // return (
+          //   <Redirect
+          //     exact
+          //     to={{
+          //       pathname: "/pages/Accesdenied",
+          //       state: { from: props.location },
+          //     }}
+          //   />
+          // );
+        } else {
+          // return Component ? <Component {...props} /> : render(props)
+          return (
+            <ContextLayout.Consumer>
+              {(context) => {
+                const LayoutTag =
+                  fullLayout === true
+                    ? context.fullLayout
+                    : context.state.activeLayout === "horizontal"
+                    ? context.horizontalLayout
+                    : context.VerticalLayout;
+                return (
+                  // permission={}
+                  <LayoutTag {...props}>
+                    <Suspense fallback={<Spinner />}>
+                      <PageTitle title={title}>
+                        <Component {...props} />
+                      </PageTitle>
+                    </Suspense>
+                  </LayoutTag>
+                );
+              }}
+            </ContextLayout.Consumer>
+          );
+        }
+      }
+    }}
+  />
+);
 
 // const mapStateToProps = (state) => {
 //   return {
@@ -307,35 +312,35 @@ const NotProtexctedRouteConfig = ({
   title,
   ...rest
 }) => (
-    <Route
-      path={path}
-      render={(props) => {
-        return (
-          <ContextLayout.Consumer>
-            {(context) => {
-              // const LayoutTag = context.fullLayout
+  <Route
+    path={path}
+    render={(props) => {
+      return (
+        <ContextLayout.Consumer>
+          {(context) => {
+            // const LayoutTag = context.fullLayout
 
-              const LayoutTag =
-                fullLayout === true
-                  ? context.fullLayout
-                  : context.state.activeLayout === "horizontal"
-                    ? context.horizontalLayout
-                    : context.VerticalLayout;
-              return (
-                <LayoutTag {...props} permission={props.user}>
-                  <Suspense fallback={<Spinner />}>
-                    <PageTitle title={title}>
-                      <Component {...props} />
-                    </PageTitle>
-                  </Suspense>
-                </LayoutTag>
-              );
-            }}
-          </ContextLayout.Consumer>
-        );
-      }}
-    />
-  );
+            const LayoutTag =
+              fullLayout === true
+                ? context.fullLayout
+                : context.state.activeLayout === "horizontal"
+                ? context.horizontalLayout
+                : context.VerticalLayout;
+            return (
+              <LayoutTag {...props} permission={props.user}>
+                <Suspense fallback={<Spinner />}>
+                  <PageTitle title={title}>
+                    <Component {...props} />
+                  </PageTitle>
+                </Suspense>
+              </LayoutTag>
+            );
+          }}
+        </ContextLayout.Consumer>
+      );
+    }}
+  />
+);
 
 class AppRouter extends React.Component {
   state = {
@@ -520,7 +525,7 @@ class AppRouter extends React.Component {
 
             <RouteConfig
               isLoggedIn={isLoggedIn}
-              title="Users"
+              title="Users-Verification"
               exact
               path="/pages/UsersVerification"
               // role="admin"
@@ -529,7 +534,16 @@ class AppRouter extends React.Component {
               component={UsersVerification}
             />
 
-
+            <RouteConfig
+              isLoggedIn={isLoggedIn}
+              title="Users-Details"
+              exact
+              path="/pages/Users-Details/:username"
+              // role="admin"
+              permission={[Permissoin.getAllUsersList]}
+              user={{ ...user }}
+              component={UsersDetails}
+            />
 
             <RouteConfig
               isLoggedIn={isLoggedIn}
@@ -540,30 +554,6 @@ class AppRouter extends React.Component {
               permission={[Permissoin.getAllUsersList, Permissoin.editUser]}
               component={Test}
             />
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
             <RouteConfig
               isLoggedIn={isLoggedIn}
