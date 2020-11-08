@@ -70,14 +70,6 @@ namespace CallInDoor.Controllers
 
 
 
-
-
-
-
-
-
-
-
         #region  CheckTokenIsValid
         [AllowAnonymous]
         [HttpGet("CheckTokenIsValid")]
@@ -235,23 +227,18 @@ namespace CallInDoor.Controllers
             }
             if (result.IsNotAllowed)
             {
-                //string[] erros = {   "Volvo", "BMW", "Ford", "Mazda" };
                 List<string> erros = new List<string> { _localizerShared["ConfirmPhoneMessage"].Value.ToString() };
                 return Unauthorized(new ApiBadRequestResponse(erros, 401));
-                //return Unauthorized(new ApiResponse(401, _localizerShared["ConfirmPhoneMessage"].Value.ToString()));
             }
             if (result.IsLockedOut)
             {
                 List<string> erros = new List<string> { _localizerShared["LockedOutMessage"].Value.ToString() };
                 return Unauthorized(new ApiBadRequestResponse(erros, 401));
-                //return Unauthorized(new ApiResponse(401, _localizerShared["LockedOutMessage"].Value.ToString()));
             }
 
-            List<string> erroses = new List<string> { _localizerShared["LockedOutMessage"].Value.ToString() };
+            List<string> erroses = new List<string> { _localizerShared["UnMathPhoneNumberPassword"].Value.ToString() };
             return Unauthorized(new ApiBadRequestResponse(erroses, 401));
 
-
-            //return Unauthorized(new ApiResponse(401, _localizerShared["UnMathPhoneNumberPassword"].Value.ToString()));
         }
 
 
@@ -427,7 +414,9 @@ namespace CallInDoor.Controllers
                 //return Unauthorized(new ApiResponse(401, _localizerShared["ConfirmPhoneMessage"].Value.ToString()));
 
             }
-            var newpass = 8.RandomString();
+            //var newpass = 8.RandomString();
+            var newpass = "111111";
+
             string resetToken = await _userManager.GeneratePasswordResetTokenAsync(user);
             var passwordChangeResult = await _userManager.ResetPasswordAsync(user, resetToken, newpass);
             if (passwordChangeResult.Succeeded)
@@ -527,7 +516,7 @@ namespace CallInDoor.Controllers
 
 
 
-        #region  GetUSerByUSername
+        #region  GetUSerByUsername
         /// <summary>
         /// گرفتن یک سرویس تایپ مثل Translate
         /// </summary>
@@ -572,7 +561,8 @@ namespace CallInDoor.Controllers
 
 
 
-            var userFromDB = await (from c in _context.Users.Include(c => c.Fields)
+            var userFromDB = await (from c in _context.Users.Where(c => c.UserName == model.Username)
+                                                            .Include(c => c.Fields)
                                         //join ur in _context.ProfileCertificateTBL
                                         //on c.UserName equals ur.UserName 
                                     select new GetUserByUsernameInAdminDTO
@@ -586,11 +576,11 @@ namespace CallInDoor.Controllers
 
                                         Bio = c.Bio,
                                         CountryCode = c.CountryCode,
-                                       
+
                                         PhoneNumberConfirmed = c.PhoneNumberConfirmed,
                                         VideoAddress = c.VideoAddress,
                                         ImageAddress = c.ImageAddress,
-                                        
+
                                         IsCompany = c.IsCompany,
                                         IsEditableProfile = c.IsEditableProfile,
 
@@ -623,15 +613,10 @@ namespace CallInDoor.Controllers
                 });
             }
 
-
             return Ok(_commonService.OkResponse(userFromDB, PubicMessages.SuccessMessage));
         }
 
         #endregion
-
-
-
-
 
 
 
@@ -700,7 +685,6 @@ namespace CallInDoor.Controllers
 
             return Ok(_commonService.OkResponse(data, PubicMessages.SuccessMessage));
         }
-
 
         #endregion
 

@@ -7,13 +7,18 @@ namespace Domain.Enums
 {
     public enum DegreeType
     {
+      
+        [Description("زیر دیپلم")]
+        UnderDiploma,
+        [Description("دیپلم")]
+        Diploma,
+        [Description("فوق دیپلم")]
+        Assosiate,
         [Description("کارشناسی")]
-        Masters,
+        Bachelor,
         [Description("کارشناسی ارشد")]
-        SeniorMaster,
+        Masters,
         [Description("دکترا")]
         Doctorate,
-        [Description("فوق دکترا")]
-        SeniorDoctorate,
     }
 }

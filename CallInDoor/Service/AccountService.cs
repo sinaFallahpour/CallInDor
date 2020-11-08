@@ -241,7 +241,8 @@ namespace Service
 
 
 
-        public async Task<ResponseType> GetListOfUserForVerification(int? page, int? perPage, string searchedWord, ProfileConfirmType? ProfileConfirmType)
+        public async Task<ResponseType> GetListOfUserForVerification(int? page, int? perPage,
+                string searchedWord, ProfileConfirmType? ProfileConfirmType)
         {
             var currentRole = GetCurrentRole();
             var currentUsername = GetCurrentUserName();

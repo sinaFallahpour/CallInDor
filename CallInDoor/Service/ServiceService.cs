@@ -6,8 +6,10 @@ using Domain.Enums;
 using Domain.Utilities;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Localization;
+using Service.Interfaces.Account;
 using Service.Interfaces.ServiceType;
 using System;
 using System.Collections.Generic;
@@ -23,16 +25,24 @@ namespace Service
     {
         #region ctor
         private readonly DataContext _context;
+        private readonly IAccountService _accountService;
+        private readonly RoleManager<AppRole> _roleManager;
+
+
         private IStringLocalizer<ServiceService> _localizer;
         private readonly IHostingEnvironment _hostingEnvironment;
 
         public ServiceService(
             DataContext context,
+            IAccountService accountService,
+            RoleManager<AppRole> roleManager,
             IStringLocalizer<ServiceService> localizer,
             IHostingEnvironment hostingEnvironment
                )
         {
             _context = context;
+            _accountService = accountService;
+            _roleManager = roleManager;
             _hostingEnvironment = hostingEnvironment;
             _localizer = localizer;
         }
@@ -839,6 +849,145 @@ namespace Service
 
         //    return (IsValid, Errors);
         //}
+
+
+
+
+
+
+        public async Task<ServiceProviderResponseTypeDTO> GetListOfUserForVerification(int? page, int? perPage,
+                    string searchedWord,DateTime createDate, ServiceType? serviceType, ConfirmedServiceType? confirmedServiceType)
+        {
+           
+            var QueryAble = _context.BaseMyServiceTBL
+                                    .AsQueryable();
+
+            if (!string.IsNullOrEmpty(searchedWord))
+            {
+                QueryAble = QueryAble
+                    .Where(c =>
+                    c.UserName.ToLower().StartsWith(searchedWord.ToLower()) ||
+                    c.UserName.ToLower().Contains(searchedWord.ToLower())
+                    ||
+                      c.ServiceName.ToLower().StartsWith(searchedWord.ToLower()) ||
+                      c.ServiceName.ToLower().Contains(searchedWord.ToLower())
+                    );
+            };
+
+            if (createDate != null)
+                QueryAble = QueryAble.Where(c => c.CreateDate > createDate);
+
+            if (serviceType != null)
+                QueryAble = QueryAble.Where(c => c.ServiceType == serviceType);
+
+            if (confirmedServiceType != null)
+                QueryAble = QueryAble.Where(c => c.ConfirmedServiceType == confirmedServiceType);
+
+            var query = QueryAble.Select(c => new ProvideServicesDTO
+            {
+                CreateDate = c.CreateDate,
+                ConfirmedServiceType = c.ConfirmedServiceType,
+                ServiceName = c.ServiceName,
+                UserName = c.UserName,
+                ServiceType = c.ServiceType,
+                ServiceTypeName = c.ServiceTbl.Name,
+            });
+
+
+            if (perPage == 0)
+                perPage = 1;
+            page = page ?? 0;
+            perPage = perPage ?? 10;
+
+            var count = QueryAble.Count();
+            double len = (double)count / (double)perPage;
+            var totalPages = Math.Ceiling((double)len);
+
+            var ProvidedServices = await query
+             .Skip((int)page * (int)perPage)
+             .Take((int)perPage)
+             .OrderByDescending(c => c.CreateDate).ToListAsync();
+
+            var data = new ServiceProviderResponseTypeDTO()
+            {
+                ProvidesdService = ProvidedServices,
+                TotalPages = totalPages
+            };
+            return data;
+        }
+
+
+
+
+
+        public async Task<ServiceProviderResponseTypeDTO> GetAllProvideServicesForNotAdmin(int? page, int? perPage, string searchedWord,
+            DateTime createDate, ServiceType? serviceType, ConfirmedServiceType? confirmedServiceType)
+        {
+            var currentRole = _accountService.GetCurrentRole();
+            var roleFromDB = await _roleManager.FindByNameAsync(currentRole);
+            var roleId = roleFromDB.Id;
+
+            var QueryAble = _context.BaseMyServiceTBL
+                       .Where(c => c.ServiceTbl.RoleId == roleId).AsQueryable();
+
+
+            if (!string.IsNullOrEmpty(searchedWord))
+            {
+                QueryAble = QueryAble
+                    .Where(c =>
+                    c.UserName.ToLower().StartsWith(searchedWord.ToLower()) ||
+                    c.UserName.ToLower().Contains(searchedWord.ToLower())
+                    ||
+                      c.ServiceName.ToLower().StartsWith(searchedWord.ToLower()) ||
+                      c.ServiceName.ToLower().Contains(searchedWord.ToLower())
+                    );
+            };
+
+            if (createDate != null)
+                QueryAble = QueryAble.Where(c => c.CreateDate > createDate);
+
+            if (serviceType != null)
+                QueryAble = QueryAble.Where(c => c.ServiceType == serviceType);
+
+            if (confirmedServiceType != null)
+                QueryAble = QueryAble.Where(c => c.ConfirmedServiceType == confirmedServiceType);
+
+
+           var  query = QueryAble.Select(c => new ProvideServicesDTO
+            {
+                CreateDate = c.CreateDate,
+                ConfirmedServiceType = c.ConfirmedServiceType,
+                ServiceName = c.ServiceName,
+                UserName = c.UserName,
+                ServiceType = c.ServiceType,
+                ServiceTypeName = c.ServiceTbl.Name,
+            });
+
+
+            if (perPage == 0)
+                perPage = 1;
+            page = page ?? 0;
+            perPage = perPage ?? 10;
+
+            var count = QueryAble.Count();
+            double len = (double)count / (double)perPage;
+            var totalPages = Math.Ceiling((double)len);
+
+            var ProvidedServices = await query
+             .Skip((int)page * (int)perPage)
+             .Take((int)perPage)
+             .OrderByDescending(c => c.CreateDate).ToListAsync();
+
+            var data = new ServiceProviderResponseTypeDTO()
+            {
+                ProvidesdService = ProvidedServices,
+                TotalPages = totalPages
+            };
+            return data;
+        }
+
+
+
 
 
 

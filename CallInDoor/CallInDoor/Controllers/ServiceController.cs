@@ -81,7 +81,7 @@ namespace CallInDoor.Controllers
                    c.AcceptedMinPriceForNonNative,
                    c.Color,
                    RoleId = c.AppRole.Id,
-                   RequiredCertificates = c.ServidceTypeRequiredCertificatesTBL.Where(c => c.Isdeleted == false).Select(c => new {c.Id, c.FileName, c.PersianFileName }),
+                   RequiredCertificates = c.ServidceTypeRequiredCertificatesTBL.Where(c => c.Isdeleted == false).Select(c => new { c.Id, c.FileName, c.PersianFileName }),
                    tags = c.Tags.Where(p => p.IsEnglisTags && !string.IsNullOrEmpty(p.TagName)).Select(s => s.TagName).ToList(),
                    persinaTags = c.Tags.Where(p => p.IsEnglisTags == false && !string.IsNullOrEmpty(p.PersianTagName)).Select(s => s.PersianTagName).ToList()
                }).FirstOrDefaultAsync();
@@ -354,6 +354,7 @@ namespace CallInDoor.Controllers
 
 
 
+
         /// <summary>
         /// گرفتن تمام سرویس های من  از نوع یک سرویس تایپ خاص
         /// </summary>
@@ -380,15 +381,7 @@ namespace CallInDoor.Controllers
 
             if (Service == null)
                 return NotFound(new ApiResponse(404, _localizerShared["NotFound"].Value.ToString()));
-
-            return Ok(new ApiOkResponse(new DataFormat()
-            {
-                Status = 1,
-                data = Service,
-                Message = _localizerShared["SuccessMessage"].Value.ToString()
-            },
-                _localizerShared["SuccessMessage"].Value.ToString()
-            ));
+            return Ok(_commonService.OkResponse(Service, _localizerShared["SuccessMessage"].Value.ToString()));
 
         }
 
@@ -746,7 +739,7 @@ namespace CallInDoor.Controllers
                  _locaLizer["SuccesfullAddServiceMessage"].Value.ToString()
                 ));
             }
-            catch 
+            catch
             {
                 return StatusCode(StatusCodes.Status500InternalServerError,
                         new ApiResponse(500, _localizerShared["InternalServerMessage"].Value.ToString()));
@@ -1134,11 +1127,62 @@ namespace CallInDoor.Controllers
         /////////////////////////////////////////////////////////تمام نشده
 
 
-        #endregion 
+        #endregion
 
 
 
         #endregion
+
+
+
+
+
+
+
+        #region AlUsersServices
+
+
+
+
+
+        #region   GetAllProvideServicesInAdmin
+        /// <summary>
+        /// رفتن تمامی سرویس های ثبت شده  (سرویس های گیرنده)
+        /// سرویس هایی که حذف نشده ند
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet("GetAllProvideServicesInAdmin")]
+        [Authorize(Roles = PublicHelper.ADMINROLE)]
+        [ClaimsAuthorize(IsAdmin = true)]
+        public async Task<ActionResult> GetAllProvideServicesInAdmin(int? page, int? perPage,
+                   string searchedWord, DateTime createDate, ServiceType? serviceType, ConfirmedServiceType? confirmedServiceType)
+        {
+            var currentRole = _accountService.GetCurrentRole();
+            if (currentRole != PublicHelper.ADMINROLE)
+            {
+                var res = await _servicetypeService.GetAllProvideServicesForNotAdmin(page, perPage, searchedWord, createDate, serviceType, confirmedServiceType);
+                return Ok(_commonService.OkResponse(res, PubicMessages.SuccessMessage));
+            }
+            var result = await _servicetypeService.GetAllProvideServicesForAdmin(page, perPage, searchedWord, createDate, serviceType, confirmedServiceType);
+            return Ok(_commonService.OkResponse(result, PubicMessages.SuccessMessage));
+
+        }
+
+        #endregion
+
+
+
+
+
+
+
+
+
+
+
+        #endregion
+
+
     }
 }
 

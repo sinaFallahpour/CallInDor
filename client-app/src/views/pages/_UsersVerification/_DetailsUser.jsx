@@ -9,10 +9,17 @@ import {
   FormGroup,
   Col,
   Spinner as SpinnerButtton,
+
 } from "reactstrap";
 
 import Spinner from "../../../components/@vuexy/spinner/Loading-spinner";
-import { PlusSquare, Check } from "react-feather";
+import { PlusSquare, Check, Edit2, Settings, Menu, X } from "react-feather";
+
+
+// import coverImg from "../../../assets/img/profile/user-uploads/cover.jpg"
+// import profileImg from "../../../assets/img/profile/user-uploads/user-13.jpg"
+
+import profile from "../../../assets/img/_custom/user-profile.png"
 
 // import ReactTagInput from "@pathofdev/react-tag-input";
 import "@pathofdev/react-tag-input/build/index.css";
@@ -45,6 +52,7 @@ class _DetailsUser extends React.Component {
       name: "",
       lastName: "",
       imageAddress: "",
+      videoAddress: "",
       isCompany: false,
       phoneNumberConfirmed: false,
       isEditableProfile: false,
@@ -109,6 +117,7 @@ class _DetailsUser extends React.Component {
         name,
         lastName,
         imageAddress,
+        videoAddress,
         isCompany,
         phoneNumberConfirmed,
         isEditableProfile,
@@ -127,6 +136,7 @@ class _DetailsUser extends React.Component {
           name,
           lastName,
           imageAddress,
+          videoAddress,
           isCompany,
           phoneNumberConfirmed,
           isEditableProfile,
@@ -149,6 +159,44 @@ class _DetailsUser extends React.Component {
 
   async componentDidMount() {
     this.populatinUser();
+  }
+
+
+  returnDegreeType = (degreeType) => {
+
+    // [Description("کارشناسی")]
+    // Bachelor,
+    //   [Description("کارشناسی ارشد")]
+    // Masters,
+    //   //[Description("کارشناسی ارشد")]
+    //   //SeniorMaster,
+    //   [Description("دکترا")]
+    // Doctorate,
+    //   [Description("فوق دکترا")]
+    // SeniorDoctorate,
+    //   [Description("فوق دیپلم")]
+    // Assosiate,
+    //   [Description("دیپلم")]
+    // Diploma,
+    //   [Description("زیر دیپلم")]
+    // UnderDiploma,
+
+
+    if (degreeType == 0) {
+      return "under-diploma"
+    }
+    if (degreeType == 1) {
+      return "diploma"
+    } if (degreeType == 2) {
+      return "assosiate"
+    } if (degreeType == 3) {
+      return "bachelor"
+    } if (degreeType == 4) {
+      return "masters"
+    } if (degreeType == 5) {
+      return "doctorate"
+    }
+
   }
 
   doSubmit = async () => {
@@ -200,245 +248,206 @@ class _DetailsUser extends React.Component {
     }
 
     return (
-      <Col sm="10" className="mx-auto">
-        <Card>
-          <CardHeader>
-            <CardTitle> Edit Category </CardTitle>
-          </CardHeader>
+      <>
 
-          <CardBody>
-            {errorscustom &&
-              errorscustom.map((err, index) => {
-                return (
-                  <Alert key={index} className="text-center" color="danger ">
-                    {err}
-                  </Alert>
-                );
-              })}
+        <Col sm="10" className="mx-auto">
+          <Card>
+            <CardHeader>
+              <CardTitle class="w-100 text-center"> User Information </CardTitle>
+            </CardHeader>
 
-            <form onSubmit={this.handleSubmit}>
-              <FormGroup row>
-                <Col md="6">
-                  <label htmlFor={"name"}>Name</label>
-                  <input
-                    value={data.name}
-                    readOnly
-                    name={"name"}
-                    id={"name"}
-                    className={`form-control `}
-                  />
-                </Col>
-                <Col md="6">
-                  <label htmlFor={"LastName"}>Last Name</label>
-                  <input
-                    value={data.lastName}
-                    readOnly
-                    name={"LastName"}
-                    id={"LastName"}
-                    className={`form-control `}
-                  />
-                </Col>
-              </FormGroup>
+            <CardBody>
+              {errorscustom &&
+                errorscustom.map((err, index) => {
+                  return (
+                    <Alert key={index} className="text-center" color="danger ">
+                      {err}
+                    </Alert>
+                  );
+                })}
+              <form onSubmit={this.handleSubmit}>
 
-              <FormGroup row>
-                <Col md="6">
-                  <label htmlFor={"username"}>Username</label>
-                  <input
-                    value={data.userName}
-                    readOnly
-                    name={"username"}
-                    id={"username"}
-                    className={`form-control `}
-                  />
-                </Col>
+                <FormGroup row>
+                  <Col md="6" style={{ height: "252px" }} >
+                    <img
+                      style={{ height: "100%", borderRadius: "12px !important" }}
+                      src={data.imageAddress ? profile : baseUrl + data.imageAddress}
+                      alt="CoverImg"
+                      className="img-fluid bg-cover w-100 rounded-0"
+                    />
+                  </Col>
+                  <Col md="6">
+                    {data.videoAddress ?
+                      <iframe
+                        className="embed-responsive-item w-100 height-250 mb-1"
+                        src={baseUrl + data.videoAddress}
+                        allowFullScreen
+                        title="post"
+                        frameBorder="0"
+                      />
+                      :
+                      <h3> there is no video for User</h3>
+                    }
+                  </Col>
+                </FormGroup>
 
-                <Col md="6">
-                  <label htmlFor={"email"}>Email</label>
-                  <input
-                    value={data.lastName}
-                    readOnly
-                    name={"email"}
-                    id={"email"}
-                    className={`form-control `}
-                  />
-                </Col>
-              </FormGroup>
+                <FormGroup row>
+                  <Col md="6">
+                    <Input name="name" value={data.name} label={"Name"} />
+                  </Col>
+                  <Col md="6">
+                    <Input name="LastName" value={data.lastName} label={"Last Name"} />
+                  </Col>
+                </FormGroup>
 
-              <FormGroup row>
-                <Col md="6">
-                  <label htmlFor={"username"}>Username</label>
-                  <input
-                    value={data.username}
-                    readOnly
-                    name={"username"}
-                    id={"username"}
-                    className={`form-control `}
-                  />
-                </Col>
+                <FormGroup row>
+                  <Col md="6">
+                    <Input name="username" value={data.userName} label={"Username"} />
+                  </Col>
 
-                <Col md="6">
-                  <label htmlFor={"email"}>Email</label>
-                  <input
-                    value={data.email}
-                    readOnly
-                    name={"email"}
-                    id={"email"}
-                    className={`form-control `}
-                  />
-                </Col>
-              </FormGroup>
+                  <Col md="6">
+                    <Input name="email" value={data.email} label={"Email"} />
+                  </Col>
+                </FormGroup>
 
-              <FormGroup row>
-                <Col md="6">
-                  <label htmlFor={"bio"}>Bio</label>
-                  <textarea
-                    value={data.bio}
-                    readOnly
-                    name={"bio"}
-                    id={"bio"}
-                    className={`form-control `}
-                  />
-                </Col>
-              </FormGroup>
+                <FormGroup row>
+                  <Col md="6">
+                    <label htmlFor={"bio"}>Bio</label>
+                    <textarea
+                      value={data.bio}
+                      readOnly
+                      name={"bio"}
+                      id={"bio"}
+                      className={`form-control `}
+                    />
+                  </Col>
+                </FormGroup>
 
-              <FormGroup row>
-                <Col md="3">
-                  <Checkbox
-                    disabled
-                    color="primary"
-                    icon={<Check className="vx-icon" size={16} />}
-                    label="Profile editable  status"
-                    defaultChecked={data.isEditableProfile}
-                  />
-                </Col>
+                <FormGroup row>
+                  <Col md="3">
+                    <Checkbox
+                      disabled
+                      color="primary"
+                      icon={<Check className="vx-icon" size={16} />}
+                      label="Profile editable  status"
+                      defaultChecked={data.isEditableProfile}
+                    />
+                  </Col>
 
-                <Col md="3">
-                  <Checkbox
-                    disabled
-                    color="primary"
-                    icon={<Check className="vx-icon" size={16} />}
-                    label="Is it a company?"
-                    defaultChecked={data.isCompany}
-                  />
-                </Col>
+                  <Col md="3">
+                    <Checkbox
+                      disabled
+                      color="primary"
+                      icon={<Check className="vx-icon" size={16} />}
+                      label="Is it a company?"
+                      defaultChecked={data.isCompany}
+                    />
+                  </Col>
 
-                <Col md="3">
-                  <Checkbox
-                    disabled
-                    color="primary"
-                    icon={<Check className="vx-icon" size={16} />}
-                    label="Lock status"
-                    defaultChecked={data.isLockOut}
-                  />
-                </Col>
-                <Col md="3">
-                  <Checkbox
-                    disabled
-                    color="primary"
-                    icon={<Check className="vx-icon" size={16} />}
-                    label="Phone number confirmation"
-                    defaultChecked={data.phoneNumberConfirmed}
-                  />
-                </Col>
-              </FormGroup>
+                  <Col md="3">
+                    <Checkbox
+                      disabled
+                      color="primary"
+                      icon={<Check className="vx-icon" size={16} />}
+                      label="Lock status"
+                      defaultChecked={data.isLockOut}
+                    />
+                  </Col>
+                  <Col md="3">
+                    <Checkbox
+                      disabled
+                      color="primary"
+                      icon={<Check className="vx-icon" size={16} />}
+                      label="Phone number confirmation"
+                      defaultChecked={data.phoneNumberConfirmed}
+                    />
+                  </Col>
+                </FormGroup>
 
-              <hr></hr>
-              <h3>required file for user </h3>
-              {this.state.requiredFiles?.map((requireFIle, index) => (
-                <>
-                  <hr></hr>
-                  {requireFIle.serviceName}
-                  <div key={index} className="row">
-                    <input type="hidden" value={requireFIle?._id} />
+                <hr></hr>
+                <h3> fileds </h3>
+                {this.state?.fields?.length === 0 ?
+                  <h3 className="text-center"> there no filed for user  </h3>
+                  :
+                  <FormGroup row>
+                    {this.state.fields?.map((field, index) => (
+                      <>
+                        <Col key={index} md="3" className="mt-2">
+                          <button type="button" key={index} className="text-center text-white form-control btn-warning">
+                            {field.title}({this.returnDegreeType(field.degreeType)})  </button>
+                        </Col>
 
-                    <div className="form-group col-4  col-md-3">
-                      <label></label>
-                      <Button
-                        type="button"
-                        onClick={() => {
-                          this.removeRequredFile(requireFIle?._id);
-                        }}
-                        className="form-control btn-danger"
-                      >
-                        <a
-                          href={baseUrl + requireFIle.fileAddress}
-                          target="_blank"
-                        >
-                          Download
-                        </a>
-                      </Button>
-                      {/* {error && <div className="  alert alert-danger">{error}</div>} */}
-                    </div>
+                      </>
+                    ))}
+                  </FormGroup>
+                }
 
-                    <div className="form-group col-4  col-md-3">
-                      <label></label>
-                      <Button
-                        type="button"
-                        onClick={() => {
-                          this.removeRequredFile(requireFIle?._id);
-                        }}
-                        className="form-control btn-danger"
-                      >
-                        remove
-                      </Button>
-                      {/* {error && <div className="  alert alert-danger">{error}</div>} */}
-                    </div>
-                    <div className="form-group col-4  col-md-3">
-                      <label></label>
-                      <Button
-                        type="button"
-                        onClick={() => {
-                          this.removeRequredFile(requireFIle?._id);
-                        }}
-                        className="form-control btn-danger"
-                      >
-                        remove
-                      </Button>
-                      {/* {error && <div className="  alert alert-danger">{error}</div>} */}
-                    </div>
-                    <div className="form-group col-4  col-md-3">
-                      <label></label>
-                      <Button
-                        type="button"
-                        onClick={() => {
-                          this.removeRequredFile(requireFIle?._id);
-                        }}
-                        className="form-control btn-danger"
-                      >
-                        remove
-                      </Button>
-                      {/* {error && <div className="  alert alert-danger">{error}</div>} */}
-                    </div>
-                    <div className="form-group col-4  col-md-3">
-                      <label></label>
-                      <Button
-                        type="button"
-                        onClick={() => {
-                          this.removeRequredFile(requireFIle?._id);
-                        }}
-                        className="form-control btn-danger"
-                      >
-                        remove
-                      </Button>
-                      {/* {error && <div className="  alert alert-danger">{error}</div>} */}
-                    </div>
-                  </div>
-                </>
-              ))}
+                <hr></hr>
+                <h3>required file for user </h3>
+                <hr></hr>
 
-              {this.state.Loading ? (
-                <Button disabled={true} color="primary" className="mb-1">
-                  <SpinnerButtton color="white" size="sm" type="grow" />
-                  <span className="ml-50">Loading...</span>
-                </Button>
-              ) : (
-                <button className="btn btn-primary">reject or accept</button>
-              )}
-            </form>
-          </CardBody>
-        </Card>
-      </Col>
+                {this.state?.requiredFiles?.length == 0
+                  ?
+                  <h3 className="text-center"> there no file for user </h3>
+                  :
+                  (
+                    <FormGroup row>
+                      { this.state.requiredFiles?.map((requireFIle, index) => (
+                        <>
+                          <Col key={index} md="3" className="mt-1" >
+                            <input type="hidden" value={requireFIle?._id} />
+                            <label></label>
+                            <a
+                              type="button"
+                              href={baseUrl + requireFIle.fileAddress}
+                              target="_blank"
+                              className="text-center text-white form-control btn-warning"
+                            >
+                              {requireFIle.serviceName}
+                            </a>
+                          </Col>
+                        </>
+                      ))}
+                    </FormGroup>
+
+                  )}
+
+
+                {this.state.Loading ? (
+                  <Button disabled={true} color="primary" className="mb-1">
+                    <SpinnerButtton color="white" size="sm" type="grow" />
+                    <span className="ml-50">Loading...</span>
+                  </Button>
+                ) : (
+                    <button className="btn btn-primary">reject or accept</button>
+                  )}
+              </form>
+            </CardBody>
+          </Card>
+        </Col>
+      </>
     );
   }
 }
 export default _DetailsUser;
+
+
+
+
+
+const Input = ({ name, value, label }) => {
+
+  return (
+    <>
+      <label htmlFor={name}> {label}</label>
+      <input
+        value={value}
+        readOnly
+        name={name}
+        id={name}
+        className={`form-control `}
+      />
+    </>
+  )
+
+}

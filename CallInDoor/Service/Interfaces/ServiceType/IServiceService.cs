@@ -1,6 +1,7 @@
 ﻿using Domain.DTO.Account;
 using Domain.DTO.Service;
 using Domain.Entities;
+using Domain.Enums;
 using Microsoft.AspNetCore.Http;
 using System;
 using System.Collections.Generic;
@@ -23,6 +24,17 @@ namespace Service.Interfaces.ServiceType
         Task<(bool succsseded, List<string> result)> ValidateServiceService(AddServiceServiceForUsersDTO model);
 
         Task<(bool succsseded, List<string> result)> ValidateCourseService(AddCourseServiceForUsersDTO model);
+
+
+        #region  get al serve Provide Foer admin and none admin 
+        Task<ServiceProviderResponseTypeDTO> GetAllProvideServicesForNotAdmin(int? page, int? perPage,
+                                        string searchedWord, DateTime createDate, Domain.Enums.ServiceType? serviceType,
+                                                            ConfirmedServiceType? confirmedServiceType);
+
+        Task<ServiceProviderResponseTypeDTO> GetAllProvideServicesForAdmin(int? page, int? perPage,
+                  string searchedWord, DateTime createDate, Domain.Enums.ServiceType? serviceType, ConfirmedServiceType? confirmedServiceType);
+        #endregion
+
 
         //آدرس فایل
         string SvaeFileToHost(string path, IFormFile file);

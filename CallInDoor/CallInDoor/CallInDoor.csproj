@@ -54,7 +54,6 @@
     <Folder Include="wwwroot\Upload\CoursePreview\" />
     <Folder Include="wwwroot\Upload\ProfileCertificate\" />
     <Folder Include="wwwroot\Upload\Topics\" />
-    <Folder Include="wwwroot\Upload\User\" />
   </ItemGroup>
 
 </Project>

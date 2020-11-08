@@ -271,8 +271,8 @@ class Create extends Form {
                 ) : addNew ? (
                   this.renderButton("Add")
                 ) : (
-                  this.renderButton("Edit")
-                )}
+                      this.renderButton("Edit")
+                    )}
               </form>
             </CardBody>
           </Card>
