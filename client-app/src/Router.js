@@ -208,6 +208,9 @@ const UsersDetails = lazy(() =>
   import("./views/pages/_UsersVerification/_DetailsUser")
 );
 
+const ProvidedServices = lazy(() => import("./views/pages/ProvidedServices/ProvidedServices"));
+
+
 const Test = lazy(() => import("./views/pages/_test/Test"));
 const Settings = lazy(() => import("./views/pages/_Settings/Settings"));
 
@@ -222,26 +225,31 @@ const RouteConfig = ({
   title,
   ...rest
 }) => (
-  <Route
-    {...rest}
-    render={(props) => {
-      if (!user.isLoggedIn) {
-        return (
-          <Redirect
-            exact
-            to={{
-              pathname: "/pages/login",
-              state: { from: props.location },
-            }}
-          />
-        );
-      } else if (permission || role) {
-        if (role) {
-          if (user?.userRole?.toLowerCase() != role.toLowerCase()) {
+    <Route
+      {...rest}
+      render={(props) => {
+        if (!user.isLoggedIn || user?.userRole?.toLowerCase() == "user") {
+          return (
+            <Redirect
+              exact
+              to={{
+                pathname: "/pages/login",
+                state: { from: props.location },
+              }}
+            />
+          );
+        } else if (permission || role) {
+          if (role) {
+            if (user?.userRole?.toLowerCase() != role.toLowerCase()) {
+              history.push("/misc/not-authorized");
+            }
+          }
+          if (
+            permission &&
+            !user?.userPermissions?.some((v) => permission?.includes(v))
+          ) {
             history.push("/misc/not-authorized");
-
             // return (
-
             //   <Redirect
             //     exact
             //     to={{
@@ -250,25 +258,33 @@ const RouteConfig = ({
             //     }}
             //   />
             // );
+          } else {
+            // return Component ? <Component {...props} /> : render(props)
+            return (
+              <ContextLayout.Consumer>
+                {(context) => {
+                  const LayoutTag =
+                    fullLayout === true
+                      ? context.fullLayout
+                      : context.state.activeLayout === "horizontal"
+                        ? context.horizontalLayout
+                        : context.VerticalLayout;
+                  return (
+                    // permission={}
+                    <LayoutTag {...props}>
+                      <Suspense fallback={<Spinner />}>
+                        <PageTitle title={title}>
+                          <Component {...props} />
+                        </PageTitle>
+                      </Suspense>
+                    </LayoutTag>
+                  );
+                }}
+              </ContextLayout.Consumer>
+            );
           }
         }
-        if (
-          permission &&
-          !user?.userPermissions?.some((v) => permission?.includes(v))
-        ) {
-          history.push("/misc/not-authorized");
-
-          // return (
-          //   <Redirect
-          //     exact
-          //     to={{
-          //       pathname: "/pages/Accesdenied",
-          //       state: { from: props.location },
-          //     }}
-          //   />
-          // );
-        } else {
-          // return Component ? <Component {...props} /> : render(props)
+        else {
           return (
             <ContextLayout.Consumer>
               {(context) => {
@@ -276,8 +292,8 @@ const RouteConfig = ({
                   fullLayout === true
                     ? context.fullLayout
                     : context.state.activeLayout === "horizontal"
-                    ? context.horizontalLayout
-                    : context.VerticalLayout;
+                      ? context.horizontalLayout
+                      : context.VerticalLayout;
                 return (
                   // permission={}
                   <LayoutTag {...props}>
@@ -291,11 +307,11 @@ const RouteConfig = ({
               }}
             </ContextLayout.Consumer>
           );
+
         }
-      }
-    }}
-  />
-);
+      }}
+    />
+  );
 
 // const mapStateToProps = (state) => {
 //   return {
@@ -312,35 +328,35 @@ const NotProtexctedRouteConfig = ({
   title,
   ...rest
 }) => (
-  <Route
-    path={path}
-    render={(props) => {
-      return (
-        <ContextLayout.Consumer>
-          {(context) => {
-            // const LayoutTag = context.fullLayout
+    <Route
+      path={path}
+      render={(props) => {
+        return (
+          <ContextLayout.Consumer>
+            {(context) => {
+              // const LayoutTag = context.fullLayout
 
-            const LayoutTag =
-              fullLayout === true
-                ? context.fullLayout
-                : context.state.activeLayout === "horizontal"
-                ? context.horizontalLayout
-                : context.VerticalLayout;
-            return (
-              <LayoutTag {...props} permission={props.user}>
-                <Suspense fallback={<Spinner />}>
-                  <PageTitle title={title}>
-                    <Component {...props} />
-                  </PageTitle>
-                </Suspense>
-              </LayoutTag>
-            );
-          }}
-        </ContextLayout.Consumer>
-      );
-    }}
-  />
-);
+              const LayoutTag =
+                fullLayout === true
+                  ? context.fullLayout
+                  : context.state.activeLayout === "horizontal"
+                    ? context.horizontalLayout
+                    : context.VerticalLayout;
+              return (
+                <LayoutTag {...props} permission={props.user}>
+                  <Suspense fallback={<Spinner />}>
+                    <PageTitle title={title}>
+                      <Component {...props} />
+                    </PageTitle>
+                  </Suspense>
+                </LayoutTag>
+              );
+            }}
+          </ContextLayout.Consumer>
+        );
+      }}
+    />
+  );
 
 class AppRouter extends React.Component {
   state = {
@@ -354,9 +370,12 @@ class AppRouter extends React.Component {
     // console.clear();
     // console.log(auth.getPermissons());
     const userPermissions = auth.getPermissons();
-
+    console.log(userPermissions)
     const userRole = auth.getRole();
+    console.log(userRole)
+
     const isLoggedIn = await auth.checkTokenIsValid();
+    console.log(isLoggedIn)
     this.setState({ isLoggedIn, userPermissions, userRole, loading: false });
   }
 
@@ -540,10 +559,29 @@ class AppRouter extends React.Component {
               exact
               path="/pages/Users-Details/:username"
               // role="admin"
-              permission={[Permissoin.getAllUsersList]}
+              permission={[Permissoin.editUser]}
               user={{ ...user }}
               component={UsersDetails}
             />
+
+
+
+
+
+            <RouteConfig
+              isLoggedIn={isLoggedIn}
+              title="Provided-Services"
+              exact
+              path="/pages/Provided-Services"
+              // role="admin"
+              permission={[Permissoin.getAllProvidedService]}
+              user={{ ...user }}
+              component={ProvidedServices}
+            />
+
+
+
+
 
             <RouteConfig
               isLoggedIn={isLoggedIn}
@@ -555,12 +593,18 @@ class AppRouter extends React.Component {
               component={Test}
             />
 
+
+
+
+
+
+
             <RouteConfig
               isLoggedIn={isLoggedIn}
               title="Admin Dashboard"
               exact
               path="/"
-              role="admin"
+              // role="admin"
               user={{ ...user }}
               component={analyticsDashboard}
             />
@@ -1063,10 +1107,11 @@ class AppRouter extends React.Component {
               component={error500}
               fullLayout
             />
-            <RouteConfig
+            <NotProtexctedRouteConfig
               isLoggedIn={isLoggedIn}
+              title="not-authorized"
               path="/misc/not-authorized"
-              role="admin"
+              // role="admin"
               user={{ ...user }}
               component={authorized}
               fullLayout

@@ -19,12 +19,12 @@ const navigationConfig = [
     title: "User & Role",
     type: "collapse",
     icon: <Icon.Users size={20} />,
-    // role: "Admin",
+    role: "Admin",
     // permissions: ["admin", "editor"],
     children: [
       {
         id: "roleManage",
-        title: "Manager role",
+        title: "Manage role",
         type: "item",
         icon: <Icon.Circle size={12} />,
         role: "Admin",
@@ -118,7 +118,7 @@ const navigationConfig = [
   },
   {
     id: "UsersVerification",
-    title: "UsersVerification",
+    title: "Users-Verification",
     type: "item",
     // role: "Admin",
     permissions: [Permission.getAllUsersList],
@@ -126,6 +126,18 @@ const navigationConfig = [
     navLink: "/pages/UsersVerification",
     parentOf: ["/pages/test"],
   },
+
+  {
+    id: "Provided-Services",
+    title: "Provided-Services",
+    type: "item",
+    // role: "Admin",
+    permissions: [Permission.getAllProvidedService],
+    icon: <Icon.Tablet size={20} />,
+    navLink: "/pages/Provided-Services",
+    // parentOf: ["/pages/test"],
+  },
+
   {
     id: "Test",
     title: "test",

@@ -166,12 +166,20 @@ namespace CallInDoor.Controllers
                         return StatusCode(StatusCodes.Status500InternalServerError,
                            new ApiBadRequestResponse(erros, 500));
                     }
-                    else if (res.Errors.Any(c => c.Code == "DuplicateUserName}"))
+                    else
                     {
-                        var err = new List<string>();
-                        err.Add($" {model.PhoneNumber} is already taken");
-                        return BadRequest(new ApiBadRequestResponse(err));
+                        var errors = new List<string>();
+                        foreach (var item in res.Errors)
+                            errors.Add(item.Description);
+                        return BadRequest(new ApiBadRequestResponse(errors));
                     }
+
+                    //else if (res.Errors.Any(c => c.Code == "DuplicateUserName}"))
+                    //{
+                    //    var err = new List<string>();
+                    //    err.Add($" {model.PhoneNumber} is already taken");
+                    //    return BadRequest(new ApiBadRequestResponse(err));
+                    //}
                 }
                 catch (Exception)
                 {
@@ -222,7 +230,6 @@ namespace CallInDoor.Controllers
                     Token = await _jwtGenerator.CreateToken(user),
                     UserName = user.UserName,
                 };
-
                 return Ok(_commonService.OkResponse(userInfo, _localizerShared["SuccessMessage"].Value.ToString()));
             }
             if (result.IsNotAllowed)
@@ -892,6 +899,7 @@ namespace CallInDoor.Controllers
                 Email = model.Email,
                 NormalizedEmail = model.Email.Normalize(),
                 EmailConfirmed = true,
+                PhoneNumberConfirmed=true,
                 SerialNumber = SerialNumber,
                 PhoneNumber = model.CountryCode.ToString() + model.PhoneNumber.Trim(),
                 //Role = PublicHelper.ADMINROLE,
@@ -929,11 +937,16 @@ namespace CallInDoor.Controllers
                         return StatusCode(StatusCodes.Status500InternalServerError,
                                       new ApiResponse(500, PubicMessages.InternalServerMessage));
                     }
-                    else if (result.Errors.Any(c => c.Code == "DuplicateUserName}"))
+                    else
                     {
-                        var err = new List<string>();
-                        err.Add($" {model.PhoneNumber} is already taken");
-                        return BadRequest(new ApiBadRequestResponse(err));
+                        var errors = new List<string>();
+                        foreach (var item in result.Errors)
+                            errors.Add(item.Description);
+                        return BadRequest(new ApiBadRequestResponse(errors));
+
+                        //var err = new List<string>();
+                        //err.Add($" {model.PhoneNumber} is already taken");
+                        //return BadRequest(new ApiBadRequestResponse(err));
                     }
                 }
                 catch (Exception)

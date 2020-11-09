@@ -6,7 +6,13 @@
 export const getAllUsersList = "user.GetAllUsersList";
 export const editUser = "user.Edit";
 
+export const getAllProvidedService = "service.GetAllProvideServicesInAdmin";
+export const rejectProvideServicesInAdmin = "service.RejectProvideServicesInAdmin";
+
 export default {
   getAllUsersList,
   editUser,
+
+  getAllProvidedService,
+  rejectProvideServicesInAdmin
 };

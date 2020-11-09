@@ -54,6 +54,21 @@ export const searchResult = [
         link: "/pages/Areas",
         icon: "Circle"
       },
+      {
+        id: 9,
+        title: "Users-Verification",
+        target: "Users-Verification",
+        link: "/pages/UsersVerification",
+        icon: "Circle"
+      },
+      {
+        id: 9,
+        title: "Provided-Services",
+        target: "Provided-Services",
+        link: "/pages/Provided-Services",
+        icon: "Circle"
+      },
+
       // {
       //   id: 113,
       //   title: "create Area",

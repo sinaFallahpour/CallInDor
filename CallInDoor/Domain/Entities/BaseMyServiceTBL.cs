@@ -35,12 +35,16 @@ namespace Domain.Entities
         /// وضعیت تایید سرویس بوسیله ادمین
         /// </summary>
         public ConfirmedServiceType ConfirmedServiceType { get; set; }
+        
+        public string  RejectReason { get; set; }
 
 
         /// <summary>
         /// vide or chat or service or course ,...
         /// </summary>
         public ServiceType ServiceType { get; set; }
+
+
 
 
 

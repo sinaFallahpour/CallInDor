@@ -18,6 +18,8 @@ using Domain.DTO.Service;
 using Domain.Enums;
 using CallInDoor.Config.Attributes;
 using Service.Interfaces.Common;
+using CallInDoor.Config.Permissions;
+using Microsoft.AspNetCore.Identity;
 
 namespace CallInDoor.Controllers
 {
@@ -28,6 +30,7 @@ namespace CallInDoor.Controllers
         #region ctor
         private readonly DataContext _context;
         private readonly IAccountService _accountService;
+        private readonly RoleManager<AppRole> _roleManager;
         private readonly IServiceService _servicetypeService;
         private readonly ICommonService _commonService;
 
@@ -36,6 +39,7 @@ namespace CallInDoor.Controllers
         public ServiceController(
             DataContext context,
               IAccountService accountService,
+              RoleManager<AppRole> roleManager,
               IServiceService servicetypeService,
               ICommonService commonService,
              IStringLocalizer<ShareResource> localizerShared,
@@ -45,6 +49,7 @@ namespace CallInDoor.Controllers
         {
             _context = context;
             _commonService = commonService;
+            _roleManager = roleManager;
             _accountService = accountService;
             _localizerShared = localizerShared;
             _locaLizer = locaLizer;
@@ -1139,9 +1144,95 @@ namespace CallInDoor.Controllers
 
 
 
-        #region AlUsersServices
 
 
+
+
+        #region  accept Service
+
+        #endregion
+
+
+
+
+
+
+
+
+
+        #region reject  and accept Provided Service
+     
+
+        [HttpPost("AcceptProvideServicesInAdmin")]
+        [Authorize]
+        [PermissionAuthorize(PublicPermissions.Service.RejectProvideServices)]
+        [PermissionDBCheck(IsAdmin = true, requiredPermission = new string[] { PublicPermissions.Service.RejectProvideServices })]
+        public async Task<ActionResult> AcceptProvideServicesInAdmin(int serviceId)
+        {
+            var currentUserName = _accountService.GetCurrentUserName();
+            var cuurentRole = _accountService.GetCurrentRole();
+
+            var serviceFromDB = await _context.BaseMyServiceTBL
+                .Where(c => c.Id == serviceId)
+                .Include(c => c.ServiceTbl)
+                 .FirstOrDefaultAsync();
+
+            if (string.IsNullOrEmpty(serviceFromDB.ServiceTbl.RoleId))
+                return StatusCode(StatusCodes.Status500InternalServerError,
+                                        new ApiResponse(500, PubicMessages.InternalServerMessage));
+
+            var roleFromDB = await _roleManager.FindByIdAsync(serviceFromDB.ServiceTbl.RoleId);
+
+            if (cuurentRole.ToLower() != roleFromDB.Name.ToLower())
+                return Unauthorized(new ApiResponse(403, PubicMessages.ForbidenMessage));
+
+            serviceFromDB.ConfirmedServiceType = ConfirmedServiceType.Confirmed;
+
+            await _context.SaveChangesAsync();
+            return Ok(_commonService.OkResponse(null, PubicMessages.SuccessMessage));
+
+        }
+
+
+
+
+         /// <summary>
+        ///reject provided service        
+        /// </summary>
+        /// <returns></returns>
+        [HttpPost("RejectProvideServicesInAdmin")]
+        [Authorize]
+        [PermissionAuthorize(PublicPermissions.Service.RejectProvideServices)]
+        [PermissionDBCheck(IsAdmin = true, requiredPermission = new string[] { PublicPermissions.Service.RejectProvideServices })]
+        public async Task<ActionResult> RejectProvideServicesInAdmin([FromBody] RejectProvideServicesInAdminDTO model)
+        {
+            var currentUserName = _accountService.GetCurrentUserName();
+            var cuurentRole = _accountService.GetCurrentRole();
+
+            var serviceFromDB = await _context.BaseMyServiceTBL
+                .Where(c => c.Id == model.ServiceId)
+                .Include(c => c.ServiceTbl)
+                 .FirstOrDefaultAsync();
+
+            if (string.IsNullOrEmpty(serviceFromDB.ServiceTbl.RoleId))
+                return StatusCode(StatusCodes.Status500InternalServerError,
+                                        new ApiResponse(500, PubicMessages.InternalServerMessage));
+
+            var roleFromDB = await _roleManager.FindByIdAsync(serviceFromDB.ServiceTbl.RoleId);
+
+            if (cuurentRole.ToLower() != roleFromDB.Name.ToLower())
+                return Unauthorized(new ApiResponse(403, PubicMessages.ForbidenMessage));
+
+            serviceFromDB.ConfirmedServiceType = ConfirmedServiceType.Rejected;
+            serviceFromDB.RejectReason = model.RejectReason;
+
+            await _context.SaveChangesAsync();
+            return Ok(_commonService.OkResponse(null, PubicMessages.SuccessMessage));
+
+
+        }
+
+        #endregion
 
 
 
@@ -1152,8 +1243,9 @@ namespace CallInDoor.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpGet("GetAllProvideServicesInAdmin")]
-        [Authorize(Roles = PublicHelper.ADMINROLE)]
-        [ClaimsAuthorize(IsAdmin = true)]
+        [Authorize]
+        [PermissionAuthorize(PublicPermissions.Service.GetAllProvidedService)]
+        [PermissionDBCheck(IsAdmin = true, requiredPermission = new string[] { PublicPermissions.Service.GetAllProvidedService })]
         public async Task<ActionResult> GetAllProvideServicesInAdmin(int? page, int? perPage,
                    string searchedWord, DateTime createDate, ServiceType? serviceType, ConfirmedServiceType? confirmedServiceType)
         {
@@ -1165,7 +1257,6 @@ namespace CallInDoor.Controllers
             }
             var result = await _servicetypeService.GetAllProvideServicesForAdmin(page, perPage, searchedWord, createDate, serviceType, confirmedServiceType);
             return Ok(_commonService.OkResponse(result, PubicMessages.SuccessMessage));
-
         }
 
         #endregion
@@ -1175,12 +1266,6 @@ namespace CallInDoor.Controllers
 
 
 
-
-
-
-
-
-        #endregion
 
 
     }

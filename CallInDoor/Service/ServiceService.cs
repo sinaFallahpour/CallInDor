@@ -855,10 +855,10 @@ namespace Service
 
 
 
-        public async Task<ServiceProviderResponseTypeDTO> GetListOfUserForVerification(int? page, int? perPage,
-                    string searchedWord,DateTime createDate, ServiceType? serviceType, ConfirmedServiceType? confirmedServiceType)
+        public async Task<ServiceProviderResponseTypeDTO> GetAllProvideServicesForAdmin(int? page, int? perPage,
+                    string searchedWord, DateTime createDate, ServiceType? serviceType, ConfirmedServiceType? confirmedServiceType)
         {
-           
+
             var QueryAble = _context.BaseMyServiceTBL
                                     .AsQueryable();
 
@@ -885,13 +885,14 @@ namespace Service
 
             var query = QueryAble.Select(c => new ProvideServicesDTO
             {
+                Id = c.Id,
                 CreateDate = c.CreateDate,
                 ConfirmedServiceType = c.ConfirmedServiceType,
                 ServiceName = c.ServiceName,
                 UserName = c.UserName,
                 ServiceType = c.ServiceType,
                 ServiceTypeName = c.ServiceTbl.Name,
-            });
+            }); 
 
 
             if (perPage == 0)
@@ -953,8 +954,9 @@ namespace Service
                 QueryAble = QueryAble.Where(c => c.ConfirmedServiceType == confirmedServiceType);
 
 
-           var  query = QueryAble.Select(c => new ProvideServicesDTO
+            var query = QueryAble.Select(c => new ProvideServicesDTO
             {
+                Id = c.Id,
                 CreateDate = c.CreateDate,
                 ConfirmedServiceType = c.ConfirmedServiceType,
                 ServiceName = c.ServiceName,

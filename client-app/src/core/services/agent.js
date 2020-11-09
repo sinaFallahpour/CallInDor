@@ -66,6 +66,12 @@ const ServiceTypes = {
   update: (activity) =>
     requests.put("/ServiceType/UpdateServiceForAdmin", activity),
   // delete: (id) => requests.del(`/activities/${id}`)
+
+  getAllProvideServicesInAdmin: (params) =>
+    requests.get(`/ServiceType/GetAllProvideServicesInAdmin?${params}`),
+
+  rejectProvideServicesInAdmin: (obj) => requests.post("/ServiceType/RejectProvideServicesInAdmin", obj),
+
 };
 
 const User = {
