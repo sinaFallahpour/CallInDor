@@ -71,6 +71,10 @@ const ServiceTypes = {
     requests.get(`/ServiceType/GetAllProvideServicesInAdmin?${params}`),
 
   rejectProvideServicesInAdmin: (obj) => requests.post("/ServiceType/RejectProvideServicesInAdmin", obj),
+  acceptProvideServicesInAdmin: (serviceid) => requests.get(`/ServiceType/AcceptProvideServicesInAdmin?serviceId=${serviceid}`),
+
+  getChatServiceDetailsInAdmin: (id) => requests.get(`/ServiceType/GetChatServiceDetailsInAdmin?id=${id}`),
+  getServiceServiceDetailsInAdmin: (id) => requests.get(`/ServiceType/GetServiceServiceDetailsInAdmin?id=${id}`),
 
 };
 

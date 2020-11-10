@@ -167,7 +167,7 @@ class Create extends React.Component {
         <Modal
           isOpen={this.state.modal}
           toggle={this.toggleModal}
-          className="modal-dialog-centered"
+          className="modal-dialog-centered "
         >
           <ModalHeader toggle={this.toggleModal}>
             New Category

@@ -17,6 +17,9 @@ import "../../../assets/scss/plugins/forms/flatpickr/flatpickr.scss"
 
 
 
+import ChatDetailsModal from "./_ChatDetailsModal";
+
+
 import ReactPaginate from "react-paginate";
 import { history } from "../../../history";
 import {
@@ -27,10 +30,11 @@ import {
   Check,
   ChevronLeft,
   ChevronRight,
+  AlertTriangle,
 } from "react-feather";
 import { connect } from "react-redux";
 
-import Sidebar from "./DataListSidebar";
+// import Sidebar from "./DataListSidebar";
 // import Chip from "../../../components/@vuexy/chips/ChipComponent";
 import Checkbox from "../../../components/@vuexy/checkbox/CheckboxesVuexy";
 
@@ -108,6 +112,28 @@ const ActionsComponent = (props) => {
           props.deleteRow(props.row);
         }}
       /> */}
+
+      <button
+        onClick={() => {
+          if (props.row?.serviceType == 0 || props.row?.serviceType == 1 || props.row?.serviceType == 2) {
+
+            props.getChatServiceDetails(props.row)
+            return
+          }
+          if (props.row?.serviceType == 3) {
+            props.getServiceServiceDetails(props.row)
+            return
+          }
+          if (props.row?.serviceType == 4) {
+            return
+          }
+        }}
+        type="button" className="text-white p-1 btn  btn-primary" id="read-45">
+        <i className="">details</i>
+      </button>
+
+
+
       <button
         onClick={() => {
           if (props.row?.confirmedServiceType == 0)
@@ -115,10 +141,10 @@ const ActionsComponent = (props) => {
           props.handleAcceptService(props.row)
         }}
         type="button"
-        class="text-white btn  btn-success"
+        className="text-white btn p-1 btn-success"
         id="read-45"
       >
-        <i class=""> accept </i>
+        <i className=""> accept </i>
       </button>
 
       <button
@@ -127,8 +153,8 @@ const ActionsComponent = (props) => {
             return
           props.handleRejectService(props.row)
         }}
-        type="button" class="text-white btn  btn-danger" id="read-45" onclick="ToggleServiceReaded(45)">
-        <i class="">reject</i>
+        type="button" className="text-white btn p-1 btn-danger" id="read-45" >
+        <i className="">reject</i>
       </button>
     </div >
   );
@@ -266,9 +292,9 @@ class DataListConfig extends Component {
     data: [],
     totalPages: 0,
     currentPage: 0,
-    defaultAlert: false,
-    confirmAlert: false,
-    cancelAlert: false,
+
+    currenChatServiceData: null,
+    currenServiceServiceData: null,
     columns: [
       {
         name: "Username",
@@ -316,7 +342,7 @@ class DataListConfig extends Component {
       },
 
       {
-        name: "category",
+        name: "confirmed Service status",
         selector: "confirmedServiceType",
         sortable: true,
         cell: (row) => {
@@ -342,9 +368,11 @@ class DataListConfig extends Component {
             getData={this.props.getData}
             parsedFilter={this.props.parsedFilter}
             currentData={this.handleCurrentData}
-            deleteRow={this.handleDelete}
+            // deleteRow={this.handleDelete}
             handleRejectService={this.handleRejectService}
             handleAcceptService={this.handleAcceptService}
+            getChatServiceDetails={this.getChatServiceDetails}
+            getServiceServiceDetails={this.getServiceServiceDetails}
           />
         ),
       },
@@ -356,6 +384,7 @@ class DataListConfig extends Component {
     serviceType: null,
     confirmedServiceType: null,
 
+    modal: false,
 
 
     sidebar: false,
@@ -367,6 +396,7 @@ class DataListConfig extends Component {
 
     loading: true,
     loadngDelete: false,
+    loadingDetails: false,
 
     errors: [],
     errorMessage: "",
@@ -467,14 +497,8 @@ class DataListConfig extends Component {
   };
 
   handleCreateDate = async (value) => {
-    // alert(value.getHours())
-    // alert(value)
-    // alert(new Date(value))
-    // var ds = new Date(value)
-    // alert(ds.getHours())
 
     var createDate = combineDateAndTime2(new Date(value))
-    alert(createDate)
     await this.setState({ createDate, currentPage: 0, loading: true });
     this.populatingData();
   };
@@ -495,15 +519,66 @@ class DataListConfig extends Component {
 
 
 
+  // GetChatServiceDetails = { this.GetChatServiceDetails }
+  // GetServiceServiceDetails = { this.GetServiceServiceDetails }
+
+
+  getChatServiceDetails = async (row) => {
+    this.setState({ loadingDetails: true });
+    // var params = this.axiosParams();
+    const { data } = await agent.ServiceTypes.getChatServiceDetailsInAdmin(row.id);
+    if (data?.result) {
+      await this.setState({
+        currenChatServiceData: data.result.data,
+        loadingDetails: false
+      });
+      this.toggleModal()
+
+      console.log(this.state.currenChatServiceData)
+      return;
+    }
+
+    toast.error(data.message, {
+      autoClose: 10000,
+    });
+  }
+
+
+
+  getServiceServiceDetails = async (row) => {
+    this.setState({ loadingDetails: true });
+    const { data } = await agent.ServiceTypes.getServiceServiceDetailsInAdmin(row.id);
+    if (data?.result) {
+      await this.setState({
+        currenServiceServiceData: data.result.data,
+        loadingDetails: false
+      });
+      return;
+    }
+    toast.error(data.message, {
+      autoClose: 10000,
+    });
+  }
+
+
+
+  toggleModal = () => {
+    this.setState((prevState) => ({
+      modal: !prevState.modal,
+    }));
+
+    console.log(this.state.modal)
+  };
+
+
+
+
+
+
 
   // handleAcceptService
 
-
   handleRejectService = async (row) => {
-    console.log(row);
-    // this.setState({ loadngDelete: true });
-
-
     Swal.fire({
       title: 'reason for rejecting the service',
       input: 'text',
@@ -515,8 +590,13 @@ class DataListConfig extends Component {
       showLoaderOnConfirm: true,
       preConfirm: async (text) => {
         try {
-          const { data } = await agent.ServiceTypes.rejectProvideServicesInAdmin()(row.userName);
+          const obj = { serviceId: row.id, rejectReason: text }
+          const { data } = await agent.ServiceTypes.rejectProvideServicesInAdmin(obj);
+          console.log(data)
           if (data.result.status) {
+            this.setState({
+              data: this.state.data.map(el => (el.id === row.id ? Object.assign({}, el, { confirmedServiceType: 1 }) : el))
+            });
             // this.handleSetNewData(row);
             Swal.fire(
               "Successful rejecting",
@@ -525,29 +605,11 @@ class DataListConfig extends Component {
             );
           }
         } catch (ex) {
+          let res = this.handleCatch2(ex)
           Swal.showValidationMessage(
-            `Request failed: ${ex}`
+            `${res}`
           )
         }
-        setTimeout(() => {
-          this.setState({ loadngDelete: false });
-        }, 1000);
-
-
-
-
-        // return fetch(`//api.github.com/users/${text}`)
-        //   .then(response => {
-        //     if (!response.ok) {
-        //       throw new Error(response.statusText)
-        //     }
-        //     return response.json()
-        //   })
-        //   .catch(error => {
-        //     Swal.showValidationMessage(
-        //       `Request failed: ${error}`
-        //     )
-        //   })
       },
       allowOutsideClick: () => !Swal.isLoading()
     }).then((result) => {
@@ -559,104 +621,66 @@ class DataListConfig extends Component {
       // }
     })
 
-
-
-
-
-
-
-
-
-
-    // Swal.fire({
-    //   title: "Reject service!",
-    //   text: "Do you want to reject this Service ?",
-    //   icon: "warning",
-    //   showCancelButton: true,
-    //   confirmButtonColor: "#3085d6",
-    //   cancelButtonColor: "#d33",
-    //   confirmButtonText: "Yes,reject it",
-    //   cancelButtonText: "Cancellation",
-    // }).then(async (result) => {
-    //   if (result.value) {
-    //     try {
-    //       const { data } = await agent.ServiceTypes.rejectProvideServicesInAdmin()(row.userName);
-    //       if (data.result.status) {
-    //         this.handleSetNewData(row);
-    //         if (data.result.data)
-    //           Swal.fire(
-    //             "Successful locking ",
-    //             "User Successfully Locked",
-    //             "success"
-    //           );
-    //         else
-    //           Swal.fire(
-    //             "Successful un locking ",
-    //             "User Successfully un Locked",
-    //             "success"
-    //           );
-    //       }
-    //     } catch (ex) {
-    //       this.handleCatch(ex);
-    //     }
-    //     setTimeout(() => {
-    //       this.setState({ loadngDelete: false });
-    //     }, 1000);
-    //   }
-    // });
-
-
-
-
   };
-
 
 
 
   handleAcceptService = async (row) => {
-    console.log(row);
-    this.setState({ loadngDelete: true });
-
+    // this.setState({ loadngDelete: true });
     Swal.fire({
-      title: 'Submit your Github username',
-      input: 'text',
-      inputAttributes: {
-        autocapitalize: 'off'
-      },
+      title: 'Are you sure?',
+      text: "confirm service ",
+      icon: 'warning',
       showCancelButton: true,
-      confirmButtonText: 'Look up',
-      showLoaderOnConfirm: true,
-      preConfirm: (login) => {
-        return fetch(`//api.github.com/users/${login}`)
-          .then(response => {
-            if (!response.ok) {
-              throw new Error(response.statusText)
-            }
-            return response.json()
-          })
-          .catch(error => {
-            Swal.showValidationMessage(
-              `Request failed: ${error}`
-            )
-          })
-      },
-      allowOutsideClick: () => !Swal.isLoading()
-    }).then((result) => {
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Yes, consfirm it!'
+    }).then(async (result) => {
       if (result.isConfirmed) {
-        Swal.fire({
-          title: `${result.value.login}'s avatar`,
-          imageUrl: result.value.avatar_url
-        })
+        Swal.fire(
+          "loading ...",
+          "success"
+        );
+        try {
+          const { data } = await agent.ServiceTypes.acceptProvideServicesInAdmin(row.id);
+          if (data.result.status) {
+            this.setState({
+              data: this.state.data.map(el => (el.id === row.id ? Object.assign({}, el, { confirmedServiceType: 0 }) : el))
+            });
+            // this.handleSetNewData(row);
+            Swal.fire(
+              "Successful accepting",
+              "service successfully accepted",
+              "success"
+            );
+          }
+        } catch (ex) {
+          let res = this.handleCatch2(ex)
+          Swal.fire(
+            `Error!`,
+            `${res}`,
+            'warning'
+          )
+        }
+        // Swal.showValidationMessage(
+        //   `${res}`
+        // )
       }
+
     })
 
+    // Swal.fire(
+    //   'Deleted!',
+    //   'Your file has been deleted.',
+    //   'success'
+    // )
+  }
 
 
 
 
 
 
-  };
 
 
 
@@ -733,6 +757,28 @@ class DataListConfig extends Component {
       });
     }
   };
+
+
+
+  handleCatch2 = (ex) => {
+    console.log(ex);
+    if (ex?.response?.status == 400) {
+      const errors = ex?.response?.data?.errors;
+      // this.setState({ errors });
+      return errors[0];
+    } else if (ex?.response) {
+      const errorMessage = ex?.response?.data?.message;
+      // this.setState({ errorMessage });
+
+      // toast.error(errorMessage, {
+      //   autoClose: 10000,
+      // });
+      return errorMessage
+    }
+  };
+
+
+
 
   handleCurrentData = (obj) => {
     this.setState({ currentData: obj });
@@ -848,7 +894,13 @@ class DataListConfig extends Component {
             }}
           />
 
-          <Sidebar
+          <ChatDetailsModal
+            toggleModal={this.toggleModal}
+            currenChatServiceData={this.state.currenChatServiceData}
+            modal={this.state.modal}
+          />
+
+          {/* <Sidebar
             show={sidebar}
             data={currentData}
             updateData={this.updateData}
@@ -857,7 +909,7 @@ class DataListConfig extends Component {
             getData={this.props.getData}
             dataParams={this.props.parsedFilter}
             addNew={this.state.addNew}
-          />
+          /> */}
           <div
             className={classnames("data-list-overlay", {
               show: sidebar,

@@ -438,9 +438,7 @@ class DataListConfig extends Component {
     // });
     Swal.fire("Successful locking ", "User Successfully Locked", "success");
 
-    console.log("=============");
-    console.log(this.state.data);
-    console.log(this.state.allData);
+
   };
 
   handleCatch = (ex) => {

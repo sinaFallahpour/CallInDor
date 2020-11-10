@@ -46,3 +46,32 @@ return StatusCode(StatusCodes.Status500InternalServerError,
 var errors = new List<string>();
         errors.Add(_localizer["PhoneNumber  already  exist."].Value.ToString());
         return BadRequest(new ApiBadRequestResponse(errors));
+
+
+
+
+
+
+
+
+
+==================================================== Angular(client) ================================
+200 OK()
+return Ok(_commonService.OkResponse(serviceFromDB, _localizerShared["SuccessMessage"].Value.ToString()));
+
+
+
+500
+ List<string> erros = new List<string> { _localizerShared["InternalServerMessage"].Value.ToString() };
+                        return StatusCode(StatusCodes.Status500InternalServerError,
+                           new ApiBadRequestResponse(erros, 500));
+
+404(notFound)
+ List<string> erros = new List<string> { _localizerShared["NotFound"].Value.ToString() };
+                return NotFound(new ApiBadRequestResponse(erros, 404));
+
+
+401(unauthorize)
+List<string> erros = new List<string> { _localizerShared["UnauthorizedMessage"].Value.ToString() };
+                return Unauthorized(new ApiBadRequestResponse(erros, 401));
+

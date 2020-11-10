@@ -116,8 +116,7 @@ class EditCategory extends Form {
       });
     } catch (ex) {
       console.clear();
-      console.log(ex);
-      console.log(ex);
+     
       if (ex?.response?.status == 404 || ex?.response?.status == 400) {
         return this.props.history.replace("/not-found");
       }

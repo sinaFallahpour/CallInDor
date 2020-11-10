@@ -208,7 +208,7 @@ const UsersDetails = lazy(() =>
   import("./views/pages/_UsersVerification/_DetailsUser")
 );
 
-const ProvidedServices = lazy(() => import("./views/pages/ProvidedServices/ProvidedServices"));
+const ProvidedServices = lazy(() => import("./views/pages/ProvidedServices/_ProvidedServices"));
 
 
 const Test = lazy(() => import("./views/pages/_test/Test"));
