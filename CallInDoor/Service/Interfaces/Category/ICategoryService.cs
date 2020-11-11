@@ -15,7 +15,7 @@ namespace Service.Interfaces.Category
         //Task<List<ServiceTBL>> GetAll();
 
         List<CategoryListDTO> GetAll();
-        Task<List<CategoryListDTO>> GetAllCateWithChildren();
+        Task<List<CategoryListDTO>> GetAllCateWithChildren(int serviceId);
         //Task<CategoryTBL> Create(CreateCategoryDTO model);
         Task<CategoryTBL> Create(CreateCategoryDTO model);
         Task<bool> Update(CategoryTBL categoryFromDB, CreateCategoryDTO model);

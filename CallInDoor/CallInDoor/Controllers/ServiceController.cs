@@ -1299,7 +1299,7 @@ namespace CallInDoor.Controllers
         [Authorize]
         [PermissionAuthorize(PublicPermissions.Service.RejectProvideServices)]
         [PermissionDBCheck(IsAdmin = true, requiredPermission = new string[] { PublicPermissions.Service.RejectProvideServices })]
-        public async Task<ActionResult> GetChatServiceDetailsInAdmin( int Id)
+        public async Task<ActionResult> GetChatServiceDetailsInAdmin(int Id)
         {
 
             var serviceFromDB = await _context
@@ -1358,6 +1358,7 @@ namespace CallInDoor.Controllers
         [Authorize]
         [PermissionAuthorize(PublicPermissions.Service.GetAllProvidedService)]
         [PermissionDBCheck(IsAdmin = true, requiredPermission = new string[] { PublicPermissions.Service.GetAllProvidedService })]
+     
         public async Task<ActionResult> GetServiceServiceDetailsInAdmin(int Id)
         {
             var serviceFromDB = await _context
@@ -1376,18 +1377,17 @@ namespace CallInDoor.Controllers
                               c.MyServicesService.HowWorkConducts,
                               c.MyServicesService.DeliveryItems,
                               c.MyServicesService.Tags,
-                              c.MyServicesService.AreaId,
-                              c.MyServicesService.SpecialityId,
-                              c.CatId,
-                              c.SubCatId,
+                              AreaTitle = c.MyServicesService.AreaTBL.Title,
+                              SpecialityTitle = c.MyServicesService.SpecialityTBL.EnglishName,
+                              CategoryTitile = c.CategoryTBL.Title,
+                              SubcategoryTitile = c.SubCategoryTBL.Title,
                               c.ServiceName,
                               c.ServiceType,
-                              c.ServiceId,
                               c.UserName,
                               confirmedServiceType = c.ConfirmedServiceType,
                               c.CreateDate,
                               //c.IsDeleted,
-                              //c.IsEditableService,
+                              c.IsEditableService,
                               c.RejectReason,
                               c.ServiceTbl.RoleId
                               //c.BaseMyChatTBL.IsConfirmByAdmin

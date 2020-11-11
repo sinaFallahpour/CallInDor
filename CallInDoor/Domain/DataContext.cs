@@ -63,10 +63,24 @@ namespace Domain
 
 
 
+
         /// <summary>
         /// جدول واسط role - permission
         /// </summary>
         public DbSet<Role_Permission> Role_Permission { get; set; }
+
+
+        /// <summary>
+        /// این جذول سوالل های نظرسنجی که از از یوزر بعد از درخواست سرویس پرسیده میشه
+        /// </summary>
+        public DbSet<QuestionPullTBL> QuestionPullTBL { get; set; }
+
+        /// <summary>
+        /// جواب سوال ها
+        /// </summary>
+        public DbSet<AnswerTBL> AnswerTBL { get; set; }
+
+
 
 
         /// <summary>

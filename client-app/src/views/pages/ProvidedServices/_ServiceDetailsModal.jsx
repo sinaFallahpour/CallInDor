@@ -25,6 +25,8 @@ import {
 import classnames from "classnames";
 import { Eye, Code, Plus, Check } from "react-feather";
 
+import ReactTagInput from "@pathofdev/react-tag-input";
+import "@pathofdev/react-tag-input/build/index.css";
 
 // import { modalForm } from "./ModalSourceCode"
 import Checkbox from "../../../components/@vuexy/checkbox/CheckboxesVuexy";
@@ -32,28 +34,30 @@ import Checkbox from "../../../components/@vuexy/checkbox/CheckboxesVuexy";
 import { toast } from "react-toastify";
 import agent from "../../../core/services/agent";
 
-class ChatDetailsModal extends React.Component {
+class ServiceDetailsModal extends React.Component {
   state = {
-
     id: null,
-    packageType: null,
+    serviceName: "",
+    description: "",
     beTranslate: false,
-    freeMessageCount: null,
-    isServiceReverse: false,
-    priceForNativeCustomer: null,
-    priceForNonNativeCustomer: null,
-    rejectReason: "",
-    createDate: null,
-
-    serviceName: '',
+    fileNeeded: false,
+    fileDescription: "",
+    price: null,
+    workDeliveryTimeEstimation: "",
+    howWorkConducts: "",
+    deliveryItems: "",
+    tags: null,  //=====================================================
+    areaTitle: "",
+    specialityTitle: "",
+    categoryTitile: "",
+    subcategoryTitile: "",
     serviceType: null,
-    catId: null,
-    subCatId: null,
     userName: "",
     confirmedServiceType: null,
-    isDeleted: false,
+    createDate: null,
+    //c.IsDeleted,
     isEditableService: false,
-    // roleId: null,
+    rejectReason: "",
 
 
 
@@ -65,99 +69,96 @@ class ChatDetailsModal extends React.Component {
     Loading: false,
 
     activeTab: "1",
-    modal: false,
+    serviceModal: false,
   };
 
-  async populatingCategories() {
-    const { data } = await agent.Category.listParentCatgory();
-    let categories = data.result.data;
-    this.setState({ categories });
-  }
-
-  async populatingServiceTypes() {
-    const { data } = await agent.ServiceTypes.list();
-    let services = data.result.data;
-    this.setState({ services });
-  }
-
   async componentDidMount() {
-    this.populatingCategories();
-    this.populatingServiceTypes();
+
   }
 
 
   componentDidUpdate(prevProps, prevState) {
-    if (this.props.currenChatServiceData !== null) {
-      if (this.props.currenChatServiceData.id != prevState.id) {
+    if (this.props.currenServiceServiceData !== null) {
+      if (this.props.currenServiceServiceData.id != prevState.id) {
         const {
           id,
-          packageType,
-          beTranslate,
-          freeMessageCount,
-          isServiceReverse,
-          priceForNativeCustomer,
-          priceForNonNativeCustomer,
-          rejectReason,
-          createDate,
           serviceName,
+          description,
+          beTranslate,
+          fileNeeded,
+          fileDescription,
+          price,
+          workDeliveryTimeEstimation,
+          howWorkConducts,
+          deliveryItems,
+          tags,//=====================================================
+          areaTitle,
+          specialityTitle,
+          categoryTitile,
+          subcategoryTitile,
           serviceType,
-          catId,
-          subCatId,
           userName,
           confirmedServiceType,
-          IsDeleted,
+          createDate,
+          //c.IsDeleted,
           isEditableService,
-          roleId,
-        } = this.props.currenChatServiceData
+          rejectReason,
 
+        } = this.props.currenServiceServiceData
 
         this.setState({
           id,
-          packageType,
-          beTranslate,
-          freeMessageCount,
-          isServiceReverse,
-          priceForNativeCustomer,
-          priceForNonNativeCustomer,
-          rejectReason,
-          createDate,
           serviceName,
+          description,
+          beTranslate,
+          fileNeeded,
+          fileDescription,
+          price,
+          workDeliveryTimeEstimation,
+          howWorkConducts,
+          deliveryItems,
+          tags,//=====================================================
+          areaTitle,
+          specialityTitle,
+          categoryTitile,
+          subcategoryTitile,
           serviceType,
-          catId,
-          subCatId,
           userName,
           confirmedServiceType,
-          IsDeleted,
+          createDate,
+          //c.IsDeleted,
           isEditableService,
-          roleId,
-          modal: this.props.modal
-
+          rejectReason,
+          serviceModal: this.props.serviceModal
         });
       }
     }
-    if (this.props.currenChatServiceData === null && prevProps.currenChatServiceData !== null) {
-      alert("exist")
+    if (this.props.currenServiceServiceData === null && prevProps.currenServiceServiceData !== null) {
+
       this.setState({
         id: null,
-        packageType: null,
+        serviceName: "",
+        description: "",
         beTranslate: false,
-        freeMessageCount: null,
-        isServiceReverse: false,
-        priceForNativeCustomer: null,
-        priceForNonNativeCustomer: null,
-        rejectReason: "",
-        createDate: null,
-
-        serviceName: '',
+        fileNeeded: false,
+        fileDescription: "",
+        price: null,
+        workDeliveryTimeEstimation: "",
+        howWorkConducts: "",
+        deliveryItems: "",
+        tags: null,//=====================================================
+        areaTitle: "",
+        specialityTitle: "",
+        categoryTitile: "",
+        subcategoryTitile: "",
         serviceType: null,
-        catId: null,
-        subCatId: null,
         userName: "",
         confirmedServiceType: null,
-        IsDeleted: false,
+        createDate: null,
+        //c.IsDeleted,
         isEditableService: false,
-        roleId: null,
-        modal: false
+        rejectReason: "",
+        serviceModal: false
       });
     }
 
@@ -251,26 +252,12 @@ class ChatDetailsModal extends React.Component {
     const { errorMessage, errors } = this.state;
     return (
       <React.Fragment>
-
-        {/* <Button.Ripple color="primary" onClick={this.toggleModal}>
-                  Create New Category
-                </Button.Ripple> */}
-
-        {/* <Button
-          className="add-new-btn mb-2"
-          color="primary"
-          onClick={this.props.toggleModal}
-          outline
-        >
-          <Plus size={15} />
-          <span className="align-middle">Add New</span>
-        </Button> */}
         <Modal
-          isOpen={this.props.modal}
-          toggle={this.props.toggleModal}
+          isOpen={this.props.serviceModal}
+          toggle={this.props.toggleServiceModal}
           className="modal-dialog-centered modal-lg"
         >
-          <ModalHeader toggle={this.props.toggleModal}>
+          <ModalHeader toggle={this.props.toggleServiceModal}>
             Service Details
           </ModalHeader>
           <ModalBody>
@@ -310,135 +297,117 @@ class ChatDetailsModal extends React.Component {
       
         modal: false */}
 
+
+
+
+
             <Form action="/s" className="mt-3" >
               <FormGroup row>
-                <Col md="6">
-                  <h5 for="userName">userName:</h5>
-                  <Input
-                    type="text"
-                    id="userName"
-                    value={this.state.userName}
-                    readOnly
-                    // onChange={(e) => {
-                    //   this.setState({ title: e.target.value });
-                    // }}
-                    placeholder="userName"
-                    required
-                    minLength="1"
-                    maxLength="100"
-                  />
-                </Col>
-
-                <Col md="6">
-                  <h5 for="serviceName">serviceName:</h5>
-                  <Input
-                    type="text"
-                    id="serviceName"
-                    value={this.state.serviceName}
-                    readOnly
-                  // onChange={(e) => {
-                  //   this.setState({ title: e.target.value });
-                  // }}
-                  />
-                </Col>
+                <InputItem id="userName" label="User Name:" value={this.state.userName} />
+                <InputItem id="serviceName" label="Service Name:" value={this.state.serviceName} />
               </FormGroup>
 
               <FormGroup row>
-                <Col md="6">
-                  <h5 for="free Message Count">free Message Count:</h5>
-                  <Input
-                    type="text"
-                    id="free Message Count"
-                    value={this.state.freeMessageCount}
-                    readOnly
-                  // onChange={(e) => {
-                  //   this.setState({ title: e.target.value });
-                  // }}
+                <InputItem id="areaTitle" label="Area Title:" value={this.state.areaTitle} />
+                <InputItem id="specialityTitle" label="Speciality Title:" value={this.state.specialityTitle} />
+              </FormGroup>
 
-                  />
-                </Col>
-                <Col md="6">
-                  <h5 for="confirmedServiceType">confirmedServiceType:</h5>
-                  <Input
-                    type="text"
-                    id="confirmedServiceType"
-                    value={this.returnConfirmService(this.state.confirmedServiceType)}
-                    readOnly
-                  // onChange={(e) => {
-                  //   this.setState({ title: e.target.value });
-                  // }}
+              <FormGroup row>
+                <InputItem id="Category Title" label="Category Title :" value={this.state.categoryTitile} />
+                <InputItem id="subcategoryTitile" label="Subcategory Title:" value={this.state.subcategoryTitile} />
+              </FormGroup>
 
-                  />
+              <FormGroup row>
+                <InputItem id="confirmedServiceType" label="Confirmed service status :" value={this.returnConfirmService(this.state.confirmedServiceType)} />
+                <InputItem id="price" label="price:" value={this.state.price} />
+              </FormGroup>
 
-                </Col>
+
+              <FormGroup row>
+                <InputItem id="Service Type" label="Service Type:" value={this.returnServiceType(this.state.serviceType)} />
+                <InputItem id="rejectReason" label=" Reason for reject:" value={this.state.rejectReason} />
+              </FormGroup>
+
+              <FormGroup row>
+                <InputItem id="Description" type="textarea" label="Description:" value={this.state.description} />
+                <InputItem id="Description" type="textarea" label="File Description:" value={this.state.fileDescription} />
 
               </FormGroup>
 
 
               <FormGroup row>
+
                 <Col md="6">
-                  <h5 for="email">price for native customer:</h5>
+                  <h5 for="workDeliveryTimeEstimation"> work Delivery Time Estimation:</h5>
                   <Input
-                    type="text"
-                    id="title"
-                    value={this.state.priceForNativeCustomer}
+                    type="textarea"
+                    id="workDeliveryTimeEstimation"
+                    value={this.state.workDeliveryTimeEstimation}
                     readOnly
 
                   />
                 </Col>
 
+
                 <Col md="6">
-                  <h5 for="email">price for non native customer:</h5>
+                  <h5 for="howWorkConducts"> how Work Conducts:</h5>
                   <Input
-                    type="text"
-                    id="title"
-                    value={this.state.priceForNonNativeCustomer}
+                    type="textarea"
+                    id="howWorkConducts"
+                    value={this.state.howWorkConducts}
                     readOnly
 
                   />
                 </Col>
+
               </FormGroup>
 
 
 
               <FormGroup row>
+
                 <Col md="6">
-                  <h5 for="package type">package type:</h5>
+                  <h5 for="deliveryItems"> delivery Items:</h5>
                   <Input
-                    type="text"
-                    id="package type"
-                    value={this.returnPackageType(this.state.packageType)}
+                    type="textarea"
+                    id="deliveryItems"
+                    value={this.state.deliveryItems}
                     readOnly
                   />
                 </Col>
 
+
                 <Col md="6">
-                  <h5 for="rejectReason"> reason for reject:</h5>
+                  <h5 for="howWorkConducts"> how Work Conducts:</h5>
                   <Input
-                    type="text"
-                    id="rejectReason"
-                    value={this.state.rejectReason}
+                    type="textarea"
+                    id="howWorkConducts"
+                    value={this.state.howWorkConducts}
                     readOnly
 
                   />
                 </Col>
+
               </FormGroup>
+
 
 
 
 
               <FormGroup row>
-                <Col md="6">
-                  <h5 for="Service Type">Service Type:</h5>
-                  <Input
-                    type="text"
-                    id="Service Type"
-                    value={this.returnServiceType(this.state.serviceType)}
-                    readOnly
+                <Col md="12">
+                  <h5 for="tags"> Tags:</h5>
+                  <ReactTagInput
+                    tags={this.state?.tags?.split(",")}
+                    editable={false}
+                    readOnly={true}
+                    removeOnBackspace={true}
                   />
                 </Col>
-
               </FormGroup>
+
+
+
 
               <FormGroup>
                 <Col md="6">
@@ -456,8 +425,8 @@ class ChatDetailsModal extends React.Component {
                     disabled
                     color="primary"
                     icon={<Check className="vx-icon" size={16} />}
-                    label="Is it service reverse?"
-                    defaultChecked={this.state.isServiceReverse}
+                    label="file Needed?"
+                    defaultChecked={this.state.fileNeeded}
                   />
                 </Col>
               </FormGroup>
@@ -471,4 +440,25 @@ class ChatDetailsModal extends React.Component {
     );
   }
 }
-export default ChatDetailsModal;
+export default ServiceDetailsModal;
+
+
+
+
+
+
+
+const InputItem = ({ label, id, value, type = "text" }) => {
+
+  return (
+    <Col md="6">
+      <h5 for={id}>{label}</h5>
+      <Input
+        type={type}
+        id={id}
+        value={value}
+        readOnly
+      />
+    </Col>
+  )
+}

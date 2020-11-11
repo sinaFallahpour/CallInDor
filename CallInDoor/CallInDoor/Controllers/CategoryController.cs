@@ -85,22 +85,10 @@ namespace CallInDoor.Controllers
         #region GetAllCategoryWithChildren
         // GET: api/ServiceType
         [HttpGet("GetAll")]
-        public async Task<ActionResult> GetAllCategoryWithChildren()
+        public async Task<ActionResult> GetAllCategoryWithChildren(int serviceId)
         {
-            //var checkToken = await _accountService.CheckTokenIsValid();
-            //if (!checkToken)
-            //    return Unauthorized(new ApiResponse(401, _localizerShared["UnauthorizedMessage"].Value.ToString()));
-            var categoriesWithChild = await _categoryService.GetAllCateWithChildren();
-
-
-            return Ok(new ApiOkResponse(new DataFormat()
-            {
-                Status = 1,
-                data = categoriesWithChild,
-                Message = PubicMessages.SuccessMessage
-            },
-               PubicMessages.SuccessMessage
-              ));
+            var categoriesWithChild = await _categoryService.GetAllCateWithChildren(serviceId);
+            return Ok(_commonService.OkResponse(categoriesWithChild, PubicMessages.SuccessMessage));
         }
 
 

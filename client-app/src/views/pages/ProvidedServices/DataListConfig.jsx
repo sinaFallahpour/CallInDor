@@ -18,6 +18,7 @@ import "../../../assets/scss/plugins/forms/flatpickr/flatpickr.scss"
 
 
 import ChatDetailsModal from "./_ChatDetailsModal";
+import ServiceDetailsModal from "./_ServiceDetailsModal";
 
 
 import ReactPaginate from "react-paginate";
@@ -79,16 +80,16 @@ const selectedStyle = {
 // <td class="text-right" style="vertical-align:middle">
 
 // <button type="button" class="text-white btn btn-sm btn-success" id="read-45" onclick="ToggleServiceReaded(45)" ;="">
-//     <i class="">بررسی شد</i>
+//     <i class="">????? ??</i>
 // </button>
 
 
 // <button type="button" class="text-white btn btn-sm btn-success" id="confirm-45" onclick="ToggleConfirmService('45', 'rezamm')">
-//     <i class="">تایید شد</i>
+//     <i class="">????? ??</i>
 // </button>
 
 // <a type="button" id="details-45" class="text-white btn btn-sm btn-info" href="/admin/Services/Details/45" dideo-checked="true">
-// <i class="">جزییات</i>
+// <i class="">??????</i>
 // </a>
 
 
@@ -385,7 +386,7 @@ class DataListConfig extends Component {
     confirmedServiceType: null,
 
     modal: false,
-
+    serviceModal: false,
 
     sidebar: false,
     currentData: null,
@@ -514,31 +515,14 @@ class DataListConfig extends Component {
     if (addNew === true) this.setState({ currentData: null, addNew: true });
   };
 
-  // data: data.result.data.users,
-  // allData: data.result.data.users,
-
-
-
-  // GetChatServiceDetails = { this.GetChatServiceDetails }
-  // GetServiceServiceDetails = { this.GetServiceServiceDetails }
 
 
   getChatServiceDetails = async (row) => {
-    this.setState({ loadingDetails: true });
-    Swal.fire({
-      title: 'Loading service ',
-      allowEnterKey: false,
-      allowEscapeKey: false,
-      allowOutsideClick: false,
-    });
-    Swal.showLoading();
-
-    // var params = this.axiosParams();
+    this.returnLoading('Loading service');
     const { data } = await agent.ServiceTypes.getChatServiceDetailsInAdmin(row.id);
     if (data?.result) {
       await this.setState({
         currenChatServiceData: data.result.data,
-        loadingDetails: false
       });
       this.toggleModal()
       Swal.close();
@@ -553,33 +537,52 @@ class DataListConfig extends Component {
 
 
 
+
+
+
   getServiceServiceDetails = async (row) => {
-    this.setState({ loadingDetails: true });
+    this.returnLoading('Loading service');
     const { data } = await agent.ServiceTypes.getServiceServiceDetailsInAdmin(row.id);
     if (data?.result) {
       await this.setState({
         currenServiceServiceData: data.result.data,
-        loadingDetails: false
       });
+      this.toggleServiceModal()
+      Swal.close();
       return;
     }
+    Swal.close();
+
     toast.error(data.message, {
       autoClose: 10000,
     });
   }
 
 
+  returnLoading = (title) => {
+    Swal.fire({
+      title: title,
+      allowEnterKey: false,
+      allowEscapeKey: false,
+      allowOutsideClick: false,
+    });
+    Swal.showLoading();
+
+  }
 
   toggleModal = () => {
     this.setState((prevState) => ({
       modal: !prevState.modal,
     }));
-
-    console.log(this.state.modal)
   };
 
 
+  toggleServiceModal = () => {
+    this.setState((prevState) => ({
+      serviceModal: !prevState.serviceModal,
+    }));
 
+  };
 
 
 
@@ -907,6 +910,17 @@ class DataListConfig extends Component {
             currenChatServiceData={this.state.currenChatServiceData}
             modal={this.state.modal}
           />
+
+
+
+          <ServiceDetailsModal
+            toggleServiceModal={this.toggleServiceModal}
+            // toggleModal={this.toggleModal}
+            currenServiceServiceData={this.state.currenServiceServiceData}
+            serviceModal={this.state.serviceModal}
+          />
+
+
 
           {/* <Sidebar
             show={sidebar}

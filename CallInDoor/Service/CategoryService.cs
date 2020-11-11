@@ -73,9 +73,9 @@ namespace Service
         /// <summary>
         ///get Al category with its Children
         /// </summary>
-        public async Task<List<CategoryListDTO>> GetAllCateWithChildren()
+        public async Task<List<CategoryListDTO>> GetAllCateWithChildren(int serviceId)
         {
-            var cats = await _context.CategoryTBL.Where(c => c.IsEnabled == true)
+            var cats = await _context.CategoryTBL.Where(c => c.IsEnabled == true && c.ServiceId ==serviceId)
                 .Include(c => c.Children)
                 .AsNoTracking()
                 .ToListAsync();

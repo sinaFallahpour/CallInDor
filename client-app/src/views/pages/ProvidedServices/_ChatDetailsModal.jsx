@@ -44,7 +44,6 @@ class ChatDetailsModal extends React.Component {
     priceForNonNativeCustomer: null,
     rejectReason: "",
     createDate: null,
-
     serviceName: '',
     serviceType: null,
     catId: null,
@@ -68,21 +67,9 @@ class ChatDetailsModal extends React.Component {
     modal: false,
   };
 
-  async populatingCategories() {
-    const { data } = await agent.Category.listParentCatgory();
-    let categories = data.result.data;
-    this.setState({ categories });
-  }
 
-  async populatingServiceTypes() {
-    const { data } = await agent.ServiceTypes.list();
-    let services = data.result.data;
-    this.setState({ services });
-  }
+  componentDidMount() {
 
-  async componentDidMount() {
-    this.populatingCategories();
-    this.populatingServiceTypes();
   }
 
 
@@ -136,7 +123,6 @@ class ChatDetailsModal extends React.Component {
       }
     }
     if (this.props.currenChatServiceData === null && prevProps.currenChatServiceData !== null) {
-      alert("exist")
       this.setState({
         id: null,
         packageType: null,
@@ -358,7 +344,7 @@ class ChatDetailsModal extends React.Component {
                   />
                 </Col>
                 <Col md="6">
-                  <h5 for="confirmedServiceType">confirmedServiceType:</h5>
+                  <h5 for="confirmedServiceType">confirmed service status:</h5>
                   <Input
                     type="text"
                     id="confirmedServiceType"
