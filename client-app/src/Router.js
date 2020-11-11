@@ -213,6 +213,7 @@ const ProvidedServices = lazy(() => import("./views/pages/ProvidedServices/_Prov
 
 const Test = lazy(() => import("./views/pages/_test/Test"));
 const Settings = lazy(() => import("./views/pages/_Settings/Settings"));
+const Questions = lazy(() => import("./views/pages/_Questions/_Questions"));
 
 // Set Layout and Component Using App Route
 const RouteConfig = ({
@@ -541,6 +542,19 @@ class AppRouter extends React.Component {
               user={{ ...user }}
               component={Settings}
             />
+
+            <RouteConfig
+              isLoggedIn={isLoggedIn}
+              title="questions"
+              exact
+              path="/pages/questions"
+              role="admin"
+              user={{ ...user }}
+              component={Questions}
+            />
+
+
+
 
             <RouteConfig
               isLoggedIn={isLoggedIn}

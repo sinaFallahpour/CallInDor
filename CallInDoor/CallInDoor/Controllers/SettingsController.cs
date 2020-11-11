@@ -31,9 +31,6 @@ namespace CallInDoor.Controllers
 
 
 
-
-
-
         [HttpGet("GetSettings")]
         [Authorize(Roles = PublicHelper.ADMINROLE)]
         [ClaimsAuthorize(IsAdmin = true)]

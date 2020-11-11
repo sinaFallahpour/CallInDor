@@ -421,13 +421,14 @@ namespace CallInDoor.Controllers
             else
                 model.FreeMessageCount = null;
 
+            var currentUsername = _accountService.GetCurrentUserName();
             var BaseMyService = new BaseMyServiceTBL()
             {
                 ConfirmedServiceType = ConfirmedServiceType.Pending,
                 CreateDate = DateTime.Now,
                 ServiceName = model.ServiceName,
                 ServiceType = (ServiceType)model.ServiceType,
-                UserName = model.UserName,
+                UserName = currentUsername,
                 ServiceId = model.ServiceId,
                 CatId = model.CatId,
                 SubCatId = model.SubCatId,
@@ -707,14 +708,14 @@ namespace CallInDoor.Controllers
             if (!res.succsseded)
                 return BadRequest(new ApiBadRequestResponse(res.result));
 
-
+            var curentUsername = _accountService.GetCurrentUserName();
             var BaseMyService = new BaseMyServiceTBL()
             {
                 ConfirmedServiceType = ConfirmedServiceType.Pending,
                 CreateDate = DateTime.Now,
                 ServiceName = model.ServiceName,
                 ServiceType = (ServiceType)model.ServiceType,
-                UserName = model.UserName,
+                UserName = curentUsername,
                 ServiceId = model.ServiceId,
                 CatId = model.CatId,
                 SubCatId = model.SubCatId,
@@ -1032,13 +1033,14 @@ namespace CallInDoor.Controllers
             //        new ApiResponse(500, _localizerShared["FileUploadErrorMessage"].Value.ToString()));
 
 
+            var currentUsername = _accountService.GetCurrentUserName();
             var BaseMyService = new BaseMyServiceTBL()
             {
                 ConfirmedServiceType = ConfirmedServiceType.Pending,
                 CreateDate = DateTime.Now,
                 ServiceName = model.ServiceName,
                 ServiceType = ServiceType.Course,
-                UserName = model.UserName,
+                UserName = currentUsername,
                 ServiceId = model.ServiceId,
                 CatId = model.CatId,
                 IsDeleted = false
@@ -1067,7 +1069,6 @@ namespace CallInDoor.Controllers
 
                 await _context.SaveChangesAsync();
                 return Ok(_commonService.OkResponse(null, _locaLizer["SuccesfullAddServiceMessage"].Value.ToString()));
-
             }
             catch
             {
@@ -1358,7 +1359,7 @@ namespace CallInDoor.Controllers
         [Authorize]
         [PermissionAuthorize(PublicPermissions.Service.GetAllProvidedService)]
         [PermissionDBCheck(IsAdmin = true, requiredPermission = new string[] { PublicPermissions.Service.GetAllProvidedService })]
-     
+
         public async Task<ActionResult> GetServiceServiceDetailsInAdmin(int Id)
         {
             var serviceFromDB = await _context

@@ -146,6 +146,11 @@ const Settings = {
   update: (setting) => requests.put("/Settings/UpdateSettings", setting),
 };
 
+const Questions = {
+  details: () => requests.get("/Question/GetQuestions"),
+  update: (setting) => requests.put("/Question/UpdateQuestions", setting),
+};
+
 export default {
   User,
   Role,
@@ -155,4 +160,5 @@ export default {
   Test,
   Areas,
   Settings,
+  Questions
 };

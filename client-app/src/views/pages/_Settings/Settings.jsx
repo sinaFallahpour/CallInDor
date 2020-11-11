@@ -33,7 +33,7 @@ import { toast } from "react-toastify";
 //   // maxlength: Yup.string().max(5, "Too Long!").required("Required")
 // });
 
-class EditCategory extends Form {
+class Settings extends Form {
     state = {
         data: {
             id: null,
@@ -165,4 +165,4 @@ class EditCategory extends Form {
         );
     }
 }
-export default EditCategory;
+export default Settings;

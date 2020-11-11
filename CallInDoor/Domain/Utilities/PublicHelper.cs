@@ -33,6 +33,14 @@ namespace Domain.Utilities
 
 
 
+        public const string Question1KeyName = "Question1";
+        public const string Question2KeyName = "Question2";
+        public const string Question3KeyName = "Question3";
+        public const string Question4KeyName = "Question4";
+        public const string Question5KeyName = "Question5";
+
+
+
     }
 
     public static class PubicMessages

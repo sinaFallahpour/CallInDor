@@ -460,18 +460,17 @@ namespace Service
             //    Errors.Add(_localizer["Category Is Required"].Value.ToString());
             //}
 
-
-            var isUserExist = await _context.Users.AnyAsync(c => c.UserName == model.UserName);
+            var currentUsername = _accountService.GetCurrentUserName();
+            var isUserExist = await _context.Users.AnyAsync(c => c.UserName == currentUsername);
             if (!isUserExist)
             {
                 string err = "";
                 if (IsPersianLanguage())
-                    err = string.Format("کاربری با نام کاربری {0} یافت نشد", model.UserName);
+                    err = string.Format("کاربری با نام کاربری {0} یافت نشد", currentUsername);
                 else
-                    err = string.Format("No user with the name {0} was found", model.UserName);
+                    err = string.Format("No user with the name {0} was found", currentUsername);
                 IsValid = false;
                 Errors.Add(err);
-
             }
 
             return (IsValid, Errors);
@@ -628,15 +627,15 @@ namespace Service
                     Errors.Add(err);
                 }
             }
-
-            var isUserExist = await _context.Users.AnyAsync(c => c.UserName == model.UserName);
+            var currentUsername = _accountService.GetCurrentUserName();
+            var isUserExist = await _context.Users.AnyAsync(c => c.UserName == currentUsername);
             if (!isUserExist)
             {
                 string err = "";
                 if (IsPersianLanguage())
-                    err = string.Format("کاربری با نام کاربری {0} یافت نشد", model.UserName);
+                    err = string.Format("کاربری با نام کاربری {0} یافت نشد", currentUsername);
                 else
-                    err = string.Format("No user with the name {0} was found", model.UserName);
+                    err = string.Format("No user with the name {0} was found", currentUsername);
                 IsValid = false;
                 Errors.Add(err);
 
@@ -727,14 +726,15 @@ namespace Service
 
             //vaidate user
             #region  vaidate user 
-            var isUserExist = await _context.Users.AnyAsync(c => c.UserName == model.UserName);
+            var curentUsername= _accountService.GetCurrentUserName();
+            var isUserExist = await _context.Users.AnyAsync(c => c.UserName == curentUsername);
             if (!isUserExist)
             {
                 string err = "";
                 if (IsPersianLanguage())
-                    err = string.Format("کاربری با نام کاربری {0} یافت نشد", model.UserName);
+                    err = string.Format("کاربری با نام کاربری {0} یافت نشد", curentUsername);
                 else
-                    err = string.Format("No user with the name {0} was found", model.UserName);
+                    err = string.Format("No user with the name {0} was found", curentUsername);
                 IsValid = false;
                 Errors.Add(err);
 

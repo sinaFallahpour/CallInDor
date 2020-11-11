@@ -9,8 +9,10 @@ namespace Domain.Entities
     [Table("QuestionPull")]
     public class QuestionPullTBL : BaseEntity<int>
     {
+        public string Key { get; set; }
         public string Text { get; set; }
+        public string EnglishText { get; set; }
 
-        public List<AnswerTBL>  AnswersTBLs { get; set; }
+        public List<AnswerTBL> AnswersTBLs { get; set; }
     }
 }

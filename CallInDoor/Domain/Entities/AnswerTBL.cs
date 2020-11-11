@@ -11,12 +11,11 @@ namespace Domain.Entities
     public class AnswerTBL : BaseEntity<int>
     {
         public string Text { get; set; }
-
+        public string EnglishText { get; set; }
 
         #region  relation
 
-
-        [ForeignKey("QuestionPullTBL ")]
+        [ForeignKey("QuestionPullTBL")]
         public int? QuestionId { get; set; }
 
         public QuestionPullTBL QuestionPullTBL { get; set; }
