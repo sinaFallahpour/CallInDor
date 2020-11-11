@@ -525,6 +525,14 @@ class DataListConfig extends Component {
 
   getChatServiceDetails = async (row) => {
     this.setState({ loadingDetails: true });
+    Swal.fire({
+      title: 'Loading service ',
+      allowEnterKey: false,
+      allowEscapeKey: false,
+      allowOutsideClick: false,
+    });
+    Swal.showLoading();
+
     // var params = this.axiosParams();
     const { data } = await agent.ServiceTypes.getChatServiceDetailsInAdmin(row.id);
     if (data?.result) {
@@ -533,11 +541,11 @@ class DataListConfig extends Component {
         loadingDetails: false
       });
       this.toggleModal()
-
-      console.log(this.state.currenChatServiceData)
+      Swal.close();
       return;
     }
-
+    Swal.close();
+    // Swal.disableLoading()
     toast.error(data.message, {
       autoClose: 10000,
     });

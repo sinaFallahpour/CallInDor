@@ -1321,7 +1321,7 @@ namespace CallInDoor.Controllers
                     c.SubCatId,
                     c.UserName,
                     c.ConfirmedServiceType,
-                    c.IsDeleted,
+                    //c.IsDeleted,
                     c.IsEditableService,
                     c.ServiceTbl.RoleId
                 }).FirstOrDefaultAsync();
