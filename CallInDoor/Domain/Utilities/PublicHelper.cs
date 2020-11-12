@@ -40,6 +40,28 @@ namespace Domain.Utilities
         public const string Question5KeyName = "Question5";
 
 
+        public const string Answer10KeyName = "Answer10";
+        public const string Answer11KeyName = "Answer11";
+        public const string Answer12KeyName = "Answer12";
+        public const string Answer13KeyName = "Answer13";
+        public const string Answer20KeyName = "Answer20";
+        public const string Answer21KeyName = "Answer21";
+        public const string Answer22KeyName = "Answer22";
+        public const string Answer23KeyName = "Answer23";
+        public const string Answer30KeyName = "Answer30";
+        public const string Answer31KeyName = "Answer31";
+        public const string Answer32KeyName = "Answer32";
+        public const string Answer33KeyName = "Answer33";
+        public const string Answer40KeyName = "Answer40";
+        public const string Answer41KeyName = "Answer41";
+        public const string Answer42KeyName = "Answer42";
+        public const string Answer43KeyName = "Answer43";
+        public const string Answer50KeyName = "Answer50";
+        public const string Answer51KeyName = "Answer51";
+        public const string Answer52KeyName = "Answer52";
+        public const string Answer53KeyName = "Answer53";
+
+
 
     }
 

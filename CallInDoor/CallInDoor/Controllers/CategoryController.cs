@@ -277,6 +277,38 @@ namespace CallInDoor.Controllers
         #endregion
 
 
+        #region GetAllAreaWith Specialities in User
+
+        [HttpGet("/api/Area/GetAllAreaWithSpeciality")]
+        [Authorize]
+        [ClaimsAuthorize(IsAdmin = false)]
+        public async Task<ActionResult> GetAllAreaForAdmin(int servcieId)
+        {
+            var areas = await _context.AreaTBL
+                .AsNoTracking()
+               .Where(C => C.ServiceId == servcieId)
+               .Select(c => new
+               {
+                   c.Id,
+                   c.Title,
+                   c.PersianTitle,
+                   c.IsEnabled,
+                   c.IsProfessional,
+                   serviceName = c.Service.Name,
+                   specialities = c.Specialities.Select(c=>new {c.Id ,c.EnglishName,c.PersianName}).ToList()
+               })
+               .ToListAsync();
+            return Ok(_commonService.OkResponse(areas, PubicMessages.SuccessMessage));
+
+        }
+
+
+        #endregion
+
+
+
+
+
         #region Create
 
         /// <summary>

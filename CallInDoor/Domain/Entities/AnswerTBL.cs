@@ -13,6 +13,8 @@ namespace Domain.Entities
         public string Text { get; set; }
         public string EnglishText { get; set; }
 
+        public string Key { get; set; }
+
         #region  relation
 
         [ForeignKey("QuestionPullTBL")]

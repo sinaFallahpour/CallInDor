@@ -33,6 +33,7 @@ namespace CallInDoor.Config.Attributes
                 {
                     List<string> errors = new List<string> { _localizerShared["UnauthorizedMessage"].Value.ToString() };
                     context.Result = new UnauthorizedObjectResult(new ApiBadRequestResponse(errors, 401));
+                    return;
                     //return Unauthorized(new ApiBadRequestResponse(erroses, 401));
                 }
                 context.Result = new UnauthorizedObjectResult(new ApiResponse(401, PubicMessages.UnAuthorizeMessage));

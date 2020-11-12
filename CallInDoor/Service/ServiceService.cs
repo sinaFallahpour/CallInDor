@@ -429,7 +429,7 @@ namespace Service
                     if (IsPersianLanguage())
                         err = $"قیمت برای کاربران غیر بومی باید بیشتر از {serviceFromDb.AcceptedMinPriceForNonNative} باشد";
                     else
-                        err = string.Format($"Price For Native Customer must be more than {serviceFromDb.AcceptedMinPriceForNonNative}");
+                        err = string.Format($"Price For Non Native Customer must be more than {serviceFromDb.AcceptedMinPriceForNonNative}");
                     //err = _localizer[string.Format("{0} must be more than {1}", "Price For Non Native Customer", serviceFromDb.AcceptedMinPriceForNonNative)].Value.ToString();
                     IsValid = false;
                     Errors.Add(err);

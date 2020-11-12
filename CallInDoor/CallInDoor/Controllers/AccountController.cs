@@ -282,14 +282,8 @@ namespace CallInDoor.Controllers
                     UserName = user.UserName,
                 };
 
-                return Ok(new ApiOkResponse(new DataFormat()
-                {
-                    Status = 1,
-                    data = userInfo,
-                    Message = PubicMessages.SuccessMessage
-                },
-                PubicMessages.SuccessMessage
-               ));
+                return Ok(_commonService.OkResponse(userInfo, PubicMessages.SuccessMessage));
+                
             }
             if (result.IsNotAllowed)
             {

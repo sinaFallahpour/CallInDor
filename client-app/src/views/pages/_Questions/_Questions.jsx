@@ -36,33 +36,33 @@ import { toast } from "react-toastify";
 class _Questions extends React.Component {
     state = {
         data: {
-            question1: "",
-            answers10: "",
-            answers11: "",
-            answers12: "",
-            answers13: "",
+            question1: null,
+            answers10: null,
+            answers11: null,
+            answers12: null,
+            answers13: null,
 
 
-            question2: "",
+            question2: null,
             answers20: null,
             answers21: null,
             answers22: null,
             answers23: null,
 
-            question3: "",
+            question3: null,
             answers30: null,
             answers30: null,
             answers30: null,
             answers30: null,
 
 
-            question4: "",
+            question4: null,
             answers40: null,
             answers41: null,
             answers42: null,
             answers43: null,
 
-            question5: "",
+            question5: null,
             answers50: null,
             answers51: null,
             answers52: null,
@@ -143,6 +143,14 @@ class _Questions extends React.Component {
         this.populatingQuestions();
     }
 
+
+    handleChange = (e) => {
+        this.setState({ [e.target.name]: e.target.value })
+        console.log(this.state)
+    }
+
+
+
     doSubmit = async () => {
         this.setState({ Loading: true });
         const errorMessage = "";
@@ -174,8 +182,10 @@ class _Questions extends React.Component {
     render() {
         const { errorscustom, errorMessage, data } = this.state;
 
+
         return (
             <Col sm="10" className="mx-auto">
+
                 <Card>
                     <CardHeader>
                         <CardTitle> Questions </CardTitle>
@@ -203,7 +213,7 @@ class _Questions extends React.Component {
                                 // error={errors[name]}
                                 />
                                 <Input type="text"
-                                    name={"answers"}
+                                    name={"answers10"}
                                     value={data.answers10}
                                     label={"answer1"}
                                     onChange={this.handleChange}
@@ -219,14 +229,14 @@ class _Questions extends React.Component {
                                 // error={errors[name]}
                                 />
                                 <Input type="text"
-                                    name={"answers1"}
+                                    name={"answers12"}
                                     value={data.answers12}
                                     label={"answer1"}
                                     onChange={this.handleChange}
                                     className="col-lg-3"                                // error={errors[name]}
                                 />
                                 <Input type="text"
-                                    name={"answers1"}
+                                    name={"answers13"}
                                     value={data.answers13}
                                     label={"answer1"}
                                     onChange={this.handleChange}
@@ -237,22 +247,24 @@ class _Questions extends React.Component {
                                 {/* ===========================question2======================== */}
 
 
-                                <Input type="text"
+                                <Input
+                                    type="text"
                                     name={"question2"}
                                     value={data.question2}
                                     label={"question2"}
                                     onChange={this.handleChange}
                                     className="col-lg-12"                                // error={errors[name]}
                                 />
-                                <Input type="text"
-                                    name={"answers"}
+                                <Input
+                                    type="text"
+                                    name={"answers20"}
                                     value={data.answers20}
                                     label={"answer2"}
                                     onChange={this.handleChange}
                                     className="col-lg-3"                                // error={errors[name]}
                                 />
                                 <Input type="text"
-                                    name={"answers"}
+                                    name={"answers21"}
                                     value={data.answers21}
                                     label={"answer2"}
                                     onChange={this.handleChange}
@@ -260,7 +272,7 @@ class _Questions extends React.Component {
                                 // error={errors[name]}
                                 />
                                 <Input type="text"
-                                    name={"answers12"}
+                                    name={"answers22"}
                                     value={data.answers22}
                                     label={"answer2"}
                                     onChange={this.handleChange}
@@ -268,7 +280,7 @@ class _Questions extends React.Component {
                                 // error={errors[name]}
                                 />
                                 <Input type="text"
-                                    name={"answers12"}
+                                    name={"answers23"}
                                     value={data.answers23}
                                     label={"answer2"}
                                     onChange={this.handleChange}
@@ -292,7 +304,7 @@ class _Questions extends React.Component {
                                 // error={errors[name]}
                                 />
                                 <Input type="text"
-                                    name={"answers"}
+                                    name={"answers30"}
                                     value={data.answers30}
                                     label={"answer3"}
                                     onChange={this.handleChange}
@@ -300,7 +312,7 @@ class _Questions extends React.Component {
                                 // error={errors[name]}
                                 />
                                 <Input type="text"
-                                    name={"answers"}
+                                    name={"answers31"}
                                     value={data.answers31}
                                     label={"answer3"}
                                     onChange={this.handleChange}
@@ -308,7 +320,7 @@ class _Questions extends React.Component {
                                 // error={errors[name]}
                                 />
                                 <Input type="text"
-                                    name={"answers12"}
+                                    name={"answers32"}
                                     value={data.answers32}
                                     label={"answer3"}
                                     onChange={this.handleChange}
@@ -316,7 +328,7 @@ class _Questions extends React.Component {
                                 // error={errors[name]}
                                 />
                                 <Input type="text"
-                                    name={"answers12"}
+                                    name={"answers33"}
                                     value={data.answers33}
                                     label={"answer3"}
                                     onChange={this.handleChange}
@@ -332,7 +344,7 @@ class _Questions extends React.Component {
 
 
                                 <Input type="text"
-                                    name={"question3"}
+                                    name={"question4"}
                                     value={data.question4}
                                     label={"question4"}
                                     onChange={this.handleChange}
@@ -340,31 +352,34 @@ class _Questions extends React.Component {
                                 // error={errors[name]}
                                 />
                                 <Input type="text"
-                                    name={"answers"}
+                                    name={"answers40"}
                                     value={data.answers40}
                                     label={"answer4"}
                                     onChange={this.handleChange}
                                     className="col-lg-3"
                                 // error={errors[name]}
                                 />
-                                <Input type="text"
-                                    name={"answers"}
+                                <Input
+                                    type="text"
+                                    name={"answers41"}
                                     value={data.answers41}
                                     label={"answer4"}
                                     onChange={this.handleChange}
                                     className="col-lg-3"
                                 // error={errors[name]}
                                 />
-                                <Input type="text"
-                                    name={"answers12"}
+                                <Input
+                                    type="text"
+                                    name={"answers42"}
                                     value={data.answers42}
                                     label={"answer4"}
                                     onChange={this.handleChange}
                                     className="col-lg-3"
                                 // error={errors[name]}
                                 />
-                                <Input type="text"
-                                    name={"answers12"}
+                                <Input
+                                    type="text"
+                                    name={"answers43"}
                                     value={data.answers43}
                                     label={"answer4"}
                                     onChange={this.handleChange}
@@ -378,8 +393,9 @@ class _Questions extends React.Component {
                                 {/* ===========================question5======================== */}
 
 
-                                <Input type="text"
-                                    name={"question3"}
+                                <Input
+                                    type="text"
+                                    name={"question5"}
                                     value={data.question5}
                                     label={"question4"}
                                     onChange={this.handleChange}
@@ -387,7 +403,7 @@ class _Questions extends React.Component {
                                 // error={errors[name]}
                                 />
                                 <Input type="text"
-                                    name={"answers"}
+                                    name={"answers50"}
                                     value={data.answers50}
                                     label={"answer5"}
                                     onChange={this.handleChange}
@@ -395,7 +411,7 @@ class _Questions extends React.Component {
                                 // error={errors[name]}
                                 />
                                 <Input type="text"
-                                    name={"answers"}
+                                    name={"answers51"}
                                     value={data.answers51}
                                     label={"answer5"}
                                     onChange={this.handleChange}
@@ -403,7 +419,7 @@ class _Questions extends React.Component {
                                 // error={errors[name]}
                                 />
                                 <Input type="text"
-                                    name={"answers"}
+                                    name={"answers52"}
                                     value={data.answers52}
                                     label={"answer5"}
                                     onChange={this.handleChange}
@@ -411,8 +427,8 @@ class _Questions extends React.Component {
                                 // error={errors[name]}
                                 />
                                 <Input type="text"
-                                    name={"answers"}
-                                    value={data.answers52}
+                                    name={"answers53"}
+                                    value={data.answers53}
                                     label={"answer5"}
                                     onChange={this.handleChange}
                                     className="col-lg-3"
