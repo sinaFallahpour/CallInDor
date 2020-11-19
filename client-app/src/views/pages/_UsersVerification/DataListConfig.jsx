@@ -101,7 +101,7 @@ const CustomHeader = (props) => {
   return (
     <div className="data-list-header d-flex justify-content-between flex-wrap">
       <div className="actions-left d-flex flex-wrap">
-        <Button
+        {/* <Button
           className="add-new-btn"
           color="primary"
           onClick={() => props.handleSidebar(true, true)}
@@ -109,7 +109,7 @@ const CustomHeader = (props) => {
         >
           <Plus size={15} />
           <span className="align-middle">Add New</span>
-        </Button>
+        </Button> */}
       </div>
       <div className="actions-right d-flex flex-wrap mt-sm-0 mt-2">
         <UncontrolledDropdown className="data-list-rows-dropdown mr-1 d-md-block d-none">
