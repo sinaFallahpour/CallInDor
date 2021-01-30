@@ -63,6 +63,12 @@
     <EmbeddedResource Update="DTO\Account\UpdateProfileDTO.fa-IR.resx">
       <Generator>PublicResXFileCodeGenerator</Generator>
     </EmbeddedResource>
+    <EmbeddedResource Update="DTO\fuck\UpdateFirmProfileDTO.en-US.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+    </EmbeddedResource>
+    <EmbeddedResource Update="DTO\fuck\UpdateFirmProfileDTO.fa-IR.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+    </EmbeddedResource>
     <EmbeddedResource Update="DTO\Service\EditChatServiceForUsersDTO.en-US.resx">
       <Generator>PublicResXFileCodeGenerator</Generator>
     </EmbeddedResource>
@@ -147,9 +153,6 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>AddCommentServiceDTO.fa-IR.resx</DependentUpon>
     </Compile>
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="DTO\fuck\" />
   </ItemGroup>
   <PropertyGroup>
     <SsdtUnitTestVersion>3.1</SsdtUnitTestVersion>

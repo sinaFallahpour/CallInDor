@@ -219,8 +219,24 @@ namespace CallInDoor.Controllers
                 WalletBalance = 0,
             };
 
+            /// اگر شرکتی بود پروفایل خالی براش اضافه شود در دیتا بیس
+            if (model.IsCompany)
+            {
+                newUser.FirmProfile = new FirmProfileTBL()
+                {
+                    CodePosti = "",
+                    FirmCountry = "",
+                    FirmDateOfRegistration = "",
+                    FirmLogo = "",
+                    FirmManagerName = "",
+                    FirmName = "",
+                    FirmNationalID = "",
+                    FirmRegistrationID = "",
+                    FirmState = "",
+                    NationalCode = "",
+                };
+            }
 
-            //var userrole = await _userManager.GetRolesAsync(newUser);
             using (var transaction = _context.Database.BeginTransaction())
             {
                 try
@@ -233,7 +249,6 @@ namespace CallInDoor.Controllers
                         {
                             transaction.Commit();
                             //send Code
-
                             return Ok(_commonService.OkResponse(null, _localizerShared["SuccessMessage"].Value.ToString()));
                         }
 
@@ -249,15 +264,8 @@ namespace CallInDoor.Controllers
                             errors.Add(item.Description);
                         return BadRequest(new ApiBadRequestResponse(errors));
                     }
-
-                    //else if (res.Errors.Any(c => c.Code == "DuplicateUserName}"))
-                    //{
-                    //    var err = new List<string>();
-                    //    err.Add($" {model.PhoneNumber} is already taken");
-                    //    return BadRequest(new ApiBadRequestResponse(err));
-                    //}
                 }
-                catch (Exception)
+                catch
                 {
                     transaction.Rollback();
 
@@ -266,12 +274,6 @@ namespace CallInDoor.Controllers
                        new ApiBadRequestResponse(erros, 500));
                 }
             }
-
-            List<string> erroses = new List<string> { _localizerShared["InternalServerMessage"].Value.ToString() };
-            return StatusCode(StatusCodes.Status500InternalServerError,
-               new ApiBadRequestResponse(erroses, 500));
-
-
         }
 
         #endregion
@@ -282,14 +284,12 @@ namespace CallInDoor.Controllers
         [HttpPost("Login")]
         public async Task<IActionResult> Login([FromBody] LoginDTO model)
         {
-
             model.PhoneNumber = model.CountryCode.ToString().Trim() + model.PhoneNumber.Trim();
             var user = await _accountService.FindUserByPhonenumber(model.PhoneNumber);
             if (user == null)
             {
                 List<string> erros = new List<string> { _localizerShared["InvalidPhoneNumber"].Value.ToString() };
-                return Unauthorized(new ApiBadRequestResponse(erros, 401));
-                //return Unauthorized(new ApiResponse(401, _localizerShared["InvalidPhoneNumber"].Value.ToString()));
+                return BadRequest(new ApiBadRequestResponse(erros, 401));
             }
             var result = await _accountService.CheckPasswordAsync(user, model.Password);
 
@@ -308,15 +308,16 @@ namespace CallInDoor.Controllers
                 };
                 return Ok(_commonService.OkResponse(userInfo, _localizerShared["SuccessMessage"].Value.ToString()));
             }
+
             if (result.IsNotAllowed)
             {
                 List<string> erros = new List<string> { _localizerShared["ConfirmPhoneMessage"].Value.ToString() };
-                return Unauthorized(new ApiBadRequestResponse(erros, 401));
+                return BadRequest(new ApiBadRequestResponse(erros, 401));
             }
             if (result.IsLockedOut)
             {
                 List<string> erros = new List<string> { _localizerShared["LockedOutMessage"].Value.ToString() };
-                return Unauthorized(new ApiBadRequestResponse(erros, 401));
+                return BadRequest(new ApiBadRequestResponse(erros, 401));
             }
 
             List<string> erroses = new List<string> { _localizerShared["UnMathPhoneNumberPassword"].Value.ToString() };
@@ -699,7 +700,7 @@ namespace CallInDoor.Controllers
 
 
             var baseServiceFromDB = await _context.BaseMyServiceTBL
-                .Where(c => c.UserName == model.UserName && c.ServiceId == model.ServiceId )
+                .Where(c => c.UserName == model.UserName && c.ServiceId == model.ServiceId)
                 //&& c.ProfileConfirmType == ProfileConfirmType.Pending
                 .ToListAsync();
 
@@ -707,7 +708,7 @@ namespace CallInDoor.Controllers
             NotificationStatus notifStatus = NotificationStatus.ProifleConfirmation;
             //string EnglishText = "";
             //string TextPersian = "";
-         
+
             if (model.IsConfirmed == true) //////in if laazem dare baz
             {
                 foreach (var item in baseServiceFromDB)
@@ -729,7 +730,7 @@ namespace CallInDoor.Controllers
 
                 notifStatus = NotificationStatus.ProfileRejection;
             }
-            
+
 
 
             var ProfileCertificationFromDb = await _context.ProfileCertificateTBL
@@ -737,7 +738,7 @@ namespace CallInDoor.Controllers
                     .ToListAsync();
 
 
-        
+
             if (model.IsConfirmed == true) //////in if laazem dare baz
             {
                 foreach (var item in ProfileCertificationFromDb)
@@ -753,7 +754,7 @@ namespace CallInDoor.Controllers
                     //item.ProfileRejectReson = model.ResonForReject;
                 }
             }
-           
+
 
 
 
@@ -1135,7 +1136,7 @@ namespace CallInDoor.Controllers
                         //return BadRequest(new ApiBadRequestResponse(err));
                     }
                 }
-                catch 
+                catch
                 {
                     transaction.Rollback();
                     return StatusCode(StatusCodes.Status500InternalServerError,

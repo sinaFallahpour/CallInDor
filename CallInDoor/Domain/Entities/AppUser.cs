@@ -101,7 +101,7 @@ namespace Domain.Entities
         /// <summary>
         /// پروفایل اکانت شرکتی  
         /// </summary>
-        public FirmProfile FirmProfile { get; set; }
+        public FirmProfileTBL FirmProfile { get; set; }
         
 
 

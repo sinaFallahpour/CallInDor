@@ -70,19 +70,12 @@ namespace Domain.DTO.Account
 
         public int? ServiceId { get; set; }
         public int FileId { get; set; }
-        public bool AddNew  { get; set; }
+        public bool AddNew { get; set; }
         //public string FileAddress { get; set; }
         public IFormFile File { get; set; }
         //public List<RequireCertitications> RequiredCertificate { get; set; }
     }
 
-
-    //public class RequireCertitications
-    //{
-    //    public int FileId { get; set; }
-    //    //public string FileAddress { get; set; }
-    //    public IFormFile File { get; set; }
-    //}
 
 
 }

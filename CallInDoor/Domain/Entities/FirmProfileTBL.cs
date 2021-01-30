@@ -6,7 +6,11 @@ using System.Text;
 
 namespace Domain.Entities
 {
-    public class FirmProfile
+    /// <summary>
+    //پروفایل شرکتی است
+    /// </summary>
+    [Table("FirmProfile")]
+    public class FirmProfileTBL
     {
 
         [MaxLength(240, ErrorMessage = "firm name is required")]
@@ -43,11 +47,40 @@ namespace Domain.Entities
         public string FirmState { get; set; }
 
 
-        [Key, ForeignKey("AppUserId")]
+
+        /// <summary>
+        /// شناسه ملی
+        /// </summary>
+        [MinLength(3, ErrorMessage = "please inter more than 3")]
+        [MaxLength(20, ErrorMessage = "please enter  lett than 20")]
+        public string FirmNationalID { get; set; }
+
+
+        /// <summary>
+        /// تایخ ثبت شرکت
+        /// </summary>
+        [MaxLength(30, ErrorMessage = "please enter  lett than 30")]
+        public string FirmDateOfRegistration { get; set; }
+
+
+
+        /// <summary>
+        /// شناسه ثبت
+        /// </summary>
+        /// 
+        [MinLength(3, ErrorMessage = "please inter more than 3")]
+        [MaxLength(20, ErrorMessage = "please enter  lett than 20")]
+        public string FirmRegistrationID { get; set; }
+
+
+
+        [ForeignKey("AppUserId")]
         public AppUser AppUser { get; set; }
-        public int AppUserId { get; set; }
-
-
-
+        [Key]
+        public string AppUserId { get; set; }
+    
+    
+    
+    
     }
 }

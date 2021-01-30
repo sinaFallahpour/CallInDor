@@ -138,22 +138,13 @@ namespace CallInDoor.Controllers
         [ClaimsAuthorize(IsAdmin = false)]
         public async Task<ActionResult> GetProfile()
         {
-            try
+            var profile = await _accountService.ProfileGet();
+            if (profile == null)
             {
-                var profile = await _accountService.ProfileGet();
-                if (profile == null)
-                {
-                    List<string> erros = new List<string> { _localizerShared["NotFound"].Value.ToString() };
-                    return NotFound(new ApiBadRequestResponse(erros, 404));
-                }
-                return Ok(_commonService.OkResponse(profile, _localizerShared["SuccessMessage"].Value.ToString()));
+                List<string> erros = new List<string> { _localizerShared["NotFound"].Value.ToString() };
+                return NotFound(new ApiBadRequestResponse(erros, 404));
             }
-            catch
-            {
-                List<string> erros = new List<string> { _localizerShared["InternalServerMessage"].Value.ToString() };
-                return StatusCode(StatusCodes.Status500InternalServerError,
-                    new ApiBadRequestResponse(erros, 500));
-            }
+            return Ok(_commonService.OkResponse(profile, _localizerShared["SuccessMessage"].Value.ToString()));
         }
         #endregion
 
@@ -168,14 +159,14 @@ namespace CallInDoor.Controllers
             var res = await _accountService.ValidateUpdateProfile(model);
             if (!res.succsseded)
                 return BadRequest(new ApiBadRequestResponse(res.result));
-          
+
             var user = await _context.Users
                 .Where(x => x.SerialNumber == currentSerialNumber && x.UserName == currentUserName)
                 .Include(c => c.Fields)
                 .FirstOrDefaultAsync();
-            
+
             var certificationFromDB = await _context.ProfileCertificateTBL.Where(c => c.UserName == currentUserName).ToListAsync();
-            
+
             if (user == null)
             {
                 List<string> erros = new List<string> { _localizerShared["NotFound"].Value.ToString() };
@@ -227,5 +218,62 @@ namespace CallInDoor.Controllers
         }
         #endregion
 
+
+
+
+
+
+
+        #region  Firm
+        [HttpGet("GetFirmProfile")]
+        [ClaimsAuthorize(IsAdmin = false)]
+        public async Task<ActionResult> GetFirmProfile()
+        {
+            var profile = await _accountService.ProfileFirmGet();
+            if (profile == null)
+            {
+                List<string> erros = new List<string> { _localizerShared["NotFound"].Value.ToString() };
+                return BadRequest(new ApiBadRequestResponse(erros, 404));
+            }
+            return Ok(_commonService.OkResponse(profile, _localizerShared["SuccessMessage"].Value.ToString()));
+        }
+
+
+
+
+        [HttpPut("UpdatefirmProfile")]
+        [ClaimsAuthorize(IsAdmin = false)]
+        public async Task<ActionResult> UpdatefirmProfile([FromForm] UpdateFirmProfileDTO model)
+        {
+            var currentUserName = _accountService.GetCurrentUserName();
+            var res = _accountService.ValidateUpdateFirmProfile(model);
+            if (!res.succsseded)
+                return BadRequest(new ApiBadRequestResponse(res.result));
+
+            var user = await _context.Users
+                                 .Where(x => x.UserName == currentUserName).Include(c => c.FirmProfile).FirstOrDefaultAsync();
+
+            if (user == null)
+            {
+                List<string> erros = new List<string> { _localizerShared["NotFound"].Value.ToString() };
+                return BadRequest(new ApiBadRequestResponse(erros, 404));
+            }
+
+            var result = await _accountService.UpdateFirmProfile(user, model);
+            if (!result)
+            {
+                List<string> erroses = new List<string> { _localizerShared["InternalServerMessage"].Value.ToString() };
+                return StatusCode(StatusCodes.Status500InternalServerError, new ApiBadRequestResponse(erroses, 500));
+            }
+
+            return Ok(_commonService.OkResponse(null, _localizerShared["SuccessMessage"].Value.ToString()));
+
+        }
+
+
+
+
+
+        #endregion 
     }
 }

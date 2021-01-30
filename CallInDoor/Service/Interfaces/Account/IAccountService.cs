@@ -30,12 +30,18 @@ namespace Service.Interfaces.Account
         Task<AppUser> CheckIsCurrentUserName(string Id);
         //Task<string> CheckTokenIsValid2();
         Task<ProfileGetDTO> ProfileGet();
+        Task<ProfileFirmGetDTO> ProfileFirmGet();
         Task<bool> UpdateProfile(AppUser userFromDB, List<ProfileCertificateTBL> certificationFromDB, UpdateProfileDTO model);
+        Task<bool> UpdateFirmProfile(AppUser userFromDB, UpdateFirmProfileDTO model);
+
+
         Task<string> SaveFileToHost(string path, string lastPath, IFormFile file);
         Task<(bool succsseded, List<string> result)> ValidateUpdateProfile(UpdateProfileDTO model);
+        (bool succsseded, List<string> result) ValidateUpdateFirmProfile(UpdateFirmProfileDTO model);
+
         bool IsNative(AppUser clinet, AppUser provider);
         Task<bool> IsNative(string clinetUserName, string providerUserName);
         bool IsPersianLanguage();
-
+        
     }
 }

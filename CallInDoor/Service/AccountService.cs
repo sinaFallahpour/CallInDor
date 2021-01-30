@@ -511,15 +511,47 @@ namespace Service
 
 
 
+        /// <summary>
+        /// گرفتن اطلاعات پروفایل شرکتی
+        /// </summary>
+        /// <returns></returns>
+        public async Task<ProfileFirmGetDTO> ProfileFirmGet()
+        {
+            var currentusername = GetCurrentUserName();
+            if (string.IsNullOrEmpty(currentusername))
+                return null;
 
-        //string err = "";
-        //        if (IsPersianLanguage())
-        //            err = $"قیمت برای کاربران بومی باید بیشتر از {serviceFromDb.AcceptedMinPriceForNative} باشد";
-        //        else
-        //            err = string.Format($"Price For Native Customer must be more than {serviceFromDb.AcceptedMinPriceForNative}");
-        //IsValid = false;
-        //        Errors.Add(err);
+            var userFromDB = await _context.Users.Where(c => c.UserName == currentusername)
+                .Select(c => new ProfileFirmGetDTO
+                {
 
+                    Id = c.Id,
+                    Username = c.UserName,
+                    Email = c.Email,
+                    Bio = c.Bio,
+                    //ImageAddress = c.ImageAddress,
+                    IsCompany = c.IsCompany,
+                    IsEditableProfile = c.IsEditableProfile,
+
+
+
+
+                    FirmName = c.FirmProfile.FirmName,
+                    FirmAddress = c.FirmProfile.FirmAddress,
+                    CodePosti = c.FirmProfile.CodePosti,
+                    FirmManagerName = c.FirmProfile.FirmManagerName,
+                    FirmState = c.FirmProfile.FirmState,
+                    FirmCountry = c.FirmProfile.FirmCountry,
+                    FirmLogo = c.FirmProfile.FirmLogo,
+                    NationalCode = c.FirmProfile.NationalCode,
+                    FirmNationalID = c.FirmProfile.FirmNationalID,
+                    FirmRegistrationID = c.FirmProfile.FirmRegistrationID,
+                    FirmDateOfRegistration = c.FirmProfile.FirmDateOfRegistration,
+                    //ProfileConfirmType = c.ProfileConfirmType,
+                }).FirstOrDefaultAsync();
+
+            return userFromDB;
+        }
 
 
 
@@ -651,6 +683,59 @@ namespace Service
                 //    DeleteFileFromHost(certi.FileAddress);
                 //    _context.ProfileCertificateTBL.Remove(certi);
                 //}
+
+                await _context.SaveChangesAsync();
+                return true;
+
+
+
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
+
+
+
+
+
+
+        
+
+
+
+
+        public async Task<bool> UpdateFirmProfile(AppUser userFromDB, UpdateFirmProfileDTO model)
+        {
+            try
+            {
+                if (model == null) return false;
+
+                userFromDB.Bio = model.Bio;
+                userFromDB.Email = model.Email;
+                userFromDB.NationalCode = model.NationalCode;
+                
+                
+                userFromDB.FirmProfile.NationalCode = model.NationalCode;
+                userFromDB.FirmProfile.FirmName = model.FirmName;
+                userFromDB.FirmProfile.FirmManagerName = model.FirmManagerName;
+                userFromDB.FirmProfile.FirmAddress = model.FirmAddress;
+                userFromDB.FirmProfile.FirmState = model.FirmState;
+                userFromDB.FirmProfile.FirmCountry = model.FirmCountry;
+                userFromDB.FirmProfile.FirmNationalID = model.FirmNationalID;
+                userFromDB.FirmProfile.FirmDateOfRegistration = model.FirmDateOfRegistration;
+                userFromDB.FirmProfile.FirmRegistrationID = model.FirmRegistrationID;
+                userFromDB.FirmProfile.CodePosti= model.CodePosti;
+                userFromDB.FirmProfile.FirmRegistrationID = model.FirmRegistrationID;
+
+                //upload immage
+                if (model.FirmLogo != null && model.FirmLogo.Length > 0 && model.FirmLogo.IsImage())
+                {
+                    var imageAddress = await SaveFileToHost("Upload/User/", userFromDB.FirmProfile.FirmLogo, model.FirmLogo);
+                    userFromDB.FirmProfile.FirmLogo = imageAddress;
+                }
 
                 await _context.SaveChangesAsync();
                 return true;
@@ -815,6 +900,41 @@ namespace Service
             return (IsValid, Errors);
         }
 
+
+
+
+
+
+
+        /// <summary>
+        /// ولیدیت کردن آبجکت پروفایل شرکتی
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns></returns>
+        public (bool succsseded, List<string> result) ValidateUpdateFirmProfile(UpdateFirmProfileDTO model)
+        {
+            bool IsValid = true;
+            List<string> Errors = new List<string>();
+
+            //validate Image
+            if (model.FirmLogo != null)
+            {
+                //string uniqueFileName = null;
+                if (!model.FirmLogo.IsImage())
+                {
+                    IsValid = false;
+                    Errors.Add(_localizerAccount["InValidImageFormat"].Value.ToString());
+                }
+                if (model.FirmLogo.Length > 4000000)
+                {
+                    IsValid = false;
+                    Errors.Add(_localizerAccount["FileIsTooLarge"].Value.ToString());
+                }
+            }
+
+
+            return (IsValid, Errors);
+        }
 
 
 
