@@ -74,13 +74,26 @@ namespace Domain.Entities
 
 
 
+
+
+
+        #region relation
+
         [ForeignKey("AppUserId")]
         public AppUser AppUser { get; set; }
         [Key]
         public string AppUserId { get; set; }
-    
-    
-    
-    
+
+
+        ///// <summary>
+        ///// دسته های سرویسی که من فعالیت میکنم توش
+        ///// </summary>
+        public List<FirmServiceCategoryInterInterFaceTBL> FirmServiceCategoryTBLs { get; set; }
+
+
+        #endregion 
+
+
+
     }
 }

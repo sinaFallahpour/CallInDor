@@ -172,6 +172,12 @@ namespace CallInDoor.Controllers
                 List<string> erros = new List<string> { _localizerShared["NotFound"].Value.ToString() };
                 return BadRequest(new ApiBadRequestResponse(erros, 404));
             }
+            if (user.IsCompany)
+            {
+                List<string> erros = new List<string> { "invalid attampt. you are company   " };
+                return BadRequest(new ApiBadRequestResponse(erros, 404));
+            }
+
             if (!user.IsEditableProfile)
             {
                 List<string> erros = new List<string> { _localizerShared["EditableProfileNotAllowed"].Value.ToString() };
@@ -246,20 +252,34 @@ namespace CallInDoor.Controllers
         public async Task<ActionResult> UpdatefirmProfile([FromForm] UpdateFirmProfileDTO model)
         {
             var currentUserName = _accountService.GetCurrentUserName();
-            var res = _accountService.ValidateUpdateFirmProfile(model);
+
+            var servicesIds = await _context.ServiceTBL.Select(c => c.Id).ToListAsync();
+            var res =  _accountService.ValidateUpdateFirmProfile(model,servicesIds);
             if (!res.succsseded)
                 return BadRequest(new ApiBadRequestResponse(res.result));
 
             var user = await _context.Users
-                                 .Where(x => x.UserName == currentUserName).Include(c => c.FirmProfile).FirstOrDefaultAsync();
+                                 .Where(x => x.UserName == currentUserName)
+                                          .Include(c => c.FirmProfile)
+                                              .ThenInclude(c=>c.FirmServiceCategoryTBLs)
+                                                   .FirstOrDefaultAsync();
 
+            #region validation
             if (user == null)
             {
                 List<string> erros = new List<string> { _localizerShared["NotFound"].Value.ToString() };
                 return BadRequest(new ApiBadRequestResponse(erros, 404));
             }
 
-            var result = await _accountService.UpdateFirmProfile(user, model);
+            if (!user.IsCompany)
+            {
+                List<string> erros = new List<string> { "invalid attampt. you are not a company" };
+                return BadRequest(new ApiBadRequestResponse(erros, 404));
+            }
+
+            #endregion 
+
+            var result = await _accountService.UpdateFirmProfile(user, servicesIds, model);
             if (!result)
             {
                 List<string> erroses = new List<string> { _localizerShared["InternalServerMessage"].Value.ToString() };

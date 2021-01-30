@@ -702,12 +702,12 @@ namespace Service
 
 
 
-        
 
 
 
 
-        public async Task<bool> UpdateFirmProfile(AppUser userFromDB, UpdateFirmProfileDTO model)
+       
+        public async Task<bool> UpdateFirmProfile(AppUser userFromDB, List<int> servicesIds, UpdateFirmProfileDTO model)
         {
             try
             {
@@ -716,8 +716,8 @@ namespace Service
                 userFromDB.Bio = model.Bio;
                 userFromDB.Email = model.Email;
                 userFromDB.NationalCode = model.NationalCode;
-                
-                
+
+
                 userFromDB.FirmProfile.NationalCode = model.NationalCode;
                 userFromDB.FirmProfile.FirmName = model.FirmName;
                 userFromDB.FirmProfile.FirmManagerName = model.FirmManagerName;
@@ -727,23 +727,38 @@ namespace Service
                 userFromDB.FirmProfile.FirmNationalID = model.FirmNationalID;
                 userFromDB.FirmProfile.FirmDateOfRegistration = model.FirmDateOfRegistration;
                 userFromDB.FirmProfile.FirmRegistrationID = model.FirmRegistrationID;
-                userFromDB.FirmProfile.CodePosti= model.CodePosti;
+                userFromDB.FirmProfile.CodePosti = model.CodePosti;
                 userFromDB.FirmProfile.FirmRegistrationID = model.FirmRegistrationID;
 
-                //upload immage
+                //upload Image
                 if (model.FirmLogo != null && model.FirmLogo.Length > 0 && model.FirmLogo.IsImage())
                 {
                     var imageAddress = await SaveFileToHost("Upload/User/", userFromDB.FirmProfile.FirmLogo, model.FirmLogo);
                     userFromDB.FirmProfile.FirmLogo = imageAddress;
                 }
 
+                if (userFromDB.FirmProfile?.FirmServiceCategoryTBLs !=null &&  userFromDB.FirmProfile?.FirmServiceCategoryTBLs?.Count != 0)
+                    _context.FirmServiceCategoryInterInterFaceTBL.RemoveRange(userFromDB.FirmProfile.FirmServiceCategoryTBLs);
+
+
+                var firmCategory = new List<FirmServiceCategoryInterInterFaceTBL>();
+
+                foreach (var item in model.ServeCastegoriesIds)
+                {
+                    firmCategory.Add(new FirmServiceCategoryInterInterFaceTBL()
+                    {
+                        ServiceTBLId = item,
+                        FirmProfileTBL = userFromDB.FirmProfile
+                    });
+                }
+                userFromDB.FirmProfile.FirmServiceCategoryTBLs = firmCategory;
+
+
                 await _context.SaveChangesAsync();
                 return true;
 
-
-
             }
-            catch
+            catch (Exception ex)
             {
                 return false;
             }
@@ -911,10 +926,22 @@ namespace Service
         /// </summary>
         /// <param name="model"></param>
         /// <returns></returns>
-        public (bool succsseded, List<string> result) ValidateUpdateFirmProfile(UpdateFirmProfileDTO model)
+        public (bool succsseded, List<string> result) ValidateUpdateFirmProfile(UpdateFirmProfileDTO model, List<int> servicesIds)
         {
             bool IsValid = true;
             List<string> Errors = new List<string>();
+
+
+            if (model.ServeCastegoriesIds != null && model.ServeCastegoriesIds.Count != 0)
+            {
+                var exist = model.ServeCastegoriesIds.All(c => servicesIds.Contains(c));
+                if (!exist)
+                {
+                    IsValid = false;
+                    Errors.Add(_localizerAccount["InValidImageFormat"].Value.ToString());
+                }
+            }
+
 
             //validate Image
             if (model.FirmLogo != null)

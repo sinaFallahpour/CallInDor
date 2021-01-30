@@ -68,6 +68,13 @@ namespace Domain
 
        
         /// <summary>
+        ///   واسط بین شرکتی و سرویس ها
+        /// </summary>
+        public DbSet<FirmServiceCategoryInterInterFaceTBL> FirmServiceCategoryInterInterFaceTBL { get; set; }
+        
+
+
+        /// <summary>
         ///پروفایل شرکتی است
         /// </summary>
         public DbSet<FirmProfileTBL> FirmProfileTBL { get; set; }

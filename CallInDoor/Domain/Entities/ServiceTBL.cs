@@ -37,7 +37,7 @@ namespace Domain.Entities
         /// آیا سرویس هایی که کاربران در این حوضه ثبت میکنند مدرک فرستادن الزامیست؟
         /// </summary>
         public bool IsProfileOptional { get; set; }
-       
+
 
 
 
@@ -81,6 +81,7 @@ namespace Domain.Entities
 
 
         #region  Relation
+        public List<FirmServiceCategoryInterInterFaceTBL> FirmServiceCategoryTBLs { get; set; }
 
         public virtual ICollection<CategoryTBL> Categories { get; set; }
 

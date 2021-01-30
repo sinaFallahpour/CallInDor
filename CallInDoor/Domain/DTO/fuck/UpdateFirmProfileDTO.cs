@@ -43,7 +43,7 @@ namespace Domain.DTO.Account
         public string FirmName { get; set; }
 
 
-        [Display(Name = "firm name")]
+        [Display(Name = "firm manager name")]
         [Required(ErrorMessage = "{0} is  Required")]
         [MinLength(1, ErrorMessage = "The minimum {0} length is {1} characters")]
         [MaxLength(600, ErrorMessage = "The maximum {0} length is {1} characters")]
@@ -113,6 +113,10 @@ namespace Domain.DTO.Account
         [MaxLength(20, ErrorMessage = "please enter  lett than 20")]
         public string FirmRegistrationID { get; set; }
 
+
+
+
+        public List<int> ServeCastegoriesIds { get; set; }
 
 
 
