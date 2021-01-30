@@ -1,11 +1,11 @@
-import React from "react"
-import ExtensionsHeader from "../extensionsHeader"
-import { Row, Col } from "reactstrap"
-import BasicSweetAlert from "./SweetAlertBasic"
-import SweetAlertTypes from "./SweetAlertTypes"
-import SweetAlertOptions from "./SweetAlertOptions"
-import SweetAlertCallback from "./SweetAlertCallback"
-import "../../assets/scss/plugins/extensions/sweet-alerts.scss"
+import React from "react";
+import ExtensionsHeader from "../extensionsHeader";
+import { Row, Col } from "reactstrap";
+import BasicSweetAlert from "./SweetAlertBasic";
+import SweetAlertTypes from "./SweetAlertTypes";
+import SweetAlertOptions from "./SweetAlertOptions";
+import SweetAlertCallback from "./SweetAlertCallback";
+import "../../assets/scss/plugins/extensions/sweet-alerts.scss";
 class Slider extends React.Component {
   render() {
     return (

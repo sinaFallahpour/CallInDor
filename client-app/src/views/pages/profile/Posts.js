@@ -279,6 +279,13 @@ class Posts extends React.Component {
                 105
               </p>
             </div>
+
+
+
+
+
+
+            ...........
             <div className="d-flex justify-content-start align-items-center mb-1">
               <div className="avatar mr-50">
                 <img src={person6} alt="Avatar" height="30" width="30" />
@@ -294,6 +301,10 @@ class Posts extends React.Component {
                 <MessageSquare className="mr-50" size={15} />
               </div>
             </div>
+
+
+
+............
             <div className="d-flex justify-content-start align-items-center mb-2">
               <div className="avatar mr-50">
                 <img src={person7} alt="Avatar" height="30" width="30" />
@@ -309,6 +320,10 @@ class Posts extends React.Component {
                 <MessageSquare className="mr-50" size={15} />
               </div>
             </div>
+
+
+
+
             <fieldset className="form-label-group mb-50">
               <Input
                 type="textarea"
@@ -348,7 +363,7 @@ class Posts extends React.Component {
             </p>
             <iframe
               className="embed-responsive-item w-100 height-250 mb-1"
-              src="https://www.youtube.com/embed/xUesKDDcLoQ"
+              src={"https://localhost:44377/Upload/7-javascript.mp4"}
               allowFullScreen
               title="post"
               frameBorder="0"

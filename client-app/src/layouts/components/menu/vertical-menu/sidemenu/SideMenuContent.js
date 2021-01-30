@@ -1,63 +1,68 @@
-import React from "react"
-import { Link } from "react-router-dom"
-import classnames from "classnames"
-import navigationConfig from "../../../../../configs/navigationConfig"
-import SideMenuGroup from "./SideMenuGroup"
-import { Badge } from "reactstrap"
-import { ChevronRight } from "react-feather"
-import { FormattedMessage } from "react-intl"
-import { history } from "../../../../../history"
+import React from "react";
+import { Link } from "react-router-dom";
+import classnames from "classnames";
+import navigationConfig from "../../../../../configs/navigationConfig";
+import SideMenuGroup from "./SideMenuGroup";
+import { Badge } from "reactstrap";
+import { ChevronRight } from "react-feather";
+import { FormattedMessage } from "react-intl";
+import { history } from "../../../../../history";
+import auth from "../../../../../core/services/userService/authService";
+
+let userRole = auth.getRole();
+let userPermissions = [];
+if (auth.getPermissons()) userPermissions = Object.values(auth.getPermissons());
 
 class SideMenuContent extends React.Component {
   constructor(props) {
-    super(props)
+    super(props);
 
-    this.parentArr = []
-    this.collapsedPath = null
+    this.parentArr = [];
+    this.collapsedPath = null;
     this.redirectUnauthorized = () => {
-      history.push("/misc/not-authorized")
-    }
+      history.push("/misc/not-authorized");
+    };
   }
   state = {
     flag: true,
     isHovered: false,
     activeGroups: [],
     currentActiveGroup: [],
-    tempArr: []
-  }
+    tempArr: [],
+  };
 
   handleGroupClick = (id, parent = null, type = "") => {
-    let open_group = this.state.activeGroups
-    let active_group = this.state.currentActiveGroup
-    let temp_arr = this.state.tempArr
+    let open_group = this.state.activeGroups;
+    let active_group = this.state.currentActiveGroup;
+    let temp_arr = this.state.tempArr;
     // Active Group to apply sidebar-group-active class
     if (type === "item" && parent === null) {
-      active_group = []
-      temp_arr = []
+      active_group = [];
+      temp_arr = [];
     } else if (type === "item" && parent !== null) {
-      active_group = []
+      active_group = [];
       if (temp_arr.includes(parent)) {
-        temp_arr.splice(temp_arr.indexOf(parent) + 1, temp_arr.length)
+        temp_arr.splice(temp_arr.indexOf(parent) + 1, temp_arr.length);
       } else {
-        temp_arr = []
-        temp_arr.push(parent)
+        temp_arr = [];
+        temp_arr.push(parent);
       }
-      active_group = temp_arr.slice(0)
+      active_group = temp_arr.slice(0);
     } else if (type === "collapse" && parent === null) {
-      temp_arr = []
-      temp_arr.push(id)
+      temp_arr = [];
+      temp_arr.push(id);
     } else if (type === "collapse" && parent !== null) {
       if (active_group.includes(parent)) {
-        temp_arr = active_group.slice(0)
+        temp_arr = active_group.slice(0);
       }
       if (temp_arr.includes(id)) {
         // temp_arr.splice(temp_arr.indexOf(id), 1)
-        temp_arr.splice(temp_arr.indexOf(id), temp_arr.length)
+        temp_arr.splice(temp_arr.indexOf(id), temp_arr.length);
       } else {
-        temp_arr.push(id)
+        temp_arr.push(id);
       }
     } else {
-      temp_arr = []
+      temp_arr = [];
     }
 
     if (type === "collapse") {
@@ -65,76 +70,78 @@ class SideMenuContent extends React.Component {
       if (!open_group.includes(id)) {
         // Get unmatched items that are not in the active group
         let temp = open_group.filter(function (obj) {
-          return active_group.indexOf(obj) === -1
-        })
+          return active_group.indexOf(obj) === -1;
+        });
         // Remove those unmatched items from open group
         if (temp.length > 0 && !open_group.includes(parent)) {
           open_group = open_group.filter(function (obj) {
-            return !temp.includes(obj)
-          })
+            return !temp.includes(obj);
+          });
         }
         if (open_group.includes(parent) && active_group.includes(parent)) {
-          open_group = active_group.slice(0)
+          open_group = active_group.slice(0);
         }
         // Add group item clicked in open group
         if (!open_group.includes(id)) {
-          open_group.push(id)
+          open_group.push(id);
         }
       } else {
         // If open group includes click group item, remove it from open group
-        open_group.splice(open_group.indexOf(id), 1)
+        open_group.splice(open_group.indexOf(id), 1);
       }
     }
     if (type === "item") {
-      open_group = active_group.slice(0)
+      open_group = active_group.slice(0);
     }
 
     this.setState({
       activeGroups: open_group,
       tempArr: temp_arr,
-      currentActiveGroup: active_group
-    })
-  }
+      currentActiveGroup: active_group,
+    });
+  };
 
-  initRender = parentArr => {
+  initRender = (parentArr) => {
     this.setState({
       activeGroups: parentArr.slice(0),
       currentActiveGroup: parentArr.slice(0),
-      flag: false
-    })
-  }
+      flag: false,
+    });
+  };
 
   componentDidMount() {
-    this.initRender(this.parentArr[0] ? this.parentArr[0] : [])
+    this.initRender(this.parentArr[0] ? this.parentArr[0] : []);
   }
 
   componentDidUpdate(prevProps, prevState) {
     if (prevProps.activePath !== this.props.activePath) {
       if (this.collapsedMenuPaths !== null) {
-        this.props.collapsedMenuPaths(this.collapsedMenuPaths)
+        this.props.collapsedMenuPaths(this.collapsedMenuPaths);
       }
 
       this.initRender(
         this.parentArr[0] ? this.parentArr[this.parentArr.length - 1] : []
-      )
+      );
     }
   }
 
   render() {
     // Loop over sidebar items
     // eslint-disable-next-line
-    const menuItems = navigationConfig.map(item => {
-      const CustomAnchorTag = item.type === "external-link" ? `a` : Link
+    const menuItems = navigationConfig.map((item) => {
+      const CustomAnchorTag = item.type === "external-link" ? `a` : Link;
+
       // checks if item has groupheader
       if (item.type === "groupHeader") {
         return (
           <li
             className="navigation-header"
-            key={`group-header-${item.groupTitle + Math.random() * 100}`}>
+            key={`group-header-${item.groupTitle + Math.random() * 100}`}
+          >
             <span>{item.groupTitle}</span>
           </li>
-        )
-      }
+        );
+      } //finished
 
       let renderItem = (
         <li
@@ -150,49 +157,53 @@ class SideMenuContent extends React.Component {
                 item.type === "item") ||
               (item.parentOf &&
                 item.parentOf.includes(this.props.activeItemState)),
-            disabled: item.disabled
+            disabled: item.disabled,
           })}
           key={item.id}
-          onClick={e => {
-            e.stopPropagation()
+          onClick={(e) => {
+            e.stopPropagation();
             if (item.type === "item") {
-              this.props.handleActiveItem(item.navLink)
-              this.handleGroupClick(item.id, null, item.type)
+              this.props.handleActiveItem(item.navLink);
+              this.handleGroupClick(item.id, null, item.type);
               if (this.props.deviceWidth <= 1200 && item.type === "item") {
-                this.props.toggleMenu()
+                this.props.toggleMenu();
               }
             } else {
-              this.handleGroupClick(item.id, null, item.type)
+              this.handleGroupClick(item.id, null, item.type);
             }
-          }}>
+          }}
+        >
           <CustomAnchorTag
             to={
               item.filterBase
                 ? item.filterBase
                 : item.navLink && item.type === "item"
-                  ? item.navLink
-                  : ""
+                ? item.navLink
+                : ""
             }
             href={item.type === "external-link" ? item.navLink : ""}
-            className={`d-flex ${item.badgeText
-              ? "justify-content-between"
-              : "justify-content-start"
-              }`}
+            className={`d-flex ${
+              item.badgeText
+                ? "justify-content-between"
+                : "justify-content-start"
+            }`}
             onMouseEnter={() => {
-              this.props.handleSidebarMouseEnter(item.id)
+              this.props.handleSidebarMouseEnter(item.id);
             }}
             onMouseLeave={() => {
-              this.props.handleSidebarMouseEnter(item.id)
+              this.props.handleSidebarMouseEnter(item.id);
             }}
             key={item.id}
-            onClick={e => {
-              return item.type === "collapse" ? e.preventDefault() : ""
+            onClick={(e) => {
+              return item.type === "collapse" ? e.preventDefault() : "";
             }}
-            target={item.newTab ? "_blank" : undefined}>
+            target={item.newTab ? "_blank" : undefined}
+          >
             <div className="menu-text">
               {item.icon}
               <span className="menu-item menu-title">
-                <FormattedMessage id={item.title} />
+                {item.title}
+                {/* <FormattedMessage id={item.title} /> */}
               </span>
             </div>
 
@@ -203,14 +214,16 @@ class SideMenuContent extends React.Component {
                 </Badge>
               </div>
             ) : (
-                ""
-              )}
+              ""
+            )}
             {item.type === "collapse" ? (
               <ChevronRight className="menu-toggle-icon" size={13} />
             ) : (
-                ""
-              )}
+              ""
+            )}
           </CustomAnchorTag>
+
+          {/* ین برای آیتم هایی است که یه صورت کال اپس هستند */}
           {item.type === "collapse" ? (
             <SideMenuGroup
               group={item}
@@ -233,36 +246,78 @@ class SideMenuContent extends React.Component {
               deviceWidth={this.props.deviceWidth}
             />
           ) : (
-              ""
-            )}
+            ""
+          )}
         </li>
-      )
+      );
 
+      //  ==================check the role && permission================
+      if (!item.role) {
+        if (!item.permissions) {
+          return renderItem;
+        }
+      }
       if (
         item.navLink &&
         item.collapsed !== undefined &&
         item.collapsed === true
       ) {
-        this.collapsedPath = item.navLink
-        this.props.collapsedMenuPaths(item.navLink)
+        this.collapsedPath = item.navLink;
+        this.props.collapsedMenuPaths(item.navLink);
       }
 
+      if (item.role) {
+        if (item.role.toLowerCase() == userRole.toLowerCase())
+          return renderItem;
+        else return null;
+      }
+      if (!item.role) {
+        if (item.permissions) {
+          if (!item.permissions.some((r) => userPermissions.includes(r))) {
+            // if (!item.permissions.includes(userPermissions)) {
+            return null;
+          } else {
+            return renderItem;
+          }
+        }
+        return renderItem;
+      }
+      //  ==================check the role && permission  Finished ================
+
+      ///shayad hazf shavad
       if (
         item.type === "collapse" ||
         item.type === "external-link" ||
-        (item.type === "item") ||
-        item.permissions === undefined
+        item.type === "item" ||
+        item.role === undefined
       ) {
-        return renderItem
+        if (item.permissions) {
+          if (!item.permissions.includes(userPermissions)) {
+            return null;
+          }
+        } else return renderItem;
+      }
+      if (
+        item.type === "collapse" ||
+        item.type === "external-link" ||
+        item.type === "item" ||
+        item.permissions === undefined
+
+        // ==================   My custompermissions check  ==============================
+      ) {
+        return renderItem;
       } else if (
         item.type === "item" &&
         item.navLink === this.props.activePath &&
         !item.permissions.includes(this.props.currentUser)
       ) {
-        return this.redirectUnauthorized()
+        return this.redirectUnauthorized();
       }
-    })
-    return <React.Fragment>{menuItems}</React.Fragment>
+    });
+
+    // console.log(this.props.currentUser);
+
+    return <React.Fragment>{menuItems}</React.Fragment>;
   }
 }
-export default SideMenuContent
+export default SideMenuContent;

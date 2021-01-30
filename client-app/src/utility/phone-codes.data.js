@@ -201,7 +201,6 @@ export const conutryPhoneCodes = [
   { name: "Yemen", dial_code: "+967", code: "YE" },
   { name: "Zambia", dial_code: "+260", code: "ZM" },
   { name: "Zimbabwe", dial_code: "+263", code: "ZW" },
-  { name: "land Islands", dial_code: "", code: "AX" },
   { name: "Antarctica", dial_code: null, code: "AQ" },
   { name: "Bolivia, Plurinational State of", dial_code: "+591", code: "BO" },
   { name: "Brunei Darussalam", dial_code: "+673", code: "BN" },

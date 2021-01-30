@@ -41,8 +41,8 @@ namespace Domain.DTO.Response
 
         public List<string> Errors { get; }
 
-        public ApiBadRequestResponse(List<string> errors, string message = "")
-            : base(400, message)
+        public ApiBadRequestResponse(List<string> errors, int Status = 400, string message = "")
+            : base(Status, message)
         {
             Errors = errors;
         }

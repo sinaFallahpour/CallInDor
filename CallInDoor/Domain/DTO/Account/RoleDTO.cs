@@ -15,5 +15,9 @@ namespace Domain.DTO.Account
 
 
         public bool IsEnabled { get; set; }
+
+
+        public List<int> premissions { get; set; }
+    
     }
 }

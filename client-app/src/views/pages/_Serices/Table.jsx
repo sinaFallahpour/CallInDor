@@ -18,7 +18,7 @@ import "../../../assets/scss/plugins/tables/_agGridStyleOverride.scss";
 
 import { toast } from "react-toastify";
 
-import { Edit } from "react-feather";
+import { Edit, Plus } from "react-feather";
 
 import { NavLink } from "react-router-dom";
 import Spinner from "../../../components/@vuexy/spinner/Loading-spinner";
@@ -48,6 +48,11 @@ class Table extends React.Component {
       {
         headerName: "PersianName",
         field: "persianName",
+        filter: true,
+      },
+      {
+        headerName: "Site Percent",
+        field: "sitePercent",
         filter: true,
       },
       {
@@ -161,12 +166,16 @@ class Table extends React.Component {
       <React.Fragment>
         <Card className="overflow-hidden agGrid-card">
           <CardHeader>
-            <Button.Ripple
+            <Button
+              className="add-new-btn mb-2"
               color="primary"
+              // onClick={this.toggleModal}
               onClick={() => history.push("/pages/Services/Create")}
+              outline
             >
-              Create New Service
-            </Button.Ripple>
+              <Plus size={15} />
+              <span className="align-middle">Add New</span>
+            </Button>
           </CardHeader>
 
           <CardBody className="py-0">

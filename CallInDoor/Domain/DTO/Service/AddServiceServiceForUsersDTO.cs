@@ -11,10 +11,27 @@ namespace Domain.DTO.Service
 
         public int? Id { get; set; }
 
+        //[Required(ErrorMessage = "{0} is  Required")]
+        //[MaxLength(30, ErrorMessage = "The maximum {0} length is {1} characters")]
+        //[Display(Name = "UserName")]
+        //public string UserName { get; set; }
+
+
         [Required(ErrorMessage = "{0} is  Required")]
-        [MaxLength(30, ErrorMessage = "The maximum {0} length is {1} characters")]
-        [Display(Name = "UserName")]
-        public string UserName { get; set; }
+        [Range(-90, +90, ErrorMessage = "The  {0} should be between {1} and {2}")]
+        [Display(Name = "Latitude")]
+        public double? Latitude { get; set; }
+
+
+
+        [Required(ErrorMessage = "{0} is  Required")]
+        [Range(-180, +180, ErrorMessage = "The  {0} should be between {1} and {2}")]
+        [Display(Name = "Longitude")]
+        public double? Longitude { get; set; }
+
+
+
+
 
 
         [Required(ErrorMessage = "{0} is  Required")]
@@ -63,9 +80,9 @@ namespace Domain.DTO.Service
         public bool FileNeeded { get; set; }
 
 
-        [Required(ErrorMessage = "{0} is  Required")]
+        //[Required(ErrorMessage = "{0} is  Required")]
         [MaxLength(600, ErrorMessage = "The maximum {0} length is {1} characters")]
-        [MinLength(10, ErrorMessage = "The minimum {0} length is {1} characters")]
+        //[MinLength(10, ErrorMessage = "The minimum {0} length is {1} characters")]
         [Display(Name = "FileDescription")]
         public string FileDescription { get; set; }
 
@@ -82,7 +99,7 @@ namespace Domain.DTO.Service
         /// </summary>
         [Required(ErrorMessage = "{0} is  Required")]
         [MaxLength(600, ErrorMessage = "The maximum {0} length is {1} characters")]
-        [MinLength(10, ErrorMessage = "The minimum {0} length is {1} characters")]
+        [MinLength(6, ErrorMessage = "The minimum {0} length is {1} characters")]
         [Display(Name = "WorkDeliveryTimeEstimation")]
         public string WorkDeliveryTimeEstimation { get; set; }
 

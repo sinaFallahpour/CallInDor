@@ -11,9 +11,29 @@ namespace Domain.Entities
     public class BaseMyServiceTBL : BaseEntity<int>
     {
 
-
         [MaxLength(200)]
         public string ServiceName { get; set; }
+
+
+
+
+        /// <summary>
+        /// لت جغرافیایی برای یافتن موفعیت جغرافیایی طرف
+        /// </summary>
+        public double? Latitude { get; set; }
+
+        /// لانگ جغرافیایی برای یافتن موفعیت جغرافیایی طرف
+        public double? Longitude { get; set; }
+
+
+
+        /// <summary>
+        /// آیا سرویس هایی که کاربران در این حوضه ثبت میکنند مدرک فرستادن الزامیست؟
+        /// این پراپرتی با جدول serviceTbl ریدانتدنتی دارد
+        /// </summary>
+        public bool IsProfileOptional { get; set; }
+
+
 
 
         /// <summary>
@@ -26,16 +46,35 @@ namespace Domain.Entities
 
 
 
+
+        //آیا سرویس کاربرر قابلیت ادیت کردن را دارد یا نه
+        //بعد تایید ادمیناین مقدارش فالز میشه
+        public bool IsEditableService { get; set; }
+
+        ////////////////////////////public bool IsEditableProfile { get; set; }
+
+
         /// <summary>
         /// وضعیت تایید سرویس بوسیله ادمین
         /// </summary>
         public ConfirmedServiceType ConfirmedServiceType { get; set; }
+
+        public string RejectReason { get; set; }
+
+
+
+        public ProfileConfirmType ProfileConfirmType { get; set; }
+        public string ProfileRejectReson { get; set; }
+
 
 
         /// <summary>
         /// vide or chat or service or course ,...
         /// </summary>
         public ServiceType ServiceType { get; set; }
+
+
+
 
 
 
@@ -47,10 +86,22 @@ namespace Domain.Entities
         /// </summary>
         public bool IsDeleted { get; set; }
 
+
+
+        /// <summary>
+        /// تعداد کل ستاره هایی که این سرویس گرفت
+        /// </summary>
+        public int StarCount { get; set; }
+
+        /// <summary>
+        /// تعداد کل ستار های زیر 3 که این سرویس دارد  
+        /// </summary>
+        public int Under3StarCount { get; set; }
+
         #region  Relation
 
         [ForeignKey("CatId")]
-        public virtual CategoryTBL CategoryTBL { get; set; }
+        public  CategoryTBL CategoryTBL { get; set; }
 
         public int? CatId { get; set; }
 
@@ -84,6 +135,9 @@ namespace Domain.Entities
 
 
 
+        public List<ServiceCommentsTBL> ServiceCommentsTBLs { get; set; }
+
+        public List<ServiceRequestTBL> ServiceRequestTBLs { get; set; }
 
 
         #endregion

@@ -29,6 +29,14 @@ using Service.Interfaces.ServiceType;
 using Service.Interfaces.Category;
 using AutoMapper;
 using Domain.DTO.Account;
+using Microsoft.AspNetCore.Authorization;
+using CallInDoor.Config.Permissions;
+using Service.Interfaces.Question;
+using CallInDoor.Hubs;
+using Service.Interfaces.Ticket;
+using Service.Interfaces.RequestService;
+using Service.Interfaces.Payment;
+using Service.Interfaces.InMemoryCache;
 
 namespace CallInDoor
 {
@@ -52,29 +60,41 @@ namespace CallInDoor
                 opt.UseSqlServer(Configuration.GetConnectionString("DefaultConnection"));
             });
 
+            services.AddSignalR(opt =>
+            {
+                opt.EnableDetailedErrors = true;
+            });
 
             //cors origin
             services.AddCors(opt =>
             {
-
                 opt.AddPolicy("CorsPolicy", policy =>
                 {
-                    policy.AllowAnyHeader().AllowAnyMethod().WithOrigins(
-                               "http://localhost:4200",
-                               "http://localhost:443",
-                               "http://localhost:80",
-                                "https://localhost:4200",
-                               "https://localhost:443",
-                               "https://localhost:80",
-                               "http://localhost:3000",
-                               "http://localhost:3001",
-                               "http://localhost:4321",
-                               "https://localhost:44374",
-                               "http://panel.callindoor.ir",
-                                "https://panel.callindoor.ir"
-
-                               )
+                    policy.AllowAnyHeader().AllowAnyMethod()
+                    .WithOrigins("http://localhost:4200",
+                    "https://app.callindoor.ir",
+                    "https://panel.callindoor.ir",
+                    "http://localhost:3000",
+                    "https://localhost:4200")
                     .AllowCredentials();
+
+                    /*.AllowAnyOrigin();*/
+                    //policy.AllowAnyHeader().AllowAnyMethod().AllowAnyOrigin().WithOrigins(
+                    //           "http://localhost:4200",
+                    //           "http://localhost:443",
+                    //           "http://localhost:80",
+                    //            "https://localhost:4200",
+                    //           "https://localhost:443",
+                    //           "https://localhost:80",
+                    //           "http://localhost:3000",
+                    //           "http://localhost:3001",
+                    //           "http://localhost:4321",
+                    //           "https://localhost:44374",
+                    //           "http://panel.callindoor.ir",
+                    //            "https://panel.callindoor.ir"
+
+                    //           )
+                    //.AllowCredentials();
                 });
 
             });
@@ -110,7 +130,7 @@ namespace CallInDoor
 
 
 
-
+           
 
             //services.AddDbContext<ApplicationDbContext>(options =>
             //    options.UseSqlServer(
@@ -131,8 +151,8 @@ namespace CallInDoor
             //swagger config
             services.AddOurSwaager();
 
-            services.AddControllersWithViews();
-            services.AddRazorPages();
+            //services.AddControllersWithViews();
+            //services.AddRazorPages();
 
 
             services.AddMvc(options =>
@@ -152,13 +172,23 @@ namespace CallInDoor
             services.AddAutoMapper(typeof(LoginDTO));
 
 
+            //services.AddMemoryCache();
 
+
+
+            services.AddSingleton<ICacheService, CacheService>();
 
             services.AddScoped<IAccountService, AccountService>();
             services.AddScoped<IJwtManager, JwtManager>();
             services.AddScoped<ICommonService, CommonService>();
             services.AddScoped<IServiceService, ServiceService>();
             services.AddScoped<ICategoryService, CategoryService>();
+            services.AddScoped<IQuestionService, QuestionService>();
+            services.AddScoped<ITicketService, TicketService>();
+            services.AddScoped<IRequestService, RequestService>();
+            services.AddScoped<IPaymentService, PaymentService>();
+            services.AddSingleton<IAuthorizationPolicyProvider, AuthorizationPolicyProvider>();
+
 
         }
 
@@ -218,8 +248,16 @@ namespace CallInDoor
             app.UseAuthentication();
             app.UseAuthorization();
             app.UseCors("CorsPolicy");
+
+            //app.UseSignalR(router => { })
+
+            //app.UseSignalR(routes => { routes.MapHub<NotificationHub>("/NotificationHub"); });
+
             app.UseEndpoints(endpoints =>
             {
+                endpoints.MapHub<NotificationHub>("/NotificationHub");
+                endpoints.MapHub<ChatHub>("/ChatHub");
+
                 endpoints.MapControllerRoute(
                     name: "default",
                     pattern: "{controller=Home}/{action=Index}/{id?}");

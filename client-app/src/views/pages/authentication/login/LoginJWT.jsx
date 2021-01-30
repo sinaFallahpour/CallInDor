@@ -11,38 +11,47 @@ import {
   Button,
   Label,
   Alert,
-  Spinner
+  Spinner,
 } from "reactstrap";
-import Checkbox from "../../../../components/@vuexy/checkbox/CheckboxesVuexy";
-import { Mail, Lock, Check, Phone } from "react-feather";
+// import Checkbox from "../../../../components/@vuexy/checkbox/CheckboxesVuexy";
+import { Lock, Phone, Code } from "react-feather";
+import Select from "react-select";
+
 // import { loginWithJWT } from "../../../../redux/actions/auth/loginActions";
 // import { connect } from "react-redux";
 // import { history } from "../../../../history";
 import { toast } from "react-toastify";
 // import Spinner from "../../../../components/@vuexy/spinner/Loading-spinner";
+import { conutryPhoneCodes } from "../../../../utility/phone-codes.data";
 
 class LoginJWT extends React.Component {
   state = {
     phone: "",
     password: "",
+    countryCode: "",
     errors: [],
     errorMessage: "",
-    Loading: false,
+    loading: false,
+
+    conutryPhoneCodes: conutryPhoneCodes,
   };
 
   doSubmit = async (e) => {
-    this.setState({ Loading: true });
     e.preventDefault();
+    let result = this.validate(this.state);
+    if (!result) return;
+    this.setState({ loading: true });
     const errorMessage = "";
     const errors = [];
     this.setState({ errorMessage, errors });
     try {
-      const { phone, password } = this.state;
+      let { phone, password, countryCode } = this.state;
+      phone = countryCode + phone;
       const res = await auth.login(phone, password);
       setTimeout(() => {
         const state = this.props?.location?.state;
         window.location = state ? state.from.pathName : "/";
-        this.setState({ Loading: false });
+        this.setState({ loading: false });
       }, 1000);
     } catch (ex) {
       console.log(ex);
@@ -57,10 +66,35 @@ class LoginJWT extends React.Component {
         });
       }
       setTimeout(() => {
-        this.setState({ Loading: false });
+        this.setState({ loading: false });
       }, 1000);
     }
+  };
 
+  validate = (obj) => {
+    let errors = [];
+    let result = true;
+    if (obj.phone.length != 10) {
+      errors.push("The minimum PhoneNumber length is 10 characters");
+      result = false;
+    }
+    if (!obj.countryCode) {
+      errors.push("Country code is required");
+      result = false;
+    }
+    this.setState({ errors });
+    return result;
+  };
+
+  getValue = () => {
+    var selectedCountry = conutryPhoneCodes.filter(
+      (item) => item.dial_code === this.state.countryCode
+    );
+    var data = {
+      value: selectedCountry[0]?.dial_code,
+      label: selectedCountry[0]?.dial_code,
+    };
+    return data;
   };
 
   render() {
@@ -82,10 +116,35 @@ class LoginJWT extends React.Component {
             })}
 
           <Form action="/s" className="mt-3" onSubmit={this.doSubmit}>
+            <label htmlFor="select"> Country code</label>
+
+            <FormGroup className="form-label-group position-relative has-icon-left">
+              <Select
+                className="React"
+                classNamePrefix="select"
+                id="select"
+                // defaultValue={options[1]}
+                value={this.getValue()}
+                name="countryCode"
+                // defaultValue={{ value: "", label: "" }}
+                //value={value}
+                isClearable={true}
+                options={conutryPhoneCodes.map((item) => ({
+                  value: item.dial_code,
+                  label: item.name,
+                }))}
+                onChange={(e) => {
+                  this.setState({ countryCode: e?.value });
+                }}
+              />
+            </FormGroup>
+
+            <label htmlFor="_phone"> Phone number(with out country Code)</label>
             <FormGroup className="form-label-group position-relative has-icon-left">
               <Input
                 type="number"
-                placeholder="Phone"
+                placeholder="example: 9117110586"
+                id="_phone"
                 value={this.state.phone}
                 onChange={(e) => this.setState({ phone: e.target.value })}
                 required
@@ -94,12 +153,16 @@ class LoginJWT extends React.Component {
               <div className="form-control-position">
                 <Phone size={15} />
               </div>
-              <Label>phoneNumber</Label>
+              <Label>phone number(with out country Code)</Label>
             </FormGroup>
+
+            <label htmlFor="_Password"> Password</label>
+
             <FormGroup className="form-label-group position-relative has-icon-left">
               <Input
                 type="password"
                 placeholder="Password"
+                id="_Password"
                 value={this.state.password}
                 onChange={(e) => this.setState({ password: e.target.value })}
                 required
@@ -121,22 +184,16 @@ class LoginJWT extends React.Component {
                 Login
               </Button.Ripple> */}
 
-
-
-              {this.state.Loading ? (
-                <Button
-                  disabled={true}
-                  color="primary"
-                  className="mb-1"
-                >
+              {this.state.loading ? (
+                <Button disabled={true} color="primary" className="mb-1">
                   <Spinner color="white" size="sm" type="grow" />
                   <span className="ml-50">Loading...</span>
                 </Button>
               ) : (
-                  <Button.Ripple color="primary" type="submit" >
-                    Login
-                  </Button.Ripple>)}
-
+                <Button.Ripple color="primary" type="submit">
+                  Login
+                </Button.Ripple>
+              )}
             </div>
           </Form>
         </CardBody>

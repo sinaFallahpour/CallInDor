@@ -1,4 +1,4 @@
-import React from "react"
+import React from "react";
 import {
   Card,
   CardHeader,
@@ -7,28 +7,28 @@ import {
   UncontrolledDropdown,
   DropdownMenu,
   DropdownItem,
-  DropdownToggle
-} from "reactstrap"
-import Chart from "react-apexcharts"
+  DropdownToggle,
+} from "reactstrap";
+import Chart from "react-apexcharts";
 import {
   Monitor,
   ArrowUp,
   Smartphone,
   Tablet,
   ArrowDown,
-  ChevronDown
-} from "react-feather"
+  ChevronDown,
+} from "react-feather";
 
 class SessionByDevice extends React.Component {
   state = {
     options: {
       chart: {
         toolbar: {
-          show: false
-        }
+          show: false,
+        },
       },
       dataLabels: {
-        enabled: false
+        enabled: false,
       },
       legend: { show: false },
       comparedResult: [2, -3, 8],
@@ -41,20 +41,23 @@ class SessionByDevice extends React.Component {
           gradientToColors: [
             this.props.primaryLight,
             this.props.warningLight,
-            this.props.dangerLight
-          ]
-        }
-      }
+            this.props.dangerLight,
+          ],
+        },
+      },
     },
-    series: [58.6, 34.9, 6.5]
-  }
+    series: [58.6, 34.9, 6.5],
+  };
   render() {
     return (
       <Card>
         <CardHeader>
           <CardTitle>Session By Device</CardTitle>
           <UncontrolledDropdown>
-            <DropdownToggle tag="small" className="text-bold-500 cursor-pointer">
+            <DropdownToggle
+              tag="small"
+              className="text-bold-500 cursor-pointer"
+            >
               Last 7 days <ChevronDown size={10} />
             </DropdownToggle>
             <DropdownMenu right>
@@ -106,7 +109,7 @@ class SessionByDevice extends React.Component {
           </div>
         </CardBody>
       </Card>
-    )
+    );
   }
 }
-export default SessionByDevice
+export default SessionByDevice;

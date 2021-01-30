@@ -16,6 +16,12 @@ using Microsoft.Extensions.Localization;
 using Service.Interfaces.ServiceType;
 using Domain.DTO.Service;
 using Domain.Enums;
+using CallInDoor.Config.Attributes;
+using Service.Interfaces.Common;
+using CallInDoor.Config.Permissions;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.SignalR;
+using CallInDoor.Hubs;
 
 namespace CallInDoor.Controllers
 {
@@ -24,20 +30,36 @@ namespace CallInDoor.Controllers
     public class ServiceController : BaseControlle
     {
         #region ctor
+
+        private readonly IHubContext<NotificationHub> _hubContext;
+
         private readonly DataContext _context;
         private readonly IAccountService _accountService;
+        private readonly RoleManager<AppRole> _roleManager;
         private readonly IServiceService _servicetypeService;
+        private readonly ICommonService _commonService;
+
+
 
         private IStringLocalizer<ShareResource> _localizerShared;
         private IStringLocalizer<ServiceController> _locaLizer;
-        public ServiceController(DataContext context,
+        public ServiceController(
+        IHubContext<NotificationHub> hubContext,
+
+            DataContext context,
+              IAccountService accountService,
+              RoleManager<AppRole> roleManager,
+              IServiceService servicetypeService,
+              ICommonService commonService,
              IStringLocalizer<ShareResource> localizerShared,
-              IStringLocalizer<ServiceController> locaLizer,
-             IAccountService accountService,
-              IServiceService servicetypeService
+              IStringLocalizer<ServiceController> locaLizer
+
             )
         {
+            _hubContext = hubContext;
             _context = context;
+            _commonService = commonService;
+            _roleManager = roleManager;
             _accountService = accountService;
             _localizerShared = localizerShared;
             _locaLizer = locaLizer;
@@ -47,7 +69,6 @@ namespace CallInDoor.Controllers
         #endregion
         #region ServiceType
 
-
         /// <summary>
         /// گرفتن یک سرویس تایپ مثل Translate
         /// </summary>
@@ -55,11 +76,9 @@ namespace CallInDoor.Controllers
         /// <returns></returns>
         [HttpGet("GetServiceByIdForAdmin")]
         [Authorize(Roles = PublicHelper.ADMINROLE)]
+        [ClaimsAuthorize(IsAdmin = true)]
         public async Task<ActionResult> GetServiceByIdForAdmin(int Id)
         {
-            var checkToken = await _accountService.CheckTokenIsValid();
-            if (!checkToken)
-                return Unauthorized(new ApiResponse(401, PubicMessages.UnAuthorizeMessage));
 
             var Service = await _context.ServiceTBL
                .AsNoTracking()
@@ -69,28 +88,26 @@ namespace CallInDoor.Controllers
                    c.Id,
                    c.Name,
                    c.PersianName,
+                   c.SitePercent,
                    c.IsEnabled,
-                   c.Color,
                    c.MinPriceForService,
                    c.MinSessionTime,
                    c.AcceptedMinPriceForNative,
                    c.AcceptedMinPriceForNonNative,
+                   c.Color,
+                   c.IsProfileOptional,
                    RoleId = c.AppRole.Id,
+                   RequiredCertificates = c.ServidceTypeRequiredCertificatesTBL.Where(c => c.Isdeleted == false).Select(c => new { c.Id, c.FileName, c.PersianFileName }),
                    tags = c.Tags.Where(p => p.IsEnglisTags && !string.IsNullOrEmpty(p.TagName)).Select(s => s.TagName).ToList(),
                    persinaTags = c.Tags.Where(p => p.IsEnglisTags == false && !string.IsNullOrEmpty(p.PersianTagName)).Select(s => s.PersianTagName).ToList()
+
                }).FirstOrDefaultAsync();
 
             if (Service == null)
                 return NotFound(new ApiResponse(404, PubicMessages.NotFoundMessage));
 
-            return Ok(new ApiOkResponse(new DataFormat()
-            {
-                Status = 1,
-                data = Service,
-                Message = PubicMessages.SuccessMessage
-            },
-            PubicMessages.SuccessMessage
-           ));
+            return Ok(_commonService.OkResponse(Service, PubicMessages.SuccessMessage));
+
 
         }
 
@@ -102,12 +119,9 @@ namespace CallInDoor.Controllers
         // GET: api/GetAllServiceForAdmin
         [HttpGet("GetAllServiceForAdmin")]
         [Authorize(Roles = PublicHelper.ADMINROLE)]
+        [ClaimsAuthorize(IsAdmin = true)]
         public async Task<ActionResult> GetAllServiceForAdmin()
         {
-            var checkToken = await _accountService.CheckTokenIsValid();
-            if (!checkToken)
-                return Unauthorized(new ApiResponse(401, PubicMessages.UnAuthorizeMessage));
-
             var AllServices = await _context
                   .ServiceTBL
                   .AsNoTracking()
@@ -117,22 +131,18 @@ namespace CallInDoor.Controllers
                       c.IsEnabled,
                       c.Name,
                       c.PersianName,
+                      c.SitePercent,
                       c.Color,
                       RoleName = c.AppRole.Name,
                       c.AcceptedMinPriceForNative,
                       c.AcceptedMinPriceForNonNative,
+                      c.IsProfileOptional,
                       c.MinSessionTime,
                       c.MinPriceForService
                   }).ToListAsync();
 
-            return Ok(new ApiOkResponse(new DataFormat()
-            {
-                Status = 1,
-                data = AllServices,
-                Message = PubicMessages.SuccessMessage
-            },
-          PubicMessages.SuccessMessage
-         ));
+            return Ok(_commonService.OkResponse(AllServices, PubicMessages.SuccessMessage));
+
 
         }
 
@@ -142,18 +152,11 @@ namespace CallInDoor.Controllers
 
         // GET: api/GetAllService
         [HttpGet("GetAllActiveService")]
-        [AllowAnonymous]
+        [Authorize]
         public async Task<ActionResult> GetAllActiveService()
         {
             var services = await _servicetypeService.GetAllActiveService();
-            return Ok(new ApiOkResponse(new DataFormat()
-            {
-                Status = 1,
-                data = services,
-                Message = PubicMessages.SuccessMessage
-            },
-           PubicMessages.SuccessMessage
-          ));
+            return Ok(_commonService.OkResponse(services, PubicMessages.SuccessMessage));
         }
 
 
@@ -162,37 +165,38 @@ namespace CallInDoor.Controllers
 
         [HttpGet("GetTagsForService")]
         [Authorize]
+        [ClaimsAuthorize(IsAdmin = false)]
         public async Task<ActionResult> GetTagsForService(int? Id)
         {
-            var checkToken = await _accountService.CheckTokenIsValid();
-            if (!checkToken)
-                return Unauthorized(new ApiResponse(401, PubicMessages.UnAuthorizeMessage));
-
             if (Id == null)
-                return NotFound(new ApiResponse(404, _localizerShared["NotFound"].Value.ToString()));
-
-            var tags = _context.ServiceTags
-                .AsNoTracking()
-                .Where(c => c.ServiceId == Id)
-                .Select(c => new
-                {
-                    c.Id,
-                    c.IsEnglisTags,
-                    c.PersianTagName,
-                    c.TagName,
-                }).ToList();
-
-            return Ok(new ApiOkResponse(new DataFormat()
             {
-                Status = 1,
-                data = tags,
-                Message = _localizerShared["SuccessMessage"].Value.ToString()
-            },
-           _localizerShared["SuccessMessage"].Value.ToString()
-           ));
+                List<string> erros = new List<string> { _localizerShared["NotFound"].Value.ToString() };
+                return NotFound(new ApiBadRequestResponse(erros, 404));
+            }
 
+            var IsPersian = _commonService.IsPersianLanguage();
+
+            List<GetTagsDTO> tags;
+            if (IsPersian)
+            {
+                tags = await _context.ServiceTags.AsNoTracking().Where(c => c.ServiceId == Id).Select(c => new GetTagsDTO
+                {
+                    Id = c.Id,
+                    TagName = c.PersianTagName
+                })
+               .ToListAsync();
+            }
+            else
+            {
+                tags = await _context.ServiceTags.AsNoTracking().Where(c => c.ServiceId == Id).Select(c => new GetTagsDTO
+                {
+                    Id = c.Id,
+                    TagName = c.TagName,
+                })
+             .ToListAsync();
+            }
+            return Ok(_commonService.OkResponse(tags, _localizerShared["SuccessMessage"].Value.ToString()));
         }
-
 
 
 
@@ -204,37 +208,28 @@ namespace CallInDoor.Controllers
         /// <returns></returns>
         [HttpGet("GetTimeAndPriceForService/{Id}")]
         [Authorize]
+        [ClaimsAuthorize(IsAdmin = false)]
         public async Task<ActionResult> GetTimeAndPriceForService(int? Id)
         {
-            var checkToken = await _accountService.CheckTokenIsValid();
-            if (!checkToken)
-                return Unauthorized(new ApiResponse(401, _localizerShared["UnauthorizedMessage"].Value.ToString()));
-
             if (Id == null)
-                return NotFound(new ApiResponse(404, _localizerShared["NotFound"].Value.ToString()));
-
-            var serviceTimsandProice = _context
+            {
+                List<string> erros = new List<string> { _localizerShared["NotFound"].Value.ToString() };
+                return NotFound(new ApiBadRequestResponse(erros, 404));
+            }
+            var serviceTimsandProice = await _context
                 .ServiceTBL
                 .AsNoTracking()
                 .Where(c => c.Id == Id)
                 .Select(c => new
                 {
+                    c.AcceptedMinPriceForNative,
+                    c.AcceptedMinPriceForNonNative,
                     c.MinPriceForService,
                     c.MinSessionTime,
-                }).ToList();
+                }).ToListAsync();
 
-            return Ok(new ApiOkResponse(new DataFormat()
-            {
-                Status = 1,
-                data = serviceTimsandProice,
-                Message = _localizerShared["SuccessMessage"].Value.ToString()
-            },
-           _localizerShared["SuccessMessage"].Value.ToString()
-           ));
-
+            return Ok(_commonService.OkResponse(serviceTimsandProice, _localizerShared["SuccessMessage"].Value.ToString()));
         }
-
-
 
 
 
@@ -245,32 +240,19 @@ namespace CallInDoor.Controllers
         /// <returns></returns>
         [HttpGet("GetTimeAndPriceForService")]
         [Authorize]
+        [ClaimsAuthorize(IsAdmin = false)]
         public async Task<ActionResult> GetTimeAndPriceForService()
         {
-            var checkToken = await _accountService.CheckTokenIsValid();
-            if (!checkToken)
-                return Unauthorized(new ApiResponse(401, _localizerShared["UnauthorizedMessage"].Value.ToString()));
-
-            var serviceTimsandProice = _context
-                .ServiceTBL
-                .AsNoTracking()
+            var serviceTimsandProice = await _context.ServiceTBL.AsNoTracking()
                 .Select(c => new
                 {
+                    c.AcceptedMinPriceForNative,
+                    c.AcceptedMinPriceForNonNative,
                     c.MinPriceForService,
                     c.MinSessionTime
-                }).ToList();
-
-            return Ok(new ApiOkResponse(new DataFormat()
-            {
-                Status = 1,
-                data = serviceTimsandProice,
-                Message = _localizerShared["SuccessMessage"].Value.ToString()
-            },
-           _localizerShared["SuccessMessage"].Value.ToString()
-           ));
-
+                }).ToListAsync();
+            return Ok(_commonService.OkResponse(serviceTimsandProice, _localizerShared["SuccessMessage"].Value.ToString()));
         }
-
 
 
 
@@ -282,89 +264,121 @@ namespace CallInDoor.Controllers
         /// <returns></returns>
         [HttpPost("CreateForAdmin")]
         [Authorize(Roles = PublicHelper.ADMINROLE)]
+        [ClaimsAuthorize(IsAdmin = true)]
         public async Task<ActionResult> CreateForAdmin([FromBody] CreateServiceDTO model)
         {
-
-            var checkToken = await _accountService.CheckTokenIsValid();
-            if (!checkToken)
-                return Unauthorized(new ApiResponse(401, PubicMessages.UnAuthorizeMessage));
-
-            var roleExist = await _context.Roles.AnyAsync(c => c.Id == model.RoleId);
-            if (!roleExist)
-            {
-                var errors = new List<string>();
-                errors.Add("invalid Role.");
-                return BadRequest(new ApiBadRequestResponse(errors));
-            }
+            var res = await validateCreateServiceForAdmin(model, false);
+            if (!res.succsseded)
+                return BadRequest(new ApiBadRequestResponse(res.result));
 
 
             var result = await _servicetypeService.Create(model);
             if (result)
-            {
-                return Ok(new ApiOkResponse(new DataFormat()
-                {
-                    Status = 1,
-                    data = new { },
-                    Message = PubicMessages.SuccessMessage
-                },
-                   PubicMessages.SuccessMessage
-                  ));
-            }
+                return Ok(_commonService.OkResponse(null, PubicMessages.SuccessMessage));
 
             return StatusCode(StatusCodes.Status500InternalServerError,
               new ApiResponse(500, PubicMessages.InternalServerMessage)
             );
-
-            //return badrequest(new ApiResponse(401, _localizerShared["InvalidPhoneNumber"].Value.ToString()));
-
         }
 
 
 
 
 
-        [HttpPut("UpdateServiceForAdmin")]
-        [Authorize(Roles = PublicHelper.ADMINROLE)]
-        public async Task<IActionResult> UpdateServiceForAdmin([FromBody] CreateServiceDTO model)
+        #region Validate  ko30Sher
+        [NonAction]
+        public async Task<(bool succsseded, List<string> result)> validateCreateServiceForAdmin(CreateServiceDTO model, bool isEditMode)
         {
-            var checkToken = await _accountService.CheckTokenIsValid();
-            if (!checkToken)
-                return Unauthorized(new ApiResponse(401, PubicMessages.UnAuthorizeMessage));
+            bool IsValid = true;
+            var errors = new List<string>();
+
+            if (model.DayCount == null && model.HourCount == null)
+            {
+                IsValid = false;
+                errors.Add("please enter day or hour for discount");
+                return (IsValid, errors);
+            }
 
 
-            var roleExist = await _context.Roles.AnyAsync(c => c.Id == model.RoleId);
+            if ((model.RequiredFiles == null || model.RequiredFiles.Count == 0) && !model.IsProfileOptional)
+            {
+                IsValid = false;
+                errors.Add("please enter required files");
+                return (IsValid, errors);
+            }
+
+
+            var roleExist = await _context.Roles.AsTracking().AnyAsync(c => c.Id == model.RoleId);
             if (!roleExist)
             {
-                var errors = new List<string>();
-                errors.Add("invalid Role.");
-                return BadRequest(new ApiBadRequestResponse(errors));
+                IsValid = false;
+                errors.Add("invalid Roles");
+                return (IsValid, errors);
+
+                //return BadRequest(new ApiBadRequestResponse(errors));
             }
+
+            if (model.RequiredFiles != null)
+            {
+                foreach (var item in model.RequiredFiles)
+                {
+                    if (string.IsNullOrEmpty(item.FileName))
+                    {
+                        IsValid = false;
+                        errors.Add("file name is required");
+                        return (IsValid, errors);
+                        //return BadRequest(new ApiBadRequestResponse(errors));
+                    }
+                    if (string.IsNullOrEmpty(item.PersianFileName))
+                    {
+                        IsValid = false;
+                        errors.Add("persian file name is required");
+                        return (IsValid, errors);
+                        //return BadRequest(new ApiBadRequestResponse(errors));
+                    }
+                }
+            }
+
+            var seviceExist = isEditMode ?
+                                  await _context.ServiceTBL.AnyAsync(c => (c.Name == model.Name || c.PersianName == model.PersianName) && c.Id != model.Id)
+                               :
+                                   await _context.ServiceTBL.AsNoTracking().AnyAsync(c => c.Name == model.Name || c.PersianName == model.PersianName);
+            if (seviceExist)
+            {
+                IsValid = false;
+                errors.Add($"name Or persian Name already exist");
+                return (IsValid, errors);
+                //return BadRequest(new ApiBadRequestResponse(errors));
+            }
+            return (IsValid, errors);
+        }
+        #endregion
+
+
+
+        [HttpPut("UpdateServiceForAdmin")]
+        [Authorize(Roles = PublicHelper.ADMINROLE)]
+        [ClaimsAuthorize(IsAdmin = true)]
+        public async Task<IActionResult> UpdateServiceForAdmin([FromBody] CreateServiceDTO model)
+        {
+            #region validation
+            var res = await validateCreateServiceForAdmin(model, true);
+            if (!res.succsseded)
+                return BadRequest(new ApiBadRequestResponse(res.result));
+
 
             var service = await _servicetypeService.GetByIdWithJoin(model.Id);
             if (service == null)
-            {
                 return NotFound(new ApiResponse(404, "service " + PubicMessages.NotFoundMessage));
-            }
 
+            #endregion
 
             var result = await _servicetypeService.Update(service, model);
             if (result)
-            {
-                return Ok(new ApiOkResponse(new DataFormat()
-                {
-                    Status = 1,
-                    data = new { },
-                    Message = PubicMessages.SuccessMessage
-                },
-                   PubicMessages.SuccessMessage
-                  ));
-            }
-
+                return Ok(_commonService.OkResponse(null, PubicMessages.SuccessMessage));
 
             return StatusCode(StatusCodes.Status500InternalServerError,
-              new ApiResponse(500, PubicMessages.InternalServerMessage)
-            );
-
+                              new ApiResponse(500, PubicMessages.InternalServerMessage));
         }
 
 
@@ -375,25 +389,54 @@ namespace CallInDoor.Controllers
 
 
 
+        /// <summary>
+        ///گرفتن سرویس تایپ های من
+        /// </summary>
+        /// <param name="Id"></param>
+        /// <returns></returns>
+        [HttpGet("GetAllMyServiceCategory")]
+        //[Authorize]
+        [ClaimsAuthorize]
+        public async Task<ActionResult> GetAllMyServiceCategory()
+        {
+            var currentusername = _accountService.GetCurrentUserName();
+            var isPersian = _commonService.IsPersianLanguage();
+
+            var query = (from bs in _context.BaseMyServiceTBL.Where(c => c.UserName == currentusername && c.IsDeleted == false && c.ServiceId != null)
+                         join s in _context.ServiceTBL
+                         on bs.ServiceId equals s.Id
+                         select new ServiceCategoryDTO
+                         {
+                             ServiceId = s.Id,
+                             ServiceName = isPersian ? s.PersianName : s.Name,
+                             Color = s.Color
+                         }).Distinct()
+                          .AsQueryable();
+
+            var MyServiceTypes = await query.ToListAsync();
+            return Ok(_commonService.OkResponse(MyServiceTypes, _localizerShared["SuccessMessage"].Value.ToString()));
+
+        }
+
+
+
 
         /// <summary>
-        /// گرفتن تمام سرویس های من 
+        /// گرفتن تمام سرویس های من  از نوع یک سرویس تایپ خاص
         /// </summary>
         /// <param name="Id"></param>
         /// <returns></returns>
         [HttpGet("GetAllMyService")]
-        [Authorize]
+        //[Authorize]
+        [ClaimsAuthorize(IsAdmin = false)]
         public async Task<ActionResult> GetAllMyService(int ServiecTypeId)
         {
-            var checkToken = await _accountService.CheckTokenIsValid();
-            if (!checkToken)
-                return Unauthorized(new ApiResponse(401, PubicMessages.UnAuthorizeMessage));
 
             var currentUsername = _accountService.GetCurrentUserName();
 
             var Service = await _context.BaseMyServiceTBL
                .AsNoTracking()
-               .Where(c => c.ServiceId == ServiecTypeId && c.UserName == currentUsername)
+               .Where(c => c.ServiceId == ServiecTypeId && c.UserName == currentUsername && c.IsDeleted == false)
                .Select(c => new
                {
                    c.Id,
@@ -403,107 +446,17 @@ namespace CallInDoor.Controllers
                }).ToListAsync();
 
             if (Service == null)
-                return NotFound(new ApiResponse(404, _localizerShared["NotFound"].Value.ToString()));
-
-            return Ok(new ApiOkResponse(new DataFormat()
             {
-                Status = 1,
-                data = Service,
-                Message = _localizerShared["SuccessMessage"].Value.ToString()
-            },
-                _localizerShared["SuccessMessage"].Value.ToString()
-            ));
+                List<string> erros = new List<string> { _localizerShared["NotFound"].Value.ToString() };
+                return NotFound(new ApiBadRequestResponse(erros, 404));
+                //return NotFound(new ApiResponse(404, _localizerShared["NotFound"].Value.ToString()));
+            }
+            return Ok(_commonService.OkResponse(Service, _localizerShared["SuccessMessage"].Value.ToString()));
 
         }
-
-
-
-
 
 
         #region chatService
-
-        /// <summary>
-        /// ایجاد  سرویس chat or voice or video  برای یک کاربر 
-        /// </summary>
-        /// <param name="model"></param>
-        /// <returns></returns>
-        [HttpPost("/api/userService/AddChatServiceForUser")]
-        [Authorize]
-        public async Task<ActionResult> AddChatServiceForUser([FromBody] AddChatServiceForUsersDTO model)
-        {
-            var checkToken = await _accountService.CheckTokenIsValid();
-            if (!checkToken)
-                return Unauthorized(new ApiResponse(401, _localizerShared["UnauthorizedMessage"].Value.ToString()));
-
-            var res = await _servicetypeService.ValidateChatService(model);
-            if (!res.succsseded)
-                return BadRequest(new ApiBadRequestResponse(res.result));
-
-
-            if (model.PackageType == PackageType.Free)
-                model.Duration = null;
-            else
-                model.FreeMessageCount = null;
-
-            var BaseMyService = new BaseMyServiceTBL()
-            {
-                ConfirmedServiceType = ConfirmedServiceType.Pending,
-                CreateDate = DateTime.Now,
-                ServiceName = model.ServiceName,
-                ServiceType = (ServiceType)model.ServiceType,
-                UserName = model.UserName,
-                ServiceId = model.ServiceId,
-                CatId = model.CatId,
-                SubCatId = model.SubCatId,
-                IsDeleted = false,
-                //IsActive = false
-            };
-
-
-            var MyChatService = new MyChatServiceTBL()
-            {
-                //UserName = model.UserName,
-                //ServiceName = model.ServiceName,
-                PackageType = model.PackageType,
-                BeTranslate = model.BeTranslate,
-                //FreeMessageCount = (int)model.FreeMessageCount,
-                IsServiceReverse = model.IsServiceReverse,
-                PriceForNativeCustomer = (double)model.PriceForNativeCustomer,
-                PriceForNonNativeCustomer = (double)model.PriceForNonNativeCustomer,
-                //CreateDate = DateTime.Now,
-                //IsCheckedByAdmin = false,
-                //ConfirmedServiceType = ConfirmedServiceType.Rejected,
-                BaseMyChatTBL = BaseMyService,
-            };
-            if (model.PackageType == PackageType.Free)
-                MyChatService.FreeMessageCount = (int)model.FreeMessageCount;
-            else
-            {
-                MyChatService.Duration = (int)model.Duration;
-            }
-
-            try
-            {
-                //await _context.BaseMyServiceTBL.AddAsync(BaseMyService);
-                await _context.MyChatServiceTBL.AddAsync(MyChatService);
-
-                await _context.SaveChangesAsync();
-                return Ok(new ApiOkResponse(new DataFormat()
-                {
-                    Status = 1,
-                    data = { },
-                    Message = _locaLizer["SuccesfullAddServiceMessage"].Value.ToString()
-                },
-                 _locaLizer["SuccesfullAddServiceMessage"].Value.ToString()
-                ));
-            }
-            catch
-            {
-                return StatusCode(StatusCodes.Status500InternalServerError,
-                                new ApiResponse(500, _localizerShared["InternalServerMessage"].Value.ToString()));
-            }
-        }
 
 
 
@@ -515,57 +468,117 @@ namespace CallInDoor.Controllers
         /// <param name="Id"></param>
         /// <returns></returns>
         [HttpGet("/api/userService/GetChatServiceForUser")]
-        [Authorize]
+        //[Authorize]
+        [ClaimsAuthorize(IsAdmin = false)]
         public async Task<ActionResult> GetChatServiceForUser(int Id)
         {
-            var checkToken = await _accountService.CheckTokenIsValid();
-            if (!checkToken)
-                return Unauthorized(new ApiResponse(401, PubicMessages.UnAuthorizeMessage));
 
             var serviceFromDB = await _context
-                .MyChatServiceTBL
-               .AsNoTracking()
-               .Where(c => c.Id == Id && c.BaseMyChatTBL.IsDeleted == false)
-               .Select(c => new
-               {
-                   c.Id,
-                   c.PackageType,
-                   c.BeTranslate,
-                   c.FreeMessageCount,
-                   c.IsServiceReverse,
-                   c.PriceForNativeCustomer,
-                   c.PriceForNonNativeCustomer,
-                   c.BaseMyChatTBL.CatId,
-                   c.BaseMyChatTBL.SubCatId,
-                   c.BaseMyChatTBL.ServiceName,
-                   c.BaseMyChatTBL.ServiceType,
-                   c.BaseMyChatTBL.UserName,
-                   c.BaseMyChatTBL.ConfirmedServiceType,
-                   c.BaseMyChatTBL.IsDeleted
-                   //c.BaseMyChatTBL.IsActive
-               }).FirstOrDefaultAsync();
+                .BaseMyServiceTBL.Where(c => c.Id == Id && c.IsDeleted == false)
+                .Select(c => new
+                {
+                    c.MyChatsService.PackageType,
+                    c.MyChatsService.BeTranslate,
+                    c.MyChatsService.MessageCount,
+                    c.MyChatsService.FreeMessageCount,
+                    c.MyChatsService.Duration,
+                    c.MyChatsService.IsServiceReverse,
+                    c.MyChatsService.PriceForNativeCustomer,
+                    c.MyChatsService.PriceForNonNativeCustomer,
+                    c.Id,
+                    c.CatId,
+                    c.SubCatId,
+                    c.ServiceName,
+                    c.ServiceType,
+                    c.UserName,
+                    c.ConfirmedServiceType,
+                    c.IsDeleted,
 
+                    c.CreateDate,
+                    c.IsEditableService,
+                    c.RejectReason,
+
+                }).FirstOrDefaultAsync();
 
             var currentUsername = _accountService.GetCurrentUserName();
 
             if (serviceFromDB == null)
-                return NotFound(new ApiResponse(404, _localizerShared["NotFound"].Value.ToString()));
+            {
+                List<string> erros = new List<string> { _localizerShared["NotFound"].Value.ToString() };
+                return NotFound(new ApiBadRequestResponse(erros, 404));
+            }
 
             if (serviceFromDB.UserName != currentUsername)
-                return Unauthorized(new ApiResponse(401, _localizerShared["UnauthorizedMessage"].Value.ToString()));
-
-            return Ok(new ApiOkResponse(new DataFormat()
             {
-                Status = 1,
-                data = serviceFromDB,
-                Message = _localizerShared["SuccessMessage"].Value.ToString()
-            },
-        _localizerShared["SuccessMessage"].Value.ToString()
-        ));
-
-
+                List<string> erros = new List<string> { _localizerShared["UnauthorizedMessage"].Value.ToString() };
+                return Unauthorized(new ApiBadRequestResponse(erros, 401));
+            }
+            return Ok(_commonService.OkResponse(serviceFromDB, _localizerShared["SuccessMessage"].Value.ToString()));
         }
 
+
+
+
+
+        /// <summary>
+        /// chat or voice or video گرفتن اطلاعات برای یک سرویس   
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns></returns>
+        [HttpGet("/api/userService/GetChatServiceInfoForUpdate")]
+        //[Authorize]
+        [ClaimsAuthorize(IsAdmin = false)]
+        public async Task<ActionResult> GetChatServiceInfoForUpdate(int id)
+        {
+
+            var currentUsername = _accountService.GetCurrentUserName();
+
+            var serviceFromDB = await _context
+               .BaseMyServiceTBL
+               .Where(c => c.Id == id && c.IsDeleted == false)
+               .Include(c => c.MyChatsService)
+               .FirstOrDefaultAsync();
+
+            #region  validation
+            if (serviceFromDB == null)
+            {
+                List<string> erros = new List<string> { _localizerShared["NotFound"].Value.ToString() };
+                return BadRequest(new ApiBadRequestResponse(erros, 404));
+            }
+
+            if (serviceFromDB.UserName != currentUsername)
+            {
+                List<string> erros = new List<string> { _localizerShared["UnauthorizedMessage"].Value.ToString() };
+                return BadRequest(new ApiBadRequestResponse(erros, 401));
+            }
+            if (serviceFromDB.ServiceType == ServiceType.Service || serviceFromDB.ServiceType == ServiceType.Course)
+            {
+                List<string> erros = new List<string> { _localizerShared["InValidServiceType"].Value.ToString() };
+                return BadRequest(new ApiBadRequestResponse(erros));
+            }
+            #endregion
+
+            var response = new
+            {
+                serviceFromDB.ServiceType,
+                serviceFromDB.ServiceName,
+                serviceFromDB.MyChatsService.PackageType,
+                serviceFromDB.MyChatsService.BeTranslate,
+                serviceFromDB.MyChatsService.IsServiceReverse,
+                serviceFromDB.MyChatsService.PriceForNativeCustomer,
+                serviceFromDB.MyChatsService.PriceForNonNativeCustomer,
+
+                serviceFromDB.MyChatsService.FreeMessageCount,
+                serviceFromDB.MyChatsService.Duration,
+                serviceFromDB.MyChatsService.MessageCount,
+
+
+                //serviceFromDB.ServiceTbl.Name,
+                //serviceFromDB.ServiceTbl.Id
+
+            };
+            return Ok(_commonService.OkResponse(response, _locaLizer["SuccesfullAddServiceMessage"].Value.ToString()));
+        }
 
 
 
@@ -576,79 +589,228 @@ namespace CallInDoor.Controllers
         /// </summary>
         /// <param name="model"></param>
         /// <returns></returns>
-        [HttpPut("/api/userService/UpdateChatServiceForUser")]
-        [Authorize]
-        public async Task<ActionResult> UpdateChatServiceForUser([FromBody] AddChatServiceForUsersDTO model)
+        [HttpPost("/api/userService/AddChatServiceForUser")]
+        //[Authorize]
+        [ClaimsAuthorize(IsAdmin = false)]
+        public async Task<ActionResult> AddChatServiceForUser([FromBody] AddChatServiceForUsersDTO model)
         {
 
-            var checkToken = await _accountService.CheckTokenIsValid();
-            if (!checkToken)
-                return Unauthorized(new ApiResponse(401, _localizerShared["UnauthorizedMessage"].Value.ToString()));
+            var serviceFromDb = await _context
+            .ServiceTBL
+            .AsNoTracking()
+            .Where(c => c.Id == model.ServiceId)
+            .Select(c => new ServiceTBLVM
+            {
+                IsProfileOptional = c.IsProfileOptional,
+                Id = c.Id,
+                AcceptedMinPriceForNative = c.AcceptedMinPriceForNative,
+                AcceptedMinPriceForNonNative = c.AcceptedMinPriceForNonNative,
+                Name = c.Name
+            })
+              .FirstOrDefaultAsync();
 
-            var res = await _servicetypeService.ValidateChatService(model);
+
+            var res = await _servicetypeService.ValidateChatService(model, serviceFromDb);
             if (!res.succsseded)
                 return BadRequest(new ApiBadRequestResponse(res.result));
 
-            var currentUsername = _accountService.GetCurrentUserName();
-
-            var serviceFromDB = await _context
-                .MyChatServiceTBL
-                .Where(c => c.Id == model.Id && c.BaseMyChatTBL.IsDeleted == false)
-                .Include(c => c.BaseMyChatTBL)
-                .FirstOrDefaultAsync();
-
-            if (serviceFromDB == null)
-                return NotFound(new ApiResponse(404, _localizerShared["NotFound"].Value.ToString()));
-
-            if (serviceFromDB.BaseMyChatTBL.UserName != currentUsername)
-                return Unauthorized(new ApiResponse(401, _localizerShared["UnauthorizedMessage"].Value.ToString()));
-
-            if (serviceFromDB.BaseMyChatTBL.ConfirmedServiceType != ConfirmedServiceType.Pending)
+            if (model.ServiceType == ServiceType.ChatVoice)
             {
-                var errors = new List<string>() {
-                      _locaLizer["AfterAdminConfirmMessage"].Value.ToString()
-               };
-                return BadRequest(new ApiBadRequestResponse(errors));
+                if (model.PackageType == PackageType.Free)
+                    model.MessageCount = null;
+                else
+                    model.FreeMessageCount = null;
+                //model.Duration = null;
+            }
+            else
+            {
+                model.MessageCount = null;
+                model.FreeMessageCount = null;
             }
 
-            serviceFromDB.BaseMyChatTBL.ServiceName = model.ServiceName;
-            serviceFromDB.BaseMyChatTBL.ServiceType = (ServiceType)model.ServiceType;
-            serviceFromDB.BaseMyChatTBL.CatId = model.CatId;
-            serviceFromDB.BaseMyChatTBL.SubCatId = model.SubCatId;
-            //serviceFromDB.BaseMyChatTBL.IsActive = model.IsActive;
+            var currentUsername = _accountService.GetCurrentUserName();
 
-            serviceFromDB.PackageType = model.PackageType;
-            serviceFromDB.BeTranslate = model.BeTranslate;
-            serviceFromDB.FreeMessageCount = (int)model.FreeMessageCount;
-            serviceFromDB.IsServiceReverse = model.IsServiceReverse;
-            serviceFromDB.PriceForNativeCustomer = (double)model.PriceForNativeCustomer;
-            serviceFromDB.PriceForNonNativeCustomer = (double)model.PriceForNonNativeCustomer;
+            var profiles = await _context.ProfileCertificateTBL.Where(c => c.ServiceId == model.ServiceId && c.UserName == currentUsername)
+                                                            .ToListAsync();
 
+
+            var res1 = profiles.Any(c => c.ProfileConfirmType == ProfileConfirmType.Confirmed);
+            var res2 = profiles.Any(c => c.ProfileConfirmType == ProfileConfirmType.Rejected);
+
+            var profileStatus = (res1 == false && res2 == false);
+
+            if (res2)
+            {
+                var err = new List<string>();
+                err.Add(_localizerShared["ProfileRejectedMessage"].Value.ToString());
+                return BadRequest(new ApiBadRequestResponse(err));
+            }
+
+            var BaseMyService = new BaseMyServiceTBL()
+            {
+                IsProfileOptional = serviceFromDb.IsProfileOptional,
+                ConfirmedServiceType = ConfirmedServiceType.Pending,
+                IsEditableService = false,
+                Latitude = model.Latitude,
+                Longitude = model.Longitude,
+                StarCount = 0,
+                Under3StarCount = 0,
+                CreateDate = DateTime.Now,
+                ServiceName = model.ServiceName,
+                ServiceType = (ServiceType)model.ServiceType,
+                UserName = currentUsername,
+                ServiceId = model.ServiceId,
+                CatId = model.CatId,
+                SubCatId = model.SubCatId,
+                IsDeleted = false,
+                ProfileConfirmType = profileStatus ? ProfileConfirmType.Pending : res1 == true ? ProfileConfirmType.Confirmed : ProfileConfirmType.Rejected,
+                //IsActive = false
+            };
+
+            var MyChatService = new MyChatServiceTBL()
+            {
+
+                PackageType = model.PackageType,
+                BeTranslate = model.BeTranslate,
+                //FreeMessageCount = (int)model.FreeMessageCount,
+                IsServiceReverse = model.IsServiceReverse,
+                PriceForNativeCustomer = (double)model.PriceForNativeCustomer,
+                PriceForNonNativeCustomer = (double)model.PriceForNonNativeCustomer,
+                BaseMyChatTBL = BaseMyService,
+                FreeMessageCount = model.FreeMessageCount,
+                MessageCount = model.MessageCount,
+                Duration = model.Duration,
+
+            };
 
             try
             {
                 //await _context.BaseMyServiceTBL.AddAsync(BaseMyService);
-                //await _context.MyChatServiceTBL.AddAsync(MyChatService);
+                await _context.MyChatServiceTBL.AddAsync(MyChatService);
 
                 await _context.SaveChangesAsync();
-                return Ok(new ApiOkResponse(new DataFormat()
-                {
-                    Status = 1,
-                    data = { },
-                    Message = _locaLizer["SuccesfullAddServiceMessage"].Value.ToString()
-                },
-                 _locaLizer["SuccesfullAddServiceMessage"].Value.ToString()
-                ));
+                return Ok(_commonService.OkResponse(null, _locaLizer["SuccesfullAddServiceMessage"].Value.ToString()));
+
             }
             catch
             {
+                List<string> erros = new List<string> { _localizerShared["InternalServerMessage"].Value.ToString() };
                 return StatusCode(StatusCodes.Status500InternalServerError,
-                                new ApiResponse(500, _localizerShared["InternalServerMessage"].Value.ToString()));
+                   new ApiBadRequestResponse(erros, 500));
+            }
+        }
+
+
+
+
+
+
+        /// <summary>
+        /// آپدیت  سرویس chat or voice or video  برای یک کاربر 
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns></returns>
+        [HttpPut("/api/userService/UpdateChatServiceForUser")]
+        //[Authorize]
+        [ClaimsAuthorize(IsAdmin = false)]
+        public async Task<ActionResult> UpdateChatServiceForUser([FromBody] EditChatServiceForUsersDTO model)
+        {
+
+
+            var currentUsername = _accountService.GetCurrentUserName();
+
+            var serviceFromDB = await _context
+               .BaseMyServiceTBL
+               .Where(c => c.Id == model.Id && c.IsDeleted == false)
+               .Include(c => c.MyChatsService)
+               .FirstOrDefaultAsync();
+
+            if (serviceFromDB == null)
+            {
+                List<string> erros = new List<string> { _localizerShared["NotFound"].Value.ToString() };
+                return BadRequest(new ApiBadRequestResponse(erros, 404));
+            }
+
+            if (serviceFromDB.UserName != currentUsername)
+            {
+                List<string> erros = new List<string> { _localizerShared["UnauthorizedMessage"].Value.ToString() };
+                return BadRequest(new ApiBadRequestResponse(erros, 401));
+            }
+
+            //if (serviceFromDB.ConfirmedServiceType != ConfirmedServiceType.Pending)
+            //{
+            //    var errors = new List<string>() {
+            //          _locaLizer["AfterAdminConfirmMessage"].Value.ToString()
+            //   };
+            //    return BadRequest(new ApiBadRequestResponse(errors));
+            //}
+
+
+
+            var res = await _servicetypeService.ValidateEditChatService(model, serviceFromDB);
+            if (!res.succsseded)
+                return BadRequest(new ApiBadRequestResponse(res.result));
+
+            if (serviceFromDB.ServiceType == ServiceType.ChatVoice)
+            {
+                if (serviceFromDB.MyChatsService.PackageType == PackageType.Free)
+                    serviceFromDB.MyChatsService.FreeMessageCount = model.FreeMessageCount;
+                else
+                    serviceFromDB.MyChatsService.MessageCount = model.MessageCount;
+            }
+            else if (serviceFromDB.ServiceType == ServiceType.VideoCal || serviceFromDB.ServiceType == ServiceType.VoiceCall)
+            {
+                //model.MessageCount = null;
+                //model.FreeMessageCount = null;
+                serviceFromDB.MyChatsService.Duration = model.Duration;
+            }
+
+
+
+            //if (model.PackageType == PackageType.Free)
+            //    model.MessageCount = null;
+            ////model.Duration = null;
+            //else
+            //    model.FreeMessageCount = null;
+
+
+            serviceFromDB.ServiceName = model.ServiceName;
+            serviceFromDB.Latitude = model.Latitude;
+            serviceFromDB.Longitude = model.Longitude;
+
+
+            //serviceFromDB.ServiceType = (ServiceType)model.ServiceType;
+            //serviceFromDB.CatId = model.CatId;
+            //serviceFromDB.SubCatId = model.SubCatId;
+            //serviceFromDB.BaseMyChatTBL.IsActive = model.IsActive;
+
+            //serviceFromDB.MyChatsService.MessageCount = model.MessageCount;
+            //serviceFromDB.MyChatsService.FreeMessageCount = model.FreeMessageCount;
+            //serviceFromDB.MyChatsService.Duration = model.Duration;
+
+            //serviceFromDB.MyChatsService.PackageType = model.PackageType;
+            serviceFromDB.MyChatsService.BeTranslate = model.BeTranslate;
+
+            serviceFromDB.MyChatsService.IsServiceReverse = model.IsServiceReverse;
+            serviceFromDB.MyChatsService.PriceForNativeCustomer = (double)model.PriceForNativeCustomer;
+            serviceFromDB.MyChatsService.PriceForNonNativeCustomer = (double)model.PriceForNonNativeCustomer;
+
+
+            try
+            {
+                await _context.SaveChangesAsync();
+                return Ok(_commonService.OkResponse(null, _locaLizer["SuccesfullAddServiceMessage"].Value.ToString()));
+
+            }
+            catch
+            {
+                List<string> erros = new List<string> { _localizerShared["InternalServerMessage"].Value.ToString() };
+                return StatusCode(StatusCodes.Status500InternalServerError,
+                   new ApiBadRequestResponse(erros, 500));
             }
 
 
         }
-
 
 
 
@@ -663,71 +825,55 @@ namespace CallInDoor.Controllers
         /// <param name="model"></param>
         /// <returns></returns>
         [HttpDelete("/api/userService/DeleteChatServiceForUser")]
-        [Authorize]
+        //[Authorize]
+        [ClaimsAuthorize(IsAdmin = false)]
         public async Task<ActionResult> DeleteChatServiceForUser(int id)
         {
-
-            var checkToken = await _accountService.CheckTokenIsValid();
-            if (!checkToken)
-                return Unauthorized(new ApiResponse(401, _localizerShared["UnauthorizedMessage"].Value.ToString()));
-
-
 
             var currentUsername = _accountService.GetCurrentUserName();
 
             var serviceFromDB = await _context
-                .MyChatServiceTBL
-                .Where(c => c.Id == id && c.BaseMyChatTBL.IsDeleted == false)
-                .Include(c => c.BaseMyChatTBL)
-                .FirstOrDefaultAsync();
-
+               .BaseMyServiceTBL
+               .Where(c => c.Id == id && c.IsDeleted == false)
+               .FirstOrDefaultAsync();
 
             if (serviceFromDB == null)
-                return NotFound(new ApiResponse(404, _localizerShared["NotFound"].Value.ToString()));
-
-            if (serviceFromDB.BaseMyChatTBL.UserName != currentUsername)
-                return Unauthorized(new ApiResponse(401, _localizerShared["UnauthorizedMessage"].Value.ToString()));
-
-            if (serviceFromDB.BaseMyChatTBL.ConfirmedServiceType != ConfirmedServiceType.Pending)
             {
-                var errors = new List<string>() {
-                      _locaLizer["AfterAdminConfirmMessage"].Value.ToString()
-               };
-                return BadRequest(new ApiBadRequestResponse(errors));
+                List<string> erros = new List<string> { _localizerShared["NotFound"].Value.ToString() };
+                return NotFound(new ApiBadRequestResponse(erros, 404));
+            }
+            if (serviceFromDB.UserName != currentUsername)
+            {
+                List<string> erros = new List<string> { _localizerShared["UnauthorizedMessage"].Value.ToString() };
+                return Unauthorized(new ApiBadRequestResponse(erros, 401));
             }
 
-            serviceFromDB.BaseMyChatTBL.IsDeleted = true;
+            //if (serviceFromDB.ConfirmedServiceType != ConfirmedServiceType.Pending)
+            //{
+            //    var errors = new List<string>() {
+            //          _locaLizer["AfterAdminConfirmMessage"].Value.ToString()
+            //   };
+            //    return BadRequest(new ApiBadRequestResponse(errors));
+            //}
+
+            serviceFromDB.IsDeleted = true;
 
             try
             {
-                //await _context.BaseMyServiceTBL.AddAsync(BaseMyService);
-                //await _context.MyChatServiceTBL.AddAsync(MyChatService);
 
                 await _context.SaveChangesAsync();
-                return Ok(new ApiOkResponse(new DataFormat()
-                {
-                    Status = 1,
-                    data = { },
-                    Message = _locaLizer["DeleteServiceMessage"].Value.ToString()
-                },
-                 _locaLizer["DeleteServiceMessage"].Value.ToString()
-                ));
+                return Ok(_commonService.OkResponse(serviceFromDB, _localizerShared["DeleteServiceMessage"].Value.ToString()));
+
             }
             catch
             {
+                List<string> erros = new List<string> { _localizerShared["InternalServerMessage"].Value.ToString() };
                 return StatusCode(StatusCodes.Status500InternalServerError,
-                                new ApiResponse(500, _localizerShared["InternalServerMessage"].Value.ToString()));
+                   new ApiBadRequestResponse(erros, 500));
             }
 
 
         }
-
-
-
-
-
-
-
 
 
 
@@ -741,39 +887,66 @@ namespace CallInDoor.Controllers
         /// <param name="model"></param>
         /// <returns></returns>
         [HttpPost("/api/userService/AddServiceServiceForUser")]
-        [Authorize]
+        //[Authorize]
+        [ClaimsAuthorize(IsAdmin = false)]
         public async Task<ActionResult> AddServiceServiceForUser([FromBody] AddServiceServiceForUsersDTO model)
         {
+            var serviceFromDb = await _context
+            .ServiceTBL
+            .AsNoTracking()
+            .Where(c => c.Id == model.ServiceId)
+            .Select(c => new ServiceTBLVM
+            {
 
-            var checkToken = await _accountService.CheckTokenIsValid();
-            if (!checkToken)
-                return Unauthorized(new ApiResponse(401, _localizerShared["UnauthorizedMessage"].Value.ToString()));
+                IsProfileOptional = c.IsProfileOptional,
+                MinPriceForService = c.MinPriceForService,
+                Id = c.Id,
+                Name = c.Name
+            })
+              .FirstOrDefaultAsync();
 
 
-            var res = await _servicetypeService.ValidateServiceService(model);
+            var res = await _servicetypeService.ValidateServiceService(model, serviceFromDb);
             if (!res.succsseded)
                 return BadRequest(new ApiBadRequestResponse(res.result));
 
+            if (model.FileNeeded == false)
+                model.FileDescription = null;
 
+            var curentUsername = _accountService.GetCurrentUserName();
+
+            var profiles = await _context.ProfileCertificateTBL
+                         .Where(c => c.ServiceId == model.ServiceId && c.UserName == curentUsername).ToListAsync();
+
+
+            var res1 = profiles.Any(c => c.ProfileConfirmType == ProfileConfirmType.Confirmed);
+            var res2 = profiles.Any(c => c.ProfileConfirmType == ProfileConfirmType.Rejected);
+
+            var profileStatus = (res1 == false && res2 == false);
             var BaseMyService = new BaseMyServiceTBL()
             {
+                IsProfileOptional = serviceFromDb.IsProfileOptional,
                 ConfirmedServiceType = ConfirmedServiceType.Pending,
+                Latitude = model.Latitude,
+                Longitude = model.Longitude,
                 CreateDate = DateTime.Now,
                 ServiceName = model.ServiceName,
                 ServiceType = (ServiceType)model.ServiceType,
-                UserName = model.UserName,
+                UserName = curentUsername,
                 ServiceId = model.ServiceId,
                 CatId = model.CatId,
                 SubCatId = model.SubCatId,
-                IsDeleted = false
+                IsDeleted = false,
+                ProfileConfirmType = profileStatus ? ProfileConfirmType.Pending : res1 == true ? ProfileConfirmType.Confirmed : ProfileConfirmType.Rejected,
+
                 //IsActive = false
             };
-
 
             var tags = model.Tags + "," + model.CustomTags;
 
             var MyChatService = new MyServiceServiceTBL()
             {
+
                 Description = model.Description,
                 DeliveryItems = model.DeliveryItems,
                 FileNeeded = model.FileNeeded,
@@ -792,21 +965,14 @@ namespace CallInDoor.Controllers
             {
                 //await _context.BaseMyServiceTBL.AddAsync(BaseMyService);
                 await _context.MyServiceServiceTBL.AddAsync(MyChatService);
-
                 await _context.SaveChangesAsync();
-                return Ok(new ApiOkResponse(new DataFormat()
-                {
-                    Status = 1,
-                    data = { },
-                    Message = _locaLizer["SuccesfullAddServiceMessage"].Value.ToString()
-                },
-                 _locaLizer["SuccesfullAddServiceMessage"].Value.ToString()
-                ));
+                return Ok(_commonService.OkResponse(null, _locaLizer["SuccesfullAddServiceMessage"].Value.ToString()));
             }
             catch
             {
+                List<string> erros = new List<string> { _localizerShared["InternalServerMessage"].Value.ToString() };
                 return StatusCode(StatusCodes.Status500InternalServerError,
-                                new ApiResponse(500, _localizerShared["InternalServerMessage"].Value.ToString()));
+                   new ApiBadRequestResponse(erros, 500));
             }
 
         }
@@ -820,38 +986,39 @@ namespace CallInDoor.Controllers
         /// <returns></returns>
         [HttpGet("/api/userService/GetServiceServiceForUser")]
         [Authorize]
+        [ClaimsAuthorize(IsAdmin = false)]
         public async Task<ActionResult> GetServiceServiceForUser(int Id)
         {
-            var checkToken = await _accountService.CheckTokenIsValid();
-            if (!checkToken)
-                return Unauthorized(new ApiResponse(401, PubicMessages.UnAuthorizeMessage));
 
             var serviceFromDB = await _context
-                .MyServiceServiceTBL
-               .AsNoTracking()
-               .Where(c => c.Id == Id && c.BaseMyChatTBL.IsDeleted == false)
+                .BaseMyServiceTBL
+                .AsNoTracking()
+               .Where(c => c.Id == Id && c.IsDeleted == false)
                .Select(c => new
                {
-                   c.Id,
-                   c.Description,
-                   c.BeTranslate,
-                   c.FileNeeded,
-                   c.FileDescription,
-                   c.Price,
-                   c.WorkDeliveryTimeEstimation,
-                   c.HowWorkConducts,
-                   c.DeliveryItems,
-                   c.Tags,
-                   c.AreaId,
-                   c.SpecialityId,
-                   c.BaseMyChatTBL.CatId,
-                   c.BaseMyChatTBL.SubCatId,
-                   c.BaseMyChatTBL.ServiceName,
-                   c.BaseMyChatTBL.ServiceType,
-                   c.BaseMyChatTBL.ServiceId,
-                   c.BaseMyChatTBL.UserName,
-                   c.BaseMyChatTBL.ConfirmedServiceType,
-
+                   c.MyServicesService.Id,
+                   c.MyServicesService.Description,
+                   c.MyServicesService.BeTranslate,
+                   c.MyServicesService.FileNeeded,
+                   c.MyServicesService.FileDescription,
+                   c.MyServicesService.Price,
+                   c.MyServicesService.WorkDeliveryTimeEstimation,
+                   c.MyServicesService.HowWorkConducts,
+                   c.MyServicesService.DeliveryItems,
+                   c.MyServicesService.Tags,
+                   c.MyServicesService.AreaId,
+                   c.MyServicesService.SpecialityId,
+                   c.CatId,
+                   c.SubCatId,
+                   c.ServiceName,
+                   c.ServiceType,
+                   c.ServiceId,
+                   c.UserName,
+                   c.ConfirmedServiceType,
+                   c.CreateDate,
+                   c.IsDeleted,
+                   c.IsEditableService,
+                   c.RejectReason,
                    //c.BaseMyChatTBL.IsConfirmByAdmin
                }).FirstOrDefaultAsync();
 
@@ -862,20 +1029,20 @@ namespace CallInDoor.Controllers
 
 
             if (serviceFromDB == null)
-                return NotFound(new ApiResponse(404, _localizerShared["NotFound"].Value.ToString()));
+            {
+                List<string> erros = new List<string> { _localizerShared["NotFound"].Value.ToString() };
+                return NotFound(new ApiBadRequestResponse(erros, 404));
+            }
 
             var currentUsername = _accountService.GetCurrentUserName();
             if (serviceFromDB.UserName != currentUsername)
-                return Unauthorized(new ApiResponse(401, _localizerShared["UnauthorizedMessage"].Value.ToString()));
-
-            return Ok(new ApiOkResponse(new DataFormat()
             {
-                Status = 1,
-                data = serviceFromDB,
-                Message = _localizerShared["SuccessMessage"].Value.ToString()
-            },
-             _localizerShared["SuccessMessage"].Value.ToString()
-            ));
+                List<string> erros = new List<string> { _localizerShared["UnauthorizedMessage"].Value.ToString() };
+                return Unauthorized(new ApiBadRequestResponse(erros, 401));
+            }
+
+            return Ok(_commonService.OkResponse(serviceFromDB, _localizerShared["SuccessMessage"].Value.ToString()));
+
         }
 
 
@@ -887,77 +1054,87 @@ namespace CallInDoor.Controllers
         /// <returns></returns>
         [HttpPut("/api/userService/UpdateServiceServiceForUser")]
         [Authorize]
+        [ClaimsAuthorize(IsAdmin = false)]
         public async Task<ActionResult> UpdateServiceServiceForUser([FromBody] AddServiceServiceForUsersDTO model)
         {
+            var serviceFromDb = await _context
+          .ServiceTBL
+          .AsNoTracking()
+          .Where(c => c.Id == model.ServiceId)
+          .Select(c => new ServiceTBLVM
+          {
+              IsProfileOptional = c.IsProfileOptional,
+              MinPriceForService = c.MinPriceForService,
+              Id = c.Id,
+              Name = c.Name
+          })
+          .FirstOrDefaultAsync();
 
-            var checkToken = await _accountService.CheckTokenIsValid();
-            if (!checkToken)
-                return Unauthorized(new ApiResponse(401, _localizerShared["UnauthorizedMessage"].Value.ToString()));
 
-            var res = await _servicetypeService.ValidateServiceService(model);
+            var res = await _servicetypeService.ValidateServiceService(model, serviceFromDb);
             if (!res.succsseded)
                 return BadRequest(new ApiBadRequestResponse(res.result));
 
             var serviceFromDB = await _context
-                .MyServiceServiceTBL
-                .Where(c => c.Id == model.Id)
-                .Include(c => c.BaseMyChatTBL)
-                .Where(c => c.BaseMyChatTBL.IsDeleted == false)
+                .BaseMyServiceTBL
+                .Where(c => c.Id == model.Id && c.IsDeleted == false)
+                .Include(c => c.MyServicesService)
                 .FirstOrDefaultAsync();
 
             if (serviceFromDB == null)
-                return NotFound(new ApiResponse(404, _localizerShared["NotFound"].Value.ToString()));
 
-            var currentUsername = _accountService.GetCurrentUserName();
-            if (serviceFromDB.BaseMyChatTBL.UserName != currentUsername)
-                return Unauthorized(new ApiResponse(401, _localizerShared["UnauthorizedMessage"].Value.ToString()));
-
-            if (serviceFromDB.BaseMyChatTBL.ConfirmedServiceType != ConfirmedServiceType.Pending)
             {
-                var errors = new List<string>() {
-                      _locaLizer["AfterAdminConfirmMessage"].Value.ToString()
-               };
-                return BadRequest(new ApiBadRequestResponse(errors));
+                List<string> erros = new List<string> { _localizerShared["NotFound"].Value.ToString() };
+                return NotFound(new ApiBadRequestResponse(erros, 404));
             }
 
-            serviceFromDB.BaseMyChatTBL.ServiceName = model.ServiceName;
-            serviceFromDB.BaseMyChatTBL.ServiceType = (ServiceType)model.ServiceType;
-            serviceFromDB.BaseMyChatTBL.CatId = model.CatId;
-            serviceFromDB.BaseMyChatTBL.SubCatId = model.SubCatId;
+            var currentUsername = _accountService.GetCurrentUserName();
+            if (serviceFromDB.UserName != currentUsername)
+            {
+                List<string> erros = new List<string> { _localizerShared["UnauthorizedMessage"].Value.ToString() };
+                return Unauthorized(new ApiBadRequestResponse(erros, 401));
+            }
+
+            //if (serviceFromDB.ConfirmedServiceType != ConfirmedServiceType.Pending)
+            //{
+            //    var errors = new List<string>() {
+            //          _locaLizer["AfterAdminConfirmMessage"].Value.ToString()
+            //   };
+            //    return BadRequest(new ApiBadRequestResponse(errors));
+            //}
+
+            serviceFromDB.ServiceName = model.ServiceName;
+            serviceFromDB.Latitude = model.Latitude;
+            serviceFromDB.Longitude = model.Longitude;
+            //serviceFromDB.ServiceType = (ServiceType)model.ServiceType;
+            //serviceFromDB.CatId = model.CatId;
+            //serviceFromDB.SubCatId = model.SubCatId;
+
             //serviceFromDB.BaseMyChatTBL.IsActive = model.IsActive;
 
 
-            serviceFromDB.Description = model.Description;
-            serviceFromDB.BeTranslate = model.BeTranslate;
-            serviceFromDB.FileNeeded = model.FileNeeded;
-            serviceFromDB.FileDescription = model.FileDescription;
-            serviceFromDB.Price = (double)model.Price;
-            serviceFromDB.WorkDeliveryTimeEstimation = model.WorkDeliveryTimeEstimation;
-            serviceFromDB.HowWorkConducts = model.HowWorkConducts;
-            serviceFromDB.DeliveryItems = model.DeliveryItems;
-            serviceFromDB.Tags = model.Tags + "," + model.CustomTags;
-
-
-            //public string Speciality { get; set; }
-            //public string Area { get; set; }
+            serviceFromDB.MyServicesService.Description = model.Description;
+            serviceFromDB.MyServicesService.BeTranslate = model.BeTranslate;
+            serviceFromDB.MyServicesService.FileNeeded = model.FileNeeded;
+            serviceFromDB.MyServicesService.FileDescription = model.FileDescription;
+            serviceFromDB.MyServicesService.Price = (double)model.Price;
+            serviceFromDB.MyServicesService.WorkDeliveryTimeEstimation = model.WorkDeliveryTimeEstimation;
+            serviceFromDB.MyServicesService.HowWorkConducts = model.HowWorkConducts;
+            serviceFromDB.MyServicesService.DeliveryItems = model.DeliveryItems;
+            serviceFromDB.MyServicesService.Tags = model.Tags + "," + model.CustomTags;
 
 
             try
             {
                 await _context.SaveChangesAsync();
-                return Ok(new ApiOkResponse(new DataFormat()
-                {
-                    Status = 1,
-                    data = { },
-                    Message = _locaLizer["SuccesfullAddServiceMessage"].Value.ToString()
-                },
-                 _locaLizer["SuccesfullAddServiceMessage"].Value.ToString()
-                ));
+                return Ok(_commonService.OkResponse(null, _locaLizer["SuccesfullAddServiceMessage"].Value.ToString()));
             }
             catch
             {
+                List<string> erros = new List<string> { _localizerShared["InternalServerMessage"].Value.ToString() };
                 return StatusCode(StatusCodes.Status500InternalServerError,
-                                new ApiResponse(500, _localizerShared["InternalServerMessage"].Value.ToString()));
+                   new ApiBadRequestResponse(erros, 500));
+
             }
 
         }
@@ -972,58 +1149,51 @@ namespace CallInDoor.Controllers
         /// <param name="model"></param>
         /// <returns></returns>
         [HttpDelete("/api/userService/DeleteServiceServiceForUser")]
-        [Authorize]
+        //[Authorize]
+        [ClaimsAuthorize(IsAdmin = false)]
         public async Task<ActionResult> DeleteServiceServiceForUser(int id)
         {
-
-            var checkToken = await _accountService.CheckTokenIsValid();
-            if (!checkToken)
-                return Unauthorized(new ApiResponse(401, _localizerShared["UnauthorizedMessage"].Value.ToString()));
 
             var currentUsername = _accountService.GetCurrentUserName();
 
             var serviceFromDB = await _context
-                .MyServiceServiceTBL
-                .Where(c => c.Id == id && c.BaseMyChatTBL.IsDeleted == false)
-                .Include(c => c.BaseMyChatTBL)
+                .BaseMyServiceTBL
+                .Where(c => c.Id == id && c.IsDeleted == false)
                 .FirstOrDefaultAsync();
 
 
             if (serviceFromDB == null)
-                return NotFound(new ApiResponse(404, _localizerShared["NotFound"].Value.ToString()));
-
-            if (serviceFromDB.BaseMyChatTBL.UserName != currentUsername)
-                return Unauthorized(new ApiResponse(401, _localizerShared["UnauthorizedMessage"].Value.ToString()));
-
-            if (serviceFromDB.BaseMyChatTBL.ConfirmedServiceType != ConfirmedServiceType.Pending)
             {
-                var errors = new List<string>() {
-                      _locaLizer["AfterAdminConfirmMessage"].Value.ToString()
-               };
-                return BadRequest(new ApiBadRequestResponse(errors));
+                List<string> erros = new List<string> { _localizerShared["NotFound"].Value.ToString() };
+                return BadRequest(new ApiBadRequestResponse(erros, 404));
+            }
+            if (serviceFromDB.UserName != currentUsername)
+            {
+                List<string> erros = new List<string> { _localizerShared["UnauthorizedMessage"].Value.ToString() };
+                return BadRequest(new ApiBadRequestResponse(erros, 401));
             }
 
-            serviceFromDB.BaseMyChatTBL.IsDeleted = true;
+            //if (serviceFromDB.ConfirmedServiceType != ConfirmedServiceType.Pending)
+            //{
+            //    var errors = new List<string>() {
+            //          _locaLizer["AfterAdminConfirmMessage"].Value.ToString()
+            //   };
+            //    return BadRequest(new ApiBadRequestResponse(errors));
+            //}
+
+            serviceFromDB.IsDeleted = true;
 
             try
             {
-                //await _context.BaseMyServiceTBL.AddAsync(BaseMyService);
-                //await _context.MyChatServiceTBL.AddAsync(MyChatService);
-
                 await _context.SaveChangesAsync();
-                return Ok(new ApiOkResponse(new DataFormat()
-                {
-                    Status = 1,
-                    data = { },
-                    Message = _locaLizer["DeleteServiceMessage"].Value.ToString()
-                },
-                 _locaLizer["DeleteServiceMessage"].Value.ToString()
-                ));
+                return Ok(_commonService.OkResponse(null, _localizerShared["DeleteServiceMessage"].Value.ToString()));
+
             }
             catch
             {
+                List<string> erros = new List<string> { _localizerShared["InternalServerMessage"].Value.ToString() };
                 return StatusCode(StatusCodes.Status500InternalServerError,
-                                new ApiResponse(500, _localizerShared["InternalServerMessage"].Value.ToString()));
+                   new ApiBadRequestResponse(erros, 500));
             }
 
 
@@ -1039,8 +1209,6 @@ namespace CallInDoor.Controllers
         #endregion
 
 
-
-
         #region CourseService
 
         /// <summary>
@@ -1050,36 +1218,70 @@ namespace CallInDoor.Controllers
         /// <returns></returns>
         [HttpPost("/api/userService/AddCourseServiceForUser")]
         [Authorize]
+        [ClaimsAuthorize(IsAdmin = false)]
         public async Task<ActionResult> AddCourseServiceForUser([FromForm] AddCourseServiceForUsersDTO model)
         {
 
-            var checkToken = await _accountService.CheckTokenIsValid();
-            if (!checkToken)
-                return Unauthorized(new ApiResponse(401, _localizerShared["UnauthorizedMessage"].Value.ToString()));
+            var serviceFromDb = await _context
+             .ServiceTBL
+             .AsNoTracking()
+             .Where(c => c.Id == model.ServiceId)
+             .Select(c => new ServiceTBLVM
+             {
+                 IsProfileOptional = c.IsProfileOptional,
+                 Id = c.Id,
+                 MinPriceForService = c.MinPriceForService,
+                 Name = c.Name
+             })
+             .FirstOrDefaultAsync();
 
-            var res = await _servicetypeService.ValidateCourseService(model);
+
+            var res = await _servicetypeService.ValidateCourseService(model, serviceFromDb);
             if (!res.succsseded)
                 return BadRequest(new ApiBadRequestResponse(res.result));
 
 
             var previewFilreAddress = _servicetypeService.SvaeFileToHost("Upload/CoursePreview/", model.PreviewFile);
             if (previewFilreAddress == null)
+            {
+                List<string> erros = new List<string> { _localizerShared["FileUploadErrorMessage"].Value.ToString() };
                 return StatusCode(StatusCodes.Status500InternalServerError,
-                        new ApiResponse(500, _localizerShared["FileUploadErrorMessage"].Value.ToString()));
+                   new ApiBadRequestResponse(erros, 500));
+            }
+            //return StatusCode(StatusCodes.Status500InternalServerError,
+            //        new ApiResponse(500, _localizerShared["FileUploadErrorMessage"].Value.ToString()));
 
 
+            var curentUsername = _accountService.GetCurrentUserName();
+
+            var profiles = await _context.ProfileCertificateTBL
+                        .Where(c => c.ServiceId == model.ServiceId && c.UserName == curentUsername).ToListAsync();
+
+
+            var res1 = profiles.Any(c => c.ProfileConfirmType == ProfileConfirmType.Confirmed);
+            var res2 = profiles.Any(c => c.ProfileConfirmType == ProfileConfirmType.Rejected);
+
+            var profileStatus = (res1 == false && res2 == false);
+
+
+            var currentUsername = _accountService.GetCurrentUserName();
             var BaseMyService = new BaseMyServiceTBL()
             {
+                IsProfileOptional= serviceFromDb.IsProfileOptional,
+                Latitude = model.Latitude,
+                Longitude = model.Longitude,
                 ConfirmedServiceType = ConfirmedServiceType.Pending,
                 CreateDate = DateTime.Now,
                 ServiceName = model.ServiceName,
                 ServiceType = ServiceType.Course,
-                UserName = model.UserName,
+                UserName = currentUsername,
                 ServiceId = model.ServiceId,
                 CatId = model.CatId,
-                IsDeleted = false
-                //IsConfirmByAdmin = false,
+                IsDeleted = false,
+                //ProfileConfirmType = ProfileConfirmType.Pending
+                ProfileConfirmType = profileStatus ? ProfileConfirmType.Pending : res1 == true ? ProfileConfirmType.Confirmed : ProfileConfirmType.Rejected,
 
+                //IsConfirmByAdmin = false,
             };
 
 
@@ -1102,19 +1304,13 @@ namespace CallInDoor.Controllers
                 await _context.MyCourseServiceTBL.AddAsync(MyCourseService);
 
                 await _context.SaveChangesAsync();
-                return Ok(new ApiOkResponse(new DataFormat()
-                {
-                    Status = 1,
-                    data = { },
-                    Message = _locaLizer["SuccesfullAddServiceMessage"].Value.ToString()
-                },
-                 _locaLizer["SuccesfullAddServiceMessage"].Value.ToString()
-                ));
+                return Ok(_commonService.OkResponse(null, _locaLizer["SuccesfullAddServiceMessage"].Value.ToString()));
             }
             catch
             {
+                List<string> erros = new List<string> { _localizerShared["InternalServerMessage"].Value.ToString() };
                 return StatusCode(StatusCodes.Status500InternalServerError,
-                                new ApiResponse(500, _localizerShared["InternalServerMessage"].Value.ToString()));
+                   new ApiBadRequestResponse(erros, 500));
             }
 
         }
@@ -1122,8 +1318,7 @@ namespace CallInDoor.Controllers
 
 
 
-
-        /////////////////////////////////////////////////////////////تمام نشده
+        //////////////////تمام نشده
         /// <summary>
         /// آپدیت سرویس course برای یک کاربر 
         /// </summary>
@@ -1131,13 +1326,24 @@ namespace CallInDoor.Controllers
         /// <returns></returns>
         [HttpPut("/api/userService/UpdateCourseServiceForUser")]
         [Authorize]
+        [ClaimsAuthorize(IsAdmin = false)]
         public async Task<ActionResult> UpdateCourseServiceForUser([FromBody] AddCourseServiceForUsersDTO model)
         {
-            var checkToken = await _accountService.CheckTokenIsValid();
-            if (!checkToken)
-                return Unauthorized(new ApiResponse(401, _localizerShared["UnauthorizedMessage"].Value.ToString()));
+            var serviceFromDb = await _context
+             .ServiceTBL
+             .AsNoTracking()
+             .Where(c => c.Id == model.ServiceId)
+             .Select(c => new ServiceTBLVM
+             {
+                 IsProfileOptional = c.IsProfileOptional,
+                 Id = c.Id,
+                 MinPriceForService = c.MinPriceForService,
+                 Name = c.Name
+             })
+             .FirstOrDefaultAsync();
 
-            var res = await _servicetypeService.ValidateCourseService(model);
+
+            var res = await _servicetypeService.ValidateCourseService(model,serviceFromDb);
             if (!res.succsseded)
                 return BadRequest(new ApiBadRequestResponse(res.result));
 
@@ -1153,22 +1359,28 @@ namespace CallInDoor.Controllers
             //await _context.MyCourseTopicsTBL.Where(c => c.MyCourseId == serviceFromDB.Id).LoadAsync();
 
             if (serviceFromDB == null)
-                return NotFound(new ApiResponse(404, _localizerShared["NotFound"].Value.ToString()));
+            {
+                List<string> erros = new List<string> { _localizerShared["NotFound"].Value.ToString() };
+                return NotFound(new ApiBadRequestResponse(erros, 404));
+            }
+
 
             var currentUsername = _accountService.GetCurrentUserName();
             if (serviceFromDB.BaseMyChatTBL.UserName != currentUsername)
                 return Unauthorized(new ApiResponse(401, _localizerShared["UnauthorizedMessage"].Value.ToString()));
 
-            if (serviceFromDB.BaseMyChatTBL.ConfirmedServiceType != ConfirmedServiceType.Pending)
-            {
-                var errors = new List<string>() {
-                      _locaLizer["AfterAdminConfirmMessage"].Value.ToString()
-               };
-                return BadRequest(new ApiBadRequestResponse(errors));
-            }
+            //if (serviceFromDB.BaseMyChatTBL.ConfirmedServiceType != ConfirmedServiceType.Pending)
+            //{
+            //    var errors = new List<string>() {
+            //          _locaLizer["AfterAdminConfirmMessage"].Value.ToString()
+            //   };
+            //    return BadRequest(new ApiBadRequestResponse(errors));
+            //}
 
             serviceFromDB.BaseMyChatTBL.ServiceName = model.ServiceName;
             serviceFromDB.BaseMyChatTBL.CatId = model.CatId;
+            serviceFromDB.BaseMyChatTBL.Latitude = model.Latitude;
+            serviceFromDB.BaseMyChatTBL.Longitude = model.Longitude;
 
             serviceFromDB.Description = model.Description;
             serviceFromDB.NewCategory = model.NewCategory;
@@ -1178,34 +1390,926 @@ namespace CallInDoor.Controllers
             ////PreviewVideoAddress  
             ////topics
 
-
             try
             {
                 await _context.SaveChangesAsync();
-                return Ok(new ApiOkResponse(new DataFormat()
-                {
-                    Status = 1,
-                    data = { },
-                    Message = _locaLizer["SuccesfullAddServiceMessage"].Value.ToString()
-                },
-                 _locaLizer["SuccesfullAddServiceMessage"].Value.ToString()
-                ));
+                return Ok(_commonService.OkResponse(null, _locaLizer["SuccesfullAddServiceMessage"].Value.ToString()));
             }
             catch
             {
+                List<string> erros = new List<string> { _localizerShared["InternalServerMessage"].Value.ToString() };
                 return StatusCode(StatusCodes.Status500InternalServerError,
-                                new ApiResponse(500, _localizerShared["InternalServerMessage"].Value.ToString()));
+                   new ApiBadRequestResponse(erros, 500));
+
+
             }
 
         }
         /////////////////////////////////////////////////////////تمام نشده
 
 
-        #endregion 
+        #endregion
 
 
 
         #endregion
+
+        #region other 
+        #region  get Users serviceBy userId and CategoryId
+
+        [HttpGet("GetUsersServiceById")]
+        //////////[ClaimsAuthorize(IsAdmin = false)]
+        public async Task<ActionResult> GetUsersServiceById(string UserId, int serviceCategoryId)
+        {
+
+            var username = await _context.Users.Where(c => c.Id == UserId).Select(c => c.UserName).FirstOrDefaultAsync();
+            if (string.IsNullOrEmpty(username))
+            {
+                List<string> erros = new List<string> { _localizerShared["NotFound"].Value.ToString() };
+                return NotFound(new ApiBadRequestResponse(erros, 404));
+            }
+
+
+            var isPersian = _commonService.IsPersianLanguage();
+
+            var userFromDB = await _context.BaseMyServiceTBL
+                .Where(c => c.UserName == username &&
+                c.ServiceId == serviceCategoryId &&
+                c.IsDeleted == false &&
+                c.ConfirmedServiceType == ConfirmedServiceType.Confirmed && c.ProfileConfirmType == ProfileConfirmType.Confirmed)
+         .Select(c => new
+         {
+             c.Id,
+             c.ServiceName,
+             c.ServiceType,
+             CategoryName = isPersian ? c.CategoryTBL.PersianTitle : c.CategoryTBL.Title,
+             //CategoryPersianName = c.CategoryTBL.PersianTitle,
+
+             SubCategoryName = isPersian ? c.SubCategoryTBL.PersianTitle : c.SubCategoryTBL.Title,
+             //SubCategoryPersianName = c.SubCategoryTBL.PersianTitle,
+
+             ChatService = new
+             {
+                 PackageType = c.MyChatsService != null ? c.MyChatsService.PackageType : null,
+                 Price = c.MyChatsService != null ? c.MyChatsService.PriceForNativeCustomer : null,
+                 //PriceForNonNativeCustomer = c.MyChatsService != null ? c.MyChatsService?.PriceForNonNativeCustomer : null,
+                 Duration = c.MyChatsService != null ? c.MyChatsService.Duration : null,
+                 FreeMessageCount = c.MyChatsService != null ? c.MyChatsService.FreeMessageCount : null,
+             },
+
+             ServiceService = new
+             {
+                 Price = c.MyServicesService != null ? c.MyServicesService.Price : null,
+             },
+
+             CourseService = new
+             {
+                 Price = c.MyCourseService != null ? c.MyCourseService.Price : null,
+             },
+         }).ToListAsync();
+
+            //var profile = await _accountService.ProfileGet();
+            if (userFromDB == null)
+            {
+                List<string> erros = new List<string> { _localizerShared["NotFound"].Value.ToString() };
+                return NotFound(new ApiBadRequestResponse(erros, 404));
+            }
+            return Ok(_commonService.OkResponse(userFromDB, _localizerShared["SuccessMessage"].Value.ToString()));
+
+
+        }
+
+        #endregion
+
+
+
+
+
+        /// <summary>
+        /// این اگر کاربرانی بخواهند سرویس های من را ببینند جزییاتش را  این ای پی ای کال ود
+        /// </summary>
+        /// <param name="baseServiceId"></param>
+        /// <returns></returns>
+        [HttpGet("GetUsersServiceDetailsById")]
+        public async Task<ActionResult> GetUsersServiceDetailsById(int baseServiceId)
+        {
+
+            var isPersian = _commonService.IsPersianLanguage();
+
+            var userFromDB = await _context.BaseMyServiceTBL
+                .Where(c =>
+                c.Id == baseServiceId &&
+                c.IsDeleted == false &&
+                c.ConfirmedServiceType == ConfirmedServiceType.Confirmed &&
+                c.ProfileConfirmType == ProfileConfirmType.Confirmed
+                )
+                .Join(_context.Users, a => a.UserName, us => us.UserName, (c, user) => new
+                {
+
+                    UserId = user.Id,
+                    UsersStar = user.StarCount,
+                    Name = user.Name,
+                    LastName = user.LastName,
+                    ImageAddress = user.ImageAddress,
+
+                    c.ServiceName,
+                    c.ServiceType,
+                    CategoryName = isPersian ? c.CategoryTBL.PersianTitle : c.CategoryTBL.Title,
+                    //CategoryPersianName = c.CategoryTBL.PersianTitle,
+                    ServiceStar = c.StarCount,
+                    ServiceUnder3Start = c.Under3StarCount,
+                    //c.ServiceName
+
+                    SubCategoryName = isPersian ? c.SubCategoryTBL.PersianTitle : c.SubCategoryTBL.Title,
+                    //SubCategoryPersianName = c.SubCategoryTBL.PersianTitle,
+
+
+                    ChatService = c.MyChatsService == null ? null :
+                        new
+                        {
+                            PackageType = c.MyChatsService != null ? c.MyChatsService.PackageType : null,
+                            //Price = c.MyChatsService != null ? c.MyChatsService.PriceForNativeCustomer : null,
+                            PriceForNativeCustomer = c.MyChatsService != null ? c.MyChatsService.PriceForNativeCustomer : null,
+                            //PriceForNonNativeCustomer = c.MyChatsService != null ? c.MyChatsService.PriceForNonNativeCustomer : null,
+                            Duration = c.MyChatsService != null ? c.MyChatsService.Duration : null,
+                            FreeMessageCount = c.MyChatsService != null ? c.MyChatsService.FreeMessageCount : null,
+                            MessageCount = c.MyChatsService != null ? c.MyChatsService.MessageCount : null,
+                            BeTranslate = c.MyChatsService != null ? c.MyChatsService.BeTranslate : false,
+                            IsServiceReverse = c.MyChatsService != null ? c.MyChatsService.IsServiceReverse : false,
+                        },
+
+                    ServiceService = c.MyServicesService == null ? null : new
+                    {
+                        Price = c.MyServicesService != null ? c.MyServicesService.Price : null,
+                        WorkDeliveryTimeEstimation = c.MyServicesService != null ? c.MyServicesService.WorkDeliveryTimeEstimation : null,
+                        Tags = c.MyServicesService != null ? c.MyServicesService.Tags : null,
+                        HowWorkConducts = c.MyServicesService != null ? c.MyServicesService.HowWorkConducts : null,
+                        FileDescription = c.MyServicesService != null ? c.MyServicesService.FileDescription : null,
+                        Description = c.MyServicesService != null ? c.MyServicesService.Description : null,
+                        DeliveryItems = c.MyServicesService != null ? c.MyServicesService.DeliveryItems : null,
+                        //Area = c.MyServicesService != null ? isPersian ? c.MyServicesService.AreaTBL.PersianTitle : c.MyServicesService.AreaTBL!.Title : null,
+                        //Speciality = c.MyServicesService != null ? isPersian ?  c.MyServicesService.SpecialityTBL.PersianName : c.MyServicesService.SpecialityTBL.EnglishName :   null,
+                    },
+
+                    CourseService = c.MyCourseService == null ? null : new
+                    {
+                        Price = c.MyCourseService != null ? c.MyCourseService.Price : null,
+                        Description = c.MyCourseService != null ? c.MyCourseService.Description : null,
+                        TotalLenght = c.MyCourseService != null ? c.MyCourseService.TotalLenght : null,
+                        DisCountPercent = c.MyCourseService != null ? c.MyCourseService.DisCountPercent : null,
+                        PreviewVideoAddress = c.MyCourseService != null ? c.MyCourseService.PreviewVideoAddress : null,
+                    },
+
+                }).FirstOrDefaultAsync();
+
+
+            if (userFromDB == null)
+            {
+                List<string> erros = new List<string> { _localizerShared["NotFound"].Value.ToString() };
+                return NotFound(new ApiBadRequestResponse(erros, 404));
+            }
+
+            return Ok(_commonService.OkResponse(userFromDB, _localizerShared["SuccessMessage"].Value.ToString()));
+        }
+
+
+
+
+
+
+        /// <summary>
+        /// این اگر کاربرانی بخواهند سرویس های خودش را ببینند  جزییاتش را  این ای پی ای کال ود
+        /// </summary>
+        /// فرقش بالای در اینه که این سرویس هاییه که هنوز تو سایت پابلیش نظه رو هم میاره
+        /// <param name="baseServiceId"></param>
+        /// <returns></returns>
+        [HttpGet("GetServiceDetailsById")]
+        public async Task<ActionResult> GetServiceDetailsById(int baseServiceId)
+        {
+            var isPersian = _commonService.IsPersianLanguage();
+            var currentUserName = _accountService.GetCurrentUserName();
+
+            var userFromDB = await _context.BaseMyServiceTBL
+                .Where(c =>
+                c.Id == baseServiceId &&
+                c.IsDeleted == false &&
+                c.UserName.ToLower() == currentUserName.ToLower() /*&&*/
+                )
+                .Join(_context.Users, a => a.UserName, us => us.UserName, (c, user) => new
+                {
+
+                    UserId = user.Id,
+                    UsersStar = user.StarCount,
+                    Name = user.Name,
+                    LastName = user.LastName,
+                    ImageAddress = user.ImageAddress,
+
+                    c.ServiceName,
+                    c.ServiceType,
+                    CategoryName = isPersian ? c.CategoryTBL.PersianTitle : c.CategoryTBL.Title,
+                    //CategoryPersianName = c.CategoryTBL.PersianTitle,
+                    ServiceStar = c.StarCount,
+                    ServiceUnder3Start = c.Under3StarCount,
+
+                    serviceCategoryName = isPersian ? c.ServiceTbl.PersianName : c.ServiceTbl.Name,
+                    serviceCategoryId = c.ServiceTbl.Id,
+
+
+                    SubCategoryName = isPersian ? c.SubCategoryTBL.PersianTitle : c.SubCategoryTBL.Title,
+                    //SubCategoryPersianName = c.SubCategoryTBL.PersianTitle,
+
+
+                    ChatService = c.MyChatsService == null ? null :
+                        new
+                        {
+                            PackageType = c.MyChatsService != null ? c.MyChatsService.PackageType : null,
+                            //Price = c.MyChatsService != null ? c.MyChatsService.PriceForNativeCustomer : null,
+                            PriceForNativeCustomer = c.MyChatsService != null ? c.MyChatsService.PriceForNativeCustomer : null,
+                            //PriceForNonNativeCustomer = c.MyChatsService != null ? c.MyChatsService.PriceForNonNativeCustomer : null,
+                            Duration = c.MyChatsService != null ? c.MyChatsService.Duration : null,
+                            FreeMessageCount = c.MyChatsService != null ? c.MyChatsService.FreeMessageCount : null,
+                            MessageCount = c.MyChatsService.MessageCount,
+                            BeTranslate = c.MyChatsService != null ? c.MyChatsService.BeTranslate : false,
+                            IsServiceReverse = c.MyChatsService != null ? c.MyChatsService.IsServiceReverse : false,
+                        },
+
+                    ServiceService = c.MyServicesService == null ? null : new
+                    {
+                        Price = c.MyServicesService != null ? c.MyServicesService.Price : null,
+                        WorkDeliveryTimeEstimation = c.MyServicesService != null ? c.MyServicesService.WorkDeliveryTimeEstimation : null,
+                        Tags = c.MyServicesService != null ? c.MyServicesService.Tags : null,
+                        HowWorkConducts = c.MyServicesService != null ? c.MyServicesService.HowWorkConducts : null,
+                        FileDescription = c.MyServicesService != null ? c.MyServicesService.FileDescription : null,
+                        Description = c.MyServicesService != null ? c.MyServicesService.Description : null,
+                        DeliveryItems = c.MyServicesService != null ? c.MyServicesService.DeliveryItems : null,
+                        //Area = c.MyServicesService != null ? isPersian ? c.MyServicesService.AreaTBL.PersianTitle : c.MyServicesService.AreaTBL!.Title : null,
+                        //Speciality = c.MyServicesService != null ? isPersian ?  c.MyServicesService.SpecialityTBL.PersianName : c.MyServicesService.SpecialityTBL.EnglishName :   null,
+                    },
+
+                    CourseService = c.MyCourseService == null ? null : new
+                    {
+                        Price = c.MyCourseService != null ? c.MyCourseService.Price : null,
+                        Description = c.MyCourseService != null ? c.MyCourseService.Description : null,
+                        TotalLenght = c.MyCourseService != null ? c.MyCourseService.TotalLenght : null,
+                        DisCountPercent = c.MyCourseService != null ? c.MyCourseService.DisCountPercent : null,
+                        PreviewVideoAddress = c.MyCourseService != null ? c.MyCourseService.PreviewVideoAddress : null,
+                    },
+
+                }).FirstOrDefaultAsync();
+
+
+            if (userFromDB == null)
+            {
+                List<string> erros = new List<string> { _localizerShared["NotFound"].Value.ToString() };
+                return NotFound(new ApiBadRequestResponse(erros, 404));
+            }
+
+            return Ok(_commonService.OkResponse(userFromDB, _localizerShared["SuccessMessage"].Value.ToString()));
+        }
+
+
+
+
+
+
+        #region  get users serviceCategory By Id
+
+        [HttpGet("GetUsersCategoryServiceById")]
+        ////////////[ClaimsAuthorize(IsAdmin = false)]
+        public async Task<ActionResult> GetUsersCategoryServiceById(string UserId)
+        {
+
+            var username = await _context.Users.Where(c => c.Id == UserId).Select(c => c.UserName).FirstOrDefaultAsync();
+            if (string.IsNullOrEmpty(username))
+            {
+                List<string> erros = new List<string> { _localizerShared["NotFound"].Value.ToString() };
+                return NotFound(new ApiBadRequestResponse(erros, 404));
+            }
+
+            var isPersian = _commonService.IsPersianLanguage();
+            var categOryServciceNames = await _context.BaseMyServiceTBL
+                .Where(c => c.UserName == username &&
+                c.IsDeleted == false &&
+                c.ConfirmedServiceType == ConfirmedServiceType.Confirmed
+                && c.ProfileConfirmType == ProfileConfirmType.Confirmed)
+                 .Select(X => new
+                 {
+                     ServiceId = X.ServiceTbl.Id,
+                     ServiceName = isPersian ? X.ServiceTbl.PersianName : X.ServiceTbl.Name,
+                     Color = X.ServiceTbl.Color
+                 }).Distinct()
+                 .AsQueryable()
+                 .ToListAsync();
+
+            return Ok(_commonService.OkResponse(categOryServciceNames, _localizerShared["SuccessMessage"].Value.ToString()));
+
+        }
+        #endregion
+
+        #region  Searech Service
+
+        /// <summary>
+        /// </summary>
+        /// <returns></returns>
+        [HttpPost("SearchService")]
+        ////////////////[Authorize]
+        //[ClaimsAuthorize(IsAdmin = false)]
+        public async Task<ActionResult> SearchService([FromBody] SearchDTO model)
+        {
+            ResponseDTO res = await _servicetypeService.SearchService(model);
+            return Ok(_commonService.OkResponse(res, false));
+        }
+
+        #endregion
+
+
+
+
+        #region  Get Top Ten of every servic
+        /// <summary>
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet("GetTopTen")]
+        ////////////////[Authorize]
+        //[ClaimsAuthorize(IsAdmin = false)]
+        public async Task<ActionResult> GetTopTen(int serviceCategoryId)
+        {
+            var QueryAble = _context.User_TopTenPackageTBL.Where(c => c.ServiceId == serviceCategoryId).AsNoTracking().AsQueryable();
+            var users = _context.Users.AsNoTracking().AsQueryable();
+            var res = await (from u in users
+                             join q in QueryAble
+                             on u.UserName equals q.UserName
+                             select new
+                             {
+                                 q.CreateDate,
+                                 u.UserName,
+                                 u.ImageAddress,
+                                 u.Id,
+                             }).OrderBy(c => c.CreateDate).ToListAsync();
+
+            return Ok(_commonService.OkResponse(res, false));
+        }
+
+
+        #endregion
+
+
+
+
+
+
+
+
+        /// <summary>
+        ///گرفتن کامنت خهایس یک سرویس در ادمین
+        /// </summary>
+        /// <param name="Id"></param>
+        /// <returns></returns>
+        [HttpGet("GetServiceCommentsForAdmin")]
+        [Authorize]
+        [ClaimsAuthorize(IsAdmin = true)]
+        public async Task<ActionResult> GetServiceCommentsForAdmin(int Id)
+        {
+
+            var comments = await _context.ServiceCommentsTBL.Where(c => c.BaseMyServiceId == Id)
+            .Select(c => new
+            {
+                c.Id,
+                c.CreateDate,
+                c.Comment,
+                c.UserName,
+                c.IsConfirmed,
+            }).ToListAsync();
+
+            return Ok(_commonService.OkResponse(comments, true));
+        }
+
+
+
+
+
+
+        /// <summary>
+        ///گرفتن کامنت خهایس یک سرویس در ادمین
+        /// </summary>
+        /// <param name="Id"></param>
+        /// <returns></returns>
+        [HttpGet("ConfirmComment")]
+        [Authorize]
+        [ClaimsAuthorize(IsAdmin = true)]
+        public async Task<ActionResult> ConfirmComment(int Id)
+        {
+
+            var comment = await _context.ServiceCommentsTBL.Where(c => c.Id == Id).FirstOrDefaultAsync();
+
+            if (comment == null)
+                return NotFound(_commonService.NotFoundErrorReponse(true));
+
+
+            if (comment.IsConfirmed)
+                comment.IsConfirmed = false;
+            else
+                comment.IsConfirmed = true;
+
+            await _context.SaveChangesAsync();
+            return Ok(_commonService.OkResponse(comment.IsConfirmed, true));
+
+        }
+
+
+
+
+
+
+
+        #region add comment or Star
+        /// <summary>
+        /// جدول کامنت وستارههای بک سرویس 
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns></returns>
+        [HttpPost("AddCommentAndStarToService")]
+        //[Authorize]
+        [ClaimsAuthorize(IsAdmin = false)]
+        public async Task<ActionResult> AddCommentAndStarToService([FromBody] AddCommentServiceDTO model)
+        {
+            //some validation     ------------------------  comming soon
+            //1-  this user have request to this service or not 
+            //if  iin request  tamam shde nabashe
+
+            //_context.ServiceCommentsTBL
+            //    .Where(c => c.UserName == currentUsername && c.ServiceId ==model.ServiceId)
+
+            var serviceFromDB = await _context.BaseMyServiceTBL.Where(c => c.ServiceId == model.ServiceId).FirstOrDefaultAsync();
+            if (serviceFromDB == null)
+            {
+                List<string> erros = new List<string> { _localizerShared["ServiceNotFound"].Value.ToString() };
+                return BadRequest(new ApiBadRequestResponse(erros));
+            }
+
+            if (model.StarCount >= 3)
+                model.ResonForUnder3Star = null;
+
+            var currentUsername = _accountService.GetCurrentUserName();
+
+            var comment = new ServiceCommentsTBL()
+            {
+                Comment = model.Comment,
+                CreateDate = DateTime.Now,
+                ResonForUnder3Star = model.ResonForUnder3Star,
+                StarCount = model.StarCount,
+                UserName = currentUsername,
+                BaseMyService = serviceFromDB,
+                ////////BaseMyServiceId = model.ServiceId,                ////////BaseMyServiceId = model.ServiceId,
+            };
+
+            AppUser curentUser = await _accountService.GetUserByUserName(currentUsername);
+            curentUser.StarCount++;
+
+
+            serviceFromDB.StarCount += model.StarCount;
+            if (model.StarCount < 3)
+            {
+                serviceFromDB.Under3StarCount++;
+                curentUser.Under3StarCount++;
+                //Under3StarCount
+            }
+
+
+
+            try
+            {
+                //await _context.BaseMyServiceTBL.AddAsync(BaseMyService);
+                await _context.ServiceCommentsTBL.AddAsync(comment);
+                await _context.SaveChangesAsync();
+                return Ok(_commonService.OkResponse(null, _localizerShared["SuccessMessage"].Value.ToString()));
+            }
+            catch
+            {
+                List<string> erros = new List<string> { _localizerShared["InternalServerMessage"].Value.ToString() };
+                return StatusCode(StatusCodes.Status500InternalServerError,
+                   new ApiBadRequestResponse(erros, 500));
+
+            }
+        }
+
+        #endregion
+
+
+        #region add Service Survey
+        /// <summary>
+        /// جدول نظر سنجی یک سرویس 
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns></returns>
+        [HttpPost("AddSurveyToService")]
+        //[Authorize]
+        [ClaimsAuthorize(IsAdmin = false)]
+        public async Task<ActionResult> AddSurveyToService([FromBody] AddSurveyToServiceDTO model)
+        {
+            //some validation     ------------------------  comming soon
+            //1-  this user have request to this service or not 
+            //if  iin request  tamam shde nabashe
+
+            //_context.ServiceCommentsTBL
+            //    .Where(c => c.UserName == currentUsername && c.ServiceId ==model.ServiceId)
+
+            var questions = await _context.QuestionPullTBL.Where(c => c.ServiceId == model.ServiceId).Select(c => new
+            {
+                questionId = c.Id,
+                answerIds = c.AnswersTBLs.Select(c => c.Id).ToList()
+            }).ToListAsync();
+
+            if (questions.Count == 0)
+            {
+                List<string> erros = new List<string> { _localizerShared["Noquestoin"].Value.ToString() };
+                return BadRequest(new ApiBadRequestResponse(erros));
+            }
+
+            //validation
+            if (model.Questoins != null)
+            {
+                foreach (var item in model.Questoins)
+                {
+                    var ques = questions.Where(c => c.questionId == item.QuestionId).FirstOrDefault();
+                    if (ques == null)
+                    {
+                        List<string> erros = new List<string> { _localizerShared["InvalidQuestion"].Value.ToString() };
+                        return BadRequest(new ApiBadRequestResponse(erros));
+                    }
+                    else if (ques.answerIds.Any(c => c == item.AnswerId) == false)
+                    {
+                        List<string> erros = new List<string> { _localizerShared["InvalidAnswer"].Value.ToString() };
+                        return BadRequest(new ApiBadRequestResponse(erros));
+                    }
+                }
+            }
+
+
+            if (model.Questoins != null)
+            {
+                var currentUsername = _accountService.GetCurrentUserName();
+                var SurveyTBLs = new List<ServiceSurveyTBL>();
+                foreach (var item in model.Questoins)
+                {
+                    new ServiceSurveyTBL()
+                    {
+                        UserName = currentUsername,
+                        QuestionId = item.QuestionId,
+                        AnswerId = item.AnswerId,
+                    };
+                }
+                await _context.ServiceSurveyTBL.AddRangeAsync(SurveyTBLs);
+            }
+
+            try
+            {
+                //await _context.BaseMyServiceTBL.AddAsync(BaseMyService);
+                await _context.SaveChangesAsync();
+                return Ok(_commonService.OkResponse(null, _localizerShared["SuccessMessage"].Value.ToString()));
+            }
+            catch
+            {
+                List<string> erros = new List<string> { _localizerShared["InternalServerMessage"].Value.ToString() };
+                return StatusCode(StatusCodes.Status500InternalServerError,
+                   new ApiBadRequestResponse(erros, 500));
+
+            }
+        }
+
+        #endregion
+
+
+
+        #region Admin
+
+
+        #region reject and accept Provided Service
+
+
+        [HttpGet("AcceptProvideServicesInAdmin")]
+        [Authorize]
+        [PermissionAuthorize(PublicPermissions.Service.RejectProvideServices)]
+        [PermissionDBCheck(IsAdmin = true, requiredPermission = new string[] { PublicPermissions.Service.RejectProvideServices })]
+        public async Task<ActionResult> AcceptProvideServicesInAdmin(int serviceId)
+        {
+            var currentUserName = _accountService.GetCurrentUserName();
+            var cuurentRole = _accountService.GetCurrentRole();
+
+            var serviceFromDB = await _context.BaseMyServiceTBL
+                .Where(c => c.Id == serviceId)
+                .Include(c => c.ServiceTbl)
+                 .FirstOrDefaultAsync();
+
+            if (serviceFromDB == null)
+                return NotFound(new ApiResponse(404, PubicMessages.NotFoundMessage));
+
+            if (string.IsNullOrEmpty(serviceFromDB.ServiceTbl.RoleId))
+                return StatusCode(StatusCodes.Status500InternalServerError,
+                                        new ApiResponse(500, PubicMessages.InternalServerMessage));
+
+            var roleFromDB = await _roleManager.FindByIdAsync(serviceFromDB.ServiceTbl.RoleId);
+
+            if (cuurentRole != PublicHelper.ADMINROLE)
+            {
+                if (cuurentRole.ToLower() != roleFromDB.Name.ToLower())
+                    return Unauthorized(new ApiResponse(403, PubicMessages.ForbidenMessage));
+            }
+            serviceFromDB.ConfirmedServiceType = ConfirmedServiceType.Confirmed;
+
+
+            var persianConfirmMessage = _context.SettingsTBL.Where(c => c.Key == PublicHelper.ServiceConfimNotificationKeyName).SingleOrDefault()?.Value;
+            var englishConfirmMessage = _context.SettingsTBL.Where(c => c.Key == PublicHelper.ServiceConfimNotificationKeyName).SingleOrDefault()?.EnglishValue;
+
+            //var userFromDB = await _context.Users.Where(c => c.UserName == currentUserName).Select(c => new { c.ConnectionId, c.UserName }).FirstOrDefaultAsync();
+            var userFromDB = await _context.Users.Where(c => c.UserName == serviceFromDB.UserName).Select(c => new { c.ConnectionId, c.UserName }).FirstOrDefaultAsync();
+
+
+            var notification = new NotificationTBL()
+            {
+                CreateDate = DateTime.Now,
+                EnglishText = englishConfirmMessage,
+                TextPersian = persianConfirmMessage,
+
+                IsReaded = false,
+                NotificationStatus = NotificationStatus.ServiceConfirmation,
+                SenderUserName = currentUserName,
+                UserName = serviceFromDB.UserName,
+            };
+
+            _context.NotificationTBL.Add(notification);
+
+            bool isPersian = _commonService.IsPersianLanguage();
+
+            string confirmMessage = isPersian ? persianConfirmMessage : englishConfirmMessage;
+
+            if (!string.IsNullOrEmpty(userFromDB?.ConnectionId))
+                await _hubContext.Clients.Client(userFromDB?.ConnectionId).SendAsync("Notifis", confirmMessage);
+
+
+            await _context.SaveChangesAsync();
+            return Ok(_commonService.OkResponse(null, PubicMessages.SuccessMessage));
+
+        }
+
+
+
+
+        /// <summary>
+        ///reject provided service        
+        /// </summary>
+        /// <returns></returns>
+        [HttpPost("RejectProvideServicesInAdmin")]
+        [Authorize]
+        [PermissionAuthorize(PublicPermissions.Service.RejectProvideServices)]
+        [PermissionDBCheck(IsAdmin = true, requiredPermission = new string[] { PublicPermissions.Service.RejectProvideServices })]
+        public async Task<ActionResult> RejectProvideServicesInAdmin([FromBody] RejectProvideServicesInAdminDTO model)
+        {
+            var currentUserName = _accountService.GetCurrentUserName();
+            var cuurentRole = _accountService.GetCurrentRole();
+
+            var serviceFromDB = await _context.BaseMyServiceTBL
+                .Where(c => c.Id == model.ServiceId)
+                .Include(c => c.ServiceTbl)
+                 .FirstOrDefaultAsync();
+
+            if (serviceFromDB == null)
+                return NotFound(new ApiResponse(404, PubicMessages.NotFoundMessage));
+
+            if (string.IsNullOrEmpty(serviceFromDB.ServiceTbl.RoleId))
+                return StatusCode(StatusCodes.Status500InternalServerError,
+                                        new ApiResponse(500, PubicMessages.InternalServerMessage));
+
+            var roleFromDB = await _roleManager.FindByIdAsync(serviceFromDB.ServiceTbl.RoleId);
+            if (cuurentRole != PublicHelper.ADMINROLE)
+            {
+                if (cuurentRole.ToLower() != roleFromDB.Name.ToLower())
+                    return Unauthorized(new ApiResponse(403, PubicMessages.ForbidenMessage));
+            }
+            serviceFromDB.ConfirmedServiceType = ConfirmedServiceType.Rejected;
+            serviceFromDB.RejectReason = model.RejectReason;
+
+
+
+            var persinaRejectMessage = _context.SettingsTBL.Where(c => c.Key == PublicHelper.ServiceRejectionKeyName).SingleOrDefault()?.Value;
+            var englishRejectMessage = _context.SettingsTBL.Where(c => c.Key == PublicHelper.ServiceRejectionKeyName).SingleOrDefault()?.EnglishValue;
+
+            //var userFromDB = await _context.Users.Where(c => c.UserName == currentUserName).Select(c => new { c.ConnectionId, c.UserName }).FirstOrDefaultAsync();
+
+
+            var userFromDB = await _context.Users.Where(c => c.UserName == serviceFromDB.UserName).Select(c => new { c.ConnectionId, c.UserName }).FirstOrDefaultAsync();
+
+            var notification = new NotificationTBL()
+            {
+                CreateDate = DateTime.Now,
+                EnglishText = englishRejectMessage,
+                TextPersian = persinaRejectMessage,
+
+                IsReaded = false,
+                NotificationStatus = NotificationStatus.ServiceRejection,
+                SenderUserName = currentUserName,
+                UserName = serviceFromDB.UserName,
+            };
+
+            _context.NotificationTBL.Add(notification);
+
+            bool isPersian = _commonService.IsPersianLanguage();
+
+            string rejectMessage = isPersian ? persinaRejectMessage : englishRejectMessage;
+
+            if (!string.IsNullOrEmpty(userFromDB?.ConnectionId))
+                await _hubContext.Clients.Client(userFromDB?.ConnectionId).SendAsync("Notifis", rejectMessage);
+
+            await _context.SaveChangesAsync();
+
+            return Ok(_commonService.OkResponse(null, PubicMessages.SuccessMessage));
+        }
+
+
+
+
+
+
+        //public async Task<IActionResult> CallGarson([FromForm] string tableCode)
+        //      {
+        //          var result = await IsValidRestuarant(tableCode);
+        //          if (!result.isValid)
+        //              return new JsonResult(new { status = "0", result = new { }, messages = new string[] { "no user!!!!!!!!" } });
+
+        //          await _hub.Clients.Client(result.restaurant.ConnectionId).SendAsync("Bell", result.table.Number);
+        //          return new JsonResult(new { status = "1", result = new { }, messages = new string[] { "Sent" } });
+        //      }
+
+
+
+
+
+
+        #endregion
+
+        #region   GetAllProvideServicesInAdmin
+        /// <summary>
+        /// رفتن تمامی سرویس های ثبت شده  (سرویس های گیرنده)
+        /// سرویس هایی که حذف نشده ند
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet("GetAllProvideServicesInAdmin")]
+        [Authorize]
+        [PermissionAuthorize(PublicPermissions.Service.GetAllProvidedService)]
+        [PermissionDBCheck(IsAdmin = true, requiredPermission = new string[] { PublicPermissions.Service.GetAllProvidedService })]
+        public async Task<ActionResult> GetAllProvideServicesInAdmin(int? page, int? perPage,
+                   string searchedWord, DateTime createDate, ServiceType? serviceType, ConfirmedServiceType? confirmedServiceType)
+        {
+            var currentRole = _accountService.GetCurrentRole();
+            if (currentRole != PublicHelper.ADMINROLE)
+            {
+                var res = await _servicetypeService.GetAllProvideServicesForNotAdmin(page, perPage, searchedWord, createDate, serviceType, confirmedServiceType);
+                return Ok(_commonService.OkResponse(res, PubicMessages.SuccessMessage));
+            }
+            var result = await _servicetypeService.GetAllProvideServicesForAdmin(page, perPage, searchedWord, createDate, serviceType, confirmedServiceType);
+            return Ok(_commonService.OkResponse(result, PubicMessages.SuccessMessage));
+        }
+
+        #endregion
+
+
+
+
+        #region  getChatServerviceDetails
+
+
+        /// <summary>
+        ///گرفتن یک   از نوع چت و وویس و.. برای یک ادمین
+        /// </summary>
+        /// <param name="Id"></param>
+        /// <returns></returns>
+        [HttpGet("GetChatServiceDetailsInAdmin")]
+        [Authorize]
+        [PermissionAuthorize(PublicPermissions.Service.RejectProvideServices)]
+        [PermissionDBCheck(IsAdmin = true, requiredPermission = new string[] { PublicPermissions.Service.RejectProvideServices })]
+        public async Task<ActionResult> GetChatServiceDetailsInAdmin(int Id)
+        {
+
+            var serviceFromDB = await _context
+                .BaseMyServiceTBL.Where(c => c.Id == Id && c.IsDeleted == false)
+                .Select(c => new
+                {
+                    c.MyChatsService.PackageType,
+                    c.MyChatsService.BeTranslate,
+                    c.MyChatsService.FreeMessageCount,
+                    c.MyChatsService.IsServiceReverse,
+                    c.MyChatsService.PriceForNativeCustomer,
+                    c.MyChatsService.PriceForNonNativeCustomer,
+                    c.RejectReason,
+                    c.CreateDate,
+                    c.Id,
+                    c.ServiceName,
+                    c.ServiceType,
+                    c.CatId,
+                    c.SubCatId,
+                    c.UserName,
+                    c.ConfirmedServiceType,
+                    //c.IsDeleted,
+                    c.IsEditableService,
+                    c.ServiceTbl.RoleId
+                }).FirstOrDefaultAsync();
+
+            if (serviceFromDB == null)
+                return NotFound(new ApiResponse(404, PubicMessages.NotFoundMessage));
+
+            var currentUsername = _accountService.GetCurrentUserName();
+            var currentRole = _accountService.GetCurrentRole();
+
+            if (currentRole != PublicHelper.ADMINROLE)
+            {
+                var roleFromDB = await _roleManager.FindByNameAsync(currentRole);
+                var roleId = roleFromDB.Id;
+
+                if (serviceFromDB.RoleId != roleId)
+                    return Unauthorized(new ApiResponse(401, PubicMessages.UnAuthorizeMessage));
+            }
+            return Ok(_commonService.OkResponse(serviceFromDB, _localizerShared["SuccessMessage"].Value.ToString()));
+        }
+
+        #endregion
+
+
+
+
+
+        /// <summary>
+        ///گرفتن یک سرویس از نوع سرویس و.. برای یک ادمین
+        /// </summary>
+        /// <param name="Id"></param>
+        /// <returns></returns>
+        [HttpGet("GetServiceServiceDetailsInAdmin")]
+        [Authorize]
+        [PermissionAuthorize(PublicPermissions.Service.GetAllProvidedService)]
+        [PermissionDBCheck(IsAdmin = true, requiredPermission = new string[] { PublicPermissions.Service.GetAllProvidedService })]
+
+        public async Task<ActionResult> GetServiceServiceDetailsInAdmin(int Id)
+        {
+            var serviceFromDB = await _context
+                           .BaseMyServiceTBL
+                           .AsNoTracking()
+                          .Where(c => c.Id == Id && c.IsDeleted == false)
+                          .Select(c => new
+                          {
+                              c.MyServicesService.Id,
+                              c.MyServicesService.Description,
+                              c.MyServicesService.BeTranslate,
+                              c.MyServicesService.FileNeeded,
+                              c.MyServicesService.FileDescription,
+                              c.MyServicesService.Price,
+                              c.MyServicesService.WorkDeliveryTimeEstimation,
+                              c.MyServicesService.HowWorkConducts,
+                              c.MyServicesService.DeliveryItems,
+                              c.MyServicesService.Tags,
+                              AreaTitle = c.MyServicesService.AreaTBL.Title,
+                              SpecialityTitle = c.MyServicesService.SpecialityTBL.EnglishName,
+                              CategoryTitile = c.CategoryTBL.Title,
+                              SubcategoryTitile = c.SubCategoryTBL.Title,
+                              c.ServiceName,
+                              c.ServiceType,
+                              c.UserName,
+                              confirmedServiceType = c.ConfirmedServiceType,
+                              c.CreateDate,
+                              //c.IsDeleted,
+                              c.IsEditableService,
+                              c.RejectReason,
+                              c.ServiceTbl.RoleId
+                              //c.BaseMyChatTBL.IsConfirmByAdmin
+                          }).FirstOrDefaultAsync();
+
+
+            if (serviceFromDB == null)
+                return NotFound(new ApiResponse(404, PubicMessages.NotFoundMessage));
+
+            var currentUsername = _accountService.GetCurrentUserName();
+            var currentRole = _accountService.GetCurrentRole();
+
+            if (currentRole != PublicHelper.ADMINROLE)
+            {
+                var roleFromDB = await _roleManager.FindByNameAsync(currentRole);
+                var roleId = roleFromDB.Id;
+
+                if (serviceFromDB.RoleId != roleId)
+                    return Unauthorized(new ApiResponse(401, PubicMessages.UnAuthorizeMessage));
+            }
+            return Ok(_commonService.OkResponse(serviceFromDB, _localizerShared["SuccessMessage"].Value.ToString()));
+
+        }
+
+
+
+
+
+
+        #endregion
+
+
+        #endregion
+
     }
 }
 

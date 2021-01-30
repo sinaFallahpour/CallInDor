@@ -15,6 +15,10 @@ namespace Domain.DTO.Service
         public string PersianName { get; set; }
 
 
+
+        public   bool IsProfileOptional { get; set; }
+        
+        
         /// <summary>
         /// رنگ سرویس
         /// </summary>
@@ -35,7 +39,7 @@ namespace Domain.DTO.Service
         /// </summary>
         public double MinPriceForService { get; set; }
 
-
+        public int SitePercent { get; set; }
 
 
         /// <summary>

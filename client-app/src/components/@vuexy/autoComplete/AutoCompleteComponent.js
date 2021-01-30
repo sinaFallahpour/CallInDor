@@ -103,7 +103,7 @@ class Autocomplete extends React.Component {
 
     // User Pressed ENTER
     else if (e.keyCode === 13 && showSuggestions) {
-      this.onSuggestionItemClick(this.filteredData[activeSuggestion].link, e)
+      this.onSuggestionItemClick(this.filteredData[activeSuggestion]?.link, e)
       this.setState({
         userInput: this.filteredData[activeSuggestion][filterKey],
         showSuggestions: false
@@ -179,8 +179,8 @@ class Autocomplete extends React.Component {
     let sortSingleData = suggestions
       .filter(i => {
         let startCondition = i[filterKey]
-            .toLowerCase()
-            .startsWith(userInput.toLowerCase()),
+          .toLowerCase()
+          .startsWith(userInput.toLowerCase()),
           includeCondition = i[filterKey]
             .toLowerCase()
             .includes(userInput.toLowerCase())
@@ -244,8 +244,8 @@ class Autocomplete extends React.Component {
         let sortData = suggestion.data
           .filter(i => {
             let startCondition = i[filterKey]
-                .toLowerCase()
-                .startsWith(userInput.toLowerCase()),
+              .toLowerCase()
+              .startsWith(userInput.toLowerCase()),
               includeCondition = i[filterKey]
                 .toLowerCase()
                 .includes(userInput.toLowerCase())
@@ -268,11 +268,11 @@ class Autocomplete extends React.Component {
             {sortData.length ? (
               this.renderGroupedSuggestion(sortData)
             ) : (
-              <li className="suggestion-item no-result">
-                <AlertTriangle size={15} />{" "}
-                <span className="align-middle ml-50">No Result</span>
-              </li>
-            )}
+                <li className="suggestion-item no-result">
+                  <AlertTriangle size={15} />{" "}
+                  <span className="align-middle ml-50">No Result</span>
+                </li>
+              )}
           </React.Fragment>
         )
       })
@@ -381,9 +381,8 @@ class Autocomplete extends React.Component {
           }}
           onKeyDown={e => onKeyDown(e)}
           value={userInput}
-          className={`vx-autocomplete-search ${
-            this.props.className ? this.props.className : ""
-          }`}
+          className={`vx-autocomplete-search ${this.props.className ? this.props.className : ""
+            }`}
           placeholder={this.props.placeholder}
           onClick={this.onInputClick}
           ref={el => {

@@ -1,18 +1,21 @@
 import { requests } from "../agent";
 
 import jwtDecode from "jwt-decode";
-import { functions } from "firebase";
 
 const tokenKey = "token";
+const userInfoKey = "userInfo";
+const permissionKey = "Permissions";
 
 export async function login(phoneNumber, password) {
   const { data } = await requests.post("/Account/AdminLogin", {
     phoneNumber,
-    password
+    password,
   });
+
   console.log(data);
   const jwt = data.result.data.token;
   localStorage.setItem(tokenKey, jwt);
+  localStorage.setItem(userInfoKey, data.result.data.userName);
 }
 
 export async function loginWithJwt(jwt) {
@@ -32,12 +35,11 @@ export function getCurrentUser() {
   }
 }
 
-export async function isAdminLoggedIn() {
+export async function checkTokenIsValid() {
   const token = getJwt();
-  if (!token)
-    return false;
+  if (!token) return false;
   try {
-    await requests.get("/Account/IsAdminLoggedIn");
+    await requests.get("/Account/CheckTokenIsValid");
     return true;
   } catch (error) {
     return false;
@@ -53,11 +55,27 @@ export function getJwt() {
   return localStorage.getItem(tokenKey);
 }
 
+export function getPermissons() {
+  const token = getJwt();
+  if (!token) return undefined;
+  const payloat = jwtDecode(token);
+  return payloat.Permissions;
+}
+
+export function getRole() {
+  const token = getJwt();
+  if (!token) return undefined;
+  const payloat = jwtDecode(token);
+  return payloat.role;
+}
+
 export default {
   login,
   logout,
-  isAdminLoggedIn,
+  checkTokenIsValid,
   getCurrentUser,
   loginWithJwt,
-  getJwt
+  getJwt,
+  getPermissons,
+  getRole,
 };

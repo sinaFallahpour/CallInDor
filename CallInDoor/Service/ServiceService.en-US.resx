@@ -129,6 +129,9 @@
   <data name="Invalid ServiceType Type" xml:space="preserve">
     <value>Invalid ServiceType Type</value>
   </data>
+  <data name="MessageCount is Required" xml:space="preserve">
+    <value>message count is Required</value>
+  </data>
   <data name="No user with the name {0} was found" xml:space="preserve">
     <value>No user with the name {0} was found</value>
   </data>

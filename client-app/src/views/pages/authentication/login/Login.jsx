@@ -1,4 +1,4 @@
-import React from "react"
+import React from "react";
 import {
   Card,
   CardHeader,
@@ -7,46 +7,44 @@ import {
   Col,
   Nav,
   NavItem,
-  NavLink,
   TabContent,
-  TabPane
-} from "reactstrap"
-import classnames from "classnames"
-import loginImg from "../../../../assets/img/pages/login.png"
-import "../../../../assets/scss/pages/authentication.scss"
+  TabPane,
+} from "reactstrap";
+// import classnames from "classnames";
+import loginImg from "../../../../assets/img/pages/login.png";
+import "../../../../assets/scss/pages/authentication.scss";
+import CustomLoader from "../../../../components/@vuexy/spinner/FullPageLoading";
 
-
-import LoginJWT from "./LoginJWT"
-import authService from "../../../../core/services/userService/authService"
-import { history } from "../../../../history"
-
+import LoginJWT from "./LoginJWT";
+import authService from "../../../../core/services/userService/authService";
+import { history } from "../../../../history";
 
 class Login extends React.Component {
   state = {
     activeTab: "1",
-    notload: true
-  }
-  toggle = tab => {
+    notload: true,
+  };
+  toggle = (tab) => {
     if (this.state.activeTab !== tab) {
       this.setState({
-        activeTab: tab
-      })
+        activeTab: tab,
+      });
     }
-  }
-
+  };
 
   async componentDidMount() {
-    const isloggedIn = await authService.isAdminLoggedIn();
-
+    const isloggedIn = await authService.checkTokenIsValid();
+    const role = authService.getRole()
     if (isloggedIn) {
-      history.push('/')
+      if (role != 'Admin')
+        history.push('/pages/Accesdenieds')
+      history.push("/");
     }
-    this.setState({ notload: false })
+    this.setState({ notload: false });
   }
 
-
   render() {
-    // if (this.state.notload) return <></>;
+    if (this.state.notload) return <CustomLoader></CustomLoader>;
 
     return (
       <Row className="m-0 justify-content-center">
@@ -76,19 +74,14 @@ class Login extends React.Component {
                     Welcome back, please login to your account.
                   </p>
                   <Nav tabs className="px-2">
-                    <NavItem>
-                    </NavItem>
+                    <NavItem></NavItem>
                   </Nav>
                   <TabContent activeTab={this.state.activeTab}>
                     <TabPane tabId="1">
                       <LoginJWT />
                     </TabPane>
-                    <TabPane tabId="2">
-                      {/* <LoginFirebase /> */}
-                    </TabPane>
-                    <TabPane tabId="3">
-                      {/* <LoginAuth0 /> */}
-                    </TabPane>
+                    <TabPane tabId="2">{/* <LoginFirebase /> */}</TabPane>
+                    <TabPane tabId="3">{/* <LoginAuth0 /> */}</TabPane>
                   </TabContent>
                 </Card>
               </Col>
@@ -96,7 +89,7 @@ class Login extends React.Component {
           </Card>
         </Col>
       </Row>
-    )
+    );
   }
 }
-export default Login
+export default Login;

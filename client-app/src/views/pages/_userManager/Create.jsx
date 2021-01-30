@@ -31,7 +31,7 @@ class Create extends Form {
       password: "",
       name: "",
       lastName: "",
-      dial_code: null,
+      dial_code: "",
       phoneNumber: "",
       roleId: null,
     },
@@ -139,6 +139,11 @@ class Create extends Form {
         if (data.result.status) {
           obj.id = data.result.data.id;
           obj.roleName = data.result.data.roleName;
+          obj.phoneNumber = obj.countryCode + obj.phoneNumber
+
+
+
+
           this.props.addToUsers(obj);
           toast.success(data.result.message);
           setTimeout(() => {
@@ -184,6 +189,7 @@ class Create extends Form {
       password: "",
       name: "",
       lastName: "",
+      phoneNumber: "",
       roleId: null,
       dial_code: null,
     };
@@ -229,11 +235,9 @@ class Create extends Form {
                   {addNew ? (
                     <>
                       <Col md="4">
-                        {" "}
                         {this.renderInput("password", "Password", "password")}
                       </Col>
                       <Col md="4">
-                        {" "}
                         {this.renderInput(
                           "phoneNumber",
                           "Phone Number(withOut Country Code)",

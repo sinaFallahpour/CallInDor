@@ -3,11 +3,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.30320.27
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CallInDoor", "CallInDoor\CallInDoor.csproj", "{6631F655-E071-4FB9-B997-5A83CED4B85F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CallInDoor", "CallInDoor\CallInDoor.csproj", "{6631F655-E071-4FB9-B997-5A83CED4B85F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Domain", "Domain\Domain.csproj", "{647E6818-A334-417A-83C7-205398C1CDA2}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Domain", "Domain\Domain.csproj", "{647E6818-A334-417A-83C7-205398C1CDA2}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Service", "Service\Service.csproj", "{C44BDCA3-4EDC-44E2-8570-5DE6E2DED3C0}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Service", "Service\Service.csproj", "{C44BDCA3-4EDC-44E2-8570-5DE6E2DED3C0}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

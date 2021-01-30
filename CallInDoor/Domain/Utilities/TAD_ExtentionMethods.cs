@@ -49,8 +49,9 @@ namespace Domain.Utilities
         public static bool IsImage(this IFormFile file)
         {
             var extention = Path.GetExtension(file.FileName).ToLower();
-            return (extention == ".jpg" || extention == ".png" || extention == ".jpeg" || extention == ".bmp" || extention == ".svg" || extention == ".gif" );
+            return (extention == ".jpg" || extention == ".png" || extention == ".jpeg" || extention == ".bmp" || extention == ".svg" || extention == ".gif");
         }
+
 
 
 
@@ -67,11 +68,46 @@ namespace Domain.Utilities
             return (extention == ".mp4" || extention == ".avi" || extention == ".hd" || extention == ".mpg" || extention == ".gif" || extention == ".vtt" || extention == ".mov" || extention == ".mkv" || extention == ".wmv");
         }
 
-        //public static bool IsVideo(this IFormFile file)
-        //{
-        //    var extention = Path.GetExtension(file.FileName).ToLower();
-        //    return (extention == ".mp4" || extention == ".ogg");
-        //}
+
+
+
+
+        public static bool IsValidExtention(this IFormFile file)
+        {
+            var extention = Path.GetExtension(file.FileName).ToLower();
+            return (extention == ".jpg" || extention == ".png" || extention == ".jpeg" || extention == ".zip" || extention == ".rar");
+        }
+
+
+
+
+
+        /// <summary>
+        /// آیا فایل  پی دی اف یا عکس است؟
+        /// </summary>
+        /// <param name="file"></param>
+        /// <returns></returns>
+        /// 
+        public static bool IsPdfOrImage(this IFormFile file)
+        {
+            var extention = Path.GetExtension(file.FileName).ToLower();
+            return (extention == ".pdf" || extention == ".jpg" || extention == ".png" || extention == ".jpeg");
+        }
+
+
+
+
+
+        /// <summary>
+        ///گرفتن اختلاف زمان 2 تارخ بر حسب ثانیه
+        /// </summary>
+        /// <param name="file"></param>
+        /// <returns></returns>
+        public static double DifferenceOfTwoDateTimePerSecond(this DateTime startTime, DateTime finishedTime)
+        {
+            var differencePerSeconde = (finishedTime - startTime).TotalSeconds;
+            return differencePerSeconde;
+        }
 
 
 

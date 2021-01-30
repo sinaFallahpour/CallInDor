@@ -1,16 +1,16 @@
-import React from "react"
+import React from "react";
 import { Row, Col } from "reactstrap"
-import BreadCrumbs from "../../@vuexy/breadCrumbs/BreadCrumb"
-import BadgeContextual from "./BadgeContextual"
-import BadgeIcons from "./BadgeIcons"
-import BadgeSquareIcons from "./BadgeSquareIcons"
-import BadgeIconsOnly from "./BadgeIconOnly"
-import BadgeLink from "./BadgeLink"
-import BadgeBlock from "./BadgeBlock"
-import BadgeSizes from "./BadgeSizes"
-import BadgeGlow from "./BadgeGlow"
-import BadgeLight from "./BadgeLight"
-import Prism from "prismjs"
+import BreadCrumbs from "../../@vuexy/breadCrumbs/BreadCrumb";
+import BadgeContextual from "./BadgeContextual";
+import BadgeIcons from "./BadgeIcons";
+import BadgeSquareIcons from "./BadgeSquareIcons";
+import BadgeIconsOnly from "./BadgeIconOnly";
+import BadgeLink from "./BadgeLink";
+import BadgeBlock from "./BadgeBlock";
+import BadgeSizes from "./BadgeSizes";
+import BadgeGlow from "./BadgeGlow";
+import BadgeLight from "./BadgeLight";
+import Prism from "prismjs";
 import "prismjs/components/prism-jsx.min"
 class Badges extends React.Component {
   componentDidMount() {

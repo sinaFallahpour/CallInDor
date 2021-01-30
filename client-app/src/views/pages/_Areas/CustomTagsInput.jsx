@@ -1,9 +1,9 @@
-import React, { useState } from "react";
+import React from "react";
 
 // import "../../styles/admin-pannel/admin.css";
 import $ from "jquery";
 
-import { FormGroup, Form as FormStrap, Spinner } from "reactstrap";
+import { FormGroup, Form as FormStrap } from "reactstrap";
 
 import { PlusSquare } from "react-feather";
 

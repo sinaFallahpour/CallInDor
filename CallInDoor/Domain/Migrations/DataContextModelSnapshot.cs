@@ -19,6 +19,32 @@ namespace Domain.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 128)
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
+            modelBuilder.Entity("Domain.Entities.AnswerTBL", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("EnglishText")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Key")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("QuestionId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Text")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("QuestionId");
+
+                    b.ToTable("Answer");
+                });
+
             modelBuilder.Entity("Domain.Entities.AppRole", b =>
                 {
                     b.Property<string>("Id")
@@ -60,12 +86,28 @@ namespace Domain.Migrations
                     b.Property<string>("Bio")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("BirthDate")
+                        .HasColumnType("nvarchar(40)")
+                        .HasMaxLength(40);
+
+                    b.Property<string>("ChatNotificationId")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("ConcurrencyStamp")
                         .IsConcurrencyToken()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("ConnectionId")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("CountryCode")
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("CreateDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("CurentRequestId")
+                        .HasColumnType("int");
 
                     b.Property<string>("Email")
                         .HasColumnType("nvarchar(256)")
@@ -74,8 +116,20 @@ namespace Domain.Migrations
                     b.Property<bool>("EmailConfirmed")
                         .HasColumnType("bit");
 
+                    b.Property<int>("Gender")
+                        .HasColumnType("int");
+
                     b.Property<string>("ImageAddress")
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsCompany")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsEditableProfile")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsOnline")
+                        .HasColumnType("bit");
 
                     b.Property<string>("LastName")
                         .HasColumnType("nvarchar(max)");
@@ -87,6 +141,9 @@ namespace Domain.Migrations
                         .HasColumnType("datetimeoffset");
 
                     b.Property<string>("Name")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("NationalCode")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("NormalizedEmail")
@@ -106,8 +163,8 @@ namespace Domain.Migrations
                     b.Property<bool>("PhoneNumberConfirmed")
                         .HasColumnType("bit");
 
-                    b.Property<string>("Role")
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<int>("ProfileConfirmType")
+                        .HasColumnType("int");
 
                     b.Property<string>("SecurityStamp")
                         .HasColumnType("nvarchar(max)");
@@ -115,12 +172,24 @@ namespace Domain.Migrations
                     b.Property<string>("SerialNumber")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int>("StarCount")
+                        .HasColumnType("int");
+
                     b.Property<bool>("TwoFactorEnabled")
                         .HasColumnType("bit");
+
+                    b.Property<int>("Under3StarCount")
+                        .HasColumnType("int");
 
                     b.Property<string>("UserName")
                         .HasColumnType("nvarchar(256)")
                         .HasMaxLength(256);
+
+                    b.Property<string>("VideoAddress")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<double?>("WalletBalance")
+                        .HasColumnType("float");
 
                     b.Property<int?>("verificationCode")
                         .HasColumnType("int");
@@ -190,6 +259,27 @@ namespace Domain.Migrations
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
 
+                    b.Property<bool>("IsEditableService")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsProfileOptional")
+                        .HasColumnType("bit");
+
+                    b.Property<double?>("Latitude")
+                        .HasColumnType("float");
+
+                    b.Property<double?>("Longitude")
+                        .HasColumnType("float");
+
+                    b.Property<int>("ProfileConfirmType")
+                        .HasColumnType("int");
+
+                    b.Property<string>("ProfileRejectReson")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("RejectReason")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<int?>("ServiceId")
                         .HasColumnType("int");
 
@@ -200,7 +290,13 @@ namespace Domain.Migrations
                     b.Property<int>("ServiceType")
                         .HasColumnType("int");
 
+                    b.Property<int>("StarCount")
+                        .HasColumnType("int");
+
                     b.Property<int?>("SubCatId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Under3StarCount")
                         .HasColumnType("int");
 
                     b.Property<string>("UserName")
@@ -213,9 +309,89 @@ namespace Domain.Migrations
 
                     b.HasIndex("ServiceId");
 
+                    b.HasIndex("ServiceName");
+
                     b.HasIndex("SubCatId");
 
+                    b.HasIndex("ServiceName", "ServiceType");
+
                     b.ToTable("BaseMyService");
+                });
+
+            modelBuilder.Entity("Domain.Entities.BuyiedPackageTBL", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<int>("BuyiedPackageStatus")
+                        .HasColumnType("int");
+
+                    b.Property<int>("BuyiedPackageType")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("CheckDiscountId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("CreateDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("ExpireTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<double?>("FinalPrice")
+                        .HasColumnType("float");
+
+                    b.Property<bool>("IsRenewPackage")
+                        .HasColumnType("bit");
+
+                    b.Property<double?>("MainPrice")
+                        .HasColumnType("float");
+
+                    b.Property<int>("MessgaeCount")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("ServiceRequestId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("SitePercent")
+                        .HasColumnType("int");
+
+                    b.Property<string>("UserName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CheckDiscountId");
+
+                    b.HasIndex("ServiceRequestId");
+
+                    b.ToTable("BuyiedPackage");
+                });
+
+            modelBuilder.Entity("Domain.Entities.CardTBL", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("CardName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("CardNumber")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Username")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Card");
                 });
 
             modelBuilder.Entity("Domain.Entities.CategoryTBL", b =>
@@ -257,6 +433,145 @@ namespace Domain.Migrations
                     b.ToTable("Category");
                 });
 
+            modelBuilder.Entity("Domain.Entities.ChatForLimitedServiceMessagesTBL", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<int>("ChatMessageType")
+                        .HasColumnType("int");
+
+                    b.Property<string>("ClientUserName")
+                        .HasColumnType("nvarchar(100)")
+                        .HasMaxLength(100);
+
+                    b.Property<DateTime>("CreateDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("FileOrVoiceAddress")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsProviderSend")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsSeen")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("ProviderUserName")
+                        .HasColumnType("nvarchar(100)")
+                        .HasMaxLength(100);
+
+                    b.Property<string>("SenderUserName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("SendetMesageType")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("ServiceRequestId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Text")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ServiceRequestId");
+
+                    b.ToTable("ChatForLimitedServiceMessagesTBL");
+                });
+
+            modelBuilder.Entity("Domain.Entities.ChatServiceMessagesTBL", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<int>("ChatMessageType")
+                        .HasColumnType("int");
+
+                    b.Property<string>("ClientUserName")
+                        .HasColumnType("nvarchar(40)")
+                        .HasMaxLength(40);
+
+                    b.Property<DateTime>("CreateDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("FileOrVoiceAddress")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsProviderSend")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsSeen")
+                        .HasColumnType("bit");
+
+                    b.Property<double?>("Price")
+                        .HasColumnType("float");
+
+                    b.Property<string>("ProviderUserName")
+                        .HasColumnType("nvarchar(40)")
+                        .HasMaxLength(40);
+
+                    b.Property<string>("SenderUserName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("SendetMesageType")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("ServiceRequestId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Text")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ServiceRequestId");
+
+                    b.ToTable("ChatServiceMessages");
+                });
+
+            modelBuilder.Entity("Domain.Entities.CheckDiscountTBL", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("Code")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("DayCount")
+                        .HasColumnType("int");
+
+                    b.Property<string>("EnglishTitle")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("ExpireTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int?>("HourCount")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Percent")
+                        .HasColumnType("int");
+
+                    b.Property<string>("PersianTitle")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("ServiceId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ServiceId");
+
+                    b.ToTable("CheckDiscount");
+                });
+
             modelBuilder.Entity("Domain.Entities.FieldTBL", b =>
                 {
                     b.Property<int>("Id")
@@ -267,13 +582,15 @@ namespace Domain.Migrations
                     b.Property<int>("DegreeType")
                         .HasColumnType("int");
 
-                    b.Property<string>("PersianTitle")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<string>("Title")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("UserId")
+                        .HasColumnType("nvarchar(450)");
+
                     b.HasKey("Id");
+
+                    b.HasIndex("UserId");
 
                     b.ToTable("Field");
                 });
@@ -291,22 +608,25 @@ namespace Domain.Migrations
                     b.Property<bool>("BeTranslate")
                         .HasColumnType("bit");
 
-                    b.Property<int>("Duration")
+                    b.Property<int?>("Duration")
                         .HasColumnType("int");
 
-                    b.Property<int>("FreeMessageCount")
+                    b.Property<int?>("FreeMessageCount")
                         .HasColumnType("int");
 
                     b.Property<bool>("IsServiceReverse")
                         .HasColumnType("bit");
 
+                    b.Property<int?>("MessageCount")
+                        .HasColumnType("int");
+
                     b.Property<int?>("PackageType")
                         .HasColumnType("int");
 
-                    b.Property<double>("PriceForNativeCustomer")
+                    b.Property<double?>("PriceForNativeCustomer")
                         .HasColumnType("float");
 
-                    b.Property<double>("PriceForNonNativeCustomer")
+                    b.Property<double?>("PriceForNonNativeCustomer")
                         .HasColumnType("float");
 
                     b.HasKey("Id");
@@ -314,6 +634,8 @@ namespace Domain.Migrations
                     b.HasIndex("BaseId")
                         .IsUnique()
                         .HasFilter("[BaseId] IS NOT NULL");
+
+                    b.HasIndex("PriceForNativeCustomer", "PriceForNonNativeCustomer");
 
                     b.ToTable("MyChatService");
                 });
@@ -332,7 +654,7 @@ namespace Domain.Migrations
                         .HasColumnType("nvarchar(1000)")
                         .HasMaxLength(1000);
 
-                    b.Property<int>("DisCountPercent")
+                    b.Property<int?>("DisCountPercent")
                         .HasColumnType("int");
 
                     b.Property<string>("NewCategory")
@@ -342,7 +664,7 @@ namespace Domain.Migrations
                     b.Property<string>("PreviewVideoAddress")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<double>("Price")
+                    b.Property<double?>("Price")
                         .HasColumnType("float");
 
                     b.Property<string>("TotalLenght")
@@ -422,7 +744,7 @@ namespace Domain.Migrations
                         .HasColumnType("nvarchar(600)")
                         .HasMaxLength(600);
 
-                    b.Property<double>("Price")
+                    b.Property<double?>("Price")
                         .HasColumnType("float");
 
                     b.Property<int?>("SpecialityId")
@@ -449,6 +771,285 @@ namespace Domain.Migrations
                     b.ToTable("MyServiceService");
                 });
 
+            modelBuilder.Entity("Domain.Entities.NotificationTBL", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<DateTime>("CreateDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("EnglishText")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsReaded")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("NotificationStatus")
+                        .HasColumnType("int");
+
+                    b.Property<string>("SenderUserName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("TextPersian")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("UserName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("NotificationTBL");
+                });
+
+            modelBuilder.Entity("Domain.Entities.Permissions", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("ActionName")
+                        .HasColumnType("nvarchar(400)")
+                        .HasMaxLength(400);
+
+                    b.Property<string>("Title")
+                        .HasColumnType("nvarchar(200)")
+                        .HasMaxLength(200);
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Permissions");
+                });
+
+            modelBuilder.Entity("Domain.Entities.ProfileCertificateTBL", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("FileAddress")
+                        .HasColumnType("nvarchar(2000)")
+                        .HasMaxLength(2000);
+
+                    b.Property<int>("ProfileConfirmType")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("RequiredCertificatesId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("ServiceId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("UserName")
+                        .HasColumnType("nvarchar(100)")
+                        .HasMaxLength(100);
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("RequiredCertificatesId");
+
+                    b.HasIndex("ServiceId");
+
+                    b.ToTable("ProfileCertificate");
+                });
+
+            modelBuilder.Entity("Domain.Entities.QuestionPullTBL", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("EnglishText")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Key")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("ServiceId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Text")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ServiceId");
+
+                    b.ToTable("QuestionPull");
+                });
+
+            modelBuilder.Entity("Domain.Entities.Role_Permission", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<int?>("PermissionId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("RoleId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("PermissionId");
+
+                    b.HasIndex("RoleId");
+
+                    b.ToTable("Role_Permission");
+                });
+
+            modelBuilder.Entity("Domain.Entities.ServiceCommentsTBL", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<int?>("BaseMyServiceId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Comment")
+                        .HasColumnType("nvarchar(400)")
+                        .HasMaxLength(400);
+
+                    b.Property<DateTime>("CreateDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsConfirmed")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("ResonForUnder3Star")
+                        .HasColumnType("nvarchar(400)")
+                        .HasMaxLength(400);
+
+                    b.Property<int>("StarCount")
+                        .HasColumnType("int");
+
+                    b.Property<string>("UserName")
+                        .HasColumnType("nvarchar(120)")
+                        .HasMaxLength(120);
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("BaseMyServiceId");
+
+                    b.ToTable("ServiceComments");
+                });
+
+            modelBuilder.Entity("Domain.Entities.ServiceRequestTBL", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<int>("AllMessageCount_LimitedChat")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("BaseServiceId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("BuyiedPackageId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("ClienUserName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("CreateDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("ExpireTime_LimitedChatVoice")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int?>("FreeMessageCount")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("FreeUsageMessageCount")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("HasPlan_LimitedChatVoice")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsLimitedChat")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime>("LastTimeTheMessageWasSent")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("PackageType")
+                        .HasColumnType("int");
+
+                    b.Property<double?>("PriceForNativeCustomer")
+                        .HasColumnType("float");
+
+                    b.Property<double?>("PriceForNonNativeCustomer")
+                        .HasColumnType("float");
+
+                    b.Property<string>("ProvideUserName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("ServiceRequestStatus")
+                        .HasColumnType("int");
+
+                    b.Property<int>("ServiceType")
+                        .HasColumnType("int");
+
+                    b.Property<int>("UsedMessageCount_LimitedChat")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("WhenTheRequestShouldBeAnswered")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("BaseServiceId");
+
+                    b.HasIndex("BuyiedPackageId");
+
+                    b.ToTable("ServiceRequest");
+                });
+
+            modelBuilder.Entity("Domain.Entities.ServiceSurveyTBL", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<int?>("AnswerId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("CreateDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int?>("QuestionId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("ServiceId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("UserName")
+                        .HasColumnType("nvarchar(120)")
+                        .HasMaxLength(120);
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AnswerId");
+
+                    b.HasIndex("QuestionId");
+
+                    b.HasIndex("ServiceId");
+
+                    b.ToTable("ServiceSurvey");
+                });
+
             modelBuilder.Entity("Domain.Entities.ServiceTBL", b =>
                 {
                     b.Property<int>("Id")
@@ -470,6 +1071,9 @@ namespace Domain.Migrations
                     b.Property<bool>("IsEnabled")
                         .HasColumnType("bit");
 
+                    b.Property<bool>("IsProfileOptional")
+                        .HasColumnType("bit");
+
                     b.Property<double>("MinPriceForService")
                         .HasColumnType("float");
 
@@ -488,6 +1092,9 @@ namespace Domain.Migrations
 
                     b.Property<string>("RoleId")
                         .HasColumnType("nvarchar(450)");
+
+                    b.Property<int>("SitePercent")
+                        .HasColumnType("int");
 
                     b.HasKey("Id");
 
@@ -520,6 +1127,32 @@ namespace Domain.Migrations
                     b.HasIndex("ServiceId");
 
                     b.ToTable("ServiceTags");
+                });
+
+            modelBuilder.Entity("Domain.Entities.ServidceTypeRequiredCertificatesTBL", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("FileName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("Isdeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("PersianFileName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("ServiceId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ServiceId");
+
+                    b.ToTable("ServidceTypeRequiredCertificates");
                 });
 
             modelBuilder.Entity("Domain.Entities.SpecialityTBL", b =>
@@ -575,26 +1208,231 @@ namespace Domain.Migrations
                     b.ToTable("Tests");
                 });
 
-            modelBuilder.Entity("Domain.Entities.User_FieldTBL", b =>
+            modelBuilder.Entity("Domain.Entities.TiketMessagesTBL", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<int?>("FieldId")
-                        .HasColumnType("int");
+                    b.Property<DateTime>("CreateDate")
+                        .HasColumnType("datetime2");
 
-                    b.Property<string>("UserId")
-                        .HasColumnType("nvarchar(450)");
+                    b.Property<string>("FileAddress")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsAdmin")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsFile")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Text")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("TiketId")
+                        .HasColumnType("int");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("FieldId");
+                    b.HasIndex("TiketId");
 
-                    b.HasIndex("UserId");
+                    b.ToTable("TiketMessages");
+                });
 
-                    b.ToTable("User_Field");
+            modelBuilder.Entity("Domain.Entities.TiketTBL", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<DateTime>("AdminLastUpdateDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("CreateDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsAdminSendNewMessgae")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsUserSendNewMessgae")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("PriorityStatus")
+                        .HasColumnType("int");
+
+                    b.Property<int>("TiketStatus")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Title")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("UserLastUpdateDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("UserName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Tiket");
+                });
+
+            modelBuilder.Entity("Domain.Entities.TopTenPackageTBL", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<int>("Count")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("CreateDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int?>("DayCount")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("HourCount")
+                        .HasColumnType("int");
+
+                    b.Property<double>("Price")
+                        .HasColumnType("float");
+
+                    b.Property<int?>("ServiceId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ServiceId");
+
+                    b.ToTable("TopTenPackage");
+                });
+
+            modelBuilder.Entity("Domain.Entities.TransactionTBL", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<double?>("Amount")
+                        .IsRequired()
+                        .HasColumnType("float");
+
+                    b.Property<int?>("BaseMyServiceId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("CardId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("CheckDiscountId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("ClientUserName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("CreateDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("nvarchar(500)")
+                        .HasMaxLength(500);
+
+                    b.Property<string>("ProviderUserName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("ServiceTypeWithDetails")
+                        .HasColumnType("int");
+
+                    b.Property<int>("TransactionConfirmedStatus")
+                        .HasColumnType("int");
+
+                    b.Property<int>("TransactionStatus")
+                        .HasColumnType("int");
+
+                    b.Property<int>("TransactionType")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("User_TopTenPackageId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Username")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("BaseMyServiceId");
+
+                    b.HasIndex("CardId");
+
+                    b.HasIndex("CheckDiscountId");
+
+                    b.HasIndex("User_TopTenPackageId")
+                        .IsUnique()
+                        .HasFilter("[User_TopTenPackageId] IS NOT NULL");
+
+                    b.ToTable("Transaction");
+                });
+
+            modelBuilder.Entity("Domain.Entities.User_TopTenPackageTBL", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<DateTime>("CreateDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("ExpireTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int?>("ServiceId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("TopTenPackageId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("UserName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ServiceId");
+
+                    b.HasIndex("TopTenPackageId");
+
+                    b.ToTable("User-TopTenPackage");
+                });
+
+            modelBuilder.Entity("Helper.Models.Entities.SettingTBL", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("EnglishValue")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Key")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Value")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Settings");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -675,7 +1513,17 @@ namespace Domain.Migrations
                     b.Property<string>("RoleId")
                         .HasColumnType("nvarchar(450)");
 
+                    b.Property<string>("AppRoleId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("AppUserId")
+                        .HasColumnType("nvarchar(450)");
+
                     b.HasKey("UserId", "RoleId");
+
+                    b.HasIndex("AppRoleId");
+
+                    b.HasIndex("AppUserId");
 
                     b.HasIndex("RoleId");
 
@@ -701,6 +1549,13 @@ namespace Domain.Migrations
                     b.ToTable("AspNetUserTokens");
                 });
 
+            modelBuilder.Entity("Domain.Entities.AnswerTBL", b =>
+                {
+                    b.HasOne("Domain.Entities.QuestionPullTBL", "QuestionPullTBL")
+                        .WithMany("AnswersTBLs")
+                        .HasForeignKey("QuestionId");
+                });
+
             modelBuilder.Entity("Domain.Entities.AreaTBL", b =>
                 {
                     b.HasOne("Domain.Entities.ServiceTBL", "Service")
@@ -723,6 +1578,17 @@ namespace Domain.Migrations
                         .HasForeignKey("SubCatId");
                 });
 
+            modelBuilder.Entity("Domain.Entities.BuyiedPackageTBL", b =>
+                {
+                    b.HasOne("Domain.Entities.CheckDiscountTBL", "CheckDiscountTBL")
+                        .WithMany("BuyiedPackageTBLs")
+                        .HasForeignKey("CheckDiscountId");
+
+                    b.HasOne("Domain.Entities.ServiceRequestTBL", "ServiceRequestTBL")
+                        .WithMany()
+                        .HasForeignKey("ServiceRequestId");
+                });
+
             modelBuilder.Entity("Domain.Entities.CategoryTBL", b =>
                 {
                     b.HasOne("Domain.Entities.CategoryTBL", "Parent")
@@ -732,6 +1598,34 @@ namespace Domain.Migrations
                     b.HasOne("Domain.Entities.ServiceTBL", "Service")
                         .WithMany("Categories")
                         .HasForeignKey("ServiceId");
+                });
+
+            modelBuilder.Entity("Domain.Entities.ChatForLimitedServiceMessagesTBL", b =>
+                {
+                    b.HasOne("Domain.Entities.ServiceRequestTBL", "ServiceRequestTBL")
+                        .WithMany("ChatForLimitedServiceMessagesTBL")
+                        .HasForeignKey("ServiceRequestId");
+                });
+
+            modelBuilder.Entity("Domain.Entities.ChatServiceMessagesTBL", b =>
+                {
+                    b.HasOne("Domain.Entities.ServiceRequestTBL", "ServiceRequestTBL")
+                        .WithMany("ChatServiceMessagesTBL")
+                        .HasForeignKey("ServiceRequestId");
+                });
+
+            modelBuilder.Entity("Domain.Entities.CheckDiscountTBL", b =>
+                {
+                    b.HasOne("Domain.Entities.ServiceTBL", "Service")
+                        .WithMany()
+                        .HasForeignKey("ServiceId");
+                });
+
+            modelBuilder.Entity("Domain.Entities.FieldTBL", b =>
+                {
+                    b.HasOne("Domain.Entities.AppUser", "User")
+                        .WithMany("Fields")
+                        .HasForeignKey("UserId");
                 });
 
             modelBuilder.Entity("Domain.Entities.MyChatServiceTBL", b =>
@@ -770,6 +1664,68 @@ namespace Domain.Migrations
                         .HasForeignKey("SpecialityId");
                 });
 
+            modelBuilder.Entity("Domain.Entities.ProfileCertificateTBL", b =>
+                {
+                    b.HasOne("Domain.Entities.ServidceTypeRequiredCertificatesTBL", "ServidceTypeRequiredCertificatesTBL")
+                        .WithMany()
+                        .HasForeignKey("RequiredCertificatesId");
+
+                    b.HasOne("Domain.Entities.ServiceTBL", "Service")
+                        .WithMany()
+                        .HasForeignKey("ServiceId");
+                });
+
+            modelBuilder.Entity("Domain.Entities.QuestionPullTBL", b =>
+                {
+                    b.HasOne("Domain.Entities.ServiceTBL", "Service")
+                        .WithMany()
+                        .HasForeignKey("ServiceId");
+                });
+
+            modelBuilder.Entity("Domain.Entities.Role_Permission", b =>
+                {
+                    b.HasOne("Domain.Entities.Permissions", "Permissions")
+                        .WithMany("Role_Permissions")
+                        .HasForeignKey("PermissionId");
+
+                    b.HasOne("Domain.Entities.AppRole", "AppRole")
+                        .WithMany("Role_Permissions")
+                        .HasForeignKey("RoleId");
+                });
+
+            modelBuilder.Entity("Domain.Entities.ServiceCommentsTBL", b =>
+                {
+                    b.HasOne("Domain.Entities.BaseMyServiceTBL", "BaseMyService")
+                        .WithMany("ServiceCommentsTBLs")
+                        .HasForeignKey("BaseMyServiceId");
+                });
+
+            modelBuilder.Entity("Domain.Entities.ServiceRequestTBL", b =>
+                {
+                    b.HasOne("Domain.Entities.BaseMyServiceTBL", "BaseMyServiceTBL")
+                        .WithMany("ServiceRequestTBLs")
+                        .HasForeignKey("BaseServiceId");
+
+                    b.HasOne("Domain.Entities.BuyiedPackageTBL", "BuyiedPackageTBL")
+                        .WithMany()
+                        .HasForeignKey("BuyiedPackageId");
+                });
+
+            modelBuilder.Entity("Domain.Entities.ServiceSurveyTBL", b =>
+                {
+                    b.HasOne("Domain.Entities.AnswerTBL", "AnswerTBL")
+                        .WithMany()
+                        .HasForeignKey("AnswerId");
+
+                    b.HasOne("Domain.Entities.QuestionPullTBL", "QuestionTBL")
+                        .WithMany()
+                        .HasForeignKey("QuestionId");
+
+                    b.HasOne("Domain.Entities.ServiceTBL", "Service")
+                        .WithMany()
+                        .HasForeignKey("ServiceId");
+                });
+
             modelBuilder.Entity("Domain.Entities.ServiceTBL", b =>
                 {
                     b.HasOne("Domain.Entities.AppRole", "AppRole")
@@ -784,6 +1740,13 @@ namespace Domain.Migrations
                         .HasForeignKey("ServiceId");
                 });
 
+            modelBuilder.Entity("Domain.Entities.ServidceTypeRequiredCertificatesTBL", b =>
+                {
+                    b.HasOne("Domain.Entities.ServiceTBL", "Service")
+                        .WithMany("ServidceTypeRequiredCertificatesTBL")
+                        .HasForeignKey("ServiceId");
+                });
+
             modelBuilder.Entity("Domain.Entities.SpecialityTBL", b =>
                 {
                     b.HasOne("Domain.Entities.AreaTBL", "Area")
@@ -791,15 +1754,48 @@ namespace Domain.Migrations
                         .HasForeignKey("AreatId");
                 });
 
-            modelBuilder.Entity("Domain.Entities.User_FieldTBL", b =>
+            modelBuilder.Entity("Domain.Entities.TiketMessagesTBL", b =>
                 {
-                    b.HasOne("Domain.Entities.FieldTBL", "FieldTBL")
-                        .WithMany()
-                        .HasForeignKey("FieldId");
+                    b.HasOne("Domain.Entities.TiketTBL", "TiketTBL")
+                        .WithMany("TiketMessagesTBL")
+                        .HasForeignKey("TiketId");
+                });
 
-                    b.HasOne("Domain.Entities.AppUser", "User")
-                        .WithMany("UsersFields")
-                        .HasForeignKey("UserId");
+            modelBuilder.Entity("Domain.Entities.TopTenPackageTBL", b =>
+                {
+                    b.HasOne("Domain.Entities.ServiceTBL", "ServiceTbl")
+                        .WithMany("TopTenPackageTBL")
+                        .HasForeignKey("ServiceId");
+                });
+
+            modelBuilder.Entity("Domain.Entities.TransactionTBL", b =>
+                {
+                    b.HasOne("Domain.Entities.BaseMyServiceTBL", "BaseMyServiceTBL")
+                        .WithMany()
+                        .HasForeignKey("BaseMyServiceId");
+
+                    b.HasOne("Domain.Entities.CardTBL", "CardTBL")
+                        .WithMany()
+                        .HasForeignKey("CardId");
+
+                    b.HasOne("Domain.Entities.CheckDiscountTBL", "CheckDiscountTBL")
+                        .WithMany("Transactions")
+                        .HasForeignKey("CheckDiscountId");
+
+                    b.HasOne("Domain.Entities.User_TopTenPackageTBL", "User_TopTenPackageTBL")
+                        .WithOne("TransactionTBL")
+                        .HasForeignKey("Domain.Entities.TransactionTBL", "User_TopTenPackageId");
+                });
+
+            modelBuilder.Entity("Domain.Entities.User_TopTenPackageTBL", b =>
+                {
+                    b.HasOne("Domain.Entities.ServiceTBL", "ServiceTbl")
+                        .WithMany("User_TopTenPackageTBL")
+                        .HasForeignKey("ServiceId");
+
+                    b.HasOne("Domain.Entities.TopTenPackageTBL", "TopTenPackageTBL")
+                        .WithMany()
+                        .HasForeignKey("TopTenPackageId");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -831,6 +1827,14 @@ namespace Domain.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserRole<string>", b =>
                 {
+                    b.HasOne("Domain.Entities.AppRole", null)
+                        .WithMany("UserRolesTBL")
+                        .HasForeignKey("AppRoleId");
+
+                    b.HasOne("Domain.Entities.AppUser", null)
+                        .WithMany("UserRolesTBL")
+                        .HasForeignKey("AppUserId");
+
                     b.HasOne("Domain.Entities.AppRole", null)
                         .WithMany()
                         .HasForeignKey("RoleId")

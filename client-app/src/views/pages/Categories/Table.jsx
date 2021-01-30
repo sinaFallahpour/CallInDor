@@ -17,7 +17,6 @@ import { Edit, Trash2, ChevronDown, Check } from "react-feather";
 
 import Checkbox from "../../../components/@vuexy/checkbox/CheckboxesVuexy";
 
-
 import "../../../assets/scss/plugins/tables/_agGridStyleOverride.scss";
 import { toast } from "react-toastify";
 
@@ -89,7 +88,6 @@ class Table extends React.Component {
         field: "isEnabled",
         filter: true,
         cellRendererFramework: (params) => {
-          console.log(params);
           return params.value === true ? (
             <div className="badge badge-pill badge-light-success">Active</div>
           ) : (
@@ -113,7 +111,6 @@ class Table extends React.Component {
               label=""
               defaultChecked={true}
             />
-
           ) : (
               <Checkbox
                 disabled
@@ -139,7 +136,6 @@ class Table extends React.Component {
               label=""
               defaultChecked={true}
             />
-
           ) : (
               <Checkbox
                 disabled
@@ -148,8 +144,6 @@ class Table extends React.Component {
                 label=""
                 defaultChecked={false}
               />
-
-
             );
         },
       },

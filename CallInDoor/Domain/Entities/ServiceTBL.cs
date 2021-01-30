@@ -33,6 +33,13 @@ namespace Domain.Entities
 
 
 
+        /// <summary>
+        /// آیا سرویس هایی که کاربران در این حوضه ثبت میکنند مدرک فرستادن الزامیست؟
+        /// </summary>
+        public bool IsProfileOptional { get; set; }
+       
+
+
 
         /// <summary>
         /// /حداقل فیمت برای برای  سرویس  تایپ هایی  از نوع سرویس
@@ -46,7 +53,7 @@ namespace Domain.Entities
         /// حداقل زمان برای سرویس های Voice//VideCall//voiceCall
         /// </summary>
         public double MinSessionTime { get; set; }
-        
+
 
         /// <summary>
         /// حداقل قیمت مجاز برای کاربران تیتیو برای سرویس های چت یا وویس یا ویدیو
@@ -65,6 +72,12 @@ namespace Domain.Entities
 
 
 
+        /// <summary>
+        /// درصد پولی که به ادمین میرسد
+        /// برای این سرویس خواص
+        /// </summary>
+        public int SitePercent { get; set; }
+
 
 
         #region  Relation
@@ -78,9 +91,24 @@ namespace Domain.Entities
 
         public string RoleId { get; set; }
 
+
         [ForeignKey("RoleId")]
         public AppRole AppRole { get; set; }
 
-        #endregion 
+
+
+
+
+
+        public List<ServidceTypeRequiredCertificatesTBL> ServidceTypeRequiredCertificatesTBL { get; set; }
+        public List<User_TopTenPackageTBL> User_TopTenPackageTBL { get; set; }
+        public List<TopTenPackageTBL> TopTenPackageTBL { get; set; }
+
+
+
+        //public List<ServiceCommentsTBL> ServiceCommentsTBLs { get; set; }
+
+
+        #endregion
     }
 }

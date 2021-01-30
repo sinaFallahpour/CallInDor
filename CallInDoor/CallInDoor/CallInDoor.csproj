@@ -14,6 +14,7 @@
 
   <ItemGroup>
     <Compile Remove="Config\Middleware\ErrorHandlingMiddleware.cs" />
+    <Compile Remove="Config\Permissions\PublicPermissions.cs" />
   </ItemGroup>
 
   <ItemGroup>
@@ -51,8 +52,10 @@
 
   <ItemGroup>
     <Folder Include="wwwroot\Upload\CoursePreview\" />
+    <Folder Include="wwwroot\Upload\ChatRequestFile\" />
+    <Folder Include="wwwroot\Upload\Tickets\" />
+    <Folder Include="wwwroot\Upload\ProfileCertificate\" />
     <Folder Include="wwwroot\Upload\Topics\" />
-    <Folder Include="wwwroot\Upload\User\" />
   </ItemGroup>
 
 </Project>

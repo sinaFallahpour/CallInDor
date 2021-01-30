@@ -6,32 +6,249 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using CallInDoor.Models;
+using Domain;
+using Domain.Enums;
+using Microsoft.EntityFrameworkCore;
+using Service.Interfaces.Common;
+using Microsoft.Extensions.Localization;
+using Microsoft.AspNetCore.Authorization;
+using CallInDoor.Config.Attributes;
 
 namespace CallInDoor.Controllers
 {
-    public class HomeController : Controller
+    [Route("api/[controller]")]
+    public class HomeController : BaseControlle
     {
-        private readonly ILogger<HomeController> _logger;
 
-        public HomeController(ILogger<HomeController> logger)
+        #region
+        private readonly DataContext _context;
+        private readonly ICommonService _commonService;
+        private IStringLocalizer<ShareResource> _localizerShared;
+
+        public HomeController(DataContext context,
+            ICommonService commonService,
+            IStringLocalizer<ShareResource> localizerShared
+            )
         {
-            _logger = logger;
+            _context = context;
+            _commonService = commonService;
+            _localizerShared = localizerShared;
         }
 
-        public IActionResult Index()
+
+
+        #endregion
+
+
+        //public IActionResult Index()
+        //{
+        //    //return View();
+        //}
+
+
+
+
+
+
+        #region AllProviderCount
+
+        [HttpGet("GetAllProviderCount")]
+        public async Task<ActionResult> GetAllProviderCount()
         {
-            return View();
+            var ProvidersCount = await _context
+                .BaseMyServiceTBL
+                .Where(c => c.ConfirmedServiceType == ConfirmedServiceType.Confirmed)
+                .Select(c => new
+                {
+                    c.UserName
+                }).Distinct().CountAsync();
+
+            return Ok(_commonService.OkResponse(ProvidersCount, _localizerShared["SuccessMessage"].Value.ToString()));
         }
 
-        public IActionResult Privacy()
+
+        #endregion
+
+
+
+        #region AllProviderCount
+
+        [HttpGet("GetAllServicesCount")]
+        public async Task<ActionResult> GetAllServicesCount()
         {
-            return View();
+            var ServicesCount = await _context.BaseMyServiceTBL
+                  .Where(c => c.ConfirmedServiceType == ConfirmedServiceType.Confirmed)
+                  .CountAsync();
+            //.Distinct().CountAsync();
+
+            return Ok(_commonService.OkResponse(ServicesCount, _localizerShared["SuccessMessage"].Value.ToString()));
         }
 
-        [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
-        public IActionResult Error()
+
+        #endregion
+
+
+
+
+
+
+        #region AllProviderCount
+
+        [HttpGet("DashBoardForAdmin")]
+
+
+
+        [HttpGet("AcceptProvideServicesInAdmin")]
+        [Authorize]
+        [ClaimsAuthorize(IsAdmin =true)]
+        public async Task<ActionResult> DashBoardForAdmin()
         {
-            return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+            var UsersCount = await _context.Users.CountAsync();
+            var ActiveUserCount = await _context.Users.Where(c => (c.LockoutEnd == null || c.LockoutEnd < DateTime.Now)).CountAsync();
+
+            var publishedServiceProvider = await _context.BaseMyServiceTBL
+                .Where(c => c.IsDeleted == false && c.ConfirmedServiceType == ConfirmedServiceType.Confirmed
+                     && c.ProfileConfirmType == ProfileConfirmType.Confirmed)
+                .CountAsync();
+
+
+            //var query = _context.BaseMyServiceTBL.AsQueryable();
+            //var sdd = query.ToList().GroupBy(c => c.ConfirmedServiceType).Select(c => new
+            //{
+            //   count =(double) (c.Count() *100) / query.Count(),
+            //   c.Key
+            //});
+
+
+            var baseServicveCount = await _context.BaseMyServiceTBL.CountAsync();
+            var ChatVoiceCount = await _context.BaseMyServiceTBL.Where(c => c.ServiceType == ServiceType.ChatVoice).CountAsync();
+            var VideoCalCount = await _context.BaseMyServiceTBL.Where(c => c.ServiceType == ServiceType.VideoCal).CountAsync();
+            var VoiceCallCount = await _context.BaseMyServiceTBL.Where(c => c.ServiceType == ServiceType.VoiceCall).CountAsync();
+            var ServiceCount = await _context.BaseMyServiceTBL.Where(c => c.ServiceType == ServiceType.Service).CountAsync();
+            var CourseCount = await _context.BaseMyServiceTBL.Where(c => c.ServiceType == ServiceType.Course).CountAsync();
+
+            var baseServiceAnalyst = new
+            {
+                baseServicveCount,
+                ChatVoiceCount = (double)(ChatVoiceCount * 100 / baseServicveCount),
+                VideoCalCount = (double)(VideoCalCount * 100 / baseServicveCount),
+                VoiceCallCount = (double)(VoiceCallCount * 100 / baseServicveCount),
+                ServiceCount = (double)(ServiceCount * 100 / baseServicveCount),
+                CourseCount = (double)(CourseCount * 100 / baseServicveCount),
+            };
+
+
+            var accepted = await _context.BaseMyServiceTBL.Where(c => c.ConfirmedServiceType == ConfirmedServiceType.Confirmed).CountAsync();
+            var Pendding = await _context.BaseMyServiceTBL.Where(c => c.ConfirmedServiceType == ConfirmedServiceType.Pending).CountAsync();
+            var Rejected = await _context.BaseMyServiceTBL.Where(c => c.ConfirmedServiceType == ConfirmedServiceType.Rejected).CountAsync();
+
+
+            var serviceStatus = new
+            {
+                Accepted = (double)(accepted * 100 / baseServicveCount),
+                Rejected = (double)(Rejected * 100 / baseServicveCount),
+                Pendding = (double)(Pendding * 100 / baseServicveCount),
+            };
+
+
+
+
+
+            var acceptedProfile = await _context.BaseMyServiceTBL.Where(c => c.ProfileConfirmType == ProfileConfirmType.Confirmed).CountAsync();
+            var penddingProfile = await _context.BaseMyServiceTBL.Where(c => c.ProfileConfirmType == ProfileConfirmType.Pending).CountAsync();
+            var rejectedProfile = await _context.BaseMyServiceTBL.Where(c => c.ProfileConfirmType== ProfileConfirmType.Rejected).CountAsync();
+
+
+            var profileStatus = new
+            {
+                acceptedProfile = (double)(acceptedProfile * 100 / baseServicveCount),
+                penddingProfile = (double)(penddingProfile * 100 / baseServicveCount),
+                rejectedProfile = (double)(rejectedProfile * 100 / baseServicveCount),
+            };
+
+
+
+
+
+
+
+
+            var response = new
+            {
+                UsersCount,
+                ActiveUserCount,
+                PublishedServiceProvider= publishedServiceProvider,
+                BaseServiceAnalyst= baseServiceAnalyst,
+                ServiceStatus= serviceStatus,
+                ProfileStatus = profileStatus
+
+            };
+            //var ServicesCount = await _context.BaseMyServiceTBL
+            //      .Where(c => c.ConfirmedServiceType == ConfirmedServiceType.Confirmed)
+            //      .CountAsync();
+            //.Distinct().CountAsync();
+
+
+            return Ok(response);
+            //return Ok(_commonService.OkResponse(ServicesCount, _localizerShared["SuccessMessage"].Value.ToString()));
         }
+
+
+        #endregion
+
+
+
+
+
+
+
+
+
+
+        //#region AllProviderCount
+
+        //[HttpGet("AllClientsCount")]
+        //public async Task<ActionResult> AllClientsCount()
+        //{
+        //    var ClientsCount = await _context.BaseMyServiceTBL
+        //          .Where(c => c.ConfirmedServiceType == ConfirmedServiceType.Confirmed)
+        //          .CountAsync();
+        //           //.Distinct().CountAsync();
+
+        //    return Ok(_commonService.OkResponse(ClientsCount, _localizerShared["SuccessMessage"].Value.ToString()));
+        //}
+
+
+        //#endregion
+
+
+
+
+
+        #region 
+
+        // GET: api/GetAllServiceForAdmin
+        [HttpGet("GetAllServiceTypes")]
+        [AllowAnonymous]
+        public async Task<ActionResult> GetAllServiceTypes()
+        {
+            var allServiceTypes = await _context.ServiceTBL.Where(c => c.IsEnabled)
+                .Select(c => new
+                {
+                    c.Id,
+                    c.Color,
+                    c.Name,
+                    c.PersianName,
+                }).ToListAsync();
+
+            return Ok(_commonService.OkResponse(allServiceTypes, _localizerShared["SuccessMessage"].Value.ToString()));
+        }
+
+
+        #endregion
+
+
+
+
     }
 }

@@ -1,6 +1,6 @@
-import React from "react"
-import { Card, CardHeader, CardTitle, CardBody, Progress } from "reactstrap"
-import { ArrowUp, ArrowDown } from "react-feather"
+import React from "react";
+import { Card, CardHeader, CardTitle, CardBody, Progress } from "reactstrap";
+import { ArrowUp, ArrowDown } from "react-feather";
 
 class BrowserStats extends React.Component {
   render() {
@@ -66,7 +66,7 @@ class BrowserStats extends React.Component {
           <Progress className="mb-2" value="27" />
         </CardBody>
       </Card>
-    )
+    );
   }
 }
-export default BrowserStats
+export default BrowserStats;

@@ -28,10 +28,10 @@ namespace Domain.Entities
 
 
         [Range(0, double.MaxValue)]
-        public double Price { get; set; }
+        public double? Price { get; set; }
 
 
-        public int DisCountPercent { get; set; }
+        public int? DisCountPercent { get; set; }
 
 
 

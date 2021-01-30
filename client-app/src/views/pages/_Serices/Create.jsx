@@ -23,6 +23,8 @@ import {
   Col,
 } from "reactstrap";
 
+import { PlusSquare } from "react-feather";
+
 // import { modalForm } from "./ModalSourceCode"
 import { toast } from "react-toastify";
 import ReactTagInput from "@pathofdev/react-tag-input";
@@ -43,12 +45,15 @@ class ModalForm extends Form {
       minSessionTime: "",
       acceptedMinPriceForNative: "",
       acceptedMinPriceForNonNative: "",
+      sitePercent: "",
       roleId: null,
     },
     tags: [],
     persinaTags: [],
     roles: [],
-
+    requiredFiles: [
+      // { _id: 1, persianFileName: "1", fileName: "21" },
+    ],
     isEnabled: true,
     errors: {},
     errorscustom: [],
@@ -87,6 +92,8 @@ class ModalForm extends Form {
       .max(10000000000000)
       .label("minimum Price For Non Native User"),
 
+    sitePercent: Joi.number().required().min(0).max(100).label("Site percent"),
+
     roleId: Joi.string().required().label("role"),
     roles: Joi.label("roles"),
   };
@@ -101,6 +108,39 @@ class ModalForm extends Form {
     this.populatingRoles();
   }
 
+  updateRequiredFileChanged = async (index, e) => {
+    this.setState({
+      requiredFiles: this.state.requiredFiles.map((item) =>
+        item?._id == index ? { ...item, fileName: e.target.value } : item
+      ),
+    });
+  };
+
+  updateRequiredFilePersianChanged = async (index, e) => {
+    this.setState({
+      requiredFiles: this.state.requiredFiles.map((item) =>
+        item?._id == index ? { ...item, persianFileName: e.target.value } : item
+      ),
+    });
+  };
+
+  addRequredFile = () => {
+    this.setState({
+      requiredFiles: [
+        ...this.state.requiredFiles,
+        { persianFileName: "", fileName: "", _id: Math.random() * 1000 },
+      ],
+    });
+  };
+
+  removeRequredFile = (index) => {
+    this.setState({
+      requiredFiles: this.state.requiredFiles.filter(function (reqFile) {
+        return reqFile._id !== index;
+      }),
+    });
+  };
+
   doSubmit = async (e) => {
     this.setState({ Loading: true });
 
@@ -108,12 +148,13 @@ class ModalForm extends Form {
     const errorscustom = [];
     this.setState({ errorMessage, errorscustom });
     try {
-      const { isEnabled, tags, persinaTags } = this.state;
+      const { isEnabled, tags, persinaTags, requiredFiles } = this.state;
       const obj = {
         ...this.state.data,
         isEnabled,
         tags: tags.join(),
         persinaTags: persinaTags.join(),
+        requiredFiles,
       };
 
       const { data } = await agent.ServiceTypes.create(obj);
@@ -157,20 +198,26 @@ class ModalForm extends Form {
 
               <form onSubmit={this.handleSubmit}>
                 {this.renderInput("name", "Name")}
-                {this.renderInput("persianName", "PersianName")}
+                {this.renderInput("persianName", "Persian Name")}
                 {this.renderInput("color", "Color")}
+                {this.renderInput("sitePercent", "Site percent(%)", "number")}
+
                 {this.renderInput(
                   "minPriceForService",
-                  "Minimm Price (For Service)$"
+                  "Minimm Price (For Service)$",
+                  "number"
                 )}
 
                 {this.renderInput(
                   "acceptedMinPriceForNative",
-                  "Minimm Price For Native User (For Chat,Voice,video)$"
+                  "Minimm Price For Native User (For Chat,Voice,video)$",
+                  "number"
                 )}
+                
                 {this.renderInput(
                   "acceptedMinPriceForNonNative",
-                  "Minimm Price For Non Native User  (For Chat,Voice,video)$"
+                  "Minimm Price For Non Native User  (For Chat,Voice,video)$",
+                  "number"
                 )}
                 {this.renderInput(
                   "minSessionTime",
@@ -254,6 +301,110 @@ class ModalForm extends Form {
                     type="checkbox"
                     className="ml-1"
                   />
+                </div>
+
+                <hr></hr>
+                <h3>required file for user </h3>
+                {this.state.requiredFiles?.map((requireFIle, index) => (
+                  <>
+                    <div key={index} className="row">
+                      <input type="hidden" value={requireFIle?._id} />
+                      <div className="form-group col-12 col-md-4">
+                        <label htmlFor={`PersianFileName${index}`}>
+                          File name (persian)
+                        </label>
+                        <input
+                          required
+                          minLength={3}
+                          maxLength={120}
+                          onChange={(e) => {
+                            this.updateRequiredFilePersianChanged(
+                              requireFIle?._id,
+                              e
+                            );
+                          }}
+                          value={`${requireFIle?.persianFileName}`}
+                          name={`PersianFileName${index}`}
+                          id={`PersianFileName${index}`}
+                          className={`form-control `}
+                        />
+                        {/* {error && <div className="  alert alert-danger">{error}</div>} */}
+                      </div>
+
+                      <div className="form-group col-12 col-md-4">
+                        <label htmlFor={`FileName${index}`}>
+                          File name (english)
+                        </label>
+                        <input
+                          required
+                          minLength={3}
+                          maxLength={120}
+                          onChange={(e) => {
+                            this.updateRequiredFileChanged(requireFIle?._id, e);
+                          }}
+                          // onChange={this.setState({
+                          //   requireFIle: this.state.requiredFiles
+                          // })}
+                          value={`${requireFIle?.fileName}`}
+                          name={`FileName${index}`}
+                          id={`FileName${index}`}
+                          className={`form-control `}
+                        />
+                        {/* {error && <div className="  alert alert-danger">{error}</div>} */}
+                      </div>
+
+                      <div className="form-group col-4  col-md-3">
+                        <label></label>
+                        <Button
+                          type="button"
+                          onClick={() => {
+                            this.removeRequredFile(requireFIle?._id);
+                          }}
+                          className="form-control btn-danger"
+                        >
+                          remove
+                        </Button>
+                        {/* {error && <div className="  alert alert-danger">{error}</div>} */}
+                      </div>
+                    </div>
+                  </>
+                ))}
+
+                {/* <div className="row">
+                  <input type="hidden" value="1" />
+                  <div className="form-group col-12 col-md-4">
+                    <label htmlFor="sa">File name (persian)</label>
+                    <input name="sa" id="sa" className={`form-control `} />
+                    {error && (
+                      <div className="  alert alert-danger">{error}</div>
+                    )}
+                  </div>
+
+                  <div className="form-group col-12 col-md-4">
+                    <label htmlFor="sa">File name (english)</label>
+                    <input name="sa" id="sa" className={`form-control `} />
+                    {error && (
+                      <div className="  alert alert-danger">{error}</div>
+                    )}
+                  </div>
+
+                  <div className="form-group col-4  col-md-3">
+                    <label></label>
+                    <Button type="button" className="form-control btn-danger">
+                      remove
+                    </Button>
+                  </div>
+                </div> */}
+
+                <div className="form-group col-5  col-md-3">
+                  <button
+                    type="button"
+                    // disabled={!props.isProfessional}
+                    className="mt-1 btn btn-warning"
+                    onClick={this.addRequredFile}
+                  >
+                    <PlusSquare />
+                  </button>
                 </div>
 
                 {this.state.Loading ? (

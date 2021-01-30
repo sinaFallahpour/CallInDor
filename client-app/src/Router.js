@@ -12,6 +12,7 @@ import knowledgeBaseQuestion from "./views/pages/knowledge-base/Questions";
 import { ContextLayout } from "./utility/context/Layout";
 import { Alert } from "reactstrap";
 import PageTitle from "./components/common/PageTitle";
+import Permissoin from "./core/permissions";
 
 const analyticsDashboard = lazy(() =>
   import("./views/dashboard/analytics/AnalyticsDashboard")
@@ -163,7 +164,7 @@ const userView = lazy(() => import("./views/apps/user/view/View"));
 const Login = lazy(() => import("./views/pages/authentication/login/Login"));
 const LogOut = lazy(() => import("./views/pages/authentication/LogOut"));
 const AccesDenied = lazy(() =>
-  import("./views/pages/authentication/AccesDenied")
+  import("./views/pages/authentication/Accesdenied")
 );
 
 const ForgotPassword = lazy(() =>
@@ -180,6 +181,9 @@ const register = lazy(() =>
 );
 
 // Route-based code splitting
+
+const Dashboard = lazy(() => import("./views/pages/_Dashboard/_Dashboard"));
+
 const Services = lazy(() => import("./views/pages/_Serices/Services"));
 const CreateService = lazy(() => import("./views/pages/_Serices/Create"));
 const EditService = lazy(() => import("./views/pages/_Serices/EditService"));
@@ -188,6 +192,8 @@ const RoleManager = lazy(() =>
   import("./views/pages/_rolemanager/Rolemanager")
 );
 const UserManager = lazy(() => import("./views/pages/_userManager/Users"));
+
+const Users = lazy(() => import("./views/pages/_Users/Users"));
 
 const Categories = lazy(() => import("./views/pages/Categories/Categories"));
 const EditCategory = lazy(() =>
@@ -198,29 +204,80 @@ const Areas = lazy(() => import("./views/pages/_Areas/Areas"));
 // const CreateArea = lazy(() => import("./views/pages/_Areas/Create"));
 const EditArea = lazy(() => import("./views/pages/_Areas/EditService"));
 
+const UsersVerification = lazy(() =>
+  import("./views/pages/_UsersVerification/_Users")
+);
+const UsersDetails = lazy(() =>
+  import("./views/pages/_UsersVerification/_DetailsUser")
+);
+
+const ProvidedServices = lazy(() =>
+  import("./views/pages/ProvidedServices/_ProvidedServices")
+);
+
+
+const Transactions = lazy(() =>
+  import("./views/pages/_Transactions/_Transactions")
+);
+
+const Tikets = lazy(() => import("./views/pages/_Tiket/_Tikets"));
+
 const Test = lazy(() => import("./views/pages/_test/Test"));
+const Settings = lazy(() => import("./views/pages/_Settings/Settings"));
+const Questions = lazy(() => import("./views/pages/_Questions/_Questions"));
+
+const Discounts = lazy(() => import("./views/pages/_Discounts/_DisCounts"));
+
+// const Chat = lazy(() => import("./views/pages/_Tiket/Chat"));
+
+// const chat = lazy(() => import("./view/pages/"))
+
+const Chat = lazy(() => import("./views/pages/_Tiket/_Tikets"));
 
 // Set Layout and Component Using App Route
 const RouteConfig = ({
   component: Component,
   fullLayout,
   isLoggedIn,
+  user,
+  role,
+  permission,
   title,
   ...rest
 }) => (
-    <Route
-      {...rest}
-      render={(props) => {
-        if (!isLoggedIn) {
-          return (
-            <Redirect
-              exact
-              to={{
-                pathname: "/pages/login",
-                state: { from: props.location },
-              }}
-            />
-          );
+  <Route
+    {...rest}
+    render={(props) => {
+      if (!user.isLoggedIn || user?.userRole?.toLowerCase() == "user") {
+        return (
+          <Redirect
+            exact
+            to={{
+              pathname: "/pages/login",
+              state: { from: props.location },
+            }}
+          />
+        );
+      } else if (permission || role) {
+        if (role) {
+          if (user?.userRole?.toLowerCase() != role.toLowerCase()) {
+            history.push("/misc/not-authorized");
+          }
+        }
+        if (
+          permission &&
+          !user?.userPermissions?.some((v) => permission?.includes(v))
+        ) {
+          history.push("/misc/not-authorized");
+          // return (
+          //   <Redirect
+          //     exact
+          //     to={{
+          //       pathname: "/pages/Accesdenied",
+          //       state: { from: props.location },
+          //     }}
+          //   />
+          // );
         } else {
           // return Component ? <Component {...props} /> : render(props)
           return (
@@ -233,6 +290,7 @@ const RouteConfig = ({
                       ? context.horizontalLayout
                       : context.VerticalLayout;
                 return (
+                  // permission={}
                   <LayoutTag {...props}>
                     <Suspense fallback={<Spinner />}>
                       <PageTitle title={title}>
@@ -245,9 +303,33 @@ const RouteConfig = ({
             </ContextLayout.Consumer>
           );
         }
-      }}
-    />
-  );
+      } else {
+        return (
+          <ContextLayout.Consumer>
+            {(context) => {
+              const LayoutTag =
+                fullLayout === true
+                  ? context.fullLayout
+                  : context.state.activeLayout === "horizontal"
+                    ? context.horizontalLayout
+                    : context.VerticalLayout;
+              return (
+                // permission={}
+                <LayoutTag {...props}>
+                  <Suspense fallback={<Spinner />}>
+                    <PageTitle title={title}>
+                      <Component {...props} />
+                    </PageTitle>
+                  </Suspense>
+                </LayoutTag>
+              );
+            }}
+          </ContextLayout.Consumer>
+        );
+      }
+    }}
+  />
+);
 
 // const mapStateToProps = (state) => {
 //   return {
@@ -264,50 +346,60 @@ const NotProtexctedRouteConfig = ({
   title,
   ...rest
 }) => (
-    <Route
-      path={path}
-      render={(props) => {
-        return (
-          <ContextLayout.Consumer>
-            {(context) => {
-              // const LayoutTag = context.fullLayout
+  <Route
+    path={path}
+    render={(props) => {
+      return (
+        <ContextLayout.Consumer>
+          {(context) => {
+            // const LayoutTag = context.fullLayout
 
-              const LayoutTag =
-                fullLayout === true
-                  ? context.fullLayout
-                  : context.state.activeLayout === "horizontal"
-                    ? context.horizontalLayout
-                    : context.VerticalLayout;
-              return (
-                <LayoutTag {...props} permission={props.user}>
-                  <Suspense fallback={<Spinner />}>
-                    <PageTitle title={title}>
-                      <Component {...props} />
-                    </PageTitle>
-                  </Suspense>
-                </LayoutTag>
-              );
-            }}
-          </ContextLayout.Consumer>
-        );
-      }}
-    />
-  );
+            const LayoutTag =
+              fullLayout === true
+                ? context.fullLayout
+                : context.state.activeLayout === "horizontal"
+                  ? context.horizontalLayout
+                  : context.VerticalLayout;
+            return (
+              <LayoutTag {...props} permission={props.user}>
+                <Suspense fallback={<Spinner />}>
+                  <PageTitle title={title}>
+                    <Component {...props} />
+                  </PageTitle>
+                </Suspense>
+              </LayoutTag>
+            );
+          }}
+        </ContextLayout.Consumer>
+      );
+    }}
+  />
+);
 
 class AppRouter extends React.Component {
   state = {
     loading: true,
     isLoggedIn: false,
+    userPermissions: [],
+    userRole: "",
   };
 
   async componentDidMount() {
-    const isLoggedIn = await auth.isAdminLoggedIn();
-    this.setState({ isLoggedIn, loading: false });
+    // console.clear();
+    // console.log(auth.getPermissons());
+    const userPermissions = auth.getPermissons();
+    console.log(userPermissions);
+    const userRole = auth.getRole();
+    console.log(userRole);
+
+    const isLoggedIn = await auth.checkTokenIsValid();
+    console.log(isLoggedIn);
+    this.setState({ isLoggedIn, userPermissions, userRole, loading: false });
   }
 
   render() {
-    const { isLoggedIn, loading } = this.state;
-
+    const { isLoggedIn, loading, userPermissions, userRole } = this.state;
+    const user = { userPermissions, userRole, isLoggedIn };
     if (loading) {
       return <CustomLoader />;
     }
@@ -366,6 +458,8 @@ class AppRouter extends React.Component {
               title="manage admins"
               exact
               path="/pages/admins"
+              role="admin"
+              user={{ ...user }}
               component={UserManager}
             />
             <RouteConfig
@@ -373,7 +467,20 @@ class AppRouter extends React.Component {
               title="manage role"
               exact
               path="/pages/Roles"
+              role="admin"
+              user={{ ...user }}
               component={RoleManager}
+            />
+
+            <RouteConfig
+              isLoggedIn={isLoggedIn}
+              title="Users"
+              exact
+              path="/pages/users"
+              // role="admin"
+              permission={[Permissoin.getAllUsersList]}
+              user={{ ...user }}
+              component={Users}
             />
 
             <RouteConfig
@@ -381,6 +488,8 @@ class AppRouter extends React.Component {
               title="categories"
               exact
               path="/pages/categories"
+              role="admin"
+              user={{ ...user }}
               component={Categories}
             />
             <RouteConfig
@@ -388,6 +497,8 @@ class AppRouter extends React.Component {
               title="Edit Category"
               exact
               path="/pages/category/:id"
+              role="admin"
+              user={{ ...user }}
               component={EditCategory}
             />
 
@@ -396,6 +507,8 @@ class AppRouter extends React.Component {
               title="Areas"
               exact
               path="/pages/areas"
+              role="admin"
+              user={{ ...user }}
               component={Areas}
             />
             {/* <RouteConfig isLoggedIn={isLoggedIn} title="Create Area" exact path="/pages/areas/Create" component={CreateArea} /> */}
@@ -404,7 +517,19 @@ class AppRouter extends React.Component {
               title="Edit Area"
               exact
               path="/pages/areas/:id"
+              role="admin"
+              user={{ ...user }}
               component={EditArea}
+            />
+
+            <RouteConfig
+              isLoggedIn={isLoggedIn}
+              title="Dashboard"
+              exact
+              path="/"
+              role="admin"
+              user={{ ...user }}
+              component={Dashboard}
             />
 
             <RouteConfig
@@ -412,6 +537,8 @@ class AppRouter extends React.Component {
               title="Services"
               exact
               path="/pages/Services"
+              role="admin"
+              user={{ ...user }}
               component={Services}
             />
             <RouteConfig
@@ -419,6 +546,8 @@ class AppRouter extends React.Component {
               title="Create Service"
               exact
               path="/pages/Services/Create"
+              role="admin"
+              user={{ ...user }}
               component={CreateService}
             />
             <RouteConfig
@@ -426,353 +555,575 @@ class AppRouter extends React.Component {
               title="Edit Service"
               exact
               path="/pages/Services/:id"
+              role="admin"
+              user={{ ...user }}
               component={EditService}
             />
 
             <RouteConfig
               isLoggedIn={isLoggedIn}
+              title="Settings"
               exact
-              path="/pages/Test"
-              component={Test}
+              path="/pages/settings"
+              role="admin"
+              user={{ ...user }}
+              component={Settings}
             />
 
             <RouteConfig
               isLoggedIn={isLoggedIn}
+              title="questions"
+              exact
+              path="/pages/questions"
+              role="admin"
+              user={{ ...user }}
+              component={Questions}
+            />
+
+            <RouteConfig
+              isLoggedIn={isLoggedIn}
+              title="tikets"
+              exact
+              path="/pages/Tikets"
+              role="admin"
+              user={{ ...user }}
+              component={Tikets}
+            />
+
+            <RouteConfig
+              isLoggedIn={isLoggedIn}
+              title="mange discount"
+              exact
+              path="/pages/discount"
+              role="admin"
+              user={{ ...user }}
+              component={Discounts}
+            />
+
+            <RouteConfig
+              isLoggedIn={isLoggedIn}
+              title="Users-Verification"
+              exact
+              path="/pages/UsersVerification"
+              // role="admin"
+              permission={[Permissoin.getAllUsersList]}
+              user={{ ...user }}
+              component={UsersVerification}
+            />
+
+            <RouteConfig
+              isLoggedIn={isLoggedIn}
+              title="Users-Details"
+              exact
+              path="/pages/Users-Details/:username"
+              // role="admin"
+              permission={[Permissoin.editUser]}
+              user={{ ...user }}
+              component={UsersDetails}
+            />
+
+            <RouteConfig
+              isLoggedIn={isLoggedIn}
+              title="Provided-Services"
+              exact
+              path="/pages/Provided-Services"
+              // role="admin"
+              permission={[Permissoin.getAllProvidedService]}
+              user={{ ...user }}
+              component={ProvidedServices}
+            />
+
+
+            <RouteConfig
+              isLoggedIn={isLoggedIn}
+              title="transactions"
+              exact
+              path="/pages/Transactions"
+              role="admin"
+              user={{ ...user }}
+              component={Transactions}
+            />
+
+
+
+            <RouteConfig
+              isLoggedIn={isLoggedIn}
+              exact
+              path="/pages/Test"
+              // role="admin"
+              user={{ ...user }}
+              permission={[Permissoin.getAllUsersList, Permissoin.editUser]}
+              component={Test}
+            />
+
+            {/* 
+            <RouteConfig
+              isLoggedIn={isLoggedIn}
+              title="Admin Dashboard"
               exact
               path="/"
+              // role="admin"
+              user={{ ...user }}
               component={analyticsDashboard}
-            />
+            /> */}
+
             <RouteConfig
               isLoggedIn={isLoggedIn}
               path="/email"
+              role="admin"
+              user={{ ...user }}
               exact
               component={() => <Redirect to="/email/inbox" />}
             />
             <RouteConfig
               isLoggedIn={isLoggedIn}
               path="/email/:filter"
+              role="admin"
+              user={{ ...user }}
               component={email}
             />
             <RouteConfig
               isLoggedIn={isLoggedIn}
               path="/todo"
+              role="admin"
+              user={{ ...user }}
               exact
               component={() => <Redirect to="/todo/all" />}
             />
             <RouteConfig
               isLoggedIn={isLoggedIn}
               path="/todo/:filter"
+              role="admin"
+              user={{ ...user }}
               component={todo}
             />
             <RouteConfig
               isLoggedIn={isLoggedIn}
               path="/calendar"
+              role="admin"
+              user={{ ...user }}
               component={calendar}
             />
             <RouteConfig
               isLoggedIn={isLoggedIn}
               path="/data-list/list-view"
+              role="admin"
+              user={{ ...user }}
               component={listView}
             />
             <RouteConfig
               isLoggedIn={isLoggedIn}
               path="/data-list/thumb-view"
+              role="admin"
+              user={{ ...user }}
               component={thumbView}
             />
             <RouteConfig
               isLoggedIn={isLoggedIn}
               path="/ui-element/grid"
+              role="admin"
+              user={{ ...user }}
               component={grid}
             />
             <RouteConfig
               isLoggedIn={isLoggedIn}
               path="/ui-element/typography"
+              role="admin"
+              user={{ ...user }}
               component={typography}
             />
             <RouteConfig
               isLoggedIn={isLoggedIn}
               path="/ui-element/textutilities"
+              role="admin"
+              user={{ ...user }}
               component={textutilities}
             />
             <RouteConfig
               isLoggedIn={isLoggedIn}
               path="/ui-element/syntaxhighlighter"
+              role="admin"
+              user={{ ...user }}
               component={syntaxhighlighter}
             />
             <RouteConfig
               isLoggedIn={isLoggedIn}
               path="/colors/colors"
+              role="admin"
+              user={{ ...user }}
               component={colors}
             />
             <RouteConfig
               isLoggedIn={isLoggedIn}
               path="/icons/reactfeather"
+              role="admin"
+              user={{ ...user }}
               component={reactfeather}
             />
             <RouteConfig
               isLoggedIn={isLoggedIn}
               path="/cards/basic"
+              role="admin"
+              user={{ ...user }}
               component={basicCards}
             />
             <RouteConfig
               isLoggedIn={isLoggedIn}
               path="/cards/statistics"
+              role="admin"
+              user={{ ...user }}
               component={statisticsCards}
             />
             <RouteConfig
               isLoggedIn={isLoggedIn}
               path="/cards/analytics"
+              role="admin"
+              user={{ ...user }}
               component={analyticsCards}
             />
             <RouteConfig
               isLoggedIn={isLoggedIn}
               path="/cards/action"
+              role="admin"
+              user={{ ...user }}
               component={actionCards}
             />
             <RouteConfig
               isLoggedIn={isLoggedIn}
               path="/components/alerts"
+              role="admin"
+              user={{ ...user }}
               component={Alerts}
             />
             <RouteConfig
               isLoggedIn={isLoggedIn}
               path="/components/buttons"
+              role="admin"
+              user={{ ...user }}
               component={Buttons}
             />
             <RouteConfig
               isLoggedIn={isLoggedIn}
               path="/components/breadcrumbs"
+              role="admin"
+              user={{ ...user }}
               component={Breadcrumbs}
             />
             <RouteConfig
               isLoggedIn={isLoggedIn}
               path="/components/carousel"
+              role="admin"
+              user={{ ...user }}
               component={Carousel}
             />
             <RouteConfig
               isLoggedIn={isLoggedIn}
               path="/components/collapse"
+              role="admin"
+              user={{ ...user }}
               component={Collapse}
             />
             <RouteConfig
               isLoggedIn={isLoggedIn}
               path="/components/dropdowns"
+              role="admin"
+              user={{ ...user }}
               component={Dropdowns}
             />
             <RouteConfig
               isLoggedIn={isLoggedIn}
               path="/components/list-group"
+              role="admin"
+              user={{ ...user }}
               component={ListGroup}
             />
             <RouteConfig
               isLoggedIn={isLoggedIn}
               path="/components/modals"
+              role="admin"
+              user={{ ...user }}
               component={Modals}
             />
             <RouteConfig
               isLoggedIn={isLoggedIn}
               path="/components/pagination"
+              role="admin"
+              user={{ ...user }}
               component={Pagination}
             />
             <RouteConfig
               isLoggedIn={isLoggedIn}
               path="/components/nav-component"
+              role="admin"
+              user={{ ...user }}
               component={NavComponent}
             />
             <RouteConfig
               isLoggedIn={isLoggedIn}
               path="/components/navbar"
+              role="admin"
+              user={{ ...user }}
               component={Navbar}
             />
             <RouteConfig
               isLoggedIn={isLoggedIn}
               path="/components/tabs-component"
+              role="admin"
+              user={{ ...user }}
               component={Tabs}
             />
             <RouteConfig
               isLoggedIn={isLoggedIn}
               path="/components/pills-component"
+              role="admin"
+              user={{ ...user }}
               component={TabPills}
             />
             <RouteConfig
               isLoggedIn={isLoggedIn}
               path="/components/tooltips"
+              role="admin"
+              user={{ ...user }}
               component={Tooltips}
             />
             <RouteConfig
               isLoggedIn={isLoggedIn}
               path="/components/popovers"
+              role="admin"
+              user={{ ...user }}
               component={Popovers}
             />
             <RouteConfig
               isLoggedIn={isLoggedIn}
               path="/components/badges"
+              role="admin"
+              user={{ ...user }}
               component={Badge}
             />
             <RouteConfig
               isLoggedIn={isLoggedIn}
               path="/components/pill-badges"
+              role="admin"
+              user={{ ...user }}
               component={BadgePill}
             />
             <RouteConfig
               isLoggedIn={isLoggedIn}
               path="/components/progress"
+              role="admin"
+              user={{ ...user }}
               component={Progress}
             />
             <RouteConfig
               isLoggedIn={isLoggedIn}
               path="/components/media-objects"
+              role="admin"
+              user={{ ...user }}
               component={Media}
             />
             <RouteConfig
               isLoggedIn={isLoggedIn}
               path="/components/spinners"
+              role="admin"
+              user={{ ...user }}
               component={Spinners}
             />
             <RouteConfig
               isLoggedIn={isLoggedIn}
               path="/components/toasts"
+              role="admin"
+              user={{ ...user }}
               component={Toasts}
             />
             <RouteConfig
               isLoggedIn={isLoggedIn}
               path="/extra-components/auto-complete"
+              role="admin"
+              user={{ ...user }}
               component={AutoComplete}
             />
             <RouteConfig
               isLoggedIn={isLoggedIn}
               path="/extra-components/chips"
+              role="admin"
+              user={{ ...user }}
               component={chips}
             />
             <RouteConfig
               isLoggedIn={isLoggedIn}
               path="/extra-components/divider"
+              role="admin"
+              user={{ ...user }}
               component={divider}
             />
             <RouteConfig
               isLoggedIn={isLoggedIn}
               path="/forms/wizard"
+              role="admin"
+              user={{ ...user }}
               component={vuexyWizard}
             />
             <RouteConfig
               isLoggedIn={isLoggedIn}
               path="/forms/elements/select"
+              role="admin"
+              user={{ ...user }}
               component={select}
             />
             <RouteConfig
               isLoggedIn={isLoggedIn}
               path="/forms/elements/switch"
+              role="admin"
+              user={{ ...user }}
               component={switchComponent}
             />
             <RouteConfig
               isLoggedIn={isLoggedIn}
               path="/forms/elements/checkbox"
+              role="admin"
+              user={{ ...user }}
               component={checkbox}
             />
             <RouteConfig
               isLoggedIn={isLoggedIn}
               path="/forms/elements/radio"
+              role="admin"
+              user={{ ...user }}
               component={radio}
             />
             <RouteConfig
               isLoggedIn={isLoggedIn}
               path="/forms/elements/input"
+              role="admin"
+              user={{ ...user }}
               component={input}
             />
             <RouteConfig
               isLoggedIn={isLoggedIn}
               path="/forms/elements/input-group"
+              role="admin"
+              user={{ ...user }}
               component={group}
             />
             <RouteConfig
               isLoggedIn={isLoggedIn}
               path="/extra-components/avatar"
+              role="admin"
+              user={{ ...user }}
               component={avatar}
             />
             <RouteConfig
               isLoggedIn={isLoggedIn}
               path="/forms/elements/number-input"
+              role="admin"
+              user={{ ...user }}
               component={numberInput}
             />
             <RouteConfig
               isLoggedIn={isLoggedIn}
               path="/forms/elements/textarea"
+              role="admin"
+              user={{ ...user }}
               component={textarea}
             />
             <RouteConfig
               isLoggedIn={isLoggedIn}
               path="/forms/elements/pickers"
+              role="admin"
+              user={{ ...user }}
               component={pickers}
             />
             <RouteConfig
               isLoggedIn={isLoggedIn}
               path="/forms/elements/input-mask"
+              role="admin"
+              user={{ ...user }}
               component={inputMask}
             />
             <RouteConfig
               isLoggedIn={isLoggedIn}
               path="/forms/layout/form-layout"
+              role="admin"
+              user={{ ...user }}
               component={layout}
             />
             <RouteConfig
               isLoggedIn={isLoggedIn}
               path="/forms/formik"
+              role="admin"
+              user={{ ...user }}
               component={formik}
             />
             <RouteConfig
               isLoggedIn={isLoggedIn}
               path="/tables/reactstrap"
+              role="admin"
+              user={{ ...user }}
               component={tables}
             />
             <RouteConfig
               isLoggedIn={isLoggedIn}
               path="/tables/react-tables"
+              role="admin"
+              user={{ ...user }}
               component={ReactTables}
             />
             <RouteConfig
               isLoggedIn={isLoggedIn}
               path="/tables/agGrid"
+              role="admin"
+              user={{ ...user }}
               component={Aggrid}
             />
             <RouteConfig
               isLoggedIn={isLoggedIn}
               path="/tables/data-tables"
+              role="admin"
+              user={{ ...user }}
               component={DataTable}
             />
             <RouteConfig
               isLoggedIn={isLoggedIn}
               path="/pages/profile"
+              role="admin"
+              user={{ ...user }}
               component={profile}
             />
-            <RouteConfig
-              isLoggedIn={isLoggedIn}
-              path="/pages/knowledge-base"
-              exact
-            />
+
             <RouteConfig
               isLoggedIn={isLoggedIn}
               path="/pages/knowledge-base/category"
+              role="admin"
+              user={{ ...user }}
               component={knowledgeBaseCategory}
               exact
             />
             <RouteConfig
               isLoggedIn={isLoggedIn}
               path="/pages/knowledge-base/category/questions"
+              role="admin"
+              user={{ ...user }}
               component={knowledgeBaseQuestion}
             />
             <RouteConfig
               isLoggedIn={isLoggedIn}
               path="/pages/search"
+              role="admin"
+              user={{ ...user }}
               component={search}
             />
             <RouteConfig
               isLoggedIn={isLoggedIn}
               path="/pages/account-settings"
+              role="admin"
+              user={{ ...user }}
               component={accountSettings}
             />
             <RouteConfig
               isLoggedIn={isLoggedIn}
               path="/misc/coming-soon"
+              role="admin"
+              user={{ ...user }}
               component={comingSoon}
               fullLayout
             />
@@ -781,6 +1132,8 @@ class AppRouter extends React.Component {
             <RouteConfig
               isLoggedIn={isLoggedIn}
               path="/pages/register"
+              role="admin"
+              user={{ ...user }}
               component={register}
               fullLayout
             />
@@ -792,68 +1145,93 @@ class AppRouter extends React.Component {
             <RouteConfig
               isLoggedIn={isLoggedIn}
               path="/pages/lock-screen"
+              role="admin"
+              user={{ ...user }}
               component={lockScreen}
               fullLayout
             />
             <RouteConfig
               isLoggedIn={isLoggedIn}
               path="/pages/reset-password"
+              role="admin"
+              user={{ ...user }}
               component={resetPassword}
               fullLayout
             />
             <RouteConfig
               isLoggedIn={isLoggedIn}
               path="/misc/error/500"
+              role="admin"
+              user={{ ...user }}
               component={error500}
               fullLayout
             />
-            <RouteConfig
+            <NotProtexctedRouteConfig
               isLoggedIn={isLoggedIn}
+              title="not-authorized"
               path="/misc/not-authorized"
+              // role="admin"
+              user={{ ...user }}
               component={authorized}
               fullLayout
             />
             <RouteConfig
               isLoggedIn={isLoggedIn}
               path="/misc/maintenance"
+              role="admin"
+              user={{ ...user }}
               component={maintenance}
               fullLayout
             />
             <RouteConfig
               isLoggedIn={isLoggedIn}
               path="/app/user/list"
+              role="admin"
+              user={{ ...user }}
               component={userList}
             />
             <RouteConfig
               isLoggedIn={isLoggedIn}
               path="/app/user/edit"
+              role="admin"
+              user={{ ...user }}
               component={userEdit}
             />
             <RouteConfig
               isLoggedIn={isLoggedIn}
               path="/app/user/view"
+              role="admin"
+              user={{ ...user }}
               component={userView}
             />
 
             <RouteConfig
               isLoggedIn={isLoggedIn}
               path="/maps/leaflet"
+              role="admin"
+              user={{ ...user }}
               component={leafletMaps}
             />
             <RouteConfig
               isLoggedIn={isLoggedIn}
               path="/extensions/sweet-alert"
+              role="admin"
+              user={{ ...user }}
               component={sweetAlert}
             />
             <RouteConfig
               isLoggedIn={isLoggedIn}
               path="/extensions/toastr"
+              role="admin"
+              user={{ ...user }}
               component={toastr}
             />
 
             <RouteConfig
               isLoggedIn={isLoggedIn}
               path="/extensions/clipboard"
+              role="admin"
+              user={{ ...user }}
               component={clipboard}
             />
             {/* <Route component={Error404} fullLayout /> */}

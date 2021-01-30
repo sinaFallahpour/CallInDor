@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using CallInDoor.Config.Attributes;
 using Domain;
 using Domain.DTO.Account;
 using Domain.DTO.Response;
@@ -16,13 +17,12 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Localization;
 using Service.Interfaces.Account;
+using Service.Interfaces.Common;
 
 namespace CallInDoor.Controllers
 {
-    [Authorize]
     public class ProfilesController : BaseControlle
     {
-
 
         #region CTOR
 
@@ -30,6 +30,7 @@ namespace CallInDoor.Controllers
         //private readonly UserManager<AppUser> _userManager;
         //private readonly SignInManager<AppUser> _signInManager;
         private readonly IAccountService _accountService;
+        private readonly ICommonService _commonService;
 
         private readonly IHttpContextAccessor _httpContextAccessor;
         private IStringLocalizer<ProfilesController> _localizer;
@@ -41,6 +42,7 @@ namespace CallInDoor.Controllers
                 IStringLocalizer<ProfilesController> localizer,
                 IStringLocalizer<ShareResource> localizerShared,
                  IAccountService accountService,
+                 ICommonService commonService,
                  IWebHostEnvironment hostingEnvironment
             )
         {
@@ -49,172 +51,181 @@ namespace CallInDoor.Controllers
             _localizer = localizer;
             _localizerShared = localizerShared;
             _accountService = accountService;
+            _commonService = commonService;
             _hostingEnvironment = hostingEnvironment;
         }
 
 
         #endregion
-        #region get Profile
 
+        #region  get User ById
+
+        // /api/Profile/Profile?username=2Fsina
+        [HttpGet("GetUserById")]
+        //[ClaimsAuthorize(IsAdmin = false)]
+        [AllowAnonymous]
+        public async Task<ActionResult> GetUserById(string UserId)
+        {
+            try
+            {
+                var userFromDB = await _context.Users.Where(c => c.Id == UserId)
+             .Select(c => new ProfileGetDTO
+             {
+                 //Username = c.UserName,
+                 Name = c.Name,
+                 Email = c.Email,
+                 LastName = c.LastName,
+                 Bio = c.Bio,
+                 ImageAddress = c.ImageAddress,
+                 VideoAddress = c.VideoAddress,
+                 BirthDate = c.BirthDate,
+                 IsCompany = c.IsCompany,
+                 //IsEditableProfile = c.IsEditableProfile,
+                 NationalCode = c.NationalCode,
+                 Gender = c.Gender,
+
+                 ProfileCertificate = _context.ProfileCertificateTBL
+                                .Where(c => c.UserName == c.UserName)
+                                    .Select(c => new ProfileCertificateDTO
+                                    {
+                                        //Id = c.Id,
+                                        //////////////Id = c.RequiredCertificatesId,
+                                        FileAdress = c.FileAddress,
+                                        ServiceId = c.ServiceId,
+                                        Username = c.UserName
+                                    }).ToList(),
+                 ProfileConfirmType = c.ProfileConfirmType,
+                 Fields = c.Fields.Select(r => new FiledsDTO { DegreeType = r.DegreeType, Title = r.Title }).ToList()
+
+
+                 //ProfileCertificate = _context.ProfileCertificateTBL
+                 //            .Where(c => c.UserName == currentusername)
+                 //                .Select(c => new ProfileCertificateDTO
+                 //                {
+                 //                       //Id = c.Id,
+                 //                       //////////////Id = c.RequiredCertificatesId,
+                 //                       FileAdress = c.FileAddress,
+                 //                    ServiceId = c.ServiceId,
+                 //                    Username = c.UserName
+                 //                }).ToList(),
+                 //ProfileConfirmType = c.ProfileConfirmType,
+                 //Fields = c.Fields.Select(r => new FiledsDTO { DegreeType = r.DegreeType, Title = r.Title }).ToList()
+             }).FirstOrDefaultAsync();
+
+
+
+                //var profile = await _accountService.ProfileGet();
+                if (userFromDB == null)
+                {
+                    List<string> erros = new List<string> { _localizerShared["NotFound"].Value.ToString() };
+                    return NotFound(new ApiBadRequestResponse(erros, 404));
+                }
+                return Ok(_commonService.OkResponse(userFromDB, _localizerShared["SuccessMessage"].Value.ToString()));
+            }
+            catch
+            {
+                List<string> erros = new List<string> { _localizerShared["InternalServerMessage"].Value.ToString() };
+                return StatusCode(StatusCodes.Status500InternalServerError,
+                    new ApiBadRequestResponse(erros, 500));
+            }
+        }
+        #endregion
+
+        #region get Profile
 
         // /api/Profile/Profile?username=2Fsina
         [HttpGet("GetProfile")]
-        public async Task<ActionResult> GetProfile(string username)
+        [ClaimsAuthorize(IsAdmin = false)]
+        public async Task<ActionResult> GetProfile()
         {
-
-            var checkToken = await _accountService.CheckTokenIsValid();
-            if (!checkToken)
-                return Unauthorized(new ApiResponse(401, _localizerShared["UnauthorizedMessage"].Value.ToString()));
-
             try
             {
                 var profile = await _accountService.ProfileGet();
                 if (profile == null)
-                    return NotFound(new ApiResponse(404, _localizerShared["NotFound"].Value.ToString()));
-
-                //نیاز به چک نیست
-                //var profile = await _accountService.CheckIsCurrentUserName(username);
-
-                //if (profile == null)
-                //    return NotFound(new ApiResponse(404, _localizerShared["NotFound"].Value.ToString()));
-
-                return Ok(new ApiOkResponse(new DataFormat()
                 {
-                    Status = 1,
-                    data = profile,
-                    Message = _localizerShared["SuccessMessage"].Value.ToString()
-                },
-                  _localizerShared["SuccessMessage"].Value.ToString()
-                 ));
+                    List<string> erros = new List<string> { _localizerShared["NotFound"].Value.ToString() };
+                    return NotFound(new ApiBadRequestResponse(erros, 404));
+                }
+                return Ok(_commonService.OkResponse(profile, _localizerShared["SuccessMessage"].Value.ToString()));
             }
-
             catch
             {
+                List<string> erros = new List<string> { _localizerShared["InternalServerMessage"].Value.ToString() };
                 return StatusCode(StatusCodes.Status500InternalServerError,
-                             new ApiResponse(500, _localizerShared["InternalServerMessage"].Value.ToString()));
+                    new ApiBadRequestResponse(erros, 500));
             }
         }
         #endregion
+
         #region UpdateProfile
 
-        // /api/Profile/UpdateProfile
         [HttpPut("UpdateProfile")]
-        [Authorize()]
+        [ClaimsAuthorize(IsAdmin = false)]
         public async Task<ActionResult> UpdateProfile([FromForm] UpdateProfileDTO model)
         {
-
             var currentSerialNumber = _accountService.GetcurrentSerialNumber();
+            var currentUserName = _accountService.GetCurrentUserName();
             var res = await _accountService.ValidateUpdateProfile(model);
             if (!res.succsseded)
                 return BadRequest(new ApiBadRequestResponse(res.result));
-
-            var user = await _context.Users.Where(x => x.SerialNumber == currentSerialNumber && x.UserName == model.Username)
-                .Include(c => c.UsersFields)
-                //.ThenInclude(o => o.FieldTBL)
+          
+            var user = await _context.Users
+                .Where(x => x.SerialNumber == currentSerialNumber && x.UserName == currentUserName)
+                .Include(c => c.Fields)
                 .FirstOrDefaultAsync();
-
+            
+            var certificationFromDB = await _context.ProfileCertificateTBL.Where(c => c.UserName == currentUserName).ToListAsync();
+            
             if (user == null)
-                return NotFound(new ApiResponse(404, _localizerShared["NotFound"].Value.ToString()));
-
-
-            user.Bio = model.Bio;
-            user.Email = model.Email;
-            user.Name = model.Name;
-            user.LastName = model.LastName;
-
-            #region  upload Image
-            string uniqueFileName = null;
-            if (model.File != null && model.File.Length > 0 && model.File.IsImage())
             {
-                if (string.IsNullOrWhiteSpace(_hostingEnvironment.WebRootPath))
-                {
-                    _hostingEnvironment.WebRootPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot");
-                }
-                var uploadsFolder = Path.Combine(_hostingEnvironment.WebRootPath, "Upload/User");
-                uniqueFileName = (Guid.NewGuid().ToString().GetImgUrlFriendly() + "_" + model.File.FileName);
-                string filePath = Path.Combine(uploadsFolder, uniqueFileName);
-
-                using (var stream = new FileStream(filePath, FileMode.Create))
-                {
-                    await model.File.CopyToAsync(stream);
-                }
-                //Delete LastImage Image
-                if (!string.IsNullOrEmpty(user.ImageAddress))
-                {
-                    var LastImagePath = user?.ImageAddress?.Substring(1);
-                    LastImagePath = Path.Combine(_hostingEnvironment.WebRootPath, LastImagePath);
-                    if (System.IO.File.Exists(LastImagePath))
-                    {
-                        System.IO.File.Delete(LastImagePath);
-                    }
-                }
-                //update Newe Pic Address To database
-                user.ImageAddress = "/Upload/User/" + uniqueFileName;
+                List<string> erros = new List<string> { _localizerShared["NotFound"].Value.ToString() };
+                return BadRequest(new ApiBadRequestResponse(erros, 404));
             }
-            #endregion
-
-            _context.UserField.RemoveRange(user.UsersFields);
-            if (model.FieldsId != null)
+            if (!user.IsEditableProfile)
             {
-                foreach (var item in model.FieldsId)
-                {
-                    user.UsersFields.Add(new User_FieldTBL()
-                    {
-                        UserId = user.Id,
-                        FieldId = item
-                    });
-                }
+                List<string> erros = new List<string> { _localizerShared["EditableProfileNotAllowed"].Value.ToString() };
+                return BadRequest(new ApiBadRequestResponse(erros));
             }
+            var result = await _accountService.UpdateProfile(user, certificationFromDB, model);
+            if (result)
+                return Ok(_commonService.OkResponse(null, _localizerShared["SuccessMessage"].Value.ToString()));
 
-
-            await _context.SaveChangesAsync();
-            return Ok(new ApiOkResponse(new DataFormat()
-            {
-                Status = 1,
-                data = user,
-                Message = _localizerShared["SuccessMessage"].Value.ToString()
-            },
-             _localizerShared["SuccessMessage"].Value.ToString()
-            ));
+            List<string> erroses = new List<string> { _localizerShared["InternalServerMessage"].Value.ToString() };
+            return StatusCode(StatusCodes.Status500InternalServerError,
+                new ApiBadRequestResponse(erroses, 500));
 
         }
-
-
-
 
 
         #endregion
-        #region GetAllFields
 
+        #region get RequiredFile For Profile
 
-        // GET: api/ServiceType
-        [HttpGet("getAllFields")]
-        public async Task<ActionResult> getAllFields()
+        [HttpGet("GetUsersRequiredFile")]
+        [ClaimsAuthorize(IsAdmin = false)]
+        public async Task<ActionResult> GetUsersRequiredFile()
         {
+            var currentusername = _accountService.GetCurrentUserName();
 
-            var fields = await _context.FieldTBL.Select(c => new
-            {
-                c.Id,
-                c.PersianTitle,
-                c.Title,
-                c.DegreeType,
-            }).ToListAsync();
+            var query = (from bs in _context.BaseMyServiceTBL.Where(c => c.UserName == currentusername && c.IsDeleted == false && c.ServiceId != null)
+                         join s in _context.ServiceTBL
+                         on bs.ServiceId equals s.Id
+                         join req in _context.ServidceTypeRequiredCertificatesTBL
+                          on s.Id equals req.ServiceId
+                         select new
+                         {
+                             serviceId = s.Id,
+                             serviceName = s.Name,
+                             ServicePersianName = s.PersianName,
+                             ServidceTypeRequiredCertificatesTBL = s.ServidceTypeRequiredCertificatesTBL.Select(c => new { c.Id, c.FileName, c.PersianFileName, c.ServiceId })
+                         }).Distinct()
+                          .AsQueryable();
 
-
-            return Ok(new ApiOkResponse(new DataFormat()
-            {
-                Status = 1,
-                data = fields,
-                Message = _localizerShared["SuccessMessage"].Value.ToString()
-            },
-            _localizerShared["SuccessMessage"].Value.ToString()
-            ));
+            var requiredServiceForUser = await query.ToListAsync();
+            return Ok(_commonService.OkResponse(requiredServiceForUser, _localizerShared["SuccessMessage"].Value.ToString()));
 
         }
-
-        #endregion 
-
-
+        #endregion
 
     }
 }

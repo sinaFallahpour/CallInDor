@@ -1,4 +1,4 @@
-import mock from "../mock"
+import mock from "../mock";
 
 export const searchResult = [
   {
@@ -6,705 +6,728 @@ export const searchResult = [
     searchLimit: 4,
     data: [
       {
-        id: 105,
+        id: 1,
         title: "Manager role",
         target: "Manage Role",
         link: "/pages/Roles",
-        icon: "Layers"
+        icon: "Layers",
       },
       {
-        id: 107,
+        id: 2,
         title: "Manager User",
         target: "Manage User",
         link: "/pages/admins",
-        icon: "Users"
+        icon: "Users",
       },
       {
-        id: 108,
+        id: 3,
         title: "categories",
         target: "categories",
         link: "/pages/categories",
-        icon: "Circle"
+        icon: "Circle",
       },
       {
-        id: 109,
+        id: 4,
         title: "create",
         target: "create category",
         link: "/pages/categories/Create",
-        icon: "Circle"
+        icon: "Circle",
       },
       {
-        id: 110,
+        id: 6,
         title: "services",
         target: "services",
         link: "/pages/Services",
-        icon: "Circle"
+        icon: "Circle",
       },
       {
-        id: 111,
+        id: 7,
         title: "create service",
         target: "create service",
         link: "/pages/Services/Create",
-        icon: "Circle"
+        icon: "Circle",
       },
-
-
-
       {
-        id: 112,
+        id: 8,
         title: "Areas",
         target: "Areas",
         link: "/pages/Areas",
-        icon: "Circle"
+        icon: "Circle",
       },
-      // {
-      //   id: 113,
-      //   title: "create Area",
-      //   target: "create Area",
-      //   link: "/pages/Areas/Create",
-      //   icon: "Circle"
-      // },
-
-
-
-
-
-
-
-
-
+      {
+        id: 9,
+        title: "Users-Verification",
+        target: "Users-Verification",
+        link: "/pages/UsersVerification",
+        icon: "Circle",
+      },
+      {
+        id: 9,
+        title: "Provided-Services",
+        target: "Provided-Services",
+        link: "/pages/Provided-Services",
+        icon: "Circle",
+      },
+      {
+        id: 10,
+        title: "Tikets",
+        target: "Tikets",
+        link: "/pages/Tikets",
+        icon: "Circle",
+      },
+      {
+        id: 11,
+        title: "Questions",
+        target: "Questions",
+        link: "/pages/questions",
+        icon: "Circle",
+      },
+      {
+        id: 12,
+        title: "mange discount",
+        target: "mange discount",
+        link: "/pages/discount",
+        icon: "Circle",
+      },
+      {
+        id: 13,
+        title: "Transactions",
+        target: "Transactions",
+        link: "/pages/Transactions",
+        icon: "Circle",
+      },
 
       {
         id: 1,
         target: "AnalyticsDashboard",
         title: "Analytics Dashboard",
         link: "/",
-        icon: "Home"
+        icon: "Home",
       },
       {
         id: 2,
         target: "eCommerceDashboard",
         title: "eCommerce Dashboard",
         link: "/ecommerce-dashboard",
-        icon: "Home"
+        icon: "Home",
       },
       {
         id: 3,
         target: "Todo",
         title: "Todo",
         link: "/todo/all",
-        icon: "CheckSquare"
+        icon: "CheckSquare",
       },
       {
         id: 4,
         target: "Chat",
         title: "Chat",
         link: "/chat",
-        icon: "MessageSquare"
+        icon: "MessageSquare",
       },
       {
         id: 5,
         target: "Email",
         title: "Email",
         link: "/email/inbox",
-        icon: "Mail"
+        icon: "Mail",
       },
       {
         id: 6,
         target: "Calender",
         title: "Calender",
         link: "/calendar",
-        icon: "Calendar"
+        icon: "Calendar",
       },
       {
         id: 7,
         target: "E-commerceShop",
         title: "E-commerce Shop",
         link: "/ecommerce/shop",
-        icon: "ShoppingCart"
+        icon: "ShoppingCart",
       },
       {
         id: 8,
         target: "E-commerceWishList",
         title: "E-commerce Wish List",
         link: "/ecommerce/wishlist",
-        icon: "Heart"
+        icon: "Heart",
       },
       {
         id: 9,
         target: "E-commerceCheckout",
         title: "E-commerce Checkout",
         link: "/ecommerce/checkout",
-        icon: "CreditCard"
+        icon: "CreditCard",
       },
       {
         id: 12,
         target: "Grid",
         title: "Content - Grid",
         link: "/ui-element/grid",
-        icon: "Grid"
+        icon: "Grid",
       },
       {
         id: 13,
         target: "Typography",
         title: "Content - Typography",
         link: "/ui-element/typography",
-        icon: "Type"
+        icon: "Type",
       },
       {
         id: 14,
         target: "TextUtilities",
         title: "Content - Text Utilities",
         link: "/ui-element/textutilities",
-        icon: "Type"
+        icon: "Type",
       },
       {
         id: 15,
         target: "SyntaxHighlighter",
         title: "Content - Syntax Highlighter",
         link: "/ui-element/syntaxhighlighter",
-        icon: "Code"
+        icon: "Code",
       },
       {
         id: 16,
         target: "Colors",
         title: "Colors",
         link: "/colors/colors",
-        icon: "Droplet"
+        icon: "Droplet",
       },
       {
         id: 17,
         target: "Icons",
         title: "Icons",
         link: "/icons/reactfeather",
-        icon: "Feather"
+        icon: "Feather",
       },
       {
         id: 18,
         target: "CardsBasic",
         title: "Cards Basic",
         link: "/cards/basic",
-        icon: "Square"
+        icon: "Square",
       },
       {
         id: 19,
         target: "CardsStatistics",
         title: "Cards Statistics",
         link: "/cards/statistics",
-        icon: "Smartphone"
+        icon: "Smartphone",
       },
       {
         id: 20,
         target: "CardsAnalytics",
         title: "Cards Analytics",
         link: "/cards/analytics",
-        icon: "BarChart2"
+        icon: "BarChart2",
       },
       {
         id: 21,
         target: "CardsActions",
         title: "Cards Actions",
         link: "/cards/action",
-        icon: "Airplay"
+        icon: "Airplay",
       },
       {
         id: 22,
         target: "ReactstrapTables",
         title: "Reactstrap Tables",
         link: "/tables/reactstrap",
-        icon: "Server"
+        icon: "Server",
       },
       {
         id: 23,
         target: "ReactTables",
         title: "React Tables",
         link: "/tables/react-tables",
-        icon: "Server"
+        icon: "Server",
       },
       {
         id: 24,
         target: "agGridTables",
         title: "agGrid Tables",
         link: "/tables/agGrid",
-        icon: "Grid"
+        icon: "Grid",
       },
       {
         id: 25,
         target: "Alert",
         title: "Alert Component",
         link: "/components/alerts",
-        icon: "Info"
+        icon: "Info",
       },
       {
         id: 26,
         target: "Button",
         title: "Button Component",
         link: "/components/buttons",
-        icon: "Inbox"
+        icon: "Inbox",
       },
       {
         id: 27,
         target: "Breadcrumb",
         title: "Breadcrumb Component",
         link: "/components/breadcrumbs",
-        icon: "MoreHorizontal"
+        icon: "MoreHorizontal",
       },
       {
         id: 28,
         target: "Carousel",
         title: "Carousel Component",
         link: "/components/carousel",
-        icon: "Map"
+        icon: "Map",
       },
       {
         id: 29,
         target: "Collapse",
         title: "Collapse Component",
         link: "/components/collapse",
-        icon: "Minimize"
+        icon: "Minimize",
       },
       {
         id: 30,
         target: "Dropdowns",
         title: "Dropdowns Component",
         link: "/components/dropdowns",
-        icon: "Inbox"
+        icon: "Inbox",
       },
       {
         id: 31,
         target: "ListGroup",
         title: "List Group Component",
         link: "/components/list-group",
-        icon: "Layers"
+        icon: "Layers",
       },
       {
         id: 32,
         target: "Modal",
         title: "Modal Component",
         link: "/components/modals",
-        icon: "Maximize2"
+        icon: "Maximize2",
       },
       {
         id: 34,
         target: "Navs",
         title: "Navs Component",
         link: "/components/nav-component",
-        icon: "MoreVertical"
+        icon: "MoreVertical",
       },
       {
         id: 35,
         target: "Navbar",
         title: "Navbar Component",
         link: "/components/navbar",
-        icon: "MoreHorizontal"
+        icon: "MoreHorizontal",
       },
       {
         id: 36,
         target: "Tabs",
         title: "Tabs Component",
         link: "/components/tabs-component",
-        icon: "CreditCard"
+        icon: "CreditCard",
       },
       {
         id: 37,
         target: "Pills",
         title: "Pills Component",
         link: "/components/pills-component",
-        icon: "ToggleRight"
+        icon: "ToggleRight",
       },
       {
         id: 38,
         target: "Tooltip",
         title: "Tooltip Component",
         link: "/components/tooltips",
-        icon: "MessageCircle"
+        icon: "MessageCircle",
       },
       {
         id: 39,
         target: "Popover",
         title: "Popover Component",
         link: "/components/popovers",
-        icon: "MessageCircle"
+        icon: "MessageCircle",
       },
       {
         id: 40,
         target: "Badge",
         title: "Badge Component",
         link: "/components/badges",
-        icon: "Circle"
+        icon: "Circle",
       },
       {
         id: 41,
         target: "PillBadge",
         title: "Pill Badge Component",
         link: "/components/pill-badges",
-        icon: "Circle"
+        icon: "Circle",
       },
       {
         id: 42,
         target: "Progress",
         title: "Progress Component",
         link: "/components/progress",
-        icon: "Server"
+        icon: "Server",
       },
       {
         id: 43,
         target: "MediaObjects",
         title: "Media Objects",
         link: "/components/media-objects",
-        icon: "Image"
+        icon: "Image",
       },
       {
         id: 44,
         target: "Spinner",
         title: "Spinner Component",
         link: "/components/spinners",
-        icon: "Sun"
+        icon: "Sun",
       },
       {
         id: 45,
         target: "Toasts",
         title: "Toasts Component",
         link: "/components/toasts",
-        icon: "Triangle"
+        icon: "Triangle",
       },
       {
         id: 46,
         target: "Avatar",
         title: "Avatar",
         link: "/extra-components/avatar",
-        icon: "User"
+        icon: "User",
       },
       {
         id: 47,
         target: "Chips",
         title: "Chips",
         link: "/extra-components/chips",
-        icon: "Octagon"
+        icon: "Octagon",
       },
       {
         id: 48,
         target: "Divider",
         title: "Divider",
         link: "/extra-components/divider",
-        icon: "Minus"
+        icon: "Minus",
       },
       {
         id: 49,
         target: "Select",
         title: "Select Form Element",
         link: "/forms/elements/select",
-        icon: "Server"
+        icon: "Server",
       },
       {
         id: 50,
         target: "Switch",
         title: "Switch Form Element",
         link: "/forms/elements/switch",
-        icon: "ToggleLeft"
+        icon: "ToggleLeft",
       },
       {
         id: 51,
         target: "Checkbox",
         title: "Checkbox Form Element",
         link: "/forms/elements/checkbox",
-        icon: "CheckSquare"
+        icon: "CheckSquare",
       },
       {
         id: 52,
         target: "Radio",
         title: "Radio Form Element",
         link: "/forms/elements/radio",
-        icon: "StopCircle"
+        icon: "StopCircle",
       },
       {
         id: 53,
         target: "Input",
         title: "Input Form Element",
         link: "/forms/elements/input",
-        icon: "Server"
+        icon: "Server",
       },
       {
         id: 54,
         target: "InputGroups",
         title: "Input Groups Form Elements",
         link: "/forms/elements/input-group",
-        icon: "Package"
+        icon: "Package",
       },
       {
         id: 55,
         target: "NumberInput",
         title: "Number Input Form Elements",
         link: "/forms/elements/number-input",
-        icon: "Plus"
+        icon: "Plus",
       },
       {
         id: 56,
         target: "Textarea",
         title: "Textarea Form Elements",
         link: "/forms/elements/textarea",
-        icon: "Edit2"
+        icon: "Edit2",
       },
       {
         id: 57,
         target: "Picker",
         title: "Date & Time Picker Form Elements",
         link: "/forms/elements/pickers",
-        icon: "Calendar"
+        icon: "Calendar",
       },
       {
         id: 58,
         target: "InputMask",
         title: "Input Mask Form Elements",
         link: "/forms/elements/input-mask",
-        icon: "Smile"
+        icon: "Smile",
       },
       {
         id: 59,
         target: "FormLayout",
         title: "Form Layout",
         link: "/forms/layout/form-layout",
-        icon: "Layout"
+        icon: "Layout",
       },
       {
         id: 60,
         target: "FormWizard",
         title: "Form Wizard",
         link: "/forms/wizard",
-        icon: "Sliders"
+        icon: "Sliders",
       },
       {
         id: 61,
         target: "Formik",
         title: "Formik",
         link: "/forms/formik",
-        icon: "FileText"
+        icon: "FileText",
       },
       {
         id: 62,
         target: "Login",
         title: "Login",
         link: "/pages/login",
-        icon: "LogIn"
+        icon: "LogIn",
       },
       {
         id: 63,
         target: "Register",
         title: "Register",
         link: "/pages/register",
-        icon: "UserPlus"
+        icon: "UserPlus",
       },
       {
         id: 64,
         target: "forgotPassword",
         title: "Forgot Password",
         link: "/pages/forgot-password",
-        icon: "Crosshair"
+        icon: "Crosshair",
       },
       {
         id: 65,
         target: "ResetPassword",
         title: "Reset Password",
         link: "/pages/reset-password",
-        icon: "TrendingUp"
+        icon: "TrendingUp",
       },
       {
         id: 67,
         target: "LockScreen",
         title: "Lock Screen",
         link: "/pages/lock-screen",
-        icon: "Lock"
+        icon: "Lock",
       },
       {
         id: 68,
         target: "ComingSoon",
         title: "Coming Soon",
         link: "/misc/coming-soon",
-        icon: "Watch"
+        icon: "Watch",
       },
       {
         id: 69,
         target: "404Page",
         title: "404 Page",
         link: "/misc/error/404",
-        icon: "AlertTriangle"
+        icon: "AlertTriangle",
       },
       {
         id: 70,
         target: "500Page",
         title: "500 Page",
         link: "/misc/error/500",
-        icon: "AlertOctagon"
+        icon: "AlertOctagon",
       },
       {
         id: 71,
         target: "NotAuthorized",
         title: "Not Authorized",
         link: "/misc/not-authorized",
-        icon: "UserX"
+        icon: "UserX",
       },
       {
         id: 72,
         target: "Maintenance",
         title: "Maintenance",
         link: "/misc/maintenance",
-        icon: "Aperture"
+        icon: "Aperture",
       },
       {
         id: 73,
         target: "Profile",
         title: "Profile",
         link: "/pages/profile",
-        icon: "Users"
+        icon: "Users",
       },
       {
         id: 74,
         target: "",
         title: "FAQ",
         link: "/pages/faq",
-        icon: "Zap"
+        icon: "Zap",
       },
       {
         id: 75,
         target: "KnowledgeBase",
         title: "Knowledge Base",
         link: "/pages/knowledge-base",
-        icon: "AlignLeft"
+        icon: "AlignLeft",
       },
       {
         id: 76,
         target: "Search",
         title: "Search",
         link: "/pages/search",
-        icon: "Search"
+        icon: "Search",
       },
       {
         id: 78,
         target: "ApexCharts",
         title: "Apex Charts",
         link: "/charts/apex",
-        icon: "BarChart"
+        icon: "BarChart",
       },
       {
         id: 79,
         target: "Chartjs",
         title: "Chartjs",
         link: "/charts/chartjs",
-        icon: "Activity"
+        icon: "Activity",
       },
       {
         id: 80,
         target: "recharts",
         title: "Recharts",
         link: "/charts/recharts",
-        icon: "PieChart"
+        icon: "PieChart",
       },
       {
         id: 81,
         target: "Leaflet Maps",
         title: "Leaflet Maps",
         link: "/maps/leaflet",
-        icon: "MapPin"
+        icon: "MapPin",
       },
       {
         id: 82,
         target: "Toastr",
         title: "Toastr",
         link: "/extensions/toastr",
-        icon: "CreditCard"
+        icon: "CreditCard",
       },
       {
         id: 88,
         target: "AutoComplete",
         title: "Auto Complete",
         link: "/extra-components/auto-complete",
-        icon: "Edit"
+        icon: "Edit",
       },
       {
         id: 89,
         target: "Clipboard",
         title: "Clipboard",
         link: "/extensions/clipboard",
-        icon: "Clipboard"
+        icon: "Clipboard",
       },
       {
         id: 91,
         target: "Internationalization",
         title: "Internationalization",
         link: "/extensions/i18n",
-        icon: "Globe"
+        icon: "Globe",
       },
       {
         id: 92,
         target: "accountSettings",
         title: "Account Settings",
         link: "/pages/account-settings",
-        icon: "Settings"
+        icon: "Settings",
       },
       {
         id: 93,
         target: "userList",
         title: "User List",
         link: "/app/user/list",
-        icon: "List"
+        icon: "List",
       },
       {
         id: 94,
         target: "userView",
         title: "User View",
         link: "/app/user/view",
-        icon: "Eye"
+        icon: "Eye",
       },
       {
         id: 95,
         target: "userEdit",
         title: "User Edit",
         link: "/app/user/edit",
-        icon: "Edit"
+        icon: "Edit",
       },
       {
         id: 101,
         target: "exportExt",
         title: "Export",
         link: "/extensions/export",
-        icon: "UploadCloud"
+        icon: "UploadCloud",
       },
       {
         id: 102,
         target: "importExt",
         title: "Import",
         link: "/extensions/import",
-        icon: "DownloadCloud"
+        icon: "DownloadCloud",
       },
       {
         id: 103,
         target: "exportSelectedExt",
         title: "Export Selected",
         link: "/extensions/export-selected",
-        icon: "CheckSquare"
+        icon: "CheckSquare",
       },
       {
         id: 104,
         target: "listView",
         title: "List View",
         link: "/data-list/list-view",
-        icon: "List"
+        icon: "List",
       },
       {
         id: 105,
         target: "thumbView",
         title: "Thumb View",
         link: "/data-list/thumb-view",
-        icon: "Image"
+        icon: "Image",
       },
       {
         id: 106,
         target: "dataTable",
         title: "DataTable",
         link: "/tables/data-tables",
-        icon: "Grid"
-      }
-    ]
+        icon: "Grid",
+      },
+    ],
   },
   {
     groupTitle: "Files",
@@ -714,27 +737,27 @@ export const searchResult = [
         title: "Passport Image",
         by: "Oliver Queen",
         size: "52kb",
-        file: require("../../assets/img/icons/jpg.png")
+        file: require("../../assets/img/icons/jpg.png"),
       },
       {
         title: "Parenting Guide",
         by: "Alfred Pennyworth",
         size: "2.3mb",
-        file: require("../../assets/img/icons/doc.png")
+        file: require("../../assets/img/icons/doc.png"),
       },
       {
         title: "Class Notes",
         by: "Barry Allen",
         size: "30kb",
-        file: require("../../assets/img/icons/doc.png")
+        file: require("../../assets/img/icons/doc.png"),
       },
       {
         title: "Class Attendance",
         by: "Walter White",
         size: "52mb",
-        file: require("../../assets/img/icons/xls.png")
-      }
-    ]
+        file: require("../../assets/img/icons/xls.png"),
+      },
+    ],
   },
   {
     groupTitle: "Contacts",
@@ -744,30 +767,30 @@ export const searchResult = [
         title: "Mia Davis",
         email: "miadavis@teleworm.us",
         img: require("../../assets/img/portrait/small/avatar-s-8.jpg"),
-        date: "01/03/2020"
+        date: "01/03/2020",
       },
       {
         title: "Norris Carrière",
         email: "NorrisCarriere@rhyta.com",
         img: require("../../assets/img/portrait/small/avatar-s-3.jpg"),
-        date: "07/03/2020"
+        date: "07/03/2020",
       },
       {
         title: "Charlotte Gordon",
         email: "CharlotteGordon@jourrapide.com",
         img: require("../../assets/img/portrait/small/avatar-s-26.jpg"),
-        date: "14/03/2020"
+        date: "14/03/2020",
       },
       {
         title: "Robert Nash",
         email: "RobertNash@dayrep.com",
         img: require("../../assets/img/portrait/small/avatar-s-25.jpg"),
-        date: "21/03/2020"
-      }
-    ]
-  }
-]
+        date: "21/03/2020",
+      },
+    ],
+  },
+];
 
 mock.onGet("/api/main-search/data").reply(200, {
-  searchResult
+  searchResult,
 });

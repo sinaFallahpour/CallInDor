@@ -383,9 +383,8 @@ class DataListConfig extends Component {
     } = this.state;
     return (
       <div
-        className={`data-list ${
-          this.props.thumbView ? "thumb-view" : "list-view"
-        }`}
+        className={`data-list ${this.props.thumbView ? "thumb-view" : "list-view"
+          }`}
       >
         <DataTable
           columns={columns}

@@ -46,11 +46,11 @@ namespace Domain.Entities
         /// </summary>
         public int? ServiceId { get; set; }
 
-        public virtual ServiceTBL Service { get; set; }
+        [ForeignKey("ServiceId")]
+        public ServiceTBL Service { get; set; }
 
 
-
-        public  ICollection<SpecialityTBL> Specialities { get; set; }
+        public ICollection<SpecialityTBL> Specialities { get; set; }
         #endregion
 
     }

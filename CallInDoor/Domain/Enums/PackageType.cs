@@ -16,19 +16,28 @@ namespace Domain.Enums
         [Display(Name = "Free")]
         Free,
 
-        /// <summary>
-        /// به ازای یه بازه زمانی از حساب کاربر برای چت پول کم میشه
-        /// </summary>
-        [Description("Prioded")]
-        [Display(Name = "Prioded")]
-        Prioded,
 
         /// <summary>
         /// 
         /// </summary>
-        [Description("Session")]
-        [Display(Name = "Session")]
-        Session,
+        [Description("Unlimited")]
+        [Display(Name = "Unlimited")]
+        limited,
+
+
+        ///// <summary>
+        ///// به ازای یه بازه زمانی از حساب کاربر برای چت پول کم میشه
+        ///// </summary>
+        //[Description("Prioded")]
+        //[Display(Name = "Prioded")]
+        //Prioded,
+
+        ///// <summary>
+        ///// 
+        ///// </summary>
+        //[Description("Session")]
+        //[Display(Name = "Session")]
+        //Session,
 
     }
 }

@@ -38,14 +38,23 @@ namespace Domain.Entities
         /// <summary>
         /// تعداد مسیج هایی  رایگانی که برای مشتری در نظر میگیرد
         /// </summary>
-        public int FreeMessageCount { get; set; }
+        public int? FreeMessageCount { get; set; }
 
 
         /// <summary>
         /// زمان جلسه
         ///اگر آزاد نبود  این مقدار کیگیرد  
         /// </summary>
-        public int Duration { get; set; }
+        public int? Duration { get; set; }
+
+
+
+        /// <summary>
+        ///  تعداد پیام
+        ///اگر آزاد نبود این مقدار میگیرد  
+        /// </summary>
+        public int? MessageCount { get; set; }
+
 
         /// <summary>
         /// اگر  این را تیک زد باید تا 8 ساعت بعد از درخواست کاربر 
@@ -59,14 +68,14 @@ namespace Domain.Entities
         /// </summary>
         /// 
         [Range(0, double.MaxValue)]
-        public double PriceForNativeCustomer { get; set; }
+        public double? PriceForNativeCustomer { get; set; }
 
 
         /// <summary>
         /// قیمت برای کاربران غیر محلی یاغیر  هم کشور
         /// </summary>
         [Range(0, double.MaxValue)]
-        public double PriceForNonNativeCustomer { get; set; }
+        public double? PriceForNonNativeCustomer { get; set; }
 
 
 
@@ -93,7 +102,7 @@ namespace Domain.Entities
 
 
         // relation With BaseMyChatTBL
-        public  BaseMyServiceTBL BaseMyChatTBL { get; set; }
+        public BaseMyServiceTBL BaseMyChatTBL { get; set; }
 
         [ForeignKey("BaseMyChatTBL")]
         public int? BaseId { get; set; }

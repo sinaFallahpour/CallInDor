@@ -1,7 +1,6 @@
 
-import React from "react"
-
-import "../../../assets/scss/components/app-loader.scss"
+import React from "react";
+import "../../../assets/scss/components/app-loader.scss";
 class CustomLoader extends React.Component {
     render() {
         return (

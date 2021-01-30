@@ -15,7 +15,7 @@ namespace Service.Interfaces.Category
         //Task<List<ServiceTBL>> GetAll();
 
         List<CategoryListDTO> GetAll();
-        Task<List<CategoryListDTO>> GetAllCateWithChildren();
+        Task<List<CategoryListDTO>> GetAllCateWithChildren(int serviceId);
         //Task<CategoryTBL> Create(CreateCategoryDTO model);
         Task<CategoryTBL> Create(CreateCategoryDTO model);
         Task<bool> Update(CategoryTBL categoryFromDB, CreateCategoryDTO model);
@@ -33,7 +33,7 @@ namespace Service.Interfaces.Category
 
         //public Task<List<AreaTBL>> GetAreaById(int Id)
 
-         Task<AreaTBL> GetAreaById(int Id);
+         Task<AreaTBL> GetAreaById(int? Id);
         Task<AreaTBL> UpdateArea(AreaTBL areaFreomDB, CreateAreaDTO model);
         Task<AreaTBL> CreateArea(CreateAreaDTO model);
         Task<(bool succsseded, List<string> result)> ValidateArea(CreateAreaDTO model);

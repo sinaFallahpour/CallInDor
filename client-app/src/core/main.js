@@ -1,68 +1,62 @@
 ﻿
 //نمایش پیغام خطا
-var FailedAlert = function (msg) {
-    swal({
-        title: "خطا!",
-        text: msg,
-        type: "error",
-        showCancelButton: false,
-        confirmButtonClass: "btn btn-danger",
-        confirmButtonText: "باشه",
-        buttonsStyling: false
-    });
-}
+// var FailedAlert = function (msg) {
+//     swal({
+//         title: "خطا!",
+//         text: msg,
+//         type: "error",
+//         showCancelButton: false,
+//         confirmButtonClass: "btn btn-danger",
+//         confirmButtonText: "باشه",
+//         buttonsStyling: false
+//     });
+// }
 
 
-var FailedAlert2 = function (msg,title, confirmButtonText) {
-    swal({
-        title: `${title}!`,
-        text: msg,
-        type: "error",
-        showCancelButton: false,
-        confirmButtonClass: "btn btn-danger",
-        confirmButtonText: confirmButtonText,
-        buttonsStyling: false
-    });
-}
-
-
+// var FailedAlert2 = function (msg, title, confirmButtonText) {
+//     swal({
+//         title: `${title}!`,
+//         text: msg,
+//         type: "error",
+//         showCancelButton: false,
+//         confirmButtonClass: "btn btn-danger",
+//         confirmButtonText: confirmButtonText,
+//         buttonsStyling: false
+//     });
+// }
 
 //نمایش پیغام موفقیت آمیز
-var SuccessAlert = function (msg) {
-    swal({
-        title: "انجام شد",
-        text: msg,
-        type: "success",
-        showCancelButton: false,
-        confirmButtonClass: "btn btn-success",
-        confirmButtonText: "باشه",
-        buttonsStyling: false
-    });
-}
+// var SuccessAlert = function (msg) {
+//     swal({
+//         title: "انجام شد",
+//         text: msg,
+//         type: "success",
+//         showCancelButton: false,
+//         confirmButtonClass: "btn btn-success",
+//         confirmButtonText: "باشه",
+//         buttonsStyling: false
+//     });
+// };
 
-var SuccessAlert2 = function (msg, title, confirmButtonText) {
-    swal({
-        title: title,
-        text: msg,
-        type: "success",
-        showCancelButton: false,
-        confirmButtonClass: "btn btn-success",
-        confirmButtonText: confirmButtonText,
-        buttonsStyling: false
-    });
-}
+// var SuccessAlert2 = function (msg, title, confirmButtonText) {
+//     swal({
+//         title: title,
+//         text: msg,
+//         type: "success",
+//         showCancelButton: false,
+//         confirmButtonClass: "btn btn-success",
+//         confirmButtonText: confirmButtonText,
+//         buttonsStyling: false
+//     });
+// }
 
-
-var toShortString = function (text, count)  {
+var toShortString = function (text, count) {
     if (!text) return "";
     if (text.length >= count) return text.substring(0, count) + "[...]";
     else return text;
 };
 
-
-
-
-var getPriceFormat = function (price)  {
+var getPriceFormat = function (price) {
     if (!price)
         return null;
     price += '';
@@ -76,21 +70,15 @@ var getPriceFormat = function (price)  {
     return y + z;
 }
 
-
-
-
 /*   اینپوتاها نتوانن اسپیس وارد کنند برای حرف اولشان   */
 // <input  oninput="validate(this)" >
-function validate(input) {
+export function validate(input) {
     if (/^\s/.test(input.value))
         input.value = '';
 }
 
-
-
-
 //get query string value 
-function getQueryString() {
+export function getQueryString() {
     var query_string = {};
     var query = window.location.search.substring(1);
     var vars = query.split("&");
@@ -107,3 +95,36 @@ function getQueryString() {
     }
     return query_string;
 }
+
+export const combineDateAndTime = (date) => {
+    date = new Date(date)
+    const timeString = date.getHours() + ':' + date.getMinutes() + ':00';
+
+    const year = date.getFullYear();
+    const month = date.getMonth() + 1;
+    const day = date.getDate();
+    const dateString = `${year}-${month}-${day}`;
+    return new Date(dateString + ' ' + timeString)
+};
+
+export const combineDateAndTime2 = (date) => {
+    date = new Date(date)
+    const timeString = date.getHours() + ':' + date.getMinutes() + ':00';
+
+    const year = date.getFullYear();
+    const month = date.getMonth() + 1;
+    const day = date.getDate();
+    const dateString = `${year}-${month}-${day}`;
+    return dateString
+    // alert(new Date(dateString + ' ' + timeString));
+    // return new Date(dateString + ' ' + timeString)
+};
+
+//usage ======>>>>> this.groupBy(requiredFiles, "serviceId")
+//این لیست میگیره گروپ بای میکنه
+export const groupBy = (array, key) => {
+    return array.reduce((result, obj) => {
+        (result[obj[key]] = result[obj[key]] || []).push(obj);
+        return result;
+    }, {});
+};

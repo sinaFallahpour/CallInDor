@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -38,7 +39,19 @@ namespace CallInDoor.Config.Middleware
 
                 var response = new ApiResponse(context.Response.StatusCode);
 
-                var json = JsonConvert.SerializeObject(response);
+                var defaultConst = new DefaultContractResolver()
+                {
+                    NamingStrategy = new CamelCaseNamingStrategy()
+                };
+
+                var json = JsonConvert.SerializeObject(response, new JsonSerializerSettings()
+                {
+                    ContractResolver = defaultConst,
+                    Formatting = Formatting.Indented
+                });
+
+
+                //var json = JsonConvert.SerializeObject(response,);
 
                 await context.Response.WriteAsync(json);
             }

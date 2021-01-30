@@ -21,7 +21,6 @@ class DataListSidebar extends Component {
 
   componentDidUpdate(prevProps, prevState) {
     if (this.props.data !== null && prevProps.data === null) {
-      alert(1);
       if (this.props.data.id !== prevState.id) {
         this.setState({ id: this.props.data.id });
       }
@@ -50,7 +49,6 @@ class DataListSidebar extends Component {
       }
     }
     if (this.props.data === null && prevProps.data !== null) {
-      alert(2);
       this.setState({
         id: "",
         name: "",

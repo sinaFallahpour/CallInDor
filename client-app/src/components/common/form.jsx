@@ -1,8 +1,10 @@
 import React, { Component } from "react";
 import Joi from "joi-browser";
 import Input from "./input";
+import TextArea from "./textArea"
 import Select from "./select";
 import ReactSelect from "./ReactSelect";
+import InputIcons from "../../views/forms/form-elements/input/InputIcons";
 
 class Form extends Component {
   state = {
@@ -88,7 +90,7 @@ class Form extends Component {
     );
   }
 
-  renderInput(name, label, type = "text") {
+  renderInput(name, label, type = "text", className, inputClass) {
     const { data, errors } = this.state;
 
     return (
@@ -99,9 +101,29 @@ class Form extends Component {
         label={label}
         onChange={this.handleChange}
         error={errors[name]}
+        className={className}
+        inputClass={inputClass}
       />
     );
   }
+
+
+  renderTextArea(name, label, type = "text", className) {
+    const { data, errors } = this.state;
+
+    return (
+      <TextArea
+        type={type}
+        name={name}
+        value={data[name]}
+        label={label}
+        onChange={this.handleChange}
+        error={errors[name]}
+        className={className}
+      />
+    );
+  }
+
 }
 
 export default Form;

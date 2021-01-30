@@ -12,16 +12,32 @@ namespace Domain.DTO.Service
         public int? Id { get; set; }
 
 
-        [Required(ErrorMessage = "{0} is  Required")]
-        [MaxLength(30, ErrorMessage = "The maximum {0} length is {1} characters")]
-        [Display(Name = "UserName")]
-        public string UserName { get; set; }
+        //[Required(ErrorMessage = "{0} is  Required")]
+        //[MaxLength(30, ErrorMessage = "The maximum {0} length is {1} characters")]
+        //[Display(Name = "UserName")]
+        //public string UserName { get; set; }
 
 
         [Required(ErrorMessage = "{0} is  Required")]
         [MaxLength(200, ErrorMessage = "The maximum {0} length is {1} characters")]
         [Display(Name = "ServiceName")]
         public string ServiceName { get; set; }
+
+
+
+
+        [Required(ErrorMessage = "{0} is  Required")]
+        [Range(-90, +90, ErrorMessage = "The  {0} should be between {1} and {2}")]
+        [Display(Name = "Latitude")]
+        public double? Latitude { get; set; }
+
+
+
+        [Required(ErrorMessage = "{0} is  Required")]
+        [Range(-180, +180, ErrorMessage = "The  {0} should be between {1} and {2}")]
+        [Display(Name = "Longitude")]
+        public double? Longitude { get; set; }
+
 
 
 

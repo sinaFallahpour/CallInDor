@@ -1,8 +1,9 @@
 import axios from "axios";
 // import { history } from "../..";
 import { toast } from "react-toastify";
-
-// axios.defaults.baseURL = "https://localhost:44377/api";
+//export const baseUrl = "https://localhost:44377/";
+export const baseUrl = "https://api.callindoor.ir/";
+//axios.defaults.baseURL = "https://localhost:44377/api";
 axios.defaults.baseURL = "https://api.callindoor.ir/api";
 
 // const token = window.localStorage.getItem("jwt");
@@ -66,16 +67,52 @@ const ServiceTypes = {
   update: (activity) =>
     requests.put("/ServiceType/UpdateServiceForAdmin", activity),
   // delete: (id) => requests.del(`/activities/${id}`)
+
+  getAllProvideServicesInAdmin: (params) =>
+    requests.get(`/ServiceType/GetAllProvideServicesInAdmin?${params}`),
+
+  rejectProvideServicesInAdmin: (obj) =>
+    requests.post("/ServiceType/RejectProvideServicesInAdmin", obj),
+
+  acceptProvideServicesInAdmin: (serviceid) =>
+    requests.get(
+      `/ServiceType/AcceptProvideServicesInAdmin?serviceId=${serviceid}`
+    ),
+
+  getChatServiceDetailsInAdmin: (id) =>
+    requests.get(`/ServiceType/GetChatServiceDetailsInAdmin?id=${id}`),
+  getServiceServiceDetailsInAdmin: (id) =>
+    requests.get(`/ServiceType/GetServiceServiceDetailsInAdmin?id=${id}`),
+
+  getServiceCommentsForAdmin: (id) =>
+    requests.get(`/ServiceType/GetServiceCommentsForAdmin?id=${id}`),
+  confirmComment: (id) => requests.get(`/ServiceType/ConfirmComment?id=${id}`),
 };
 
 const User = {
   // current: () => requests.get("/user"),
   list: () => requests.get("/Account/admin/GetAllAdminInAdmin"),
+  UsersList: (params) => requests.get(`/Account/GetAllUsersList?${params}`),
+  UsersListForVerification: (params) =>
+    requests.get(`/Account/GetAllUsersListForVerification?${params}`),
+  UsersDetails: (obj) => {
+    return requests.post("/Account/admin/GetUserByUsernameInAdmin", obj);
+  },
   details: (id) => requests.get(`/Account/admin/GetAdminByIdInAdmin?id=${id}`),
   login: (user) => requests.post("/user/login", user),
   registerAdmin: (user) =>
     requests.post("/Account/admin/RegisterAdminInAdmin", user),
   update: (user) => requests.put("/Account/admin/UpdateAdmin", user),
+  changePassword: (obj) => requests.post("/Account/ChangePasswordInAdmin", obj),
+  forgetPassword: (obj) => requests.post("/Account/ForgetPasswod", obj),
+  lockedUser: (username) => requests.post("/Account/LockedUser", { username }),
+
+  // User: (username) => requests.post("/Account/LockedUser", { username }),
+  // confirmCertificate: (id) =>
+  //   requests.get(`/ServiceType/ConfirmComment?id=${id}`),
+
+  confirmProfileForAdmin: (obj) =>
+    requests.post("/Account/ConfirmProfileForAdmin", obj),
 };
 
 const Role = {
@@ -84,6 +121,14 @@ const Role = {
   details: (id) => requests.get(`/Account/Role/GetRoleByIdInAdmin?id=${id}`),
   create: (role) => requests.post("/Account/Role/CreateRoleInAdmin", role),
   update: (role) => requests.put("/Account/Role/UpdateRoleInAdmin", role),
+};
+
+const Permissions = {
+  list: () => requests.get("/Account/Permission/GetAllPermissionInAdmin"),
+  // listActive: () => requests.get("/Account/Role/GetAllActiveRolesInAdmin"),
+  // details: (id) => requests.get(`/Account/Role/GetRoleByIdInAdmin?id=${id}`),
+  // create: (role) => requests.post("/Account/Role/CreateRoleInAdmin", role),
+  // update: (role) => requests.put("/Account/Role/UpdateRoleInAdmin", role),
 };
 
 const Category = {
@@ -114,11 +159,81 @@ const Test = {
   delete: (id) => requests.del("/Test/Index", id),
 };
 
+export const Tikets = {
+  // GetAllTiketsInAdmin: (model) => requests.post("/ServiceType/GetAllProvideServicesInAdmin", model),
+
+  GetAllTiketsInAdmin: (params) =>
+    requests.get(`/Tiket/GetAllTiketsInAdmin?${params}`),
+  GetTiketsDetails: (id) =>
+    requests.get(`/Tiket/GetTiketsDetailsInAdmin?tiketId=${id}`),
+  closeOrOpenTicket: (id) =>
+    requests.get(`/Tiket/CloseOrOpenTicket?ticketId=${id}`),
+
+  addFileToTiketInAdmin: (model) =>
+    requests.post("/tiket/AddFileToTiketInAdmin", model),
+  addChatMessageToTiketInAdmin: (model) =>
+    requests.post("/tiket/AddChatMessageToTiketInAdmin", model),
+};
+
+const Transactions = {
+  GetAllTransactionInAdmin: (model) => {
+    console.log(model);
+    return requests.post("/Transactoin/GetAllTransactionInAdmin", model);
+  },
+
+  //   GetTiketsDetails: (id) =>
+  //   requests.get(`/Tiket/GetTiketsDetailsInAdmin?tiketId=${id}`),
+  // closeOrOpenTicket: (id) =>
+  //   requests.get(`/Tiket/CloseOrOpenTicket?ticketId=${id}`),
+
+  // addFileToTiketInAdmin: (model) =>
+  //   requests.post("/tiket/AddFileToTiketInAdmin", model),
+  // addChatMessageToTiketInAdmin: (model) =>
+  //   requests.post("/tiket/AddChatMessageToTiketInAdmin", model),
+};
+
+
+
+const Settings = {
+  details: () => requests.get("/Settings/GetSettings"),
+  update: (setting) => requests.put("/Settings/UpdateSettings", setting),
+};
+
+const Home = {
+  details: () => requests.get("/Home/DashBoardForAdmin"),
+};
+
+export const Questions = {
+  list: () => requests.get("/Question/GetAllQuestionsForAdmin"),
+  create: (question) =>
+    requests.post("/Question/CreateQuestionForAdmin", question),
+  details: (id) => requests.get(`/Question/GetQuestionsByIdForAdmin?id=${id}`),
+  update: (question) =>
+    requests.put("/Question/UpdateQuestionsForAdmin", question),
+};
+
+export const CheckDiscount = {
+  list: () => requests.get("/CheckDiscount/GetAllCheckDiscountInAdmin"),
+  create: (discount) =>
+    requests.post("/CheckDiscount/AddCheckDiscountInAdmin", discount),
+  details: (id) =>
+    requests.get(`/CheckDiscount/GetCheckDiscountByIdInAdmin?id=${id}`),
+  update: (discount) =>
+    requests.put("/CheckDiscount/UpdateCheckDiscountInAdmin", discount),
+};
+
 export default {
   User,
   Role,
+  Permissions,
   Category,
   ServiceTypes,
   Test,
   Areas,
+  Settings,
+  Home,
+  Tikets,
+  Transactions,
+  Questions,
+  CheckDiscount,
 };
