@@ -98,6 +98,13 @@ namespace Domain.Entities
 
         #region  Relation
 
+        /// <summary>
+        /// پروفایل اکانت شرکتی  
+        /// </summary>
+        public FirmProfile FirmProfile { get; set; }
+        
+
+
         public ICollection<FieldTBL> Fields { get; set; }
 
 

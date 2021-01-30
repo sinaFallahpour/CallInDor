@@ -66,6 +66,12 @@ namespace Domain
 
 
 
+        /// <summary>
+        /// جدول تاپ تن هایی که ادمین ثبت میکند برای هر سرویس تایپ خواص
+        /// </summary>
+        public DbSet<TopTenPackageTBL> TopTenPackageTBL { get; set; }
+
+
 
 
         /// <summary>
