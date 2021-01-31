@@ -53,9 +53,14 @@ namespace Domain
             //.HasName("");
 
 
+            builder.Entity<BaseMyServiceTBL>()
+               .HasIndex(x => new { x.ServiceType });
+
+
 
             builder.Entity<MyChatServiceTBL>()
               .HasIndex(x => new { x.PriceForNativeCustomer, x.PriceForNonNativeCustomer });
+
 
 
 
@@ -66,12 +71,12 @@ namespace Domain
 
 
 
-       
+
         /// <summary>
         ///   واسط بین شرکتی و سرویس ها
         /// </summary>
         public DbSet<FirmServiceCategoryInterInterFaceTBL> FirmServiceCategoryInterInterFaceTBL { get; set; }
-        
+
 
 
         /// <summary>

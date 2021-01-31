@@ -1267,7 +1267,7 @@ namespace CallInDoor.Controllers
             var currentUsername = _accountService.GetCurrentUserName();
             var BaseMyService = new BaseMyServiceTBL()
             {
-                IsProfileOptional= serviceFromDb.IsProfileOptional,
+                IsProfileOptional = serviceFromDb.IsProfileOptional,
                 Latitude = model.Latitude,
                 Longitude = model.Longitude,
                 ConfirmedServiceType = ConfirmedServiceType.Pending,
@@ -1343,7 +1343,7 @@ namespace CallInDoor.Controllers
              .FirstOrDefaultAsync();
 
 
-            var res = await _servicetypeService.ValidateCourseService(model,serviceFromDb);
+            var res = await _servicetypeService.ValidateCourseService(model, serviceFromDb);
             if (!res.succsseded)
                 return BadRequest(new ApiBadRequestResponse(res.result));
 
@@ -1721,6 +1721,97 @@ namespace CallInDoor.Controllers
         }
 
         #endregion
+
+
+
+
+
+
+
+        #region  Searech Service
+
+        /// <summary>
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet("PopularService")]
+        ////////////////[Authorize]
+        //[ClaimsAuthorize(IsAdmin = false)]
+        public async Task<ActionResult> PopularService()
+        {
+            var currentusername = _accountService.GetCurrentUserName();
+            var queryAble =  _context.BaseMyServiceTBL
+                                .Where(c => c.IsDeleted == false
+                                && c.ConfirmedServiceType == ConfirmedServiceType.Confirmed
+                                &&
+                                c.ProfileConfirmType == ProfileConfirmType.Confirmed
+                                )
+                                .AsNoTracking()
+                                .OrderByDescending(c => c.StarCount)
+                                .ThenBy(c => c.Under3StarCount)
+                                .ThenByDescending(c => c.CreateDate)
+                                .AsQueryable();
+                                
+
+            //var  services = queryAble.GroupBy(c => c.UserName)
+            //                    .Take(4);
+
+            var users = _context.Users.AsNoTracking().AsQueryable();
+            var list = await (from u in users
+                              join q in queryAble
+                              on u.UserName equals q.UserName
+                              select new
+                              {
+                                  Username = u.UserName,
+                                  UserId = u.Id,
+                                  Name = u.Name,
+                                  LastName = u.LastName,
+                                  Bio = u.Bio,
+                                  ImageAddress = u.ImageAddress,
+                                  StarCount = u.StarCount,
+
+                                  CategoryName = q.CategoryTBL.Title /*s.CategoryTBL.Title*/,
+                                  CategoryPersianName = q.CategoryTBL.PersianTitle /*s.CategoryTBL.PersianTitle */,
+                                  SubCategoryName = q.SubCategoryTBL.Title /*s.CategoryTBL.Title*/,
+                                  SubCategoryPersianName = q.SubCategoryTBL.PersianTitle /*s.CategoryTBL.PersianTitle*/,
+                                  ServiceTypes = q.ServiceType  /*q.Select(y => y.ServiceType).Distinct().ToList()*/ /*s.ServiceType*/
+                              })
+                              .ToListAsync();
+
+
+            //GroupBy
+            var items = list.GroupBy(x => x.Username)
+                .Select(x => new SearchResponseDTO
+                {
+                    UserId = x.FirstOrDefault().UserId,
+                    Username = x.FirstOrDefault().Username,
+                    Name = x.FirstOrDefault().Name,
+                    LastName = x.FirstOrDefault().LastName,
+                    Bio = x.FirstOrDefault().Bio,
+                    ImageAddress = x.FirstOrDefault().ImageAddress,
+
+                    CategoryName = x.FirstOrDefault().CategoryName,
+                    CategoryPersianName = x.FirstOrDefault().CategoryPersianName,
+
+                    SubCategoryName = x.FirstOrDefault().SubCategoryName,
+                    SubCategoryPersianName = x.FirstOrDefault().SubCategoryPersianName,
+                    ServiceTypes = x.Select(y => y.ServiceTypes).Distinct().ToList(),
+                    StarCount = x.FirstOrDefault().StarCount
+
+                }).Take(4)
+                 .ToList();
+           
+
+            var response = new ResponseDTO
+            {
+                Users = items,
+                TotalPages = 0,
+            };
+
+            return Ok(_commonService.OkResponse(response, false));
+        }
+
+        #endregion
+
 
 
 
@@ -2306,6 +2397,20 @@ namespace CallInDoor.Controllers
 
 
         #endregion
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
         #endregion

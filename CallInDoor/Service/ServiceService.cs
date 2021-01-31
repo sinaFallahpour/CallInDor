@@ -658,7 +658,7 @@ namespace Service
         /// </summary>
         /// <param name="model"></param>
         /// <returns></returns>
-        public async Task<(bool succsseded, List<string> result)> ValidateServiceService(AddServiceServiceForUsersDTO model,ServiceTBLVM serviceFromDb)
+        public async Task<(bool succsseded, List<string> result)> ValidateServiceService(AddServiceServiceForUsersDTO model, ServiceTBLVM serviceFromDb)
         {
             bool IsValid = true;
             List<string> Errors = new List<string>();
@@ -826,7 +826,7 @@ namespace Service
         /// </summary>
         /// <param name="model"></param>
         /// <returns></returns>
-        public async Task<(bool succsseded, List<string> result)> ValidateCourseService(AddCourseServiceForUsersDTO model , ServiceTBLVM serviceFromDb)
+        public async Task<(bool succsseded, List<string> result)> ValidateCourseService(AddCourseServiceForUsersDTO model, ServiceTBLVM serviceFromDb)
         {
             bool IsValid = true;
             List<string> Errors = new List<string>();
@@ -1377,13 +1377,10 @@ namespace Service
 
                              categoryTitle = s.CategoryTBL.Title,
                              categoryPersianTitle = s.CategoryTBL.PersianTitle,
-                             subCategoryTitle = s.CategoryTBL.Title,
-                             subCategoryPersianTitle = s.CategoryTBL.PersianTitle,
+                             subCategoryTitle = s.SubCategoryTBL.Title,
+                             subCategoryPersianTitle = s.SubCategoryTBL.PersianTitle,
                              ServiceTypes = s.ServiceType
                          });
-
-
-
 
 
             if (model.PerPage == 0)
