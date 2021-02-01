@@ -327,14 +327,12 @@ namespace CallInDoor.Controllers
                         IsValid = false;
                         errors.Add("file name is required");
                         return (IsValid, errors);
-                        //return BadRequest(new ApiBadRequestResponse(errors));
                     }
                     if (string.IsNullOrEmpty(item.PersianFileName))
                     {
                         IsValid = false;
                         errors.Add("persian file name is required");
                         return (IsValid, errors);
-                        //return BadRequest(new ApiBadRequestResponse(errors));
                     }
                 }
             }
