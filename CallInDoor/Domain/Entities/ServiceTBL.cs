@@ -98,8 +98,11 @@ namespace Domain.Entities
 
 
 
-
-
+        
+        /// <summary>
+        /// لیست کمپانی هایی که در این سرویس کاربر جذب میکنند
+        /// </summary>
+        public List<CompanyServiceUserTBL> CompanyServiceUserTBLs { get; set; }
 
         public List<ServidceTypeRequiredCertificatesTBL> ServidceTypeRequiredCertificatesTBL { get; set; }
         public List<User_TopTenPackageTBL> User_TopTenPackageTBL { get; set; }

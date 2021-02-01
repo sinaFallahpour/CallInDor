@@ -25,6 +25,7 @@ namespace Domain.DTO.Account
         /// <summary>
         /// آیا مدارک برلی کسی که این از این نوع دسته بندی سرویس ثبت میکند الزامیست یا خیر
         /// </summary>
+        [Required(ErrorMessage = "{0} is required")]
         public bool IsProfileOptional { get; set; }
 
 
@@ -33,6 +34,7 @@ namespace Domain.DTO.Account
         /// </summary>
         [Required(ErrorMessage = "{0} is required")]
         [Range(1, int.MaxValue, ErrorMessage = "invalid users Count")]
+        [Display(Name = "users count for buy top 10 package ")]
         public int? UsersCount { get; set; }
 
 

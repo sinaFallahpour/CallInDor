@@ -71,8 +71,6 @@ namespace Service
         #endregion
 
 
-
-
         public Task<AppUser> GetUserByUserName(string userName)
         {
             if (string.IsNullOrEmpty(userName))
@@ -461,7 +459,7 @@ namespace Service
         }
 
 
-
+        //;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
         /// <summary>
         /// get ProfileInformation
         /// </summary>
@@ -524,7 +522,6 @@ namespace Service
             var userFromDB = await _context.Users.Where(c => c.UserName == currentusername)
                 .Select(c => new ProfileFirmGetDTO
                 {
-
                     Id = c.Id,
                     Username = c.UserName,
                     Email = c.Email,
@@ -547,6 +544,22 @@ namespace Service
                     FirmNationalID = c.FirmProfile.FirmNationalID,
                     FirmRegistrationID = c.FirmProfile.FirmRegistrationID,
                     FirmDateOfRegistration = c.FirmProfile.FirmDateOfRegistration,
+
+                    ProfileCertificate = _context.ProfileCertificateTBL
+                                .Where(c => c.UserName == currentusername)
+                                    .Select(c => new ProfileCertificateDTO
+                                    {
+                                        //Id = c.Id,
+                                        //////////////Id = c.RequiredCertificatesId,
+                                        //Id= c.Id,
+                                        Id = c.RequiredCertificatesId,
+                                        FileAdress = c.FileAddress,
+                                        ServiceId = c.ServiceId,
+                                        Username = c.UserName
+                                    }).ToList(),
+                    ProfileConfirmType = c.ProfileConfirmType,
+                    //ProfileConfirmType = c.ProfileConfirmType,
+                    //Fields = c.Fields.Select(r => new FiledsDTO { DegreeType = r.DegreeType, Title = r.Title }).ToList()
                     //ProfileConfirmType = c.ProfileConfirmType,
                 }).FirstOrDefaultAsync();
 
@@ -557,6 +570,19 @@ namespace Service
 
 
 
+        /// <summary>
+        /// ایا کاربر به ازای این سرویس پرفایلش تایید شده یا نه
+        /// </summary>
+        /// <param name="userName"></param>
+        /// <param name="serviceId"></param>
+        /// <returns></returns>
+        public async Task<bool> IsProfileConfirmed(string userName, int? serviceId)
+        {
+            bool isExist = await _context.ProfileCertificateTBL.AsNoTracking()
+                                        .AnyAsync(c => c.UserName == userName && c.ServiceId == serviceId
+                                                             && c.ProfileConfirmType == ProfileConfirmType.Confirmed);
+            return isExist;
+        }
 
 
 
@@ -609,11 +635,7 @@ namespace Service
 
                 //var certifications = new List<ProfileCertificateTBL>();
                 var currentUserName = GetCurrentUserName();
-
                 var idsShouldBeRemoved = new List<int?>();
-
-                ////////////idsShouldBeRemoved = certificationFromDB.Select(c => c.RequiredCertificatesId).ToList();
-                //////////////////////////////////////////////idsShouldBeRemoved = certificationFromDB.Select(c => c.Id).ToList();
                 if (model.RequiredFile != null)
                 {
 
@@ -629,30 +651,8 @@ namespace Service
                             {
                                 idsShouldBeRemoved.Remove(existcertificate.Id);
                                 var fileaddress = await SaveFileToHost("Upload/ProfileCertificate/", existcertificate.FileAddress, item.File);
-                                //_context.ProfileCertificateTBL.Remove(existcertificate);
                                 existcertificate.FileAddress = fileaddress;
-
-                                //var newCertificate = new ProfileCertificateTBL()
-                                //{
-                                //    ServiceId = item.ServiceId,
-                                //    UserName = currentUserName,
-                                //    ///uploadFile
-                                //    FileAddress = fileaddress,
-                                //};
-                                //await _context.ProfileCertificateTBL.AddAsync(newCertificate);
                             }
-                            //else
-                            //{
-                            //    //in certificate haee ast ke ghablan vared kard alan nist
-                            //    var notExistCertificate = certificationFromDB.Where(c => c.Id != item.FileId & c.ServiceId == item.ServiceId).FirstOrDefault();
-                            //    DeleteFileFromHost("Upload/ProfileCertificate", notExistCertificate.FileAddress);
-                            //    _context.ProfileCertificateTBL.Remove(notExistCertificate);
-                            //    //foreach (var item2 in notExistCertificate)
-                            //    //{
-                            //    //    DeleteFileFromHost("Upload/ProfileCertificate", item2.FileAddress);
-                            //    //    _context.ProfileCertificateTBL.Remove(item2);
-                            //    //}
-                            //}
                         }
                         //new Certifivcaatefile added 
                         else
@@ -675,15 +675,6 @@ namespace Service
                 }
 
 
-
-                ////var existcertificate = certificationFromDB.Where(c => c.Id == item.FileId && c.ServiceId == item.ServiceId).FirstOrDefault();
-                //foreach (var item in idsShouldBeRemoved)
-                //{
-                //    var certi = certificationFromDB.Where(c => c.Id == item).FirstOrDefault();
-                //    DeleteFileFromHost(certi.FileAddress);
-                //    _context.ProfileCertificateTBL.Remove(certi);
-                //}
-
                 await _context.SaveChangesAsync();
                 return true;
 
@@ -703,11 +694,7 @@ namespace Service
 
 
 
-
-
-
-       
-        public async Task<bool> UpdateFirmProfile(AppUser userFromDB, List<int> servicesIds, UpdateFirmProfileDTO model)
+        public async Task<bool> UpdateFirmProfile(AppUser userFromDB, List<int> servicesIds, List<ProfileCertificateTBL> certificationFromDB, UpdateFirmProfileDTO model)
         {
             try
             {
@@ -737,7 +724,7 @@ namespace Service
                     userFromDB.FirmProfile.FirmLogo = imageAddress;
                 }
 
-                if (userFromDB.FirmProfile?.FirmServiceCategoryTBLs !=null &&  userFromDB.FirmProfile?.FirmServiceCategoryTBLs?.Count != 0)
+                if (userFromDB.FirmProfile?.FirmServiceCategoryTBLs != null && userFromDB.FirmProfile?.FirmServiceCategoryTBLs?.Count != 0)
                     _context.FirmServiceCategoryInterInterFaceTBL.RemoveRange(userFromDB.FirmProfile.FirmServiceCategoryTBLs);
 
 
@@ -754,11 +741,49 @@ namespace Service
                 userFromDB.FirmProfile.FirmServiceCategoryTBLs = firmCategory;
 
 
+
+
+                var currentUserName = GetCurrentUserName();
+                var idsShouldBeRemoved = new List<int?>();
+                if (model.RequiredFile != null)
+                {
+                    foreach (var item in model.RequiredFile)
+                    {
+                        if (!item.AddNew  /*item.FileId != null*/)
+                        {
+                            //in dar ram ast
+                            var existcertificate = certificationFromDB.Where(c => c.RequiredCertificatesId == item.FileId && c.ServiceId == item.ServiceId).FirstOrDefault();
+                            //In yani agar certificate fetestade  ghablan bood faghat filesho dare change mikone   
+                            if (existcertificate != null && item.File != null)
+                            {
+                                idsShouldBeRemoved.Remove(existcertificate.Id);
+                                var fileaddress = await SaveFileToHost("Upload/ProfileCertificate/", existcertificate.FileAddress, item.File);
+                                existcertificate.FileAddress = fileaddress;
+                            }
+                        }
+                        //new certificate file added 
+                        else
+                        {
+                            var fileaddress = await SaveFileToHost("Upload/ProfileCertificate/", null, item.File);
+                            var newCertificate = new ProfileCertificateTBL()
+                            {
+                                ServiceId = item.ServiceId,
+                                UserName = currentUserName,
+                                //RequiredCertificatesId = model,
+                                ///uploadFile
+                                RequiredCertificatesId = item.FileId,
+                                FileAddress = fileaddress,
+                                ProfileConfirmType = ProfileConfirmType.Pending,
+                            };
+                            await _context.ProfileCertificateTBL.AddAsync(newCertificate);
+                        }
+                    }
+                }
+
                 await _context.SaveChangesAsync();
                 return true;
-
             }
-            catch (Exception ex)
+            catch
             {
                 return false;
             }
@@ -867,7 +892,6 @@ namespace Service
                 }
             }
 
-
             //validate Image
             if (model.Image != null)
             {
@@ -882,33 +906,7 @@ namespace Service
                     IsValid = false;
                     Errors.Add(_localizerAccount["FileIsTooLarge"].Value.ToString());
                 }
-                //if (model.File.Length > 0)
-                //{
 
-                //    var uploadsFolder = Path.Combine(_hostingEnvironment.WebRootPath, "Upload/User");
-                //    uniqueFileName = (Guid.NewGuid().ToString().GetImgUrlFriendly() + "_" + model.File.FileName);
-                //    string filePath = Path.Combine(uploadsFolder, uniqueFileName);
-
-                //    using (var stream = new FileStream(filePath, FileMode.Create))
-                //    {
-                //        await model.File.CopyToAsync(stream);
-                //    }
-
-                //    //model.Photo.CopyTo(new FileStream(filePath, FileMode.Create));
-
-                //    //Delete LastImage Image
-                //    if (!string.IsNullOrEmpty(model.ImageAddress))
-                //    {
-                //        var LastImagePath = model.ImageAddress.Substring(1);
-                //        LastImagePath = Path.Combine(_hostingEnvironment.WebRootPath, LastImagePath);
-                //        if (System.IO.File.Exists(LastImagePath))
-                //        {
-                //            System.IO.File.Delete(LastImagePath);
-                //        }
-                //    }
-                //    //update Newe Pic Address To database
-                //    model.ImageAddress = "/Upload/User/" + uniqueFileName;
-                //}
             }
 
 
@@ -926,7 +924,7 @@ namespace Service
         /// </summary>
         /// <param name="model"></param>
         /// <returns></returns>
-        public (bool succsseded, List<string> result) ValidateUpdateFirmProfile(UpdateFirmProfileDTO model, List<int> servicesIds)
+        public async Task<(bool succsseded, List<string> result)> ValidateUpdateFirmProfile(UpdateFirmProfileDTO model, List<int> servicesIds)
         {
             bool IsValid = true;
             List<string> Errors = new List<string>();
@@ -941,6 +939,45 @@ namespace Service
                     Errors.Add(_localizerAccount["InValidImageFormat"].Value.ToString());
                 }
             }
+
+
+            //validate RequiredCertificate
+            if (model.RequiredFile != null)
+            {
+                foreach (var item in model.RequiredFile)
+                {
+                    var exist = await _context.ServiceTBL.AnyAsync(c => c.Id == item.ServiceId);
+                    if (!exist)
+                    {
+                        IsValid = false;
+                        Errors.Add(_localizerAccount["InvalidServiceType"].Value.ToString());
+                    }
+
+                    var exist2 = await _context.ServidceTypeRequiredCertificatesTBL.AnyAsync(c => c.Id == item.FileId && c.ServiceId == item.ServiceId);
+                    if (!exist2)
+                    {
+                        IsValid = false;
+                        Errors.Add(_localizerAccount["InvalidRequiredServiocTypeCertification"].Value.ToString());
+                    }
+
+
+
+                    if (item.File == null)
+                    {
+                        IsValid = false;
+                        Errors.Add(_localizerAccount["FileIsRequired"].Value.ToString());
+                    }
+                    else
+                    {
+                        if (!item.File.IsPdfOrImage())
+                        {
+                            IsValid = false;
+                            Errors.Add(_localizerAccount["InValidFileFormat"].Value.ToString());
+                        }
+                    }
+                }
+            }
+
 
 
             //validate Image

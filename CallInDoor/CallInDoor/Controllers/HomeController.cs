@@ -13,6 +13,8 @@ using Service.Interfaces.Common;
 using Microsoft.Extensions.Localization;
 using Microsoft.AspNetCore.Authorization;
 using CallInDoor.Config.Attributes;
+using Domain.Entities;
+using Microsoft.AspNetCore.Identity;
 
 namespace CallInDoor.Controllers
 {
@@ -22,15 +24,18 @@ namespace CallInDoor.Controllers
 
         #region
         private readonly DataContext _context;
+        private readonly UserManager<AppUser> _userManager;
         private readonly ICommonService _commonService;
         private IStringLocalizer<ShareResource> _localizerShared;
 
         public HomeController(DataContext context,
+            UserManager<AppUser> userManager,
             ICommonService commonService,
             IStringLocalizer<ShareResource> localizerShared
             )
         {
             _context = context;
+            _userManager = userManager;
             _commonService = commonService;
             _localizerShared = localizerShared;
         }
@@ -58,6 +63,7 @@ namespace CallInDoor.Controllers
             var ProvidersCount = await _context
                 .BaseMyServiceTBL
                 .Where(c => c.ConfirmedServiceType == ConfirmedServiceType.Confirmed)
+                .AsNoTracking()
                 .Select(c => new
                 {
                     c.UserName
@@ -78,6 +84,7 @@ namespace CallInDoor.Controllers
         {
             var ServicesCount = await _context.BaseMyServiceTBL
                   .Where(c => c.ConfirmedServiceType == ConfirmedServiceType.Confirmed)
+                  .AsNoTracking()
                   .CountAsync();
             //.Distinct().CountAsync();
 
@@ -91,16 +98,27 @@ namespace CallInDoor.Controllers
 
 
 
+        #region  get AllSite users
+
+
+        [HttpGet("GetAllUsersCount")]
+        public async Task<ActionResult> GetAllUsersCount()
+        {
+            int usersCount = await _userManager.Users.AsNoTracking().CountAsync();
+            return Ok(_commonService.OkResponse(usersCount, _localizerShared["SuccessMessage"].Value.ToString()));
+        }
+
+
+        #endregion
+
+
+
 
         #region AllProviderCount
 
         [HttpGet("DashBoardForAdmin")]
-
-
-
-        [HttpGet("AcceptProvideServicesInAdmin")]
         [Authorize]
-        [ClaimsAuthorize(IsAdmin =true)]
+        [ClaimsAuthorize(IsAdmin = true)]
         public async Task<ActionResult> DashBoardForAdmin()
         {
             var UsersCount = await _context.Users.CountAsync();
@@ -156,7 +174,7 @@ namespace CallInDoor.Controllers
 
             var acceptedProfile = await _context.BaseMyServiceTBL.Where(c => c.ProfileConfirmType == ProfileConfirmType.Confirmed).CountAsync();
             var penddingProfile = await _context.BaseMyServiceTBL.Where(c => c.ProfileConfirmType == ProfileConfirmType.Pending).CountAsync();
-            var rejectedProfile = await _context.BaseMyServiceTBL.Where(c => c.ProfileConfirmType== ProfileConfirmType.Rejected).CountAsync();
+            var rejectedProfile = await _context.BaseMyServiceTBL.Where(c => c.ProfileConfirmType == ProfileConfirmType.Rejected).CountAsync();
 
 
             var profileStatus = new
@@ -177,9 +195,9 @@ namespace CallInDoor.Controllers
             {
                 UsersCount,
                 ActiveUserCount,
-                PublishedServiceProvider= publishedServiceProvider,
-                BaseServiceAnalyst= baseServiceAnalyst,
-                ServiceStatus= serviceStatus,
+                PublishedServiceProvider = publishedServiceProvider,
+                BaseServiceAnalyst = baseServiceAnalyst,
+                ServiceStatus = serviceStatus,
                 ProfileStatus = profileStatus
 
             };

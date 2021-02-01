@@ -118,7 +118,7 @@ namespace Domain.DTO.Account
 
         public List<int> ServeCastegoriesIds { get; set; }
 
-
+        public List<RequiredFile> RequiredFile { get; set; }
 
 
 

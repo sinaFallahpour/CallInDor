@@ -150,6 +150,9 @@
   <data name="InvalidAnswer" xml:space="preserve">
     <value>جواب نامعتبر است</value>
   </data>
+  <data name="InvalidaServiceCategory" xml:space="preserve">
+    <value>سرویس نامعتبر است</value>
+  </data>
   <data name="InvalidAttamp" xml:space="preserve">
     <value>تلاش نامعتبر</value>
   </data>
@@ -254,6 +257,9 @@
   </data>
   <data name="YoudontHavePlanOrPlanIsExpired" xml:space="preserve">
     <value>شما پلن فعالی ندارید یا زمان پلن به پایان رسید</value>
+  </data>
+  <data name="YouHaveReservedService" xml:space="preserve">
+    <value>شما قبلا در این دسته بندی عضو شرکت بوده اید</value>
   </data>
   <data name="YourPackageExpired" xml:space="preserve">
     <value>بسته شمابه پایان رسیده</value>

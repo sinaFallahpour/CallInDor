@@ -28,7 +28,9 @@ namespace Domain.Entities
 
         //////public string key { get; set; }
 
-
+        /// <summary>
+        ///  وضعیت تایید 
+        /// </summary>
         public ProfileConfirmType ProfileConfirmType { get; set; }
 
 

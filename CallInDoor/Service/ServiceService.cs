@@ -240,7 +240,7 @@ namespace Service
                 serviceFromDB.RoleId = model.RoleId;
 
                 serviceFromDB.TopTenPackageTBL.FirstOrDefault().Count = (int)model.UsersCount;
-                serviceFromDB.TopTenPackageTBL.FirstOrDefault().DayCount = (int)model.DayCount;
+                serviceFromDB.TopTenPackageTBL.FirstOrDefault().DayCount = model.DayCount ;
                 serviceFromDB.TopTenPackageTBL.FirstOrDefault().HourCount = model.HourCount;
                 serviceFromDB.TopTenPackageTBL.FirstOrDefault().Price = (double)model.TopTenPackagePrice;
 
@@ -302,7 +302,7 @@ namespace Service
                 var idsShouldBeRemoved = new List<int>();
                 idsShouldBeRemoved = serviceFromDB.ServidceTypeRequiredCertificatesTBL.Select(c => c.Id).ToList();
 
-                if (model.RequiredFiles != null)
+                if (model.RequiredFiles != null && model.RequiredFiles.Count != 0)
                 {
 
                     foreach (var item in model.RequiredFiles)
@@ -334,7 +334,7 @@ namespace Service
                     }
                 }
 
-                //delete requredFile from db
+                //delete requredFile from db ما حذف نمیکنیم فقط isdelete =true میکنیم
                 foreach (var item in idsShouldBeRemoved)
                 {
                     var reqFile = serviceFromDB.ServidceTypeRequiredCertificatesTBL.Where(c => c.Id == item).FirstOrDefault();

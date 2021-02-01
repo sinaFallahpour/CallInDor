@@ -80,6 +80,31 @@ namespace CallInDoor.Controllers
 
 
 
+        /// <summary>
+        ///گرفتن تعداد نوتیفیکیشن های نخوانده من
+        /// </summary>
+        /// <param name="Id"></param>
+        /// <returns></returns>
+        [HttpGet("GetUnReadedNotificationCount")]
+        //[Authorize]
+        //[ClaimsAuthorize(IsAdmin = false)]
+        public async Task<ActionResult> GetUnReadedNotificationCount()
+        {
+            var currentusername = _accountService.GetCurrentUserName();
+
+            var notisCount = await _context
+               .NotificationTBL
+               .Where(C => C.UserName == currentusername && !C.IsReaded)
+               .AsNoTracking()
+               .CountAsync();
+
+            return Ok(_commonService.OkResponse(notisCount, _localizerShared["SuccessMessage"].Value.ToString()));
+        }
+
+
+
+
+
 
         /// <summary>
         ///گرفتن نوتیفیکیشن های خوانده نشده ی من

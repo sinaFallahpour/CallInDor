@@ -41,11 +41,14 @@ namespace Domain.DTO.Account
         //public Gender Gender { get; set; }
         public bool IsCompany { get; set; }
         public bool IsEditableProfile { get; set; }
-        //public ProfileConfirmType ProfileConfirmType { get; set; }
+
+
+
+        public ProfileConfirmType ProfileConfirmType { get; set; }
 
         //public string BirthDate { get; set; }
         //public List<FiledsDTO> Fields { get; set; }
-        //public List<ProfileCertificateDTO> ProfileCertificate { get; set; }
+        public List<ProfileCertificateDTO> ProfileCertificate { get; set; }
 
 
 

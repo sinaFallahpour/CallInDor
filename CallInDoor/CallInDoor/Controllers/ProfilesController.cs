@@ -207,7 +207,7 @@ namespace CallInDoor.Controllers
             var query = (from bs in _context.BaseMyServiceTBL.Where(c => c.UserName == currentusername && c.IsDeleted == false && c.ServiceId != null)
                          join s in _context.ServiceTBL
                          on bs.ServiceId equals s.Id
-                         join req in _context.ServidceTypeRequiredCertificatesTBL
+                         join req in _context.ServidceTypeRequiredCertificatesTBL.Where(c => c.Isdeleted == false)
                           on s.Id equals req.ServiceId
                          select new
                          {
@@ -254,15 +254,18 @@ namespace CallInDoor.Controllers
             var currentUserName = _accountService.GetCurrentUserName();
 
             var servicesIds = await _context.ServiceTBL.Select(c => c.Id).ToListAsync();
-            var res =  _accountService.ValidateUpdateFirmProfile(model,servicesIds);
+            var res = await _accountService.ValidateUpdateFirmProfile(model, servicesIds);
             if (!res.succsseded)
                 return BadRequest(new ApiBadRequestResponse(res.result));
 
             var user = await _context.Users
                                  .Where(x => x.UserName == currentUserName)
                                           .Include(c => c.FirmProfile)
-                                              .ThenInclude(c=>c.FirmServiceCategoryTBLs)
+                                              .ThenInclude(c => c.FirmServiceCategoryTBLs)
                                                    .FirstOrDefaultAsync();
+
+            var certificationFromDB = await _context.ProfileCertificateTBL.Where(c => c.UserName == currentUserName).ToListAsync();
+
 
             #region validation
             if (user == null)
@@ -276,24 +279,20 @@ namespace CallInDoor.Controllers
                 List<string> erros = new List<string> { "invalid attampt. you are not a company" };
                 return BadRequest(new ApiBadRequestResponse(erros, 404));
             }
-
             #endregion 
 
-            var result = await _accountService.UpdateFirmProfile(user, servicesIds, model);
+            var result = await _accountService.UpdateFirmProfile(user, servicesIds, certificationFromDB, model);
             if (!result)
             {
                 List<string> erroses = new List<string> { _localizerShared["InternalServerMessage"].Value.ToString() };
                 return StatusCode(StatusCodes.Status500InternalServerError, new ApiBadRequestResponse(erroses, 500));
             }
-
             return Ok(_commonService.OkResponse(null, _localizerShared["SuccessMessage"].Value.ToString()));
-
         }
 
 
 
 
-
-        #endregion 
+        #endregion
     }
 }

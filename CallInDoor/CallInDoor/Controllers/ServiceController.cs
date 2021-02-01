@@ -1752,9 +1752,6 @@ namespace CallInDoor.Controllers
                                 .AsQueryable();
                                 
 
-            //var  services = queryAble.GroupBy(c => c.UserName)
-            //                    .Take(4);
-
             var users = _context.Users.AsNoTracking().AsQueryable();
             var list = await (from u in users
                               join q in queryAble

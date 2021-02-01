@@ -72,6 +72,14 @@ namespace Domain
 
 
 
+
+
+        /// <summary>
+        /// جدول ذخیره کاربرانی که در یک  سرویس خاص عضو یک کمپانی هستند
+        /// </summary>
+        public DbSet<CompanyServiceUserTBL> CompanyServiceUserTBL { get; set; }
+        
+        
         /// <summary>
         ///   واسط بین شرکتی و سرویس ها
         /// </summary>

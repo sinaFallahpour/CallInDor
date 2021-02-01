@@ -63,6 +63,10 @@
     <EmbeddedResource Update="DTO\Account\UpdateProfileDTO.fa-IR.resx">
       <Generator>PublicResXFileCodeGenerator</Generator>
     </EmbeddedResource>
+    <EmbeddedResource Update="DTO\Company\requestCompany.en-US.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>requestCompany.en-us.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
     <EmbeddedResource Update="DTO\fuck\UpdateFirmProfileDTO.en-US.resx">
       <Generator>PublicResXFileCodeGenerator</Generator>
     </EmbeddedResource>
@@ -143,6 +147,11 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Update="DTO\Company\requestCompany.en-us.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>requestCompany.en-US.resx</DependentUpon>
+    </Compile>
     <Compile Update="DTO\Service\AddCommentServiceDTO.en-US.Designer.cs">
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>

@@ -17,14 +17,14 @@ namespace Domain.DTO.Service
         //public string UserName { get; set; }
 
 
-        [Required(ErrorMessage = "{0} is  Required")]
+        //[Required(ErrorMessage = "{0} is  Required")]
         [Range(-90, +90, ErrorMessage = "The  {0} should be between {1} and {2}")]
         [Display(Name = "Latitude")]
         public double? Latitude { get; set; }
 
 
 
-        [Required(ErrorMessage = "{0} is  Required")]
+        //[Required(ErrorMessage = "{0} is  Required")]
         [Range(-180, +180, ErrorMessage = "The  {0} should be between {1} and {2}")]
         [Display(Name = "Longitude")]
         public double? Longitude { get; set; }

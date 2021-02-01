@@ -3,12 +3,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Domain;
+using Domain.DTO.Company;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Localization;
 using Service.Interfaces.Account;
 using Service.Interfaces.Common;
-
+using Microsoft.EntityFrameworkCore;
+using Domain.DTO.Response;
 
 namespace CallInDoor.Controllers
 {
@@ -46,26 +48,66 @@ namespace CallInDoor.Controllers
 
 
         ///// <summary>
-        ///// درخواست به سرویسی که از جنس چت ووییس است و فقط free(است)
+        ///// درخواست به کمپانی ها برای عضویت در انها 
         ///// </summary>
         ///// <param name="model"></param>
         ///// <returns></returns>
-        //[HttpPost("RequestToChatService")]
+        //[HttpPost("RequestToCompany")]
         ////[Authorize]
         ////[ClaimsAuthorize(IsAdmin = false)]
-        //public async Task<ActionResult> RequestToCompany([FromBody] RequestToCompanyDTO model)
+        //public async Task<ActionResult> RequestToCompany([FromBody] RequestCompany model)
         //{
         //    var currentUsername = _accountService.GetCurrentUserName();
 
+        //    var userId = await _context.Users.Where(c => c.UserName == currentUsername)
+        //                                        .AsNoTracking().Select(c => c.Id).FirstOrDefaultAsync();
 
-        //        //_context.ServiceRequestTBL.Where(c => c.Id == 1).Select(c => new { c.IsLimitedChat, c.PackageType })
-    
+        //    if (string.IsNullOrEmpty(userId))
+        //    {
+        //        return BadRequest(_commonService.NotFoundErrorReponse(false));
+        //    }
+
+        //    //validation
+        //    var isServiceExist = await _context.FirmServiceCategoryInterInterFaceTBL.AsNoTracking()
+        //                                               .AnyAsync(c => c.FirmProfileTBLId == userId
+        //                                                     && c.ServiceTBLId == model.ServiceCategoryId);
+
+        //    if (isServiceExist == false)
+        //    {
+        //        return BadRequest(_commonService.NotFoundErrorReponse(false));
+        //    }
+
+        //    var isThisReseredBefore = await _context.CompanyServiceUserTBL
+        //                                .AnyAsync(c => c.UserName == currentUsername && c.ServiceId == model.ServiceCategoryId);
+
+        //    if (isThisReseredBefore)
+        //    {
+        //        List<string> erros = new List<string> { _localizerShared["YouHaveReservedService"].Value.ToString() };
+        //        return BadRequest(new ApiBadRequestResponse(erros));
+        //    }
+
+        //    var isProfileExist = await _accountService.IsProfileConfirmed(currentUsername, model.ServiceCategoryId);
+        //    if (isServiceExist == false)
+        //    {
+        //        List<string> erros = new List<string> { _localizerShared["InvalidaServiceCategory"].Value.ToString() };
+        //        return BadRequest(new ApiBadRequestResponse(erros));
+        //    }
+
+        //    ///آیا شرکت برای ان سرویس مدارکش را آپلود کرده و تایید شده مدارکش
+        //    //ServidceTypeRequiredCertificates.isdeletd     ==  boro emal konnnnnn
+
+        //    _context.ServidceTypeRequiredCertificatesTBL.First().Isdeleted == false;
+        //    _context.ProfileCertificateTBL.First().ProfileConfirmType == 0
 
 
-        //        var baseServiceFromDB = await _context.BaseMyServiceTBL
-        //                                             .Where(c => c.Id == model.BaseServiceId && c.IsDeleted == false)
-        //                                                             .Include(c => c.MyChatsService)
-        //                                                             .FirstOrDefaultAsync();
+
+
+
+        //    var baseServiceFromDB = await _context.BaseMyServiceTBL
+        //                                        .Where(c => c.Id == model.BaseServiceId && c.IsDeleted == false)
+        //                                                        .Include(c => c.MyChatsService)
+        //                                                        .FirstOrDefaultAsync();
+
 
         //    var hasReserveRequest = await _context.ServiceRequestTBL.AnyAsync(c =>
 
