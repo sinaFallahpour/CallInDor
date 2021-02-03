@@ -15,11 +15,11 @@ namespace Domain.DTO.Service
         public DateTime CreateDate { get; set; }
         public ServiceType ServiceType { get; set; }
         public ConfirmedServiceType ConfirmedServiceType { get; set; }
-        public string  ServiceTypeName { get; set; }
-
-
-
-
+        public string ServiceTypeName { get; set; }
+        /// <summary>
+        /// ایا شرکتی آن را غیر فعال کرده یا خیر
+        /// </summary>
+        public bool IsDisabledByCompany { get; set; }
 
 
     }

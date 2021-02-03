@@ -755,12 +755,6 @@ namespace CallInDoor.Controllers
                 }
             }
 
-
-
-
-
-
-
             var currentUserName = _accountService.GetCurrentUserName();
 
 
@@ -777,11 +771,7 @@ namespace CallInDoor.Controllers
                 englishConfirmMessage = _context.SettingsTBL.Where(c => c.Key == PublicHelper.ProfileRejectNotificationKeyName).SingleOrDefault()?.EnglishValue;
             }
 
-
-            //var userFromDB = await _context.Users.Where(c => c.UserName == currentUserName).Select(c => new { c.ConnectionId, c.UserName }).FirstOrDefaultAsync();
-            //var userFromDB = await _context.Users.Where(c => c.UserName == serviceFromDB.UserName).Select(c => new { c.ConnectionId, c.UserName }).FirstOrDefaultAsync();
-
-
+            
             var notification = new NotificationTBL()
             {
                 CreateDate = DateTime.Now,
@@ -794,23 +784,17 @@ namespace CallInDoor.Controllers
                 UserName = userFromDB.UserName,
             };
 
-            _context.NotificationTBL.Add(notification);
-
+            await _context.NotificationTBL.AddAsync(notification);
             bool isPersian = _commonService.IsPersianLanguage();
-
             string confirmMessage = isPersian ? persianConfirmMessage : englishConfirmMessage;
-
             if (!string.IsNullOrEmpty(userFromDB?.ConnectionId))
                 await _hubContext.Clients.Client(userFromDB?.ConnectionId).SendAsync("Notifis", confirmMessage);
-
 
             await _context.SaveChangesAsync();
             return Ok(_commonService.OkResponse(model.IsConfirmed, true));
         }
 
         #endregion
-
-
 
 
         #region GetAllUsers 

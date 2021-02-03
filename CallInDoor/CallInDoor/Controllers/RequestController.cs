@@ -637,21 +637,29 @@ namespace CallInDoor.Controllers
         {
             var currentUserName = _accountService.GetCurrentUserName();
 
-            var requestFromDB = await _context.ServiceRequestTBL.FindAsync(requestId);
-            if (requestFromDB == null)
+            var requestFromDB = await _context.ServiceRequestTBL
+                                    .Where(c => c.Id == requestId && c.ProvideUserName == currentUserName)
+                                    .AsNoTracking().Select(c => new { c.Id, c.ClienUserName })
+                                        .FirstOrDefaultAsync();
+
+            if (requestFromDB.Id == 0)
             {
                 List<string> erros = new List<string> { _localizerShared["NotFound"].Value.ToString() };
-                return NotFound(new ApiBadRequestResponse(erros, 404));
+                return BadRequest(new ApiBadRequestResponse(erros, 404));
             }
 
-            requestFromDB.ServiceRequestStatus = ServiceRequestStatus.Confirmed;
+
+            var serviceRequestTBL = new ServiceRequestTBL() { Id = requestFromDB.Id, ServiceRequestStatus = ServiceRequestStatus.Confirmed };
+            _context.ServiceRequestTBL.Attach(serviceRequestTBL);
+            _context.Entry(serviceRequestTBL).Property(x => x.ServiceRequestStatus).IsModified = true;
+
 
             var userFromDB = await _context.Users.Where(c => c.UserName.ToLower() == requestFromDB.ClienUserName.ToLower())
                             .Select(c => new { c.ConnectionId, c.UserName }).FirstOrDefaultAsync();
 
             var notification = new NotificationTBL()
             {
-                CreateDate = DateTime.Now,
+                CreateDate = DateTime.UtcNow,
                 EnglishText = "your request has been accepted",
                 TextPersian = "درخواست شما قبول شده است",
                 IsReaded = false,
@@ -677,19 +685,33 @@ namespace CallInDoor.Controllers
         public async Task<ActionResult> RejectRequest(int requestId)
         {
             var currentUserName = _accountService.GetCurrentUserName();
+            var requestFromDB = await _context.ServiceRequestTBL
+                                           .Where(c => c.Id == requestId && c.ProvideUserName == currentUserName)
+                                                        .AsNoTracking().Select(c => new { c.Id, c.ClienUserName })
+                                                                                            .FirstOrDefaultAsync();
 
-            var requestFromDB = await _context.ServiceRequestTBL.FindAsync(requestId);
-            if (requestFromDB == null)
+            if (requestFromDB.Id == 0)
             {
                 List<string> erros = new List<string> { _localizerShared["NotFound"].Value.ToString() };
-                return NotFound(new ApiBadRequestResponse(erros, 404));
+                return BadRequest(new ApiBadRequestResponse(erros, 404));
             }
 
+            //var requestFromDB = await _context.ServiceRequestTBL.FindAsync(requestId);
+            //if (requestFromDB == null)
+            //{
+            //    List<string> erros = new List<string> { _localizerShared["NotFound"].Value.ToString() };
+            //    return BadRequest(new ApiBadRequestResponse(erros, 404));
+            //}
 
-            requestFromDB.ServiceRequestStatus = ServiceRequestStatus.Rejected;
+            var serviceRequestTBL = new ServiceRequestTBL() { Id = requestFromDB.Id, ServiceRequestStatus = ServiceRequestStatus.Rejected };
+            _context.ServiceRequestTBL.Attach(serviceRequestTBL);
+            _context.Entry(serviceRequestTBL).Property(x => x.ServiceRequestStatus).IsModified = true;
+
+            //requestFromDB.ServiceRequestStatus = ServiceRequestStatus.Rejected;
 
 
             var userFromDB = await _context.Users.Where(c => c.UserName.ToLower() == requestFromDB.ClienUserName.ToLower())
+                            .AsNoTracking()
                             .Select(c => new { c.ConnectionId, c.UserName }).FirstOrDefaultAsync();
 
 
@@ -1233,8 +1255,11 @@ namespace CallInDoor.Controllers
                                                    .Include(c => c.MyChatsService)
                                                    .FirstOrDefaultAsync();
 
+
+
             var hasReserveRequest = await _context.ServiceRequestTBL.AnyAsync(c =>
                                         //آیا من ریکوست در حال پندینگ یا اکسپدت از نوع  لیمیتد دارم یا نه
+                                        //اگه دارم دیگه نباید  ریکوست بزنم
                                         ((c.ServiceRequestStatus == ServiceRequestStatus.Confirmed || c.ServiceRequestStatus == ServiceRequestStatus.Pending)
                                              &&
                                              c.BaseServiceId == model.BaseServiceId &&

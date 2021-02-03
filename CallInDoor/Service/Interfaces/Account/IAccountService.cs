@@ -31,6 +31,14 @@ namespace Service.Interfaces.Account
         //Task<string> CheckTokenIsValid2();
         Task<ProfileGetDTO> ProfileGet();
         Task<ProfileFirmGetDTO> ProfileFirmGet();
+
+
+        /// <summary>
+        /// ایا کاربر به ازای این سرویس پرفایلش تایید شده یا نه
+        /// </summary>
+        /// <param name="userName"></param>
+        /// <param name="serviceId"></param>
+        /// <returns></returns>
         Task<bool> IsProfileConfirmed(string userName, int? serviceId);
         Task<bool> UpdateProfile(AppUser userFromDB, List<ProfileCertificateTBL> certificationFromDB, UpdateProfileDTO model);
         //Task<bool> UpdateFirmProfile(AppUser userFromDB, List<int> servicesIds, UpdateFirmProfileDTO model);

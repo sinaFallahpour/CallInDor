@@ -8,7 +8,8 @@ namespace Domain.DTO.Service
     {
         public int ServiceId { get; set; }
         public string ServiceName { get; set; }
-        public string Color{ get; set; }
+        public string Color { get; set; }
 
+        public bool IsDisabledByCompany { get; set; }
     }
 }

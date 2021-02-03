@@ -37,6 +37,7 @@ using Service.Interfaces.Ticket;
 using Service.Interfaces.RequestService;
 using Service.Interfaces.Payment;
 using Service.Interfaces.InMemoryCache;
+using Service.Interfaces.Company;
 
 namespace CallInDoor
 {
@@ -187,8 +188,8 @@ namespace CallInDoor
             services.AddScoped<ITicketService, TicketService>();
             services.AddScoped<IRequestService, RequestService>();
             services.AddScoped<IPaymentService, PaymentService>();
+            services.AddScoped<ICompanyService, CompanyService>();
             services.AddSingleton<IAuthorizationPolicyProvider, AuthorizationPolicyProvider>();
-
 
         }
 

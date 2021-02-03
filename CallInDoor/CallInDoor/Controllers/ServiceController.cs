@@ -314,8 +314,6 @@ namespace CallInDoor.Controllers
                 IsValid = false;
                 errors.Add("invalid Roles");
                 return (IsValid, errors);
-
-                //return BadRequest(new ApiBadRequestResponse(errors));
             }
 
             if (model.RequiredFiles != null)
@@ -363,8 +361,6 @@ namespace CallInDoor.Controllers
             var res = await validateCreateServiceForAdmin(model, true);
             if (!res.succsseded)
                 return BadRequest(new ApiBadRequestResponse(res.result));
-
-
             var service = await _servicetypeService.GetByIdWithJoin(model.Id);
             if (service == null)
                 return NotFound(new ApiResponse(404, "service " + PubicMessages.NotFoundMessage));
@@ -407,7 +403,8 @@ namespace CallInDoor.Controllers
                          {
                              ServiceId = s.Id,
                              ServiceName = isPersian ? s.PersianName : s.Name,
-                             Color = s.Color
+                             Color = s.Color,
+                             IsDisabledByCompany = bs.IsDisabledByCompany
                          }).Distinct()
                           .AsQueryable();
 
@@ -440,6 +437,7 @@ namespace CallInDoor.Controllers
                    c.Id,
                    c.ServiceName,
                    c.ServiceType,
+                   c.IsDisabledByCompany,
                    //c.IsActive
                }).ToListAsync();
 
@@ -472,7 +470,7 @@ namespace CallInDoor.Controllers
         {
 
             var serviceFromDB = await _context
-                .BaseMyServiceTBL.Where(c => c.Id == Id && c.IsDeleted == false)
+                .BaseMyServiceTBL.Where(c => c.Id == Id && c.IsDeleted == false && c.IsDisabledByCompany == false)
                 .Select(c => new
                 {
                     c.MyChatsService.PackageType,
@@ -533,7 +531,7 @@ namespace CallInDoor.Controllers
 
             var serviceFromDB = await _context
                .BaseMyServiceTBL
-               .Where(c => c.Id == id && c.IsDeleted == false)
+               .Where(c => c.Id == id && c.IsDeleted == false && c.IsDisabledByCompany == false)
                .Include(c => c.MyChatsService)
                .FirstOrDefaultAsync();
 
@@ -569,7 +567,7 @@ namespace CallInDoor.Controllers
                 serviceFromDB.MyChatsService.FreeMessageCount,
                 serviceFromDB.MyChatsService.Duration,
                 serviceFromDB.MyChatsService.MessageCount,
-
+                serviceFromDB.IsDisabledByCompany
 
                 //serviceFromDB.ServiceTbl.Name,
                 //serviceFromDB.ServiceTbl.Id
@@ -661,6 +659,7 @@ namespace CallInDoor.Controllers
                 CatId = model.CatId,
                 SubCatId = model.SubCatId,
                 IsDeleted = false,
+                IsDisabledByCompany = false,
                 ProfileConfirmType = profileStatus ? ProfileConfirmType.Pending : res1 == true ? ProfileConfirmType.Confirmed : ProfileConfirmType.Rejected,
                 //IsActive = false
             };
@@ -935,6 +934,7 @@ namespace CallInDoor.Controllers
                 CatId = model.CatId,
                 SubCatId = model.SubCatId,
                 IsDeleted = false,
+                IsDisabledByCompany = false,
                 ProfileConfirmType = profileStatus ? ProfileConfirmType.Pending : res1 == true ? ProfileConfirmType.Confirmed : ProfileConfirmType.Rejected,
 
                 //IsActive = false
@@ -979,6 +979,7 @@ namespace CallInDoor.Controllers
 
         /// <summary>
         ///گرفتن یک سرویس از نوع چت و وویس و.. برای یک کاربر
+        ///این  ای پی ای برای کاربران بیرونی ایی است که مسخواهند سرویس من را ببینند
         /// </summary>
         /// <param name="Id"></param>
         /// <returns></returns>
@@ -991,7 +992,7 @@ namespace CallInDoor.Controllers
             var serviceFromDB = await _context
                 .BaseMyServiceTBL
                 .AsNoTracking()
-               .Where(c => c.Id == Id && c.IsDeleted == false)
+               .Where(c => c.Id == Id && c.IsDeleted == false && c.IsDisabledByCompany == false)
                .Select(c => new
                {
                    c.MyServicesService.Id,
@@ -1021,8 +1022,6 @@ namespace CallInDoor.Controllers
                }).FirstOrDefaultAsync();
 
 
-            //public string Speciality { get; set; }
-            //public string Area { get; set; }
 
 
 
@@ -1196,13 +1195,6 @@ namespace CallInDoor.Controllers
 
 
         }
-
-
-
-
-
-
-
 
         #endregion
 
@@ -1424,7 +1416,7 @@ namespace CallInDoor.Controllers
             if (string.IsNullOrEmpty(username))
             {
                 List<string> erros = new List<string> { _localizerShared["NotFound"].Value.ToString() };
-                return NotFound(new ApiBadRequestResponse(erros, 404));
+                return BadRequest(new ApiBadRequestResponse(erros, 404));
             }
 
 
@@ -1434,43 +1426,44 @@ namespace CallInDoor.Controllers
                 .Where(c => c.UserName == username &&
                 c.ServiceId == serviceCategoryId &&
                 c.IsDeleted == false &&
-                c.ConfirmedServiceType == ConfirmedServiceType.Confirmed && c.ProfileConfirmType == ProfileConfirmType.Confirmed)
-         .Select(c => new
-         {
-             c.Id,
-             c.ServiceName,
-             c.ServiceType,
-             CategoryName = isPersian ? c.CategoryTBL.PersianTitle : c.CategoryTBL.Title,
-             //CategoryPersianName = c.CategoryTBL.PersianTitle,
+                c.IsDisabledByCompany == false &&
+                c.ConfirmedServiceType == ConfirmedServiceType.Confirmed && c.IsDisabledByCompany && c.ProfileConfirmType == ProfileConfirmType.Confirmed)
+                .Select(c => new
+                {
+                    c.Id,
+                    c.ServiceName,
+                    c.ServiceType,
+                    CategoryName = isPersian ? c.CategoryTBL.PersianTitle : c.CategoryTBL.Title,
+                    //CategoryPersianName = c.CategoryTBL.PersianTitle,
 
-             SubCategoryName = isPersian ? c.SubCategoryTBL.PersianTitle : c.SubCategoryTBL.Title,
-             //SubCategoryPersianName = c.SubCategoryTBL.PersianTitle,
+                    SubCategoryName = isPersian ? c.SubCategoryTBL.PersianTitle : c.SubCategoryTBL.Title,
+                    //SubCategoryPersianName = c.SubCategoryTBL.PersianTitle,
 
-             ChatService = new
-             {
-                 PackageType = c.MyChatsService != null ? c.MyChatsService.PackageType : null,
-                 Price = c.MyChatsService != null ? c.MyChatsService.PriceForNativeCustomer : null,
-                 //PriceForNonNativeCustomer = c.MyChatsService != null ? c.MyChatsService?.PriceForNonNativeCustomer : null,
-                 Duration = c.MyChatsService != null ? c.MyChatsService.Duration : null,
-                 FreeMessageCount = c.MyChatsService != null ? c.MyChatsService.FreeMessageCount : null,
-             },
+                    ChatService = new
+                    {
+                        PackageType = c.MyChatsService != null ? c.MyChatsService.PackageType : null,
+                        Price = c.MyChatsService != null ? c.MyChatsService.PriceForNativeCustomer : null,
+                        //PriceForNonNativeCustomer = c.MyChatsService != null ? c.MyChatsService?.PriceForNonNativeCustomer : null,
+                        Duration = c.MyChatsService != null ? c.MyChatsService.Duration : null,
+                        FreeMessageCount = c.MyChatsService != null ? c.MyChatsService.FreeMessageCount : null,
+                    },
 
-             ServiceService = new
-             {
-                 Price = c.MyServicesService != null ? c.MyServicesService.Price : null,
-             },
+                    ServiceService = new
+                    {
+                        Price = c.MyServicesService != null ? c.MyServicesService.Price : null,
+                    },
 
-             CourseService = new
-             {
-                 Price = c.MyCourseService != null ? c.MyCourseService.Price : null,
-             },
-         }).ToListAsync();
+                    CourseService = new
+                    {
+                        Price = c.MyCourseService != null ? c.MyCourseService.Price : null,
+                    },
+                }).ToListAsync();
 
             //var profile = await _accountService.ProfileGet();
             if (userFromDB == null)
             {
                 List<string> erros = new List<string> { _localizerShared["NotFound"].Value.ToString() };
-                return NotFound(new ApiBadRequestResponse(erros, 404));
+                return BadRequest(new ApiBadRequestResponse(erros, 404));
             }
             return Ok(_commonService.OkResponse(userFromDB, _localizerShared["SuccessMessage"].Value.ToString()));
 
@@ -1498,6 +1491,7 @@ namespace CallInDoor.Controllers
                 .Where(c =>
                 c.Id == baseServiceId &&
                 c.IsDeleted == false &&
+                c.IsDisabledByCompany == false &&
                 c.ConfirmedServiceType == ConfirmedServiceType.Confirmed &&
                 c.ProfileConfirmType == ProfileConfirmType.Confirmed
                 )
@@ -1564,7 +1558,7 @@ namespace CallInDoor.Controllers
             if (userFromDB == null)
             {
                 List<string> erros = new List<string> { _localizerShared["NotFound"].Value.ToString() };
-                return NotFound(new ApiBadRequestResponse(erros, 404));
+                return BadRequest(new ApiBadRequestResponse(erros, 404));
             }
 
             return Ok(_commonService.OkResponse(userFromDB, _localizerShared["SuccessMessage"].Value.ToString()));
@@ -1611,7 +1605,7 @@ namespace CallInDoor.Controllers
 
                     serviceCategoryName = isPersian ? c.ServiceTbl.PersianName : c.ServiceTbl.Name,
                     serviceCategoryId = c.ServiceTbl.Id,
-
+                    c.IsDisabledByCompany,
 
                     SubCategoryName = isPersian ? c.SubCategoryTBL.PersianTitle : c.SubCategoryTBL.Title,
                     //SubCategoryPersianName = c.SubCategoryTBL.PersianTitle,
@@ -1659,7 +1653,7 @@ namespace CallInDoor.Controllers
             if (userFromDB == null)
             {
                 List<string> erros = new List<string> { _localizerShared["NotFound"].Value.ToString() };
-                return NotFound(new ApiBadRequestResponse(erros, 404));
+                return BadRequest(new ApiBadRequestResponse(erros, 404));
             }
 
             return Ok(_commonService.OkResponse(userFromDB, _localizerShared["SuccessMessage"].Value.ToString()));
@@ -1677,17 +1671,18 @@ namespace CallInDoor.Controllers
         public async Task<ActionResult> GetUsersCategoryServiceById(string UserId)
         {
 
-            var username = await _context.Users.Where(c => c.Id == UserId).Select(c => c.UserName).FirstOrDefaultAsync();
+            var username = await _context.Users.Where(c => c.Id == UserId).AsNoTracking().Select(c => c.UserName).FirstOrDefaultAsync();
             if (string.IsNullOrEmpty(username))
             {
                 List<string> erros = new List<string> { _localizerShared["NotFound"].Value.ToString() };
-                return NotFound(new ApiBadRequestResponse(erros, 404));
+                return BadRequest(new ApiBadRequestResponse(erros, 404));
             }
 
             var isPersian = _commonService.IsPersianLanguage();
             var categOryServciceNames = await _context.BaseMyServiceTBL
                 .Where(c => c.UserName == username &&
                 c.IsDeleted == false &&
+                c.IsDisabledByCompany == false &&
                 c.ConfirmedServiceType == ConfirmedServiceType.Confirmed
                 && c.ProfileConfirmType == ProfileConfirmType.Confirmed)
                  .Select(X => new
@@ -1737,8 +1732,8 @@ namespace CallInDoor.Controllers
         public async Task<ActionResult> PopularService()
         {
             var currentusername = _accountService.GetCurrentUserName();
-            var queryAble =  _context.BaseMyServiceTBL
-                                .Where(c => c.IsDeleted == false
+            var queryAble = _context.BaseMyServiceTBL
+                                .Where(c => c.IsDeleted == false && c.IsDisabledByCompany == false
                                 && c.ConfirmedServiceType == ConfirmedServiceType.Confirmed
                                 &&
                                 c.ProfileConfirmType == ProfileConfirmType.Confirmed
@@ -1748,7 +1743,7 @@ namespace CallInDoor.Controllers
                                 .ThenBy(c => c.Under3StarCount)
                                 .ThenByDescending(c => c.CreateDate)
                                 .AsQueryable();
-                                
+
 
             var users = _context.Users.AsNoTracking().AsQueryable();
             var list = await (from u in users
@@ -1794,7 +1789,7 @@ namespace CallInDoor.Controllers
 
                 }).Take(4)
                  .ToList();
-           
+
 
             var response = new ResponseDTO
             {
@@ -1926,7 +1921,8 @@ namespace CallInDoor.Controllers
             //_context.ServiceCommentsTBL
             //    .Where(c => c.UserName == currentUsername && c.ServiceId ==model.ServiceId)
 
-            var serviceFromDB = await _context.BaseMyServiceTBL.Where(c => c.ServiceId == model.ServiceId).FirstOrDefaultAsync();
+            var serviceFromDB = await _context.BaseMyServiceTBL
+                        .Where(c => c.ServiceId == model.ServiceId && c.IsDeleted == false && c.IsDisabledByCompany == false).FirstOrDefaultAsync();
             if (serviceFromDB == null)
             {
                 List<string> erros = new List<string> { _localizerShared["ServiceNotFound"].Value.ToString() };
@@ -2064,7 +2060,6 @@ namespace CallInDoor.Controllers
         }
 
         #endregion
-
 
 
         #region Admin
@@ -2216,20 +2211,6 @@ namespace CallInDoor.Controllers
 
 
 
-        //public async Task<IActionResult> CallGarson([FromForm] string tableCode)
-        //      {
-        //          var result = await IsValidRestuarant(tableCode);
-        //          if (!result.isValid)
-        //              return new JsonResult(new { status = "0", result = new { }, messages = new string[] { "no user!!!!!!!!" } });
-
-        //          await _hub.Clients.Client(result.restaurant.ConnectionId).SendAsync("Bell", result.table.Number);
-        //          return new JsonResult(new { status = "1", result = new { }, messages = new string[] { "Sent" } });
-        //      }
-
-
-
-
-
 
         #endregion
 
@@ -2297,7 +2278,8 @@ namespace CallInDoor.Controllers
                     c.ConfirmedServiceType,
                     //c.IsDeleted,
                     c.IsEditableService,
-                    c.ServiceTbl.RoleId
+                    c.ServiceTbl.RoleId,
+                    c.IsDisabledByCompany
                 }).FirstOrDefaultAsync();
 
             if (serviceFromDB == null)
@@ -2392,20 +2374,6 @@ namespace CallInDoor.Controllers
 
 
         #endregion
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
         #endregion

@@ -33,6 +33,24 @@ namespace Domain.Enums
         RequestRejection,
 
 
+        [Description("request to company")]
+        [Display(Name = "request to company")]
+        RequestToCompany,
+
+
+        [Description("Accept request to Company")]
+        [Display(Name = "Accept request to Company")]
+        AcceptRequestToCompany,
+
+
+
+
+        /// <summary>
+        /// زمانی  که کمپانی یکی لز زیرمجموعه های قبلی اش را حذف کند
+        /// </summary>
+        [Description("company delete the subset")]
+        [Display(Name = "company delete the subset")]
+        CompanyDeleteTheSubset,
 
     }
 }

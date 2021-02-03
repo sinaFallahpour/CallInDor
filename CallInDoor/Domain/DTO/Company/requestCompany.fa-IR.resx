@@ -117,10 +117,13 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="CompanyUserName" xml:space="preserve">
+    <value>نام کاربری شرکت</value>
+  </data>
   <data name="ServiceCategoryId" xml:space="preserve">
-    <value>service category </value>
+    <value>دسته سرویس</value>
   </data>
   <data name="{0} is  Required" xml:space="preserve">
-    <value>{0} is  Required</value>
+    <value>{0} الزامیست</value>
   </data>
 </root>

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Domain.Enums;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Text;
@@ -17,6 +18,19 @@ namespace Domain.Entities
         public DateTimeOffset CreateDate { get; set; }
 
 
+        /// <summary>
+        /// ایا توسط ادمین رد شده تا تایید شده
+        /// </summary>
+        public ConfirmStatus ConfirmStatus { get; set; }
+
+
+        /// <summary>
+        /// آیا شخص از زیر مجموعه بودن خارج شده
+        /// شاید شرکت اورا حذف کند شاید خودش لفت دهد
+        /// </summary>
+        public bool IsDeleted { get; set; }
+
+
 
         #region 
 
@@ -25,7 +39,7 @@ namespace Domain.Entities
         /// <summary>
         ///نام کاربری کاربری که در این سرویس عضو شده است
         /// </summary>
-        public string UserName { get; set; }
+        public string subSetUserName { get; set; }
 
 
         /// <summary>
@@ -38,6 +52,8 @@ namespace Domain.Entities
         [ForeignKey("ServiceId")]
         public ServiceTBL ServiceTBL { get; set; }
         public int? ServiceId { get; set; }
+
+
 
 
 

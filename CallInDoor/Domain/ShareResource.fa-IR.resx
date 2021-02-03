@@ -204,6 +204,9 @@
   <data name="RequestNotConfirmedMessgaes" xml:space="preserve">
     <value>درخواست توسط سرویس دهنده تایید نشده است</value>
   </data>
+  <data name="ServiceIsDisabled" xml:space="preserve">
+    <value>این سرویس توسط ادمین غیر فعال گردید</value>
+  </data>
   <data name="ServiceNotFound" xml:space="preserve">
     <value>سرویس یافت نشد</value>
   </data>
@@ -242,6 +245,9 @@
   </data>
   <data name="YouAreProviderOfThisService" xml:space="preserve">
     <value>شما سرویس دهنده هستیدونمیتوانید بسته بخرید</value>
+  </data>
+  <data name="YouCantRequestToACompay" xml:space="preserve">
+    <value>شما نمیتوانید به حساب شرکتی درخواست دهید</value>
   </data>
   <data name="YouCantRequestToYourSelf" xml:space="preserve">
     <value>درخواست نامعتبر</value>

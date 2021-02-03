@@ -38,7 +38,10 @@ namespace Service
 
 
         //private IStringLocalizer<ShareResource> _localizerShared;
+        private IStringLocalizer<ShareResource> _localizerShared;
         private IStringLocalizer<AccountService> _localizerAccount;
+
+
         private readonly IMapper _mapper;
 
 
@@ -50,6 +53,7 @@ namespace Service
                IJwtManager jwtGenerator,
                IHostingEnvironment hostingEnvironment,
                IHttpContextAccessor httpContextAccessor,
+               IStringLocalizer<ShareResource> localizerShared,
                 IStringLocalizer<AccountService> localizerAccount,
                 //ICommonService commonService,
                 IMapper mapper
@@ -62,6 +66,7 @@ namespace Service
             _jwtGenerator = jwtGenerator;
             _hostingEnvironment = hostingEnvironment;
             _httpContextAccessor = httpContextAccessor;
+            _localizerShared = localizerShared;
             _localizerAccount = localizerAccount;
             //_CommonService = commonService;
             _mapper = mapper;
@@ -999,6 +1004,13 @@ namespace Service
 
             return (IsValid, Errors);
         }
+
+
+
+
+
+        
+
 
 
 

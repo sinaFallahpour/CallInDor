@@ -4,14 +4,16 @@ using Domain;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace Domain.Migrations
 {
     [DbContext(typeof(DataContext))]
-    partial class DataContextModelSnapshot : ModelSnapshot
+    [Migration("20210202061801_addIndexToSerialNumberOfAppUser")]
+    partial class addIndexToSerialNumberOfAppUser
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -252,9 +254,6 @@ namespace Domain.Migrations
                     b.Property<int?>("CatId")
                         .HasColumnType("int");
 
-                    b.Property<string>("CompanyId")
-                        .HasColumnType("nvarchar(450)");
-
                     b.Property<int>("ConfirmedServiceType")
                         .HasColumnType("int");
 
@@ -262,9 +261,6 @@ namespace Domain.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<bool>("IsDeleted")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("IsDisabledByCompany")
                         .HasColumnType("bit");
 
                     b.Property<bool>("IsEditableService")
@@ -314,8 +310,6 @@ namespace Domain.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("CatId");
-
-                    b.HasIndex("CompanyId");
 
                     b.HasIndex("ServiceId");
 
@@ -1683,10 +1677,6 @@ namespace Domain.Migrations
                     b.HasOne("Domain.Entities.CategoryTBL", "CategoryTBL")
                         .WithMany()
                         .HasForeignKey("CatId");
-
-                    b.HasOne("Domain.Entities.AppUser", "Company")
-                        .WithMany("BaseMyServiceTBLs")
-                        .HasForeignKey("CompanyId");
 
                     b.HasOne("Domain.Entities.ServiceTBL", "ServiceTbl")
                         .WithMany("BaseMyServices")

@@ -34,7 +34,7 @@ namespace Domain.Entities
         /// آخرین چتی که داشته برای کدام ریکوستش بود  
         /// این آیدی آون ریکوست است
         /// </summary>
-        public int  CurentRequestId { get; set; }
+        public int CurentRequestId { get; set; }
 
         /// <summary>
         /// notification Id baraye safhe Chat ha
@@ -99,10 +99,19 @@ namespace Domain.Entities
         #region  Relation
 
         /// <summary>
+        /// لیست سرویس هایی را که  غیر فعال کرده
+        /// </summary>
+        public List<BaseMyServiceTBL> BaseMyServiceTBLs { get; set; }
+
+
+
+
+
+        /// <summary>
         /// پروفایل اکانت شرکتی  
         /// </summary>
         public FirmProfileTBL FirmProfile { get; set; }
-        
+
 
 
         public ICollection<FieldTBL> Fields { get; set; }

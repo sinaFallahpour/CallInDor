@@ -7,6 +7,14 @@ namespace Domain.DTO.Company
 {
     public class RequestCompany
     {
+
+
+
+        [Required(ErrorMessage = "{0} is  Required")]
+        [Display(Name = "CompanyUserName")]
+        public string  CompanyUserName { get; set; }
+
+
         [Required(ErrorMessage = "{0} is  Required")]
         [Display(Name = "ServiceCategoryId")]
         public int? ServiceCategoryId { get; set; }

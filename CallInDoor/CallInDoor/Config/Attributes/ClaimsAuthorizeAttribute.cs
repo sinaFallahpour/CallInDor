@@ -9,6 +9,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
+using Microsoft.EntityFrameworkCore;
+
 
 namespace CallInDoor.Config.Attributes
 {
@@ -25,8 +27,8 @@ namespace CallInDoor.Config.Attributes
             var currentSerialNumber = context.HttpContext.User?.Claims?.FirstOrDefault(x => x.Type == PublicHelper.SerialNumberClaim)?.Value;
             var currentUserName = context.HttpContext.User?.Claims?.FirstOrDefault(x => x.Type == ClaimTypes.Name)?.Value;
 
-            var IsExist = _context.Users
-                    .Any(x => x.SerialNumber == currentSerialNumber && x.UserName == currentUserName);
+            var IsExist = _context.Users.AsNoTracking()
+                        .Any(x => x.SerialNumber == currentSerialNumber && x.UserName == currentUserName);
             if (!IsExist)
             {
                 if (!IsAdmin)

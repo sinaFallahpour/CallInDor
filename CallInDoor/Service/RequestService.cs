@@ -20,14 +20,11 @@ namespace Service
 {
     public class RequestService : IRequestService
     {
+        #region ctor
         private IStringLocalizer<ShareResource> _localizerShared;
         private readonly DataContext _context;
-
-
         private readonly IHostingEnvironment _hostingEnvironment;
         private readonly IAccountService _accountService;
-
-
 
         public RequestService(IStringLocalizer<ShareResource> localizerShared,
             DataContext context,
@@ -40,6 +37,9 @@ namespace Service
             _hostingEnvironment = hostingEnvironment;
             _accountService = accountService;
         }
+
+
+        #endregion
 
         /// <summary>
         /// ولیدیت کردن ریکوست که به سرویس های فیری از نوع چت وویس بیابد

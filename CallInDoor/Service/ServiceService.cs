@@ -240,7 +240,7 @@ namespace Service
                 serviceFromDB.RoleId = model.RoleId;
 
                 serviceFromDB.TopTenPackageTBL.FirstOrDefault().Count = (int)model.UsersCount;
-                serviceFromDB.TopTenPackageTBL.FirstOrDefault().DayCount = model.DayCount ;
+                serviceFromDB.TopTenPackageTBL.FirstOrDefault().DayCount = model.DayCount;
                 serviceFromDB.TopTenPackageTBL.FirstOrDefault().HourCount = model.HourCount;
                 serviceFromDB.TopTenPackageTBL.FirstOrDefault().Price = (double)model.TopTenPackagePrice;
 
@@ -1065,6 +1065,7 @@ namespace Service
                 UserName = c.UserName,
                 ServiceType = c.ServiceType,
                 ServiceTypeName = c.ServiceTbl.Name,
+                IsDisabledByCompany = c.IsDisabledByCompany
             });
 
 
@@ -1137,6 +1138,7 @@ namespace Service
                 UserName = c.UserName,
                 ServiceType = c.ServiceType,
                 ServiceTypeName = c.ServiceTbl.Name,
+                IsDisabledByCompany = c.IsDisabledByCompany,
             });
 
 
@@ -1214,7 +1216,7 @@ namespace Service
             //var QueryAble = _context.BaseMyServiceTBL.Include(c=>c.MyChatsService).Where(c=>c.MyChatsService)
 
             var QueryAble = _context.BaseMyServiceTBL
-                                .Where(c => c.IsDeleted == false
+                                .Where(c => c.IsDeleted == false && c.IsDisabledByCompany == false
                                 && c.ConfirmedServiceType == ConfirmedServiceType.Confirmed
                                 &&
                                 c.ProfileConfirmType == ProfileConfirmType.Confirmed

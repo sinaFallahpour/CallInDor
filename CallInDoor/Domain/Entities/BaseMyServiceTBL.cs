@@ -85,6 +85,18 @@ namespace Domain.Entities
         /// آیا این  حذف شده
         /// </summary>
         public bool IsDeleted { get; set; }
+        
+        
+        
+        
+        
+        /// <summary>
+        /// آیا این سرویسی توسط کمپانی ایی که در ان عضو است 
+        /// disabled شده؟؟
+        /// </summary>
+        public bool IsDisabledByCompany { get; set; }
+
+
 
 
 
@@ -93,15 +105,37 @@ namespace Domain.Entities
         /// </summary>
         public int StarCount { get; set; }
 
+
+
+
+
         /// <summary>
         /// تعداد کل ستار های زیر 3 که این سرویس دارد  
         /// </summary>
         public int Under3StarCount { get; set; }
-
+        
+        
+        
+        
+        
         #region  Relation
 
+
+
+
+
+        /// <summary>
+        /// شرکتی که این سرویس را disable کرد
+        /// </summary>
+        [ForeignKey("CompanyId")]
+        public AppUser Company { get; set; }
+        public string CompanyId { get; set; }
+
+
+
+
         [ForeignKey("CatId")]
-        public  CategoryTBL CategoryTBL { get; set; }
+        public CategoryTBL CategoryTBL { get; set; }
 
         public int? CatId { get; set; }
 

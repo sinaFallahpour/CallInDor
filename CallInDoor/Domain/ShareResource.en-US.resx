@@ -204,6 +204,9 @@
   <data name="RequestNotConfirmedMessgaes" xml:space="preserve">
     <value>request not confirmed by provider messgaes</value>
   </data>
+  <data name="ServiceIsDisabled" xml:space="preserve">
+    <value>service is disable</value>
+  </data>
   <data name="ServiceNotFound" xml:space="preserve">
     <value>service notfound</value>
   </data>
@@ -242,6 +245,9 @@
   </data>
   <data name="YouAreProviderOfThisService" xml:space="preserve">
     <value>you are provider of service . you cant buy package</value>
+  </data>
+  <data name="YouCantRequestToACompay" xml:space="preserve">
+    <value>you cant request to a compay because you are a company</value>
   </data>
   <data name="YouCantRequestToYourSelf" xml:space="preserve">
     <value>invalid request</value>
