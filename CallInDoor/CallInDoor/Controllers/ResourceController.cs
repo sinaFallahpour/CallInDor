@@ -172,11 +172,43 @@ namespace CallInDoor.Controllers
             HttpContext.Request.Headers.TryGetValue("Accept-Language", out hederval);
 
 
-          var dsdsd  =_localizerShared["card name already exist"].Value.ToString();
-
+            var dsdsd = _localizerShared["card name already exist"].Value.ToString();
             var sa = _localizerShared["card name already exist"].Value.ToString();
 
             return Ok();
         }
+
+
+
+
+
+        //Enumerate resources
+        [HttpGet("DBRedource")]
+        public async Task<ActionResult> DBRedource()
+        {
+
+            var isPersian = _commonService.IsPersianLanguage();
+
+
+            var sdsds = _context.ServiceTBL.Where(c => c.IsEnabled == true).Select(c => new
+            {
+                sss = _localizerShared["card name already exist"].Value.ToString(),
+                sss21 = _localizerShared[c.Name].Value.ToString(),
+            }).FirstOrDefault();
+
+            //HttpContext.Request.Headers;
+
+            //StringValues hederval;
+            //string headerName = string.Empty;
+            //HttpContext.Request.Headers.TryGetValue("Accept-Language", out hederval);
+
+
+            var dsdsd = _localizerShared["card name already exist"].Value.ToString();
+            var sa = _localizerShared["card name already exist"].Value.ToString();
+
+            return Ok();
+        }
+
+
     }
 }
