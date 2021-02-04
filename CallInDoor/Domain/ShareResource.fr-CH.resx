@@ -118,156 +118,159 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="BlockUserMessage" xml:space="preserve">
-    <value>111</value>
+    <value>the    frnacg</value>
   </data>
   <data name="card name already exist" xml:space="preserve">
-    <value>222</value>
+    <value>the franch</value>
   </data>
   <data name="ConfirmPhoneMessage" xml:space="preserve">
-    <value>333</value>
+    <value>لطفا حساب کاربری خود را تایید </value>
   </data>
   <data name="EditableProfileNotAllowed" xml:space="preserve">
-    <value>44</value>
+    <value>شما اجازه تصحیح پروفایل را ندارید</value>
   </data>
   <data name="ErrorMessage" xml:space="preserve">
-    <value>55</value>
+    <value>خطا در ثبت</value>
   </data>
   <data name="ForniddenMessage" xml:space="preserve">
-    <value>66</value>
+    <value>عدم دسترسی</value>
   </data>
   <data name="HasReserveRequest" xml:space="preserve">
-    <value>77</value>
+    <value>شما قبلا به این سرویس درخواست داده اید</value>
   </data>
   <data name="InCorrectPassword" xml:space="preserve">
-    <value>88</value>
+    <value>پسورد صحیح نمیباشد</value>
   </data>
   <data name="InternalServerMessage" xml:space="preserve">
-    <value>99</value>
+    <value>خطایی رخ داده است</value>
   </data>
   <data name="InvaliAmountForTransaction" xml:space="preserve">
-    <value>10</value>
+    <value>مبلغ ورودی بیشتر از موجودی کیف پول شما میباشد</value>
   </data>
   <data name="InvalidAnswer" xml:space="preserve">
-    <value>invalid answer </value>
+    <value>جواب نامعتبر است</value>
   </data>
   <data name="InvalidaServiceCategory" xml:space="preserve">
-    <value>invalid service category</value>
+    <value>سرویس نامعتبر است</value>
   </data>
   <data name="InvalidAttamp" xml:space="preserve">
-    <value>invalid attamp</value>
+    <value>تلاش نامعتبر</value>
   </data>
   <data name="InvalidDiscointCode" xml:space="preserve">
-    <value>invalid discount code</value>
+    <value>کد تخفیف نامعتبر است</value>
   </data>
   <data name="InvalidDiscountCode" xml:space="preserve">
-    <value>invalid discount code</value>
+    <value>مد تخفیف نامعتبر</value>
   </data>
   <data name="InvalidPackageType" xml:space="preserve">
-    <value>invalid package type</value>
+    <value>نامعتبر</value>
   </data>
   <data name="InvalidPhoneNumber" xml:space="preserve">
-    <value>invalid phone number</value>
+    <value>شماره موبایل صحیح نمیباشد</value>
   </data>
   <data name="InvalidQuestion" xml:space="preserve">
-    <value>invalid question</value>
+    <value>سوال نامعتبر است</value>
   </data>
   <data name="InValidServiceType" xml:space="preserve">
-    <value>service type is invalid</value>
+    <value>نوع سرویس نامعتبر است</value>
   </data>
   <data name="LockedOutMessage" xml:space="preserve">
-    <value>user account locked out</value>
+    <value>حساب کاربری قفل شده است</value>
   </data>
   <data name="Noquestoin" xml:space="preserve">
-    <value>there is no question</value>
+    <value>سوالی موجود نیست</value>
   </data>
   <data name="NotEnoughtBalance" xml:space="preserve">
-    <value>your wallet balance is not enough</value>
+    <value>موجودی کیف پول شما کافی نمیباشد</value>
   </data>
   <data name="NotFound" xml:space="preserve">
-    <value>not found</value>
+    <value>نتیجه ایی یافت نشد</value>
   </data>
   <data name="NumberOfFreeMessagesCompleted" xml:space="preserve">
-    <value>Your authorized message count has expired</value>
+    <value>تعداد پیام مجاز شما به پایان رسید</value>
   </data>
   <data name="PhoneNumber  already  exist." xml:space="preserve">
-    <value>phone number  already  exist</value>
+    <value>شماره موبایل  تکراریست</value>
   </data>
   <data name="problemUploadingTheFileMessage" xml:space="preserve">
-    <value>there is a problem to uploading the file</value>
+    <value>خطایی در آپلود فایل رخ داده است</value>
   </data>
   <data name="ProfileRejectedMessage" xml:space="preserve">
-    <value>your profile rejected for this service</value>
+    <value>پروفایل شما برای این سرویس رد شده</value>
   </data>
   <data name="ProviderIsUnAvailableMessage" xml:space="preserve">
-    <value>provide is not available</value>
+    <value>سرویس دهنده در دسترس نمیباشد</value>
   </data>
   <data name="RequestNotConfirmedMessgaes" xml:space="preserve">
-    <value>request not confirmed by provider messgaes</value>
+    <value>درخواست توسط سرویس دهنده تایید نشده است</value>
   </data>
   <data name="ServiceIsDisabled" xml:space="preserve">
-    <value>service is disable</value>
+    <value>این سرویس توسط ادمین غیر فعال گردید</value>
   </data>
   <data name="ServiceNotFound" xml:space="preserve">
-    <value>service notfound</value>
+    <value>سرویس یافت نشد</value>
   </data>
   <data name="somethingWentWrongForChaing" xml:space="preserve">
-    <value>something went wrong </value>
+    <value>مشکلی رخ داده</value>
   </data>
   <data name="SuccessMessage" xml:space="preserve">
-    <value>successful Submit</value>
+    <value>ثبت موفقیت آمیز</value>
   </data>
   <data name="TextIsRequired" xml:space="preserve">
-    <value>text Is required</value>
+    <value>متن پیام الزامیست</value>
   </data>
   <data name="TheFileIsInValid" xml:space="preserve">
-    <value>file format is invalid</value>
+    <value>فرمت فایل نامعتبر است</value>
   </data>
   <data name="TheFileIsRequired" xml:space="preserve">
-    <value>file is required</value>
+    <value>انتخاب فایل الزامیست</value>
   </data>
   <data name="TheFileIsTooLarge" xml:space="preserve">
-    <value>file is too large</value>
+    <value>حجم فایل زیاد است</value>
   </data>
   <data name="TicketIsClosedMessage" xml:space="preserve">
-    <value>the tiket isclosed</value>
+    <value>تیکت بسته شده است</value>
   </data>
   <data name="UnauthorizedMessage" xml:space="preserve">
-    <value>you are  unauthorized</value>
+    <value>عدم دسترسی</value>
   </data>
   <data name="UnMathPhoneNumberPassword" xml:space="preserve">
-    <value>invalid phone number or password</value>
+    <value>رمز عبور یا  شماره موبایل صحیح نمی باشد</value>
   </data>
   <data name="VoiceIsrequired" xml:space="preserve">
-    <value>voice is required</value>
+    <value>وویس الزامیست</value>
   </data>
   <data name="VoiceIsTooLarge" xml:space="preserve">
-    <value>vocie is too large</value>
+    <value>حجم وویس زیاد است</value>
   </data>
   <data name="YouAreProviderOfThisService" xml:space="preserve">
-    <value>you are provider of service . you cant buy package</value>
+    <value>شما سرویس دهنده هستیدونمیتوانید بسته بخرید</value>
   </data>
   <data name="YouCantRequestToACompay" xml:space="preserve">
-    <value>you cant request to a compay because you are a company</value>
+    <value>شما نمیتوانید به حساب شرکتی درخواست دهید</value>
   </data>
   <data name="YouCantRequestToYourSelf" xml:space="preserve">
-    <value>invalid request</value>
+    <value>درخواست نامعتبر</value>
   </data>
   <data name="YouCurrentlyHaveAnActivePackage" xml:space="preserve">
-    <value>you currently have an active package</value>
+    <value>شما درحال حاضر بسته فعال دارید</value>
   </data>
   <data name="YouDOntAnyWallet" xml:space="preserve">
-    <value>you dont have wallet</value>
+    <value>موجودی کیف پول شما کافی نیست</value>
   </data>
   <data name="YouDontHaveAnyPackage" xml:space="preserve">
-    <value>you dont have any  active package</value>
+    <value>شما پلن فعالی ندارید</value>
+  </data>
+  <data name="YoudontHavePlanOrPlanIsExpired" xml:space="preserve">
+    <value>شما پلن فعالی ندارید یا زمان پلن به پایان رسید</value>
   </data>
   <data name="YouHaveReservedService" xml:space="preserve">
-    <value>You have already been a member of this category</value>
+    <value>شما قبلا در این دسته بندی عضو شرکت بوده اید</value>
   </data>
   <data name="YourPackageExpired" xml:space="preserve">
-    <value>Your package is expired</value>
+    <value>بسته شمابه پایان رسیده</value>
   </data>
   <data name="YourPackageExpiredOrNoPlan" xml:space="preserve">
-    <value>your dont have package or package is expire</value>
+    <value>شما بسته فعالی ندارید یا بسته شما منقصی شده</value>
   </data>
 </root>

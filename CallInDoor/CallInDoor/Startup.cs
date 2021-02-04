@@ -227,6 +227,7 @@ namespace CallInDoor
             var supportedCultures = new List<CultureInfo>()
             {
                 new CultureInfo(PublicHelper.persianCultureName),
+                new CultureInfo(PublicHelper.EngCultureName),
                 new CultureInfo(PublicHelper.EngCultureName)
             };
             var options = new RequestLocalizationOptions()

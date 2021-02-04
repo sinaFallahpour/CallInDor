@@ -3,6 +3,7 @@ using ICSharpCode.Decompiler.Util;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Localization;
+using Microsoft.Extensions.Primitives;
 using Service.Interfaces.Account;
 using Service.Interfaces.Common;
 using Service.Interfaces.Company;
@@ -155,5 +156,27 @@ namespace CallInDoor.Controllers
 
 
 
+
+
+
+        //Enumerate resources
+        [HttpGet("GEtResource")]
+        public async Task<ActionResult> GEtResource()
+        {
+
+
+            //HttpContext.Request.Headers;
+
+            StringValues hederval;
+            string headerName = string.Empty;
+            HttpContext.Request.Headers.TryGetValue("Accept-Language", out hederval);
+
+
+          var dsdsd  =_localizerShared["card name already exist"].Value.ToString();
+
+            var sa = _localizerShared["card name already exist"].Value.ToString();
+
+            return Ok();
+        }
     }
 }

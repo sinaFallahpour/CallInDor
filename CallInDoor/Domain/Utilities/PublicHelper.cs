@@ -21,6 +21,8 @@ namespace Domain.Utilities
 
         public const string EngCultureName = "en-US";
         public const string persianCultureName = "fa-IR";
+        public const string frenchCultureName = "fa-CH";
+
 
         public const string swaggerProductionUrl = "https://api.callindoor.ir";
         public const string swaggerdevelopmentUrl = "https://localhost:44377";

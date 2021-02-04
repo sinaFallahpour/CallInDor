@@ -117,6 +117,10 @@
     <EmbeddedResource Update="DTO\Tiket\AddChatMessageToTicketInUserDTO.fa-IR.resx">
       <Generator>PublicResXFileCodeGenerator</Generator>
     </EmbeddedResource>
+    <EmbeddedResource Update="ShareResource.fr-CH.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>ShareResource.fr-CH.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
     <EmbeddedResource Update="ShareResource.en-US.resx">
       <SubType>Designer</SubType>
       <Generator>PublicResXFileCodeGenerator</Generator>
@@ -161,6 +165,11 @@
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
       <DependentUpon>AddCommentServiceDTO.fa-IR.resx</DependentUpon>
+    </Compile>
+    <Compile Update="ShareResource.fr-CH.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>ShareResource.fr-CH.resx</DependentUpon>
     </Compile>
   </ItemGroup>
   <PropertyGroup>
