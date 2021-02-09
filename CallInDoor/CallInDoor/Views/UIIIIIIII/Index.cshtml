@@ -1,0 +1,197 @@
+﻿
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <link rel="stylesheet" href="./style.css" />
+</head>
+<body>
+    <h1>
+        Video Call<br /><small style="font-size: 14pt">Powered by Agora.io</small>
+    </h1>
+    <h4>Local video</h4>
+    <div id="me"></div>
+    <h4>Remote video</h4>
+    <div id="local_stream"></div>
+    <div id="remote-container"></div>
+
+
+    <button id="join">click to join</button>
+    <button id="disconnect">left confrance</button>
+
+    <script src="https://cdn.agora.io/sdk/release/AgoraRTCSDK-3.4.0.js"></script>
+
+    <script>
+        var rtc = {
+            client: null,
+            joined: false,
+            published: false,
+            localStream: null,
+            remoteStreams: [],
+            params: {},
+        };
+        var options = {
+            appId: "000c793f4d7c4858b4bcc8f3bd6db6ec",
+            channelId: "CallInDoortestId",
+            channelName: "testChannel",
+            tempToken:
+                "006000c793f4d7c4858b4bcc8f3bd6db6ecIACqJRLhLesLfSsZbNI5l+b+BsMFE4L/7xKuyydoDkCTHHZXrgMAAAAAEABoKgnH+04iYAEAAQD5TiJg",
+            appSecret: "4e1c574a89a84ef3ace1263ba9f34e36",
+            uid: null,
+        };
+
+        var remoteContainer = document.getElementById("remote-container");
+
+        document.getElementById("join").onclick = () => {
+            //create client
+            //rtc.client = AgoraRTC.createClient({ mode: "rtc", codec: "vp8" });  // not support safari
+            rtc.client = AgoraRTC.createClient({ mode: "rtc", codec: "h264" }); // it ssupport saffari too
+
+            //initialize the client
+            rtc.client.init(
+                options.appId,
+                function () {
+                    console.log("init success full");
+                    // Join a channel
+                    rtc.client.join(
+                        options.tempToken ? options.tempToken : null,
+                        options.channelName ? options.channelName : null,
+                        options.uid ? +options.uid : null,
+                        (uid) => {
+                            rtc.params.uid = uid;
+                            // Create a local stream
+                            rtc.localStream = AgoraRTC.createStream({
+                                streamId: rtc.params.uid,
+                                audio: true,
+                                video: true,
+                                screen: false,
+                            });
+
+                            // Initialize the local stream
+                            rtc.localStream.init(() => {
+                                console.log("initial local stream success");
+                                // Play the local stream
+                                rtc.localStream.play("local_stream");
+                                // Publish the local stream
+                                rtc.client.publish(rtc.localStream, handleError.bind(this, "publish failed") );
+                            }, handleError.bind(this, "init local stream failed"));
+                        },
+                        handleError.bind(this, "clinet join failed")
+                    );
+                },
+                handleError.bind(this, "init err")
+            );
+
+            // Subscribe to the remote stream when it is published
+            rtc.client.on("stream-added", function (evt) {
+                var remoteStream = evt.stream;
+                var id = remoteStream.getId();
+                //that is  not curent straem
+                if (id != rtc.params.uid) {
+                    rtc.client.subscribe(
+                        evt.stream,
+                        handleError.bind(this, "stream subscribe faild")
+                    );
+                }
+                console.log("stream adde remote Id :", id);
+            });
+
+            // Play the remote stream when it is subsribed
+            rtc.client.on("stream-subscribed", function (evt) {
+                let stream = evt.stream;
+                let streamId = String(stream.getId());
+                addVideoStream(streamId);
+                stream.play(streamId);
+                console.log("stream subscribed : remote-uid", streamId);
+
+
+                ////////var remoteStream = evt.stream;
+                ////////var streamId = remoteStream.getId();
+                //////////add view for video dtream
+                ////////addVideoStream(streamId);
+
+                //////////play the vide stream
+                ////////remoteStream.play(streamId);
+                ////////console.log("stream subscribed : remote-uid", streamId);
+            });
+
+            //When a remote user unpublishes the stream or leaves the channel, stop the stream playback, and remove its view.
+            // Remove the corresponding view when a remote user unpublishes.
+            rtc.client.on("stream-removed", function (evt) {
+                // let stream = evt.stream;
+                // let streamId = String(stream.getId());
+
+                var remoteStream = evt.stream;
+                var id = remoteStream.getId();
+
+                //yaro zad stream.stop();
+                remoteStream.close();
+                removeVideoStream(id);
+            });
+            // Remove the corresponding view when a remote user leaves the channel.
+            rtc.client.on("peer-leave", function (evt) {
+                let stream = evt.stream;
+                let streamId = String(stream.getId());
+                stream.close();
+                removeVideoStream(streamId);
+            });
+        };
+
+        document.getElementById("disconnect").onclick = () => {
+            //leave the channel
+            rtc.client.leave(function () {
+                //stop to playing the local stream
+                rtc.localStream.stop();
+                //close the local stream
+                rtc.localStream.close();
+
+                //stop the playing the remote streas and remove the views
+                while (rtc.remoteStreams.length > 0) {
+                    var stream = rtc.remoteStreams.shift();
+                    var id = stream.getId();
+                    stream.stop();
+                    removeVideoStream(id);
+                }
+                console.log("cline leave the chnnael succes full");
+            }, handleError.bind(this, "channel leave faild"));
+        };
+
+        handleError = (err, text) => {
+            console.log(text, ` : ${err}`);
+            // console.error(err)
+        };
+
+        // Add video streams to the container.
+        function addVideoStream(elementId) {
+            alert(elementId)
+            // Creates a new div for every stream
+            let streamDiv = document.createElement("div");
+            // Assigns the elementId to the div.
+            streamDiv.id = elementId;
+            console.log('--------------')
+            console.log(streamDiv)
+
+            
+            console.log('contaiuner')
+            console.log(remoteContainer)
+
+           
+            // Takes care of the lateral inversion
+            streamDiv.style.transform = "rotateY(180deg)";
+            // Adds the div to the container.
+            //document.getElementById("join").appendChild(streamDiv)
+            remoteContainer.appendChild(streamDiv);
+        }
+
+        // Remove the video stream from the container.
+        function removeVideoStream(elementId) {
+            let remoteDiv = document.getElementById(elementId);
+            if (remoteDiv) remoteDiv?.parentNode?.removeChild(remoteDiv);
+        }
+    </script>
+</body>
+</html>
