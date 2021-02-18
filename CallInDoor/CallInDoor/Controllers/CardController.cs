@@ -205,12 +205,8 @@ namespace CallInDoor.Controllers
                 return StatusCode(StatusCodes.Status500InternalServerError,
                    new ApiBadRequestResponse(erros, 500));
             }
-
-
         }
-
-
-
+        
 
 
 
@@ -239,14 +235,11 @@ namespace CallInDoor.Controllers
                 return StatusCode(StatusCodes.Status500InternalServerError,
                    new ApiBadRequestResponse(erros, 500));
             }
-
-
         }
-
-
-
-
-
-
+    
+    
+    
+    
+    
     }
 }
