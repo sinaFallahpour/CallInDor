@@ -190,7 +190,7 @@ namespace CallInDoor
             services.AddScoped<IRequestService, RequestService>();
             services.AddScoped<IPaymentService, PaymentService>();
             services.AddScoped<ICompanyService, CompanyService>();
-            services.AddScoped<IResourceServices, ResourceServices>();
+            //services.AddScoped<IResourceServices, ResourceServices>();
             services.AddSingleton<IAuthorizationPolicyProvider, AuthorizationPolicyProvider>();
 
         }

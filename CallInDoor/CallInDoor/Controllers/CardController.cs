@@ -138,7 +138,7 @@ namespace CallInDoor.Controllers
         {
 
             var currentUsername = _accountService.GetCurrentUserName();
-            var cardFromDB = await _context.CardTBL.AnyAsync(c => c.CardName.ToLower() == model.CardName.ToLower());
+            var cardFromDB = await _context.CardTBL.AnyAsync(c => c.CardName.ToLower() == model.CardName.ToLower() && c.Username == currentUsername);
             if (cardFromDB)
             {
                 var errors = new List<string>();
@@ -178,8 +178,16 @@ namespace CallInDoor.Controllers
         public async Task<ActionResult> UpdateCard([FromBody] AddCardDTO model)
         {
             var currentUsername = _accountService.GetCurrentUserName();
-            var cardFromDB = await _context.CardTBL.Where(c => c.Id == model.Id && c.IsDeleted == false).FirstOrDefaultAsync();
+            var cardFromDBExist = await _context.CardTBL.AnyAsync(c => c.Id != model.Id && c.CardName.ToLower() == model.CardName.ToLower() && c.Username == currentUsername);
+            if (cardFromDBExist)
+            {
+                var errors = new List<string>();
+                errors.Add(_localizerShared["card name already exist"].Value.ToString());
+                return BadRequest(new ApiBadRequestResponse(errors));
+            }
 
+
+            var cardFromDB = await _context.CardTBL.Where(c => c.Id == model.Id && c.IsDeleted == false).FirstOrDefaultAsync();
             if (cardFromDB == null)
                 return NotFound(_commonService.NotFoundErrorReponse(false));
 

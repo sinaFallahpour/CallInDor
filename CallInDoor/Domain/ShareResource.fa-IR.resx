@@ -120,7 +120,7 @@
   <data name="BlockUserMessage" xml:space="preserve">
     <value>حساب کاربری شما قفل شده است</value>
   </data>
-  <data name="card name already exist" xml:space="preserve">
+  <data name="cardNameAlreadyExist" xml:space="preserve">
     <value>کارت موجود است</value>
   </data>
   <data name="ConfirmPhoneMessage" xml:space="preserve">
@@ -159,9 +159,6 @@
   <data name="InvalidDiscointCode" xml:space="preserve">
     <value>کد تخفیف نامعتبر است</value>
   </data>
-  <data name="InvalidDiscountCode" xml:space="preserve">
-    <value>مد تخفیف نامعتبر</value>
-  </data>
   <data name="InvalidPackageType" xml:space="preserve">
     <value>نامعتبر</value>
   </data>
@@ -189,7 +186,7 @@
   <data name="NumberOfFreeMessagesCompleted" xml:space="preserve">
     <value>تعداد پیام مجاز شما به پایان رسید</value>
   </data>
-  <data name="PhoneNumber  already  exist." xml:space="preserve">
+  <data name="PhoneNumberAlreadyExist" xml:space="preserve">
     <value>شماره موبایل  تکراریست</value>
   </data>
   <data name="problemUploadingTheFileMessage" xml:space="preserve">

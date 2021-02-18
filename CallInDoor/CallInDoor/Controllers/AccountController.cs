@@ -189,7 +189,7 @@ namespace CallInDoor.Controllers
                 if (user.PhoneNumberConfirmed == true)
                 {
                     var errors = new List<string>();
-                    errors.Add(_localizer["PhoneNumber  already  exist."].Value.ToString());
+                    errors.Add(_localizer["PhoneNumberAlreadyExist"].Value.ToString());
                     return BadRequest(new ApiBadRequestResponse(errors));
                 }
                 user.verificationCode = code;

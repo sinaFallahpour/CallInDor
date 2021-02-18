@@ -120,7 +120,7 @@
   <data name="BlockUserMessage" xml:space="preserve">
     <value>the    frnacg</value>
   </data>
-  <data name="card name already exist" xml:space="preserve">
+  <data name="cardNameAlreadyExist" xml:space="preserve">
     <value>the franch</value>
   </data>
   <data name="ConfirmPhoneMessage" xml:space="preserve">
@@ -189,7 +189,7 @@
   <data name="NumberOfFreeMessagesCompleted" xml:space="preserve">
     <value>تعداد پیام مجاز شما به پایان رسید</value>
   </data>
-  <data name="PhoneNumber  already  exist." xml:space="preserve">
+  <data name="PhoneNumberAlreadyExist" xml:space="preserve">
     <value>شماره موبایل  تکراریست</value>
   </data>
   <data name="problemUploadingTheFileMessage" xml:space="preserve">

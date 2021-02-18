@@ -120,7 +120,7 @@
   <data name="BlockUserMessage" xml:space="preserve">
     <value>Your account has been locked by admin</value>
   </data>
-  <data name="card name already exist" xml:space="preserve">
+  <data name="cardNameAlreadyExist" xml:space="preserve">
     <value>card name already exist</value>
   </data>
   <data name="ConfirmPhoneMessage" xml:space="preserve">
@@ -159,9 +159,6 @@
   <data name="InvalidDiscointCode" xml:space="preserve">
     <value>invalid discount code</value>
   </data>
-  <data name="InvalidDiscountCode" xml:space="preserve">
-    <value>invalid discount code</value>
-  </data>
   <data name="InvalidPackageType" xml:space="preserve">
     <value>invalid package type</value>
   </data>
@@ -189,7 +186,7 @@
   <data name="NumberOfFreeMessagesCompleted" xml:space="preserve">
     <value>Your authorized message count has expired</value>
   </data>
-  <data name="PhoneNumber  already  exist." xml:space="preserve">
+  <data name="PhoneNumberAlreadyExist" xml:space="preserve">
     <value>phone number  already  exist</value>
   </data>
   <data name="problemUploadingTheFileMessage" xml:space="preserve">

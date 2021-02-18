@@ -120,7 +120,7 @@
   <data name="BlockUserMessage" xml:space="preserve">
     <value>111</value>
   </data>
-  <data name="card name already exist" xml:space="preserve">
+  <data name="cardNameAlreadyExist" xml:space="preserve">
     <value>222</value>
   </data>
   <data name="ConfirmPhoneMessage" xml:space="preserve">
@@ -189,7 +189,7 @@
   <data name="NumberOfFreeMessagesCompleted" xml:space="preserve">
     <value>Your authorized message count has expired</value>
   </data>
-  <data name="PhoneNumber  already  exist." xml:space="preserve">
+  <data name="PhoneNumberAlreadyExist" xml:space="preserve">
     <value>phone number  already  exist</value>
   </data>
   <data name="problemUploadingTheFileMessage" xml:space="preserve">

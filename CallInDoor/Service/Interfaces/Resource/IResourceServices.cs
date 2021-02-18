@@ -1,6 +1,8 @@
-﻿using System;
+﻿using Domain.DTO.Resource;
+using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace Service.Interfaces.Resource
 {
@@ -15,6 +17,36 @@ namespace Service.Interfaces.Resource
         /// <param name="id"></param>
         public abstract string SetKeyName(string KeyName, object id);
 
+
+        /// <summary>
+        ///ولیدیت کردن هدر accept language   
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns></returns>
+        public abstract (bool succsseded, List<string> result) ValidateAcceptLanguageHeader();
+
+
+
+
+
+
+        /// <summary>
+        ///ولیدیت کردن هدر accept language   
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns></returns>
+        public abstract Task<bool> AddToShareResource(DataAnotationAndErrorMessageDTO mode);
+      
+
+
+
+
+
+        /// <summary>
+        /// گرفتن header acept language
+        /// </summary>
+        /// <returns></returns>
+        public abstract string GetAcceptLanguageHeader();
 
     }
 }
