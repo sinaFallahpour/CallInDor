@@ -39,6 +39,7 @@ using Service.Interfaces.Payment;
 using Service.Interfaces.InMemoryCache;
 using Service.Interfaces.Company;
 using Service.Interfaces.Resource;
+using Service.Interfaces.SmsService;
 
 namespace CallInDoor
 {
@@ -177,6 +178,7 @@ namespace CallInDoor
             //services.AddMemoryCache();
 
 
+            services.AddHttpClient();
 
             services.AddSingleton<ICacheService, CacheService>();
 
@@ -190,6 +192,7 @@ namespace CallInDoor
             services.AddScoped<IRequestService, RequestService>();
             services.AddScoped<IPaymentService, PaymentService>();
             services.AddScoped<ICompanyService, CompanyService>();
+            services.AddScoped<ISmsService, SmsService>();
             //services.AddScoped<IResourceServices, ResourceServices>();
             services.AddSingleton<IAuthorizationPolicyProvider, AuthorizationPolicyProvider>();
 

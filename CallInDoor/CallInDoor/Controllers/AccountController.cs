@@ -23,6 +23,7 @@ using Microsoft.Extensions.Localization;
 using Service.Interfaces.Account;
 using Service.Interfaces.Common;
 using Service.Interfaces.JwtManager;
+using Service.Interfaces.SmsService;
 
 namespace CallInDoor.Controllers
 {
@@ -43,6 +44,7 @@ namespace CallInDoor.Controllers
         private readonly IAccountService _accountService;
         private readonly IJwtManager _jwtGenerator;
         private readonly ICommonService _commonService;
+        private readonly ISmsService _smsService;
 
         private IStringLocalizer<AccountController> _localizer;
         private IStringLocalizer<ShareResource> _localizerShared;
@@ -55,6 +57,8 @@ namespace CallInDoor.Controllers
              IJwtManager jwtGenerator,
                    IAccountService accountService,
                    ICommonService commonService,
+                   ISmsService smsService,
+
                IStringLocalizer<AccountController> localizer,
                 IStringLocalizer<ShareResource> localizerShared
             )
@@ -65,6 +69,9 @@ namespace CallInDoor.Controllers
             _roleManager = roleManager;
             _accountService = accountService;
             _commonService = commonService;
+            _smsService = smsService;
+
+
             _jwtGenerator = jwtGenerator;
             _localizer = localizer;
             _localizerShared = localizerShared;
@@ -104,7 +111,6 @@ namespace CallInDoor.Controllers
                 return StatusCode(StatusCodes.Status500InternalServerError,
                     new ApiBadRequestResponse(erroses, 500));
             }
-
         }
 
 
@@ -180,8 +186,8 @@ namespace CallInDoor.Controllers
             var user = await _accountService.FindUserByPhonenumber(phonenumber);
 
             var random = new Random();
-            //var code = random.Next(100000, 999999);
-            var code = 1111;
+            var code = random.Next(1000, 9999);
+            //var code = 1111;
 
             if (user != null)
             {
@@ -207,7 +213,7 @@ namespace CallInDoor.Controllers
             {
                 UserName = model.CountryCode.ToString().Trim() + model.PhoneNumber.Trim(),
                 SerialNumber = SerialNumber,
-                PhoneNumber = model.CountryCode.ToString() + model.PhoneNumber.Trim(),
+                PhoneNumber = model.CountryCode.ToString().Trim() + model.PhoneNumber.Trim(),
                 IsEditableProfile = true,
                 IsCompany = model.IsCompany,
                 ProfileConfirmType = ProfileConfirmType.Pending,
@@ -248,6 +254,8 @@ namespace CallInDoor.Controllers
                         if (roleResult.Succeeded)
                         {
                             transaction.Commit();
+                            await _smsService.RegistrerCode(code.ToString(), phonenumber);
+
                             //send Code
                             return Ok(_commonService.OkResponse(null, _localizerShared["SuccessMessage"].Value.ToString()));
                         }
@@ -255,7 +263,7 @@ namespace CallInDoor.Controllers
                         transaction.Rollback();
                         List<string> erros = new List<string> { _localizerShared["InternalServerMessage"].Value.ToString() };
                         return StatusCode(StatusCodes.Status500InternalServerError,
-                           new ApiBadRequestResponse(erros, 500));
+                                                                    new ApiBadRequestResponse(erros, 500));
                     }
                     else
                     {
@@ -488,19 +496,16 @@ namespace CallInDoor.Controllers
             {
                 List<string> erros = new List<string> { _localizerShared["ConfirmPhoneMessage"].Value.ToString() };
                 return Unauthorized(new ApiBadRequestResponse(erros, 401));
-
-                //return Unauthorized(new ApiResponse(401, _localizerShared["ConfirmPhoneMessage"].Value.ToString()));
-
-            }
-            //var newpass = 8.RandomString();
-            var newpass = "111111";
+             }
+             //var newpass = "123456";
+            var newpass = 6.RandomString();
 
             string resetToken = await _userManager.GeneratePasswordResetTokenAsync(user);
             var passwordChangeResult = await _userManager.ResetPasswordAsync(user, resetToken, newpass);
             if (passwordChangeResult.Succeeded)
             {
                 //send Password to user
-
+                await _smsService.RecoveryPassword(newpass, user.PhoneNumber);
                 return Ok(_commonService.OkResponse(null, _localizerShared["SuccessMessage"].Value.ToString()));
             }
             else
@@ -771,7 +776,7 @@ namespace CallInDoor.Controllers
                 englishConfirmMessage = _context.SettingsTBL.Where(c => c.Key == PublicHelper.ProfileRejectNotificationKeyName).SingleOrDefault()?.EnglishValue;
             }
 
-            
+
             var notification = new NotificationTBL()
             {
                 CreateDate = DateTime.Now,

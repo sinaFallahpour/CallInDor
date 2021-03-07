@@ -162,6 +162,9 @@
   <data name="InvalidDiscountCode" xml:space="preserve">
     <value>مد تخفیف نامعتبر</value>
   </data>
+  <data name="InvalidInput" xml:space="preserve">
+    <value>ورودی نامعتبر است</value>
+  </data>
   <data name="InvalidPackageType" xml:space="preserve">
     <value>نامعتبر</value>
   </data>

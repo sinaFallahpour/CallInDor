@@ -159,6 +159,9 @@
   <data name="InvalidDiscointCode" xml:space="preserve">
     <value>invalid discount code</value>
   </data>
+  <data name="InvalidInput" xml:space="preserve">
+    <value>invalid input</value>
+  </data>
   <data name="InvalidPackageType" xml:space="preserve">
     <value>invalid package type</value>
   </data>

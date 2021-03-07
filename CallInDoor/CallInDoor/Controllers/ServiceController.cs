@@ -22,6 +22,7 @@ using CallInDoor.Config.Permissions;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.SignalR;
 using CallInDoor.Hubs;
+using Service.Interfaces.SmsService;
 
 namespace CallInDoor.Controllers
 {
@@ -40,6 +41,12 @@ namespace CallInDoor.Controllers
         private readonly ICommonService _commonService;
 
 
+        private readonly ISmsService _smsService;
+
+
+
+
+
 
         private IStringLocalizer<ShareResource> _localizerShared;
         private IStringLocalizer<ServiceController> _locaLizer;
@@ -51,6 +58,7 @@ namespace CallInDoor.Controllers
               RoleManager<AppRole> roleManager,
               IServiceService servicetypeService,
               ICommonService commonService,
+              ISmsService smsService,
              IStringLocalizer<ShareResource> localizerShared,
               IStringLocalizer<ServiceController> locaLizer
 
@@ -59,6 +67,7 @@ namespace CallInDoor.Controllers
             _hubContext = hubContext;
             _context = context;
             _commonService = commonService;
+            _smsService = smsService;
             _roleManager = roleManager;
             _accountService = accountService;
             _localizerShared = localizerShared;
@@ -1427,7 +1436,7 @@ namespace CallInDoor.Controllers
                 c.ServiceId == serviceCategoryId &&
                 c.IsDeleted == false &&
                 c.IsDisabledByCompany == false &&
-                c.ConfirmedServiceType == ConfirmedServiceType.Confirmed && c.IsDisabledByCompany && c.ProfileConfirmType == ProfileConfirmType.Confirmed)
+                c.ConfirmedServiceType == ConfirmedServiceType.Confirmed && c.ProfileConfirmType == ProfileConfirmType.Confirmed)
                 .Select(c => new
                 {
                     c.Id,
@@ -2120,6 +2129,7 @@ namespace CallInDoor.Controllers
 
             _context.NotificationTBL.Add(notification);
 
+
             bool isPersian = _commonService.IsPersianLanguage();
 
             string confirmMessage = isPersian ? persianConfirmMessage : englishConfirmMessage;
@@ -2127,10 +2137,12 @@ namespace CallInDoor.Controllers
             if (!string.IsNullOrEmpty(userFromDB?.ConnectionId))
                 await _hubContext.Clients.Client(userFromDB?.ConnectionId).SendAsync("Notifis", confirmMessage);
 
-
             await _context.SaveChangesAsync();
-            return Ok(_commonService.OkResponse(null, PubicMessages.SuccessMessage));
 
+            //ارسال اس ام اس
+            await _smsService.ConfirmServiceByAdmin(serviceFromDB.ServiceName, serviceFromDB.UserName);
+
+            return Ok(_commonService.OkResponse(null, PubicMessages.SuccessMessage));
         }
 
 
