@@ -1,10 +1,10 @@
 import axios from "axios";
 // import { history } from "../..";
 import { toast } from "react-toastify";
-//export const baseUrl = "https://localhost:44377/";
-export const baseUrl = "https://api.callindoor.ir/";
-//axios.defaults.baseURL = "https://localhost:44377/api";
-axios.defaults.baseURL = "https://api.callindoor.ir/api";
+export const baseUrl = "https://localhost:44377/";
+// export const baseUrl = "https://api.callindoor.ir/";
+axios.defaults.baseURL = "https://localhost:44377/api";
+// axios.defaults.baseURL = "https://api.callindoor.ir/api";
 
 // const token = window.localStorage.getItem("jwt");
 // axios.config.headers.Authorization = `Bearer ${token}`;
@@ -23,6 +23,17 @@ axios.interceptors.request.use(
 axios.interceptors.response.use(undefined, (error) => {
   if (error.message === "Network Error" && !error.response) {
     toast.error("Network error - make sure API is running!");
+  }
+
+  console.log(error.status);
+  console.log(error.response);
+  console.log(error.response.data.errors);
+  console.log(error.config);
+
+  if (error.response) {
+    error.response.data.errors.map((item, index) => {
+      toast.error(item);
+    });
   }
 
   // const { status, data, config } = error?.response;
