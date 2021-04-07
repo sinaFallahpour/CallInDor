@@ -152,21 +152,22 @@ class Settings extends Form {
                 toast.success(data.result.message);
             }
         } catch (ex) {
-            console.log(ex);
-            if (ex?.response?.status == 400) {
-                const errorscustom = ex?.response?.data?.errors;
-                this.setState({ errorscustom });
-            } else if (ex?.response) {
-                const errorMessage = ex?.response?.data?.Message;
-                this.setState({ errorMessage });
-                toast.error(errorMessage, {
-                    autoClose: 10000,
-                });
-            }
+            // console.log(ex);
+            // if (ex?.response?.status == 400) {
+            //     const errorscustom = ex?.response?.data?.errors;
+            //     this.setState({ errorscustom });
+            // } else if (ex?.response) {
+            //     const errorMessage = ex?.response?.data?.Message;
+            //     this.setState({ errorMessage });
+            //     toast.error(errorMessage, {
+            //         autoClose: 10000,
+            //     });
+            // }
+        } finally {
+            setTimeout(() => {
+                this.setState({ Loading: false });
+            }, 800);
         }
-        setTimeout(() => {
-            this.setState({ Loading: false });
-        }, 800);
     };
     render() {
         const { errorscustom, errorMessage, data } = this.state;
@@ -178,14 +179,14 @@ class Settings extends Form {
                         <CardTitle> Settings </CardTitle>
                     </CardHeader>
                     <CardBody>
-                        {errorscustom &&
+                        {/* {errorscustom &&
                             errorscustom.map((err, index) => {
                                 return (
                                     <Alert key={index} className="text-center" color="danger ">
                                         {err}
                                     </Alert>
                                 );
-                            })}
+                            })} */}
                         <form onSubmit={this.handleSubmit}>
                             <Row >
                                 {this.renderTextArea("aboutus", "About us(Psersian)", "textarea", "col-12", "text-right ")}
@@ -212,8 +213,8 @@ class Settings extends Form {
                                     <span className="ml-50">Loading...</span>
                                 </Button>
                             ) : (
-                                    this.renderButton("Save")
-                                )}
+                                this.renderButton("Save")
+                            )}
                         </form>
                     </CardBody>
                 </Card>
