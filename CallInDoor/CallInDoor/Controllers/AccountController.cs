@@ -1176,7 +1176,7 @@ namespace CallInDoor.Controllers
 
                         ////////return StatusCode(StatusCodes.Status500InternalServerError,
                         ////////              new ApiResponse(500, PubicMessages.InternalServerMessage));
-
+                    
                     }
                     else
                     {
@@ -1225,7 +1225,6 @@ namespace CallInDoor.Controllers
         [ClaimsAuthorize]
         public async Task<ActionResult> UpdateAdmin([FromBody] UpdateAdminDTO model)
         {
-
             using (var transaction = _context.Database.BeginTransaction())
             {
                 try
