@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Domain.Enums;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Text;
@@ -12,8 +13,14 @@ namespace Domain.DTO.Resource
     /// </summary>
     public class DataAnotationAndErrorMessageDTO
     {
+ 
         [Required(ErrorMessage = "{0} is  Required")]
-        //[Display(Name = "PhoneNumber")]
+        public LanguageHeader LanguageHeader { get; set; }
+        
+        
+        
+        
+        [Required(ErrorMessage = "{0} is  Required")]
         public string BlockUserMessage { get; set; }
         [Required(ErrorMessage = "{0} is  Required")]
         public string cardNameAlreadyExist { get; set; }
@@ -41,6 +48,8 @@ namespace Domain.DTO.Resource
         public string InvalidAttamp { get; set; }
         [Required(ErrorMessage = "{0} is  Required")]
         public string InvalidDiscointCode { get; set; }
+        [Required(ErrorMessage = "{0} is  Required")]
+        public string InvalidInput { get; set; }
         [Required(ErrorMessage = "{0} is  Required")]
         public string InvalidPackageType { get; set; }
         [Required(ErrorMessage = "{0} is  Required")]
@@ -104,6 +113,8 @@ namespace Domain.DTO.Resource
         [Required(ErrorMessage = "{0} is  Required")]
         public string YouCurrentlyHaveAnActivePackage { get; set; }
         [Required(ErrorMessage = "{0} is  Required")]
+        public string YouDOntAnyWallet { get; set; }
+        [Required(ErrorMessage = "{0} is  Required")]
         public string YouDontHaveAnyPackage { get; set; }
         [Required(ErrorMessage = "{0} is  Required")]
         public string YouHaveReservedService { get; set; }
@@ -111,6 +122,7 @@ namespace Domain.DTO.Resource
         public string YourPackageExpired { get; set; }
         [Required(ErrorMessage = "{0} is  Required")]
         public string YourPackageExpiredOrNoPlan { get; set; }
-
+   
     }
+
 }

@@ -193,7 +193,7 @@ namespace CallInDoor
             services.AddScoped<IPaymentService, PaymentService>();
             services.AddScoped<ICompanyService, CompanyService>();
             services.AddScoped<ISmsService, SmsService>();
-            //services.AddScoped<IResourceServices, ResourceServices>();
+            services.AddScoped<IResourceServices, ResourceServices>();
             services.AddSingleton<IAuthorizationPolicyProvider, AuthorizationPolicyProvider>();
 
         }

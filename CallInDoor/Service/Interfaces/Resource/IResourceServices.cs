@@ -35,7 +35,7 @@ namespace Service.Interfaces.Resource
         /// </summary>
         /// <param name="model"></param>
         /// <returns></returns>
-        public abstract Task<bool> AddToShareResource(DataAnotationAndErrorMessageDTO mode);
+        public abstract (bool succsseded, List<string> result) AddToShareResource(DataAnotationAndErrorMessageDTO mode);
       
 
 
