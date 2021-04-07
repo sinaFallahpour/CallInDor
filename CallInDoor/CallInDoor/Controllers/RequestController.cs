@@ -1189,8 +1189,8 @@ namespace CallInDoor.Controllers
             catch
             {
                 List<string> erros = new List<string> { _localizerShared["InternalServerMessage"].Value.ToString() };
-                return StatusCode(StatusCodes.Status500InternalServerError,
-                   new ApiBadRequestResponse(erros, 500));
+                return StatusCode(StatusCodes.Status500InternalServerError, new ApiBadRequestResponse(erros, 500));
+
             }
         }
 
@@ -1706,8 +1706,8 @@ namespace CallInDoor.Controllers
             {
                 List<string> erros = new List<string> { _localizerShared["InternalServerMessage"].Value.ToString() };
 
-                return StatusCode(StatusCodes.Status500InternalServerError,
-                   new ApiBadRequestResponse(erros, 500));
+                return StatusCode(StatusCodes.Status500InternalServerError, new ApiBadRequestResponse(erros, 500));
+
 
             }
 

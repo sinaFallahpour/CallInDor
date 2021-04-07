@@ -73,8 +73,11 @@ namespace CallInDoor.Controllers
             }).FirstOrDefaultAsync();
 
             if (category == null)
-                return NotFound(new ApiResponse(404, PubicMessages.NotFoundMessage));
-
+            {
+                List<string> erros = new List<string> { PubicMessages.NotFoundMessage };
+                return BadRequest(new ApiBadRequestResponse(erros, 404));
+                //return NotFound(new ApiResponse(404, PubicMessages.NotFoundMessage));
+            }
             return Ok(_commonService.OkResponse(category, PubicMessages.SuccessMessage));
 
         }
@@ -231,9 +234,13 @@ namespace CallInDoor.Controllers
             if (category != null)
                 return Ok(_commonService.OkResponse(category, PubicMessages.SuccessMessage));
 
-            return StatusCode(StatusCodes.Status500InternalServerError,
-              new ApiResponse(500, PubicMessages.InternalServerMessage)
-            );
+
+
+            List<string> erroses2 = new List<string> { PubicMessages.InternalServerMessage };
+            return StatusCode(StatusCodes.Status500InternalServerError, new ApiBadRequestResponse(erroses2, 500));
+            //////return StatusCode(StatusCodes.Status500InternalServerError,
+            //////  new ApiResponse(500, PubicMessages.InternalServerMessage)
+            //////);
 
         }
 
@@ -249,16 +256,23 @@ namespace CallInDoor.Controllers
 
             var service = _categoryService.GetById(model.Id);
             if (service == null)
-                return NotFound(new ApiResponse(404, _localizerShared["NotFound"].Value.ToString()));
+            {
+                List<string> erros = new List<string> { PubicMessages.NotFoundMessage };
+                return BadRequest(new ApiBadRequestResponse(erros, 404));
 
+                //return NotFound(new ApiResponse(404, _localizerShared["NotFound"].Value.ToString()));
+            }
             var result = await _categoryService.Update(service, model);
             if (result)
                 return Ok(_commonService.OkResponse(null, PubicMessages.SuccessMessage));
 
 
-            return StatusCode(StatusCodes.Status500InternalServerError,
-              new ApiResponse(500, PubicMessages.InternalServerMessage)
-            );
+            List<string> erroses2 = new List<string> { PubicMessages.InternalServerMessage };
+            return StatusCode(StatusCodes.Status500InternalServerError, new ApiBadRequestResponse(erroses2, 500));
+
+            //////////return StatusCode(StatusCodes.Status500InternalServerError,
+            //////////  new ApiResponse(500, PubicMessages.InternalServerMessage)
+            //////////);
 
         }
 
@@ -293,8 +307,12 @@ namespace CallInDoor.Controllers
             }).FirstOrDefaultAsync();
 
             if (service == null)
-                return NotFound(new ApiResponse(404, PubicMessages.NotFoundMessage));
+            {
+                List<string> erros = new List<string> { PubicMessages.NotFoundMessage };
+                return BadRequest(new ApiBadRequestResponse(erros, 404));
 
+                //return NotFound(new ApiResponse(404, PubicMessages.NotFoundMessage));
+            }
             return Ok(_commonService.OkResponse(service, PubicMessages.SuccessMessage));
 
         }
@@ -397,9 +415,13 @@ namespace CallInDoor.Controllers
             if (Area != null)
                 return Ok(_commonService.OkResponse(area, PubicMessages.SuccessMessage));
 
-            return StatusCode(StatusCodes.Status500InternalServerError,
-              new ApiResponse(500, PubicMessages.InternalServerMessage)
-            );
+
+            List<string> erroses2 = new List<string> { PubicMessages.InternalServerMessage };
+            return StatusCode(StatusCodes.Status500InternalServerError, new ApiBadRequestResponse(erroses2, 500));
+
+            //////////return StatusCode(StatusCodes.Status500InternalServerError,
+            //////////  new ApiResponse(500, PubicMessages.InternalServerMessage)
+            //////////);
         }
 
         #endregion
@@ -423,8 +445,12 @@ namespace CallInDoor.Controllers
 
             var area = await _categoryService.GetAreaById(model.Id);
             if (area == null)
-                return NotFound(new ApiResponse(404, "area " + PubicMessages.NotFoundMessage));
+            {
+                List<string> erros = new List<string> { PubicMessages.NotFoundMessage };
+                return BadRequest(new ApiBadRequestResponse(erros, 404));
 
+                //return NotFound(new ApiResponse(404, "area " + PubicMessages.NotFoundMessage));
+            }
             //validate
             var res = await _categoryService.ValidateAreaForEdit(model, area);
             if (!res.succsseded)
@@ -449,9 +475,14 @@ namespace CallInDoor.Controllers
             if (Area != null)
                 return Ok(_commonService.OkResponse(areResponse, PubicMessages.SuccessMessage));
 
-            return StatusCode(StatusCodes.Status500InternalServerError,
-              new ApiResponse(500, PubicMessages.InternalServerMessage)
-            );
+
+
+            List<string> erroses2 = new List<string> { PubicMessages.InternalServerMessage };
+            return StatusCode(StatusCodes.Status500InternalServerError, new ApiBadRequestResponse(erroses2, 500));
+
+            ////////////return StatusCode(StatusCodes.Status500InternalServerError,
+            ////////////  new ApiResponse(500, PubicMessages.InternalServerMessage)
+            ////////////);
         }
 
         #endregion

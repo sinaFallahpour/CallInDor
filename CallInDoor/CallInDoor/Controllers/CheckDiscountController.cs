@@ -77,7 +77,12 @@ namespace CallInDoor.Controllers
                .FirstOrDefaultAsync();
 
             if (checkDiscount == null)
-                return NotFound(_commonService.NotFoundErrorReponse(true));
+            {
+                List<string> erros = new List<string> { PubicMessages.NotFoundMessage };
+                return BadRequest(new ApiBadRequestResponse(erros, 404));
+
+                //return NotFound(_commonService.NotFoundErrorReponse(true));
+            }
             return Ok(_commonService.OkResponse(checkDiscount, true));
         }
 
@@ -108,7 +113,7 @@ namespace CallInDoor.Controllers
                    c.Code,
                    serviceId = c.Service.Id,
                    serviceName = c.Service != null ? c.Service.Name + $"({c.Service.PersianName})" : null,
-                   
+
                })
                .ToListAsync();
             return Ok(_commonService.OkResponse(checkDiscounts, true));
@@ -251,8 +256,12 @@ namespace CallInDoor.Controllers
                                                             .FirstOrDefaultAsync();
 
             if (checkDiscountfFromDB == null)
-                return NotFound(new ApiResponse(404, PubicMessages.NotFoundMessage));
+            {
+                List<string> erros = new List<string> { PubicMessages.NotFoundMessage };
+                return BadRequest(new ApiBadRequestResponse(erros, 404));
 
+                ////////return NotFound(new ApiResponse(404, PubicMessages.NotFoundMessage));
+            }
             DateTime expiretime = DateTime.Now;
             if (model.DayCount != null)
                 expiretime = expiretime.AddDays((int)model.DayCount);
@@ -311,13 +320,27 @@ namespace CallInDoor.Controllers
 
             if (model.DayCount == null && model.HourCount == null)
             {
-                var err = new List<string>();
-                err.Add($"please enter day or hour for discount");
+
+
+                List<string> erros = new List<string> { "please enter day or hour for discount" };
+                return BadRequest(new ApiBadRequestResponse(erros, 400));
+
+
+                //////////var err = new List<string>();
+                //////////err.Add($"please enter day or hour for discount");
+
             }
+
 
             CheckDiscountTBL checkDiscountfFromDB = await _context.CheckDiscountTBL.FindAsync(model.Id);
             if (checkDiscountfFromDB == null)
-                return NotFound(new ApiResponse(404, PubicMessages.NotFoundMessage));
+            {
+                List<string> erros = new List<string> { PubicMessages.NotFoundMessage };
+                return BadRequest(new ApiBadRequestResponse(erros, 404));
+
+                //////////return NotFound(new ApiResponse(404, PubicMessages.NotFoundMessage));
+
+            }
             checkDiscountfFromDB.ExpireTime = DateTime.Now.AddYears(-100);
 
             try
@@ -327,8 +350,11 @@ namespace CallInDoor.Controllers
             }
             catch
             {
-                return StatusCode(StatusCodes.Status500InternalServerError,
-                          new ApiResponse(500, PubicMessages.InternalServerMessage));
+                List<string> erroses2 = new List<string> { PubicMessages.InternalServerMessage };
+                return StatusCode(StatusCodes.Status500InternalServerError, new ApiBadRequestResponse(erroses2, 500));
+
+                //return StatusCode(StatusCodes.Status500InternalServerError,
+                //          new ApiResponse(500, PubicMessages.InternalServerMessage));
             }
         }
 

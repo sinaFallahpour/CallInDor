@@ -113,7 +113,12 @@ namespace CallInDoor.Controllers
                }).FirstOrDefaultAsync();
 
             if (Service == null)
-                return NotFound(new ApiResponse(404, PubicMessages.NotFoundMessage));
+            {
+                List<string> erros = new List<string> { PubicMessages.NotFoundMessage };
+                return BadRequest(new ApiBadRequestResponse(erros, 404));
+
+                //return NotFound(new ApiResponse(404, PubicMessages.NotFoundMessage));
+            }
 
             return Ok(_commonService.OkResponse(Service, PubicMessages.SuccessMessage));
 
@@ -285,9 +290,14 @@ namespace CallInDoor.Controllers
             if (result)
                 return Ok(_commonService.OkResponse(null, PubicMessages.SuccessMessage));
 
-            return StatusCode(StatusCodes.Status500InternalServerError,
-              new ApiResponse(500, PubicMessages.InternalServerMessage)
-            );
+
+            List<string> erroses2 = new List<string> { PubicMessages.InternalServerMessage };
+            return StatusCode(StatusCodes.Status500InternalServerError, new ApiBadRequestResponse(erroses2, 500));
+
+
+            //////////return StatusCode(StatusCodes.Status500InternalServerError,
+            //////////  new ApiResponse(500, PubicMessages.InternalServerMessage)
+            //////////);
         }
 
 
@@ -372,7 +382,14 @@ namespace CallInDoor.Controllers
                 return BadRequest(new ApiBadRequestResponse(res.result));
             var service = await _servicetypeService.GetByIdWithJoin(model.Id);
             if (service == null)
-                return NotFound(new ApiResponse(404, "service " + PubicMessages.NotFoundMessage));
+            {
+                List<string> erros = new List<string> { PubicMessages.NotFoundMessage };
+                return BadRequest(new ApiBadRequestResponse(erros, 404));
+
+
+                //////////return NotFound(new ApiResponse(404, "service " + PubicMessages.NotFoundMessage));
+
+            }
 
             #endregion
 
@@ -380,8 +397,13 @@ namespace CallInDoor.Controllers
             if (result)
                 return Ok(_commonService.OkResponse(null, PubicMessages.SuccessMessage));
 
-            return StatusCode(StatusCodes.Status500InternalServerError,
-                              new ApiResponse(500, PubicMessages.InternalServerMessage));
+            List<string> erroses2 = new List<string> { PubicMessages.InternalServerMessage };
+            return StatusCode(StatusCodes.Status500InternalServerError, new ApiBadRequestResponse(erroses2, 500));
+
+
+            //////////////return StatusCode(StatusCodes.Status500InternalServerError,
+            //////////////                  new ApiResponse(500, PubicMessages.InternalServerMessage));
+
         }
 
 
@@ -1893,7 +1915,14 @@ namespace CallInDoor.Controllers
             var comment = await _context.ServiceCommentsTBL.Where(c => c.Id == Id).FirstOrDefaultAsync();
 
             if (comment == null)
-                return NotFound(_commonService.NotFoundErrorReponse(true));
+            {
+                List<string> erros = new List<string> { PubicMessages.NotFoundMessage };
+                return BadRequest(new ApiBadRequestResponse(erros, 404));
+
+                ////////////return NotFound(_commonService.NotFoundErrorReponse(true));
+
+            }
+
 
 
             if (comment.IsConfirmed)
@@ -1980,7 +2009,6 @@ namespace CallInDoor.Controllers
                 List<string> erros = new List<string> { _localizerShared["InternalServerMessage"].Value.ToString() };
                 return StatusCode(StatusCodes.Status500InternalServerError,
                    new ApiBadRequestResponse(erros, 500));
-
             }
         }
 
@@ -2092,18 +2120,35 @@ namespace CallInDoor.Controllers
                  .FirstOrDefaultAsync();
 
             if (serviceFromDB == null)
-                return NotFound(new ApiResponse(404, PubicMessages.NotFoundMessage));
+            {
 
+                List<string> erros = new List<string> { PubicMessages.NotFoundMessage };
+                return BadRequest(new ApiBadRequestResponse(erros, 404));
+
+                ////////return NotFound(new ApiResponse(404, PubicMessages.NotFoundMessage));
+            }
             if (string.IsNullOrEmpty(serviceFromDB.ServiceTbl.RoleId))
-                return StatusCode(StatusCodes.Status500InternalServerError,
-                                        new ApiResponse(500, PubicMessages.InternalServerMessage));
+            {
+                List<string> erroses2 = new List<string> { PubicMessages.InternalServerMessage };
+                return StatusCode(StatusCodes.Status500InternalServerError, new ApiBadRequestResponse(erroses2, 500));
+
+
+                //return StatusCode(StatusCodes.Status500InternalServerError,
+                //                        new ApiResponse(500, PubicMessages.InternalServerMessage));
+
+            }
+
 
             var roleFromDB = await _roleManager.FindByIdAsync(serviceFromDB.ServiceTbl.RoleId);
 
             if (cuurentRole != PublicHelper.ADMINROLE)
             {
                 if (cuurentRole.ToLower() != roleFromDB.Name.ToLower())
-                    return Unauthorized(new ApiResponse(403, PubicMessages.ForbidenMessage));
+                {
+                    List<string> erros = new List<string> { PubicMessages.ForbiddenMessage };
+                    return Unauthorized(new ApiBadRequestResponse(erros, 403));
+                    //return Unauthorized(new ApiResponse(403, PubicMessages.ForbidenMessage));
+                }
             }
             serviceFromDB.ConfirmedServiceType = ConfirmedServiceType.Confirmed;
 
@@ -2167,17 +2212,33 @@ namespace CallInDoor.Controllers
                  .FirstOrDefaultAsync();
 
             if (serviceFromDB == null)
-                return NotFound(new ApiResponse(404, PubicMessages.NotFoundMessage));
+            {
+                List<string> erros = new List<string> { PubicMessages.NotFoundMessage };
+                return BadRequest(new ApiBadRequestResponse(erros, 404));
 
+                //////////////return NotFound(new ApiResponse(404, PubicMessages.NotFoundMessage));
+            }
             if (string.IsNullOrEmpty(serviceFromDB.ServiceTbl.RoleId))
-                return StatusCode(StatusCodes.Status500InternalServerError,
-                                        new ApiResponse(500, PubicMessages.InternalServerMessage));
+            {
+                List<string> erroses2 = new List<string> { PubicMessages.InternalServerMessage };
+                return StatusCode(StatusCodes.Status500InternalServerError, new ApiBadRequestResponse(erroses2, 500));
+
+
+                //////////////return StatusCode(StatusCodes.Status500InternalServerError,
+                //////////////                        new ApiResponse(500, PubicMessages.InternalServerMessage));
+
+            }
 
             var roleFromDB = await _roleManager.FindByIdAsync(serviceFromDB.ServiceTbl.RoleId);
             if (cuurentRole != PublicHelper.ADMINROLE)
             {
                 if (cuurentRole.ToLower() != roleFromDB.Name.ToLower())
-                    return Unauthorized(new ApiResponse(403, PubicMessages.ForbidenMessage));
+                {
+                    List<string> erros = new List<string> { PubicMessages.ForbiddenMessage };
+                    return BadRequest(new ApiBadRequestResponse(erros, 403));
+
+                    ////////return Unauthorized(new ApiResponse(403, PubicMessages.ForbidenMessage));
+                }
             }
             serviceFromDB.ConfirmedServiceType = ConfirmedServiceType.Rejected;
             serviceFromDB.RejectReason = model.RejectReason;
@@ -2306,7 +2367,11 @@ namespace CallInDoor.Controllers
                 var roleId = roleFromDB.Id;
 
                 if (serviceFromDB.RoleId != roleId)
-                    return Unauthorized(new ApiResponse(401, PubicMessages.UnAuthorizeMessage));
+                {
+                    List<string> erros = new List<string> { PubicMessages.UnAuthorizeMessage };
+                    return Unauthorized(new ApiBadRequestResponse(erros, 401));
+                    //////////////return Unauthorized(new ApiResponse(401, PubicMessages.UnAuthorizeMessage));
+                }
             }
             return Ok(_commonService.OkResponse(serviceFromDB, _localizerShared["SuccessMessage"].Value.ToString()));
         }
@@ -2363,8 +2428,12 @@ namespace CallInDoor.Controllers
 
 
             if (serviceFromDB == null)
-                return NotFound(new ApiResponse(404, PubicMessages.NotFoundMessage));
-
+            {
+                List<string> erros = new List<string> { PubicMessages.NotFoundMessage };
+                return BadRequest(new ApiBadRequestResponse(erros, 404));
+                
+                //////////////return NotFound(new ApiResponse(404, PubicMessages.NotFoundMessage));
+            }
             var currentUsername = _accountService.GetCurrentUserName();
             var currentRole = _accountService.GetCurrentRole();
 
@@ -2374,7 +2443,11 @@ namespace CallInDoor.Controllers
                 var roleId = roleFromDB.Id;
 
                 if (serviceFromDB.RoleId != roleId)
-                    return Unauthorized(new ApiResponse(401, PubicMessages.UnAuthorizeMessage));
+                {
+                    List<string> erros = new List<string> { PubicMessages.UnAuthorizeMessage };
+                    return Unauthorized(new ApiBadRequestResponse(erros, 401));
+                    //////////return Unauthorized(new ApiResponse(401, PubicMessages.UnAuthorizeMessage));
+                }
             }
             return Ok(_commonService.OkResponse(serviceFromDB, _localizerShared["SuccessMessage"].Value.ToString()));
 

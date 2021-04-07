@@ -161,7 +161,12 @@ namespace CallInDoor.Controllers
                 }).FirstOrDefaultAsync();
 
             if (service == null)
-                return NotFound(_commonService.NotFoundErrorReponse(true));
+            {
+                List<string> erros = new List<string> { PubicMessages.NotFoundMessage };
+                return BadRequest(new ApiBadRequestResponse(erros, 404));
+
+                ////////return NotFound(_commonService.NotFoundErrorReponse(true));
+            }
             return Ok(_commonService.OkResponse(service, true));
         }
 
@@ -269,9 +274,16 @@ namespace CallInDoor.Controllers
             var Question = await _questionService.CreateQuestion(model);
             if (Question == null)
             {
-                return StatusCode(StatusCodes.Status500InternalServerError,
-                         new ApiResponse(500, PubicMessages.InternalServerMessage)
-                                 );
+
+
+                List<string> erros = new List<string> { PubicMessages.InternalServerMessage };
+                return StatusCode(StatusCodes.Status500InternalServerError, new ApiBadRequestResponse(erros, 500));
+
+
+                ////////////return StatusCode(StatusCodes.Status500InternalServerError,
+                ////////////         new ApiResponse(500, PubicMessages.InternalServerMessage)
+                ////////////                 );
+
             }
 
             var response = new
@@ -290,9 +302,16 @@ namespace CallInDoor.Controllers
             if (Question != null)
                 return Ok(_commonService.OkResponse(response, true));
 
-            return StatusCode(StatusCodes.Status500InternalServerError,
-              new ApiResponse(500, PubicMessages.InternalServerMessage)
-            );
+
+
+
+            List<string> erroses2 = new List<string> { PubicMessages.InternalServerMessage };
+            return StatusCode(StatusCodes.Status500InternalServerError, new ApiBadRequestResponse(erroses2, 500));
+
+
+            ////////////return StatusCode(StatusCodes.Status500InternalServerError,
+            ////////////  new ApiResponse(500, PubicMessages.InternalServerMessage)
+            ////////////);
         }
 
         #endregion
@@ -313,11 +332,18 @@ namespace CallInDoor.Controllers
             var question = await _context.QuestionPullTBL
                 .Where(c => c.Id == model.Id)
                 .Include(c => c.AnswersTBLs)
-                .Include(c=>c.Service)
+                .Include(c => c.Service)
                 .FirstOrDefaultAsync();
 
             if (question == null)
-                return NotFound(new ApiResponse(404, PubicMessages.NotFoundMessage));
+            {
+                List<string> erros = new List<string> { PubicMessages.NotFoundMessage };
+                return BadRequest(new ApiBadRequestResponse(erros, 404));
+
+                ////////////return NotFound(new ApiResponse(404, PubicMessages.NotFoundMessage));
+
+            }
+
 
 
             question.Text = model.Text;
@@ -359,7 +385,7 @@ namespace CallInDoor.Controllers
                 //Question.EnglishText,
                 //Question.IsEnabled,
                 serviceName = question.Service?.Name,
-                persianServiceName= question.Service?.PersianName
+                persianServiceName = question.Service?.PersianName
             };
 
             try
@@ -369,9 +395,13 @@ namespace CallInDoor.Controllers
             }
             catch
             {
-                List<string> erroses = new List<string> { _localizerShared["InternalServerMessage"].Value.ToString() };
-                return StatusCode(StatusCodes.Status500InternalServerError,
-                    new ApiBadRequestResponse(erroses, 500));
+
+                List<string> erroses2 = new List<string> { PubicMessages.InternalServerMessage };
+                return StatusCode(StatusCodes.Status500InternalServerError, new ApiBadRequestResponse(erroses2, 500));
+
+                //////////List<string> erroses = new List<string> { _localizerShared["InternalServerMessage"].Value.ToString() };
+                //////////return StatusCode(StatusCodes.Status500InternalServerError,
+                //////////    new ApiBadRequestResponse(erroses, 500));
             }
         }
 
