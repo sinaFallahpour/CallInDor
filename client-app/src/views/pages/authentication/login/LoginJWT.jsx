@@ -41,10 +41,13 @@ class LoginJWT extends React.Component {
     let result = this.validate(this.state);
     if (!result) return;
     this.setState({ loading: true });
-    const errorMessage = "";
-    const errors = [];
-    this.setState({ errorMessage, errors });
+    // const errorMessage = "";
+    // const errors = [];
+    // this.setState({ errorMessage, errors });
     try {
+
+
+
       let { phone, password, countryCode } = this.state;
       phone = countryCode + phone;
       const res = await auth.login(phone, password);
@@ -53,18 +56,25 @@ class LoginJWT extends React.Component {
         window.location = state ? state.from.pathName : "/";
         this.setState({ loading: false });
       }, 1000);
+
+
     } catch (ex) {
-      console.log(ex);
-      if (ex?.response?.status == 400) {
-        const errors = ex?.response?.data?.errors;
-        this.setState({ errors });
-      } else if (ex?.response) {
-        const errorMessage = ex?.response?.data?.message;
-        this.setState({ errorMessage });
-        toast.error(errorMessage, {
-          autoClose: 10000,
-        });
-      }
+
+      //   console.log(ex);
+      //   if (ex?.response?.status == 400) {
+      //     const errors = ex?.response?.data?.errors;
+      //     this.setState({ errors });
+      //   } else if (ex?.response) {
+      //     const errorMessage = ex?.response?.data?.message;
+      //     this.setState({ errorMessage });
+      //     toast.error(errorMessage, {
+      //       autoClose: 10000,
+      //     });
+      //   }
+      //   setTimeout(() => {
+      //     this.setState({ loading: false });
+      //   }, 1000);
+    } finally {
       setTimeout(() => {
         this.setState({ loading: false });
       }, 1000);
@@ -106,14 +116,14 @@ class LoginJWT extends React.Component {
     return (
       <React.Fragment>
         <CardBody className="pt-4">
-          {errors &&
+          {/* {errors &&
             errors.map((err, index) => {
               return (
                 <Alert key={index} color="danger">
                   {err}
                 </Alert>
               );
-            })}
+            })} */}
 
           <Form action="/s" className="mt-3" onSubmit={this.doSubmit}>
             <label htmlFor="select"> Country code</label>

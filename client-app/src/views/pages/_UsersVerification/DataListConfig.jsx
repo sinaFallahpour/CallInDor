@@ -370,7 +370,7 @@ class DataListConfig extends Component {
 
           }
         } catch (ex) {
-          this.handleCatch(ex);
+          // this.handleCatch(ex);
         }
         setTimeout(() => {
           this.setState({ loadngDelete: false });
@@ -382,17 +382,17 @@ class DataListConfig extends Component {
 
 
   handleCatch = (ex) => {
-    console.log(ex);
-    if (ex?.response?.status == 400) {
-      const errors = ex?.response?.data?.errors;
-      this.setState({ errors });
-    } else if (ex?.response) {
-      const errorMessage = ex?.response?.data?.message;
-      this.setState({ errorMessage });
-      toast.error(errorMessage, {
-        autoClose: 10000,
-      });
-    }
+    // console.log(ex);
+    // if (ex?.response?.status == 400) {
+    //   const errors = ex?.response?.data?.errors;
+    //   this.setState({ errors });
+    // } else if (ex?.response) {
+    //   const errorMessage = ex?.response?.data?.message;
+    //   this.setState({ errorMessage });
+    //   toast.error(errorMessage, {
+    //     autoClose: 10000,
+    //   });
+    // }
   };
 
   handleCurrentData = (obj) => {
@@ -435,14 +435,14 @@ class DataListConfig extends Component {
           className={`data-list ${this.props.thumbView ? "thumb-view" : "list-view"
             }`}
         >
-          {errors &&
+          {/* {errors &&
             errors.map((err, index) => {
               return (
                 <Alert key={index} className="text-center" color="danger ">
                   {err}
                 </Alert>
               );
-            })}
+            })} */}
           <DataTable
             progressPending={this.state.loading}
             columns={columns}

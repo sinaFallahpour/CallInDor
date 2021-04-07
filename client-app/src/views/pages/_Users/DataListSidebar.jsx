@@ -74,7 +74,7 @@ class DataListSidebar extends Component {
       const { data } = await agent.User.changePassword(this.state);
       toast.success(data.result.message);
     } catch (ex) {
-      this.handleCatch(ex);
+      // this.handleCatch(ex);
     } finally {
       setTimeout(() => {
         this.setState({ loadingSubmit: false });
@@ -84,17 +84,17 @@ class DataListSidebar extends Component {
   };
 
   handleCatch = (ex) => {
-    console.log(ex);
-    if (ex?.response?.status == 400) {
-      const errors = ex?.response?.data?.errors;
-      this.setState({ errors });
-    } else if (ex?.response) {
-      const errorMessage = ex?.response?.data?.message;
-      this.setState({ errorMessage });
-      toast.error(errorMessage, {
-        autoClose: 10000,
-      });
-    }
+    // console.log(ex);
+    // if (ex?.response?.status == 400) {
+    //   const errors = ex?.response?.data?.errors;
+    //   this.setState({ errors });
+    // } else if (ex?.response) {
+    //   const errorMessage = ex?.response?.data?.message;
+    //   this.setState({ errorMessage });
+    //   toast.error(errorMessage, {
+    //     autoClose: 10000,
+    //   });
+    // }
   };
 
   // handleSubmit = (obj) => {
@@ -178,13 +178,13 @@ class DataListSidebar extends Component {
                 <span className="ml-50">Loading...</span>
               </Button>
             ) : (
-                <Button
-                  color="primary"
-                // onClick={() => this.handleSubmit(this.state)}
-                >
-                  {data !== null ? "Update" : "Submit"}
-                </Button>
-              )}
+              <Button
+                color="primary"
+              // onClick={() => this.handleSubmit(this.state)}
+              >
+                {data !== null ? "Update" : "Submit"}
+              </Button>
+            )}
 
             <Button
               className="ml-1"

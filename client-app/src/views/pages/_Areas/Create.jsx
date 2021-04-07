@@ -180,21 +180,22 @@ class Create extends Form {
         }
       }
     } catch (ex) {
-      console.log(ex);
-      if (ex?.response?.status == 400) {
-        const errorscustom = ex?.response?.data?.errors;
-        this.setState({ errorscustom });
-      } else if (ex?.response) {
-        const errorMessage = ex?.response?.data?.Message;
-        this.setState({ errorMessage });
-        toast.error(errorMessage, {
-          autoClose: 10000,
-        });
-      }
+      // console.log(ex);
+      // if (ex?.response?.status == 400) {
+      //   const errorscustom = ex?.response?.data?.errors;
+      //   this.setState({ errorscustom });
+      // } else if (ex?.response) {
+      //   const errorMessage = ex?.response?.data?.Message;
+      //   this.setState({ errorMessage });
+      //   toast.error(errorMessage, {
+      //     autoClose: 10000,
+      //   });
+      // }
+    } finally {
+      setTimeout(() => {
+        this.setState({ Loading: false });
+      }, 200);
     }
-    setTimeout(() => {
-      this.setState({ Loading: false });
-    }, 200);
   };
 
   cleanData = () => {
@@ -230,14 +231,14 @@ class Create extends Form {
               <CardTitle> {addNew ? "Create Area" : "Edit Area"} </CardTitle>
             </CardHeader>
             <CardBody>
-              {errorscustom &&
+              {/* {errorscustom &&
                 errorscustom.map((err, index) => {
                   return (
                     <Alert key={index} className="text-center" color="danger ">
                       {err}
                     </Alert>
                   );
-                })}
+                })} */}
 
               <form onSubmit={this.handleSubmit}>
                 <FormGroup row>
@@ -319,8 +320,8 @@ class Create extends Form {
                 ) : addNew ? (
                   this.renderButton("Add")
                 ) : (
-                      this.renderButton("Edit")
-                    )}
+                  this.renderButton("Edit")
+                )}
               </form>
             </CardBody>
           </Card>

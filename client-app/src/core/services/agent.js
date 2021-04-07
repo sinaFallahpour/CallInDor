@@ -25,12 +25,8 @@ axios.interceptors.response.use(undefined, (error) => {
     toast.error("Network error - make sure API is running!");
   }
 
-  console.log(error.status);
-  console.log(error.response);
-  console.log(error.response.data.errors);
-  console.log(error.config);
-
-  if (error.response) {
+  if (error?.response?.data) {
+    // console.log(error.response);
     error.response.data.errors.map((item, index) => {
       toast.error(item);
     });

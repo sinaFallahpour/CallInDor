@@ -584,37 +584,37 @@ class DataListConfig extends Component {
             Swal.fire("Successful closing ", "ticked successfully closed", "success")
           }
         } catch (ex) {
-          let res = this.handleCatch2(ex);
-          Swal.fire(`Error!`, `${res}`, "warning");
+          // let res = this.handleCatch2(ex);
+          // Swal.fire(`Error!`, `${res}`, "warning");
         }
       }
     });
   };
 
   handleCatch = (ex) => {
-    console.log(ex);
-    if (ex?.response?.status == 400) {
-      const errors = ex?.response?.data?.errors;
-      this.setState({ errors });
-    } else if (ex?.response) {
-      const errorMessage = ex?.response?.data?.message;
-      this.setState({ errorMessage });
-      toast.error(errorMessage, {
-        autoClose: 10000,
-      });
-    }
+    // console.log(ex);
+    // if (ex?.response?.status == 400) {
+    //   const errors = ex?.response?.data?.errors;
+    //   this.setState({ errors });
+    // } else if (ex?.response) {
+    //   const errorMessage = ex?.response?.data?.message;
+    //   this.setState({ errorMessage });
+    //   toast.error(errorMessage, {
+    //     autoClose: 10000,
+    //   });
+    // }
   };
 
   handleCatch2 = (ex) => {
-    console.log(ex);
-    if (ex?.response?.status == 400) {
-      const errors = ex?.response?.data?.errors;
-      // this.setState({ errors });
-      return errors[0];
-    } else if (ex?.response) {
-      const errorMessage = ex?.response?.data?.message;
-      return errorMessage;
-    }
+    // console.log(ex);
+    // if (ex?.response?.status == 400) {
+    //   const errors = ex?.response?.data?.errors;
+    //   // this.setState({ errors });
+    //   return errors[0];
+    // } else if (ex?.response) {
+    //   const errorMessage = ex?.response?.data?.message;
+    //   return errorMessage;
+    // }
   };
 
   handleSendChatMessage = async (text, ticketId) => {
@@ -634,7 +634,7 @@ class DataListConfig extends Component {
         const obj = { text, ticketId }
         const { data } = await agent.Tikets.addChatMessageToTiketInAdmin(obj);
       } catch (ex) {
-        this.handleCatch(ex)
+        // this.handleCatch(ex)
         let messages = this.state.currenChatData?.messages.pop();
         this.setState({ currenChatData: this.state.currenChatData, messages, modal: false })
       } finally {
@@ -669,9 +669,9 @@ class DataListConfig extends Component {
         await this.setState({ currenChatData: this.state.currenChatData, messages, })
 
       } catch (ex) {
-        this.handleCatch(ex)
-        this.setState({ modal: false })
+        // this.handleCatch(ex)
       } finally {
+        this.setState({ modal: false })
         Swal.close();
       }
     }
@@ -737,14 +737,14 @@ class DataListConfig extends Component {
           className={`data-list ${this.props.thumbView ? "thumb-view" : "list-view"
             }`}
         >
-          {errors &&
+          {/* {errors &&
             errors.map((err, index) => {
               return (
                 <Alert key={index} className="text-center" color="danger ">
                   {err}
                 </Alert>
               );
-            })}
+            })} */}
           <DataTable
             progressPending={this.state.loading}
             columns={columns}

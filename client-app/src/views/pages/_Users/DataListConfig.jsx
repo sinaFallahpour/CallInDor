@@ -286,7 +286,7 @@ class DataListConfig extends Component {
 
   handleFilter = async (e) => {
     if (this.state.value == "" && e.target.value == "") return;
-    
+
     await this.setState({
       loading: true,
       value: e.target.value,
@@ -352,7 +352,7 @@ class DataListConfig extends Component {
               );
           }
         } catch (ex) {
-          this.handleCatch(ex);
+          // this.handleCatch(ex);
         }
         setTimeout(() => {
           this.setState({ loadngDelete: false });
@@ -421,23 +421,22 @@ class DataListConfig extends Component {
     // });
     Swal.fire("Successful locking ", "User Successfully Locked", "success");
 
-    console.log("=============");
     console.log(this.state.data);
     console.log(this.state.allData);
   };
 
   handleCatch = (ex) => {
-    console.log(ex);
-    if (ex?.response?.status == 400) {
-      const errors = ex?.response?.data?.errors;
-      this.setState({ errors });
-    } else if (ex?.response) {
-      const errorMessage = ex?.response?.data?.message;
-      this.setState({ errorMessage });
-      toast.error(errorMessage, {
-        autoClose: 10000,
-      });
-    }
+    // console.log(ex);
+    // if (ex?.response?.status == 400) {
+    //   const errors = ex?.response?.data?.errors;
+    //   this.setState({ errors });
+    // } else if (ex?.response) {
+    //   const errorMessage = ex?.response?.data?.message;
+    //   this.setState({ errorMessage });
+    //   toast.error(errorMessage, {
+    //     autoClose: 10000,
+    //   });
+    // }
   };
 
   handleCurrentData = (obj) => {
@@ -480,14 +479,14 @@ class DataListConfig extends Component {
           className={`data-list ${this.props.thumbView ? "thumb-view" : "list-view"
             }`}
         >
-          {errors &&
+          {/* {errors &&
             errors.map((err, index) => {
               return (
                 <Alert key={index} className="text-center" color="danger ">
                   {err}
                 </Alert>
               );
-            })}
+            })} */}
           <DataTable
             progressPending={this.state.loading}
             columns={columns}

@@ -56,7 +56,7 @@ class FormModal extends React.Component {
     modal: false,
   };
 
-  componentDidMount() {}
+  componentDidMount() { }
 
   componentDidUpdate(prevProps, prevState) {
     //این دیتا جدیده نسبت به قبل ایدی ها تغییر کرد
@@ -237,22 +237,25 @@ class FormModal extends React.Component {
       this.props.toggleModal();
       this.props.handleSidebar(false, true, false);
     } catch (ex) {
-      console.log(ex);
-      if (ex?.response?.status == 400) {
-        const errorscustom = ex?.response?.data?.errors;
-        this.setState({ errorscustom });
-      } else if (ex?.response) {
-        const errorMessage = ex?.response?.data?.message;
-        console.log(errorMessage);
-        this.setState({ errorMessage });
-        toast.error(errorMessage, {
-          autoClose: 10000,
-        });
-      }
+      // console.log(ex);
+      // if (ex?.response?.status == 400) {
+      //   const errorscustom = ex?.response?.data?.errors;
+      //   this.setState({ errorscustom });
+      // } else if (ex?.response) {
+      //   const errorMessage = ex?.response?.data?.message;
+      //   console.log(errorMessage);
+      //   this.setState({ errorMessage });
+      //   toast.error(errorMessage, {
+      //     autoClose: 10000,
+      //   });
+      // }
+    } finally {
+      setTimeout(() => {
+        this.setState({ Loading: false });
+      }, 200);
+
     }
-    setTimeout(() => {
-      this.setState({ Loading: false });
-    }, 200);
+
   };
 
   populatinginData = () => {

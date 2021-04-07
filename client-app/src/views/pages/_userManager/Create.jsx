@@ -165,17 +165,17 @@ class Create extends Form {
         }
       }
     } catch (ex) {
-      console.log(ex);
-      if (ex?.response?.status == 400) {
-        const errorscustom = ex?.response?.data?.errors;
-        this.setState({ errorscustom });
-      } else if (ex?.response) {
-        const errorMessage = ex?.response?.data?.Message;
-        this.setState({ errorMessage });
-        toast.error(errorMessage, {
-          autoClose: 10000,
-        });
-      }
+      // console.log(ex);
+      // if (ex?.response?.status == 400) {
+      //   const errorscustom = ex?.response?.data?.errors;
+      //   this.setState({ errorscustom });
+      // } else if (ex?.response) {
+      //   const errorMessage = ex?.response?.data?.Message;
+      //   this.setState({ errorMessage });
+      //   toast.error(errorMessage, {
+      //     autoClose: 10000,
+      //   });
+      // }
     }
     setTimeout(() => {
       this.setState({ Loading: false });
@@ -276,8 +276,8 @@ class Create extends Form {
                 ) : addNew ? (
                   this.renderButton("Add")
                 ) : (
-                      this.renderButton("Edit")
-                    )}
+                  this.renderButton("Edit")
+                )}
               </form>
             </CardBody>
           </Card>

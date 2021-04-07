@@ -199,23 +199,25 @@ class FormModal extends React.Component {
       this.props.handleSidebar(false, true, false);
     } catch (ex) {
 
-      console.log(ex);
-      if (ex?.response?.status == 400) {
-        const errorscustom = ex?.response?.data?.errors;
-        this.setState({ errorscustom });
-      } else if (ex?.response) {
+      // console.log(ex);
+      // if (ex?.response?.status == 400) {
+      //   const errorscustom = ex?.response?.data?.errors;
+      //   this.setState({ errorscustom });
+      // } else if (ex?.response) {
 
-        const errorMessage = ex?.response?.data?.message;
-        console.log(errorMessage);
-        this.setState({ errorMessage });
-        toast.error(errorMessage, {
-          autoClose: 10000,
-        });
-      }
+      //   const errorMessage = ex?.response?.data?.message;
+      //   console.log(errorMessage);
+      //   this.setState({ errorMessage });
+      //   toast.error(errorMessage, {
+      //     autoClose: 10000,
+      //   });
+      // }
+    } finally {
+      setTimeout(() => {
+        this.setState({ Loading: false });
+      }, 200);
     }
-    setTimeout(() => {
-      this.setState({ Loading: false });
-    }, 200);
+
   };
 
   populatinginData = () => {
@@ -504,8 +506,8 @@ class FormModal extends React.Component {
                   <span className="ml-50">Loading...</span>
                 </Button>
               ) : (
-                  <Button color="primary">submit</Button>
-                )}
+                <Button color="primary">submit</Button>
+              )}
             </Form>
           </ModalBody>
         </Modal>

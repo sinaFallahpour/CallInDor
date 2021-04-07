@@ -116,7 +116,7 @@ class EditCategory extends Form {
       });
     } catch (ex) {
       console.clear();
-     
+
       if (ex?.response?.status == 404 || ex?.response?.status == 400) {
         return this.props.history.replace("/not-found");
       }
@@ -148,22 +148,24 @@ class EditCategory extends Form {
         toast.success(data.result.message);
       }
     } catch (ex) {
-      console.log(ex);
-      if (ex?.response?.status == 400) {
-        const errorscustom = ex?.response?.data?.errors;
-        this.setState({ errorscustom });
-      } else if (ex?.response) {
-        const errorMessage = ex?.response?.data?.message;
-        this.setState({ errorMessage });
-        toast.error(errorMessage, {
-          autoClose: 10000,
-        });
-      }
+      // console.log(ex);
+      // if (ex?.response?.status == 400) {
+      //   const errorscustom = ex?.response?.data?.errors;
+      //   this.setState({ errorscustom });
+      // } else if (ex?.response) {
+      //   const errorMessage = ex?.response?.data?.message;
+      //   this.setState({ errorMessage });
+      //   toast.error(errorMessage, {
+      //     autoClose: 10000,
+      //   });
+      // }
+    } finally {
+      setTimeout(() => {
+        this.setState({ Loading: false });
+      }, 800);
     }
 
-    setTimeout(() => {
-      this.setState({ Loading: false });
-    }, 800);
+
   };
 
   render() {
@@ -259,8 +261,8 @@ class EditCategory extends Form {
                   <span className="ml-50">Loading...</span>
                 </Button>
               ) : (
-                  this.renderButton("Save")
-                )}
+                this.renderButton("Save")
+              )}
 
               {/* {this.renderSelect("genreId", "Genre", this.state.genres)} */}
               {/* {this.renderInput("numberInStock", "Number in Stock", "number")}

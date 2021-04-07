@@ -160,17 +160,17 @@ class ModalForm extends Form {
       const { data } = await agent.ServiceTypes.create(obj);
       if (data.result.status) toast.success(data.result.message);
     } catch (ex) {
-      console.log(ex);
-      if (ex?.response?.status == 400) {
-        const errorscustom = ex?.response?.data?.errors;
-        this.setState({ errorscustom });
-      } else if (ex?.response) {
-        const errorMessage = ex?.response?.data?.Message;
-        this.setState({ errorMessage });
-        toast.error(errorMessage, {
-          autoClose: 10000,
-        });
-      }
+      // console.log(ex);
+      // if (ex?.response?.status == 400) {
+      //   const errorscustom = ex?.response?.data?.errors;
+      //   this.setState({ errorscustom });
+      // } else if (ex?.response) {
+      //   const errorMessage = ex?.response?.data?.Message;
+      //   this.setState({ errorMessage });
+      //   toast.error(errorMessage, {
+      //     autoClose: 10000,
+      //   });
+      // }
     }
     setTimeout(() => {
       this.setState({ Loading: false });
@@ -213,7 +213,7 @@ class ModalForm extends Form {
                   "Minimm Price For Native User (For Chat,Voice,video)$",
                   "number"
                 )}
-                
+
                 {this.renderInput(
                   "acceptedMinPriceForNonNative",
                   "Minimm Price For Non Native User  (For Chat,Voice,video)$",

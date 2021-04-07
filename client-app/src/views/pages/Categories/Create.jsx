@@ -94,10 +94,8 @@ class Create extends React.Component {
         parentId,
       } = this.state;
 
-      const serviceName = this.state.services.find((c) => c.id == serviceId)
-        .name;
-      const parentName = this.state.categories.find((c) => c.id == parentId)
-        ?.persianTitle;
+      const serviceName = this.state.services.find((c) => c.id == serviceId).name;
+      const parentName = this.state.categories.find((c) => c.id == parentId)?.persianTitle;
 
       const obj = {
         title,
@@ -129,20 +127,23 @@ class Create extends React.Component {
         // this.toggleModal()
       }, 2000);
     } catch (ex) {
-      console.log(ex);
-      if (ex?.response?.status == 400) {
-        const errors = ex?.response?.data?.errors;
-        this.setState({ errors });
-      } else if (ex?.response) {
-        const errorMessage = ex?.response?.data?.Message;
-        this.setState({ errorMessage });
-        toast.error(errorMessage, {
-          autoClose: 10000,
-        });
-      }
+      // console.log(ex);
+      // if (ex?.response?.status == 400) {
+      //   const errors = ex?.response?.data?.errors;
+      //   this.setState({ errors });
+      // } else if (ex?.response) {
+      //   const errorMessage = ex?.response?.data?.Message;
+      //   this.setState({ errorMessage });
+      //   toast.error(errorMessage, {
+      //     autoClose: 10000,
+      //   });
+      // }
+
+    } finally {
       setTimeout(() => {
         this.setState({ Loading: false });
       }, 1000);
+
     }
   };
 
@@ -173,7 +174,7 @@ class Create extends React.Component {
             New Category
           </ModalHeader>
           <ModalBody>
-            {errors &&
+            {/* {errors &&
               errors.map((err, index) => {
                 return (
                   <Alert
@@ -184,7 +185,7 @@ class Create extends React.Component {
                     {err}
                   </Alert>
                 );
-              })}
+              })} */}
             <Form action="/s" className="mt-3" onSubmit={this.doSubmit}>
               <FormGroup>
                 <h5 for="email">Title:</h5>
@@ -325,8 +326,8 @@ class Create extends React.Component {
                   <span className="ml-50">Loading...</span>
                 </Button>
               ) : (
-                  <Button color="primary">submit</Button>
-                )}
+                <Button color="primary">submit</Button>
+              )}
             </Form>
           </ModalBody>
         </Modal>

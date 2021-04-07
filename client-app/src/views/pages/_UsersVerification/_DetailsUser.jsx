@@ -230,8 +230,9 @@ class _DetailsUser extends React.Component {
             Swal.fire("Successful accepting", "profile successfully rejected", "success");
           }
         } catch (ex) {
-          let res = this.handleCatch2(ex);
-          Swal.showValidationMessage(`${res}`);
+          // let res = this.handleCatch2(ex);
+
+          // Swal.showValidationMessage(`${res}`);
         }
       },
       allowOutsideClick: () => !Swal.isLoading(),
@@ -269,8 +270,8 @@ class _DetailsUser extends React.Component {
             Swal.fire("Successful accepting", "profile successfully accepted", "success");
           }
         } catch (ex) {
-          let res = this.handleCatch2(ex);
-          Swal.fire(`Error!`, `${res}`, "warning");
+          // let res = this.handleCatch2(ex);
+          // Swal.fire(`Error!`, `${res}`, "warning");
         }
 
       }
@@ -281,15 +282,15 @@ class _DetailsUser extends React.Component {
 
 
   handleCatch2 = (ex) => {
-    console.log(ex);
-    if (ex?.response?.status == 400) {
-      const errors = ex?.response?.data?.errors;
-      // this.setState({ errors });
-      return errors[0];
-    } else if (ex?.response) {
-      const errorMessage = ex?.response?.data?.message;
-      return errorMessage;
-    }
+    // console.log(ex);
+    // if (ex?.response?.status == 400) {
+    //   const errors = ex?.response?.data?.errors;
+    //   // this.setState({ errors });
+    //   return errors[0];
+    // } else if (ex?.response) {
+    //   const errorMessage = ex?.response?.data?.message;
+    //   return errorMessage;
+    // }
   };
 
 
@@ -347,14 +348,14 @@ class _DetailsUser extends React.Component {
             </CardHeader>
 
             <CardBody>
-              {errorscustom &&
+              {/* {errorscustom &&
                 errorscustom.map((err, index) => {
                   return (
                     <Alert key={index} className="text-center" color="danger ">
                       {err}
                     </Alert>
                   );
-                })}
+                })} */}
               <form>
                 <FormGroup row>
                   <Col md="6" style={{ height: "252px" }}>
@@ -399,8 +400,8 @@ class _DetailsUser extends React.Component {
                         frameBorder="0"
                       />
                     ) : (
-                        <h3> there is no video for User</h3>
-                      )}
+                      <h3> there is no video for User</h3>
+                    )}
                   </Col>
                 </FormGroup>
 
@@ -490,23 +491,23 @@ class _DetailsUser extends React.Component {
                 {this.state?.fields?.length === 0 ? (
                   <h3 className="text-center"> there no filed for user </h3>
                 ) : (
-                    <FormGroup row>
-                      {this.state.fields?.map((field, index) => (
-                        <>
-                          <Col key={index} md="5" className="mt-2">
-                            <button
-                              type="button"
-                              key={index}
-                              className="text-center text-white form-control btn-warning"
-                            >
-                              {`${field.title}(${this.returnDegreeType(field.degreeType)})`}
-                              {/* {field.title}( {this.returnDegreeType(field.degreeType)}) */}
-                            </button>
-                          </Col>
-                        </>
-                      ))}
-                    </FormGroup>
-                  )}
+                  <FormGroup row>
+                    {this.state.fields?.map((field, index) => (
+                      <>
+                        <Col key={index} md="5" className="mt-2">
+                          <button
+                            type="button"
+                            key={index}
+                            className="text-center text-white form-control btn-warning"
+                          >
+                            {`${field.title}(${this.returnDegreeType(field.degreeType)})`}
+                            {/* {field.title}( {this.returnDegreeType(field.degreeType)}) */}
+                          </button>
+                        </Col>
+                      </>
+                    ))}
+                  </FormGroup>
+                )}
 
                 <hr></hr>
                 <h3>required file for user </h3>
@@ -514,65 +515,65 @@ class _DetailsUser extends React.Component {
                 {requiredFiles?.length == 0 ? (
                   <h3 className="text-center"> there no file for user </h3>
                 ) : (
-                    <FormGroup row>
-                      {requiredFiles?.map((requireFIle, index) => (
-                        <>
-                          <Col key={index} md="12" className="mt-4">
-                            <hr />
-                            <p> {requireFIle.serviceName}
-                              {this.returnProfileConfirmType(requireFIle.profileConfirmType)}
-                            </p>
-                            {requireFIle?.files?.map((item) => {
-                              return (
-                                <>
-                                  <div className="mb-1">
-                                    <input type="hidden" value={item?._id} />
-                                    <label></label>
-                                    <a
-                                      type="button"
-                                      href={baseUrl + item.fileAddress}
-                                      target="_blank"
-                                      className="text-center text-white form-control btn-success"
-                                    >
-                                      {item.serviceName}
-                                    </a>
+                  <FormGroup row>
+                    {requiredFiles?.map((requireFIle, index) => (
+                      <>
+                        <Col key={index} md="12" className="mt-4">
+                          <hr />
+                          <p> {requireFIle.serviceName}
+                            {this.returnProfileConfirmType(requireFIle.profileConfirmType)}
+                          </p>
+                          {requireFIle?.files?.map((item) => {
+                            return (
+                              <>
+                                <div className="mb-1">
+                                  <input type="hidden" value={item?._id} />
+                                  <label></label>
+                                  <a
+                                    type="button"
+                                    href={baseUrl + item.fileAddress}
+                                    target="_blank"
+                                    className="text-center text-white form-control btn-success"
+                                  >
+                                    {item.serviceName}
+                                  </a>
 
-                                  </div>
-                                </>
-                              );
-                            })}
+                                </div>
+                              </>
+                            );
+                          })}
 
 
-                            <button
-                              type="button"
-                              // disabled={this.returnConfirmType(requireFIle.profileConfirmType)}
-                              disabled={requireFIle.profileConfirmType == 0 ? true : false}
-                              className="mr-1 text-center btn btn-primary text-center "
-                              onClick={() => {
-                                this.handleAccept(requireFIle.serviceId)
-                              }}
-                            >
-                              confirm
+                          <button
+                            type="button"
+                            // disabled={this.returnConfirmType(requireFIle.profileConfirmType)}
+                            disabled={requireFIle.profileConfirmType == 0 ? true : false}
+                            className="mr-1 text-center btn btn-primary text-center "
+                            onClick={() => {
+                              this.handleAccept(requireFIle.serviceId)
+                            }}
+                          >
+                            confirm
                             </button>
 
-                            <button
-                              type="button"
-                              // disabled={this.returnRejectType(requireFIle.profileConfirmType)}
-                              disabled={requireFIle.profileConfirmType == 1 ? true : false}
+                          <button
+                            type="button"
+                            // disabled={this.returnRejectType(requireFIle.profileConfirmType)}
+                            disabled={requireFIle.profileConfirmType == 1 ? true : false}
 
-                              // disabled={!(requireFIle.profileConfirmType == 2 && requireFIle.profileConfirmType == 1)}
-                              className=" text-center btn btn-danger text-center "
-                              onClick={() => {
-                                this.handleReject(requireFIle.serviceId)
-                              }}
-                            >
-                              reject
+                            // disabled={!(requireFIle.profileConfirmType == 2 && requireFIle.profileConfirmType == 1)}
+                            className=" text-center btn btn-danger text-center "
+                            onClick={() => {
+                              this.handleReject(requireFIle.serviceId)
+                            }}
+                          >
+                            reject
                             </button>
-                          </Col>
-                        </>
-                      ))}
-                    </FormGroup>
-                  )}
+                        </Col>
+                      </>
+                    ))}
+                  </FormGroup>
+                )}
 
               </form>
             </CardBody>

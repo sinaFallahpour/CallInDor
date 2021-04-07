@@ -621,7 +621,7 @@ class DataListConfig extends Component {
 
 
     } catch (ex) {
-      let res = this.handleCatch2(ex)
+      // let res = this.handleCatch2(ex)
     }
 
   };
@@ -657,10 +657,10 @@ class DataListConfig extends Component {
             );
           }
         } catch (ex) {
-          let res = this.handleCatch2(ex)
-          Swal.showValidationMessage(
-            `${res}`
-          )
+          // let res = this.handleCatch2(ex)
+          // Swal.showValidationMessage(
+          //   `${res}`
+          // )
         }
       },
       allowOutsideClick: () => !Swal.isLoading()
@@ -707,12 +707,12 @@ class DataListConfig extends Component {
             );
           }
         } catch (ex) {
-          let res = this.handleCatch2(ex)
-          Swal.fire(
-            `Error!`,
-            `${res}`,
-            'warning'
-          )
+          // let res = this.handleCatch2(ex)
+          // Swal.fire(
+          //   `Error!`,
+          //   `${res}`,
+          //   'warning'
+          // )
         }
         // Swal.showValidationMessage(
         //   `${res}`
@@ -748,36 +748,36 @@ class DataListConfig extends Component {
   };
 
   handleCatch = (ex) => {
-    console.log(ex);
-    if (ex?.response?.status == 400) {
-      const errors = ex?.response?.data?.errors;
-      this.setState({ errors });
-    } else if (ex?.response) {
-      const errorMessage = ex?.response?.data?.message;
-      this.setState({ errorMessage });
-      toast.error(errorMessage, {
-        autoClose: 10000,
-      });
-    }
+    // console.log(ex);
+    // if (ex?.response?.status == 400) {
+    //   const errors = ex?.response?.data?.errors;
+    //   this.setState({ errors });
+    // } else if (ex?.response) {
+    //   const errorMessage = ex?.response?.data?.message;
+    //   this.setState({ errorMessage });
+    //   toast.error(errorMessage, {
+    //     autoClose: 10000,
+    //   });
+    // }
   };
 
 
 
   handleCatch2 = (ex) => {
-    console.log(ex);
-    if (ex?.response?.status == 400) {
-      const errors = ex?.response?.data?.errors;
-      // this.setState({ errors });
-      return errors[0];
-    } else if (ex?.response) {
-      const errorMessage = ex?.response?.data?.message;
-      // this.setState({ errorMessage });
+    // console.log(ex);
+    // if (ex?.response?.status == 400) {
+    //   const errors = ex?.response?.data?.errors;
+    //   // this.setState({ errors });
+    //   return errors[0];
+    // } else if (ex?.response) {
+    //   const errorMessage = ex?.response?.data?.message;
+    //   // this.setState({ errorMessage });
 
-      // toast.error(errorMessage, {
-      //   autoClose: 10000,
-      // });
-      return errorMessage
-    }
+    //   // toast.error(errorMessage, {
+    //   //   autoClose: 10000,
+    //   // });
+    //   return errorMessage
+    // }
   };
 
 
@@ -825,14 +825,14 @@ class DataListConfig extends Component {
           className={`data-list ${this.props.thumbView ? "thumb-view" : "list-view"
             }`}
         >
-          {errors &&
+          {/* {errors &&
             errors.map((err, index) => {
               return (
                 <Alert key={index} className="text-center" color="danger ">
                   {err}
                 </Alert>
               );
-            })}
+            })} */}
           <DataTable
             progressPending={this.state.loading}
             columns={columns}

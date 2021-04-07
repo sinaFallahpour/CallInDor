@@ -143,6 +143,11 @@ class RoleManager extends React.Component {
     const errors = [];
     this.setState({ errorMessage, errors });
     try {
+
+
+
+
+
       const obj = {
         name: this.state.data.name,
         isEnabled: this.state.data.isEnabled,
@@ -188,6 +193,7 @@ class RoleManager extends React.Component {
             }),
           });
         }
+
         setTimeout(() => {
           this.setState({
             modal: false,
@@ -200,18 +206,22 @@ class RoleManager extends React.Component {
           // this.toggleModal()
         }, 2000);
       }
+
+
+
+
     } catch (ex) {
-      console.log(ex);
-      if (ex?.response?.status == 400) {
-        const errors = ex?.response?.data?.errors;
-        this.setState({ errors });
-      } else if (ex?.response) {
-        const errorMessage = ex?.response?.data?.Message;
-        this.setState({ errorMessage });
-        toast.error(errorMessage, {
-          autoClose: 10000,
-        });
-      }
+      //   console.log(ex);
+      //   if (ex?.response?.status == 400) {
+      //     const errors = ex?.response?.data?.errors;
+      //     this.setState({ errors });
+      //   } else if (ex?.response) {
+      //     const errorMessage = ex?.response?.data?.Message;
+      //     this.setState({ errorMessage });
+      //     toast.error(errorMessage, {
+      //       autoClose: 10000,
+      //     });
+      //   }
     } finally {
       setTimeout(() => {
         this.setState({ loadingSubmiting: false });
@@ -286,14 +296,14 @@ class RoleManager extends React.Component {
             {this.state.addNew ? "Add Role " : "Edit Role"}
           </ModalHeader>
           <ModalBody>
-            {errors &&
+            {/* {errors &&
               errors.map((err, index) => {
                 return (
                   <Alert key={index} className="text-center" color="danger ">
                     {err}
                   </Alert>
                 );
-              })}
+              })} */}
             <Form action="/s" className="mt-3" onSubmit={this.doSubmit}>
               <FormGroup>
                 <h5 for="email">name:</h5>
@@ -362,14 +372,14 @@ class RoleManager extends React.Component {
                               );
                               this.setState(
                                 { data: { ...data, rolesPermission } },
-                                function () {}
+                                function () { }
                               );
                             } else {
                               let rolesPermission = data.rolesPermission;
                               rolesPermission.push(parseInt(e.target.value));
                               this.setState(
                                 { data: { ...data, rolesPermission } },
-                                function () {}
+                                function () { }
                               );
                             }
                           }}
