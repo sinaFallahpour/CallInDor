@@ -64,27 +64,65 @@ namespace CallInDoor.Controllers
 
         #endregion ctor
 
+
+
+
+
+        /// <summary>
+        /// گرفتن مقادیر دیتا انئتیشن ها
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet("GetDataAnotationAndErrorMessages")]
+        [ClaimsAuthorize(IsAdmin = true)]
+        public ActionResult GetDataAnotationAndErrorMessages()
+        {
+
+            var data = new DataAnotationAndErrorMessageDTO(_localizerShared);
+            return Ok(_commonService.OkResponse(data, PubicMessages.SuccessMessage));
+
+            //var cats = await _context.CategoryTBL.Where(c => c.IsEnabled == true &&
+            // c.ServiceId == serviceId && c.IsSubCategory == false)
+            //    .AsNoTracking()
+            // .Select(c => new
+            // {
+            //     c.Id,
+            //     c.Title,
+            //     c.PersianTitle,
+            //     c.IsEnabled,
+            //     c.ParentId,
+            //     c.ServiceId,
+            //     c.IsForCourse,
+            //     c.IsSubCategory,
+
+            // })
+            //    .ToListAsync();
+
+
+        }
+
+
+
+
+
+
         /// <summary>
         /// آ=دیت کردن فایل ریسورس مربوط به دیتا انوتیشن ها و ارور مسیج ها
         /// </summary>
         /// <param name="model"></param>
         /// <returns></returns>
-        [HttpPost("RequestToChatService")]
+        [HttpPost("EditDataAnotationAndErrorMessages")]
         //[Authorize]
         [ClaimsAuthorize(IsAdmin = true)]
-        public ActionResult DataAnotationAndErrorMessages([FromBody] DataAnotationAndErrorMessageDTO model)
+        public ActionResult EditDataAnotationAndErrorMessages([FromBody] DataAnotationAndErrorMessageDTO model)
         {
-
-
-            var asasa = nameof(model.BlockUserMessage);
-
-            var saass = asasa;
+            //////////var asasa = nameof(model.BlockUserMessage);
+            //////////var saass = asasa;
             //var res = _resourceServices.ValidateAcceptLanguageHeader();
             //if (!res.succsseded)
             //{
             //    return BadRequest(new ApiBadRequestResponse(res.result));
             //}
-            var currentUsername = _accountService.GetCurrentUserName();
+            //var currentUsername = _accountService.GetCurrentUserName();
 
             try
             {
@@ -94,30 +132,6 @@ namespace CallInDoor.Controllers
                 {
                     return BadRequest(new ApiBadRequestResponse(result.result));
                 }
-
-
-
-
-                //using (ResXResourceWriter resx = new ResXResourceWriter(@"..\Domain\ShareResource.en-ca.resx"))
-                //{
-                //    resx.AddResource("Title", "Classic American Cars");
-                //    resx.AddResource("HeaderString1", "Make222222");
-                //    resx.AddResource("HeaderString2", "Model");
-                //    resx.AddResource("HeaderString3", "Year");
-                //    resx.AddResource("HeaderString4", "Doors");
-                //    resx.AddResource("HeaderString5", "Cylinders");
-                //    //resx.AddResource("Information", SystemIcons.Information);
-                //    resx.AddResource("EarlyAuto1", "12");
-                //    resx.AddResource("EarlyAuto2", "1");
-                //}
-
-
-
-
-
-
-                //await _context.ServiceRequestTBL.AddAsync(request);
-                //await _context.SaveChangesAsync();
                 return Ok(_commonService.OkResponse(null, false));
             }
             catch

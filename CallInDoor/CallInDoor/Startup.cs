@@ -123,7 +123,7 @@ namespace CallInDoor
             })
             .AddRoleManager<RoleManager<AppRole>>()
             .AddSignInManager<SignInManager<AppUser>>()
-            //این توکن میسازه   باید باشه برا چنج پسورد و.کانفیرم ایمیل
+            //این توکن میسازه باید باشه برا چنج پسورد و.کانفیرم ایمیل
             .AddDefaultTokenProviders()
             .AddEntityFrameworkStores<DataContext>();
 

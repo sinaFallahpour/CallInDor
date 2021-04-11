@@ -31,14 +31,20 @@ namespace CallInDoor.Config.Attributes
                         .Any(x => x.SerialNumber == currentSerialNumber && x.UserName == currentUserName);
             if (!IsExist)
             {
+
+                ///این if دیگر بی کاربرد است چون همه ریسپتنس ها یکدست شد
                 if (!IsAdmin)
                 {
                     List<string> errors = new List<string> { _localizerShared["UnauthorizedMessage"].Value.ToString() };
                     context.Result = new UnauthorizedObjectResult(new ApiBadRequestResponse(errors, 401));
+                   
                     return;
                     //return Unauthorized(new ApiBadRequestResponse(erroses, 401));
                 }
-                context.Result = new UnauthorizedObjectResult(new ApiResponse(401, PubicMessages.UnAuthorizeMessage));
+
+                List<string> errors2 = new List<string> { PubicMessages.UnAuthorizeMessage };
+                context.Result = new UnauthorizedObjectResult(new ApiBadRequestResponse(errors2, 401));
+                //////context.Result = new UnauthorizedObjectResult(new ApiResponse(401, PubicMessages.UnAuthorizeMessage));
             }
         }
 

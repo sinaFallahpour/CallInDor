@@ -78,8 +78,6 @@ namespace Service
 
 
 
-
-
             bool IsValid = true;
             List<string> Errors = new List<string>();
             
