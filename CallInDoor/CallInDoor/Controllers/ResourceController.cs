@@ -73,31 +73,11 @@ namespace CallInDoor.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpGet("GetDataAnotationAndErrorMessages")]
-        [ClaimsAuthorize(IsAdmin = true)]
+        //[ClaimsAuthorize(IsAdmin = true)]
         public ActionResult GetDataAnotationAndErrorMessages()
         {
-
-            var data = new DataAnotationAndErrorMessageDTO(_localizerShared);
+            var data = _resourceServices.GetDataAnotationAndErrorMessages();
             return Ok(_commonService.OkResponse(data, PubicMessages.SuccessMessage));
-
-            //var cats = await _context.CategoryTBL.Where(c => c.IsEnabled == true &&
-            // c.ServiceId == serviceId && c.IsSubCategory == false)
-            //    .AsNoTracking()
-            // .Select(c => new
-            // {
-            //     c.Id,
-            //     c.Title,
-            //     c.PersianTitle,
-            //     c.IsEnabled,
-            //     c.ParentId,
-            //     c.ServiceId,
-            //     c.IsForCourse,
-            //     c.IsSubCategory,
-
-            // })
-            //    .ToListAsync();
-
-
         }
 
 

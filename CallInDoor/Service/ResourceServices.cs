@@ -1,8 +1,10 @@
-﻿using Domain.DTO.Resource;
+﻿using Domain;
+using Domain.DTO.Resource;
 using Domain.Enums;
 using Domain.Utilities;
 using ICSharpCode.Decompiler.Util;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Localization;
 using Service.Interfaces.Resource;
 using System;
 using System.Collections.Generic;
@@ -18,11 +20,13 @@ namespace Service
         #region  ctor
 
         private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly IStringLocalizer<ShareResource> _localizerShared;
 
 
-        public ResourceServices(IHttpContextAccessor httpContextAccessor)
+        public ResourceServices(IHttpContextAccessor httpContextAccessor, IStringLocalizer<ShareResource> localizerShared)
         {
             _httpContextAccessor = httpContextAccessor;
+            _localizerShared = localizerShared;
         }
 
 
@@ -73,6 +77,32 @@ namespace Service
 
 
 
+
+        /// <summary>
+        /// get all Data Anotation  key value
+        /// </summary>
+        /// <returns></returns>
+        public override List<KeyValueDTO> GetDataAnotationAndErrorMessages()
+        {
+            var data = new DataAnotationAndErrorMessageDTO(_localizerShared);
+            var model = new List<KeyValueDTO>();
+            foreach (var prop in data.GetType().GetProperties())
+            {
+                var obj = new KeyValueDTO()
+                {
+                    Name = prop.Name,
+                    Value = prop.GetValue(data, null).ToString(),
+                };
+                model.Add(obj);
+            }
+            return model;
+        }
+
+
+
+
+
+
         public override (bool succsseded, List<string> result) AddToShareResource(DataAnotationAndErrorMessageDTO model)
         {
 
@@ -80,14 +110,14 @@ namespace Service
 
             bool IsValid = true;
             List<string> Errors = new List<string>();
-            
+
             if (model == null)
             {
                 IsValid = false;
                 Errors.Add("Invalid date");
                 return (IsValid, Errors);
             }
- 
+
             //var acceptLanguage = GetAcceptLanguageHeader();
             //var address = "";
             //if (acceptLanguage == "")
@@ -109,7 +139,7 @@ namespace Service
 
             try
             {
-                 
+
 
                 //using (ResXResourceWriter resx = new ResXResourceWriter(@"..\Domain\ShareResource.en-ca.resx"))
                 using (ResXResourceWriter resx = new ResXResourceWriter(address))
@@ -126,8 +156,8 @@ namespace Service
                     resx.AddResource(nameof(model.InternalServerMessage), model.InternalServerMessage);
                     resx.AddResource(nameof(model.InvaliAmountForTransaction), model.InvaliAmountForTransaction);
                     resx.AddResource(nameof(model.InvalidAnswer), model.InvalidAnswer);
- 
-                     
+
+
 
                     resx.AddResource(nameof(model.InvalidaServiceCategory), model.InvalidaServiceCategory);
                     resx.AddResource(nameof(model.InvalidAttamp), model.InvalidAttamp);
@@ -192,18 +222,18 @@ namespace Service
                 return (IsValid, Errors);
 
 
-              
-              
-            
-              
-              
 
 
 
 
-           
 
-             }
+
+
+
+
+
+
+            }
             catch
             {
                 IsValid = false;

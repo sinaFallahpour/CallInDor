@@ -36,8 +36,8 @@ namespace Service.Interfaces.Resource
         /// <param name="model"></param>
         /// <returns></returns>
         public abstract (bool succsseded, List<string> result) AddToShareResource(DataAnotationAndErrorMessageDTO mode);
-      
 
+        public abstract List<KeyValueDTO> GetDataAnotationAndErrorMessages();
 
 
 
