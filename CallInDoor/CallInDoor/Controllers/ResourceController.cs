@@ -73,7 +73,7 @@ namespace CallInDoor.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpGet("GetDataAnotationAndErrorMessages")]
-        //[ClaimsAuthorize(IsAdmin = true)]
+        [ClaimsAuthorize(IsAdmin = true)]
         public ActionResult GetDataAnotationAndErrorMessages()
         {
             var data = _resourceServices.GetDataAnotationAndErrorMessages();

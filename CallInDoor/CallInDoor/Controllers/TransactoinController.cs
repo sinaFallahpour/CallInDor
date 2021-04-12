@@ -326,7 +326,7 @@ namespace CallInDoor.Controllers
                 await _context.SaveChangesAsync();
                 return Ok(_commonService.OkResponse(null, false));
             }
-            catch (Exception ex)
+            catch 
             {
                 List<string> erros = new List<string> { _localizerShared["InternalServerMessage"].Value.ToString() };
                 return StatusCode(StatusCodes.Status500InternalServerError,

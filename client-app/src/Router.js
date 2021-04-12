@@ -188,6 +188,16 @@ const Services = lazy(() => import("./views/pages/_Serices/Services"));
 const CreateService = lazy(() => import("./views/pages/_Serices/Create"));
 const EditService = lazy(() => import("./views/pages/_Serices/EditService"));
 
+
+
+
+// const Services = lazy(() => import("./views/pages/_Serices/Services"));
+const DataAnotation = lazy(() => import("./views/pages/_resourceManger/Create"));
+// const EditService = lazy(() => import("./views/pages/_Serices/EditService"));
+
+
+
+
 const RoleManager = lazy(() =>
   import("./views/pages/_rolemanager/Rolemanager")
 );
@@ -560,6 +570,53 @@ class AppRouter extends React.Component {
               component={EditService}
             />
 
+
+
+
+
+
+
+
+            {/* <RouteConfig
+              isLoggedIn={isLoggedIn}
+              title="Services"
+              exact
+              path="/pages/Services"
+              role="admin"
+              user={{ ...user }}
+              component={Services}
+            />
+           */}
+          
+            <RouteConfig
+              isLoggedIn={isLoggedIn}
+              title="edit data anotation errro messages"
+              exact
+              path="/pages/resourceManger/dataAnotation"
+              role="admin"
+              user={{ ...user }}
+              component={DataAnotation}
+            />
+            {/* <RouteConfig
+              isLoggedIn={isLoggedIn}
+              title="Edit Service"
+              exact
+              path="/pages/Services/:id"
+              role="admin"
+              user={{ ...user }}
+              component={EditService}
+            /> */}
+
+
+
+
+
+
+
+
+
+
+
             <RouteConfig
               isLoggedIn={isLoggedIn}
               title="Settings"
@@ -655,6 +712,17 @@ class AppRouter extends React.Component {
               permission={[Permissoin.getAllUsersList, Permissoin.editUser]}
               component={Test}
             />
+
+
+
+
+
+
+
+
+
+
+
 
             {/* 
             <RouteConfig

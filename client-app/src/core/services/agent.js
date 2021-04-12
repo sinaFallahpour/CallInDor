@@ -201,6 +201,16 @@ const Transactions = {
 
 
 
+const Resources = {
+  dataAnotationsList: () => requests.get("/Resource/GetDataAnotationAndErrorMessages"),
+  // listActive: () => requests.get("/Account/Role/GetAllActiveRolesInAdmin"),
+  // details: (id) => requests.get(`/Account/Role/GetRoleByIdInAdmin?id=${id}`),
+  // create: (role) => requests.post("/Account/Role/CreateRoleInAdmin", role),
+  editDataAnotationAndErrorMessages : (model) => requests.put("/Resource/EditDataAnotationAndErrorMessages", model),
+
+};
+
+
 const Settings = {
   details: () => requests.get("/Settings/GetSettings"),
   update: (setting) => requests.put("/Settings/UpdateSettings", setting),
@@ -243,4 +253,5 @@ export default {
   Transactions,
   Questions,
   CheckDiscount,
+  Resources
 };

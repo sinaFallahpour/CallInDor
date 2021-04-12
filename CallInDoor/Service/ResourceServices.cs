@@ -84,6 +84,7 @@ namespace Service
         /// <returns></returns>
         public override List<KeyValueDTO> GetDataAnotationAndErrorMessages()
         {
+
             var data = new DataAnotationAndErrorMessageDTO(_localizerShared);
             var model = new List<KeyValueDTO>();
             foreach (var prop in data.GetType().GetProperties())
@@ -96,6 +97,7 @@ namespace Service
                 model.Add(obj);
             }
             return model;
+
         }
 
 
