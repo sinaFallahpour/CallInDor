@@ -186,6 +186,17 @@ const navigationConfig = [
     navLink: "/pages/discount",
     // parentOf: ["/pages/test"],
   },
+  {
+    id: "language manager",
+    title: "resource manager",
+    type: "item",
+    role: "Admin",
+    // permissions: [Permission.getAllProvidedService],
+    icon: <Icon.Tablet size={20} />,
+    navLink: "/pages/DataAnotation",
+    // parentOf: ["/pages/test"],
+  },
+
 
   // {
   //   id: "Test",

@@ -1,4 +1,6 @@
+import Axios from "axios";
 import axios from "axios";
+import { func } from "prop-types";
 // import { history } from "../..";
 import { toast } from "react-toastify";
 export const baseUrl = "https://localhost:44377/";
@@ -8,6 +10,10 @@ axios.defaults.baseURL = "https://localhost:44377/api";
 
 // const token = window.localStorage.getItem("jwt");
 // axios.config.headers.Authorization = `Bearer ${token}`;
+
+const headerNames = {
+  acceptLanguage: "Accept-Language"
+}
 
 axios.interceptors.request.use(
   (config) => {
@@ -202,12 +208,17 @@ const Transactions = {
 
 
 const Resources = {
-  dataAnotationsList: () => requests.get("/Resource/GetDataAnotationAndErrorMessages"),
+  dataAnotationsList: (acceptLanguageHeader) => {
+    setHeader(headerNames.acceptLanguage, acceptLanguageHeader)
+ return   requests.get("/Resource/GetDataAnotationAndErrorMessages")
+  },
   // listActive: () => requests.get("/Account/Role/GetAllActiveRolesInAdmin"),
   // details: (id) => requests.get(`/Account/Role/GetRoleByIdInAdmin?id=${id}`),
   // create: (role) => requests.post("/Account/Role/CreateRoleInAdmin", role),
-  editDataAnotationAndErrorMessages : (model) => requests.put("/Resource/EditDataAnotationAndErrorMessages", model),
-
+  editDataAnotationAndErrorMessages: (model, acceptLanguageHeader) => {
+    setHeader(headerNames.acceptLanguage, acceptLanguageHeader)
+    return requests.post("/Resource/EditDataAnotationAndErrorMessages", model, acceptLanguageHeader)
+  }
 };
 
 
@@ -255,3 +266,25 @@ export default {
   CheckDiscount,
   Resources
 };
+
+
+
+
+
+
+
+// "Accept-Language"
+function setHeader(headerName, headerValue) {
+   axios.interceptors.request.use(
+    (config) => {
+      alert(headerName)
+      alert(headerValue)
+       config.headers = { headerName: headerValue };
+       return config;
+    }
+    // (error) => {
+    //   return Promise.reject(error);
+    // }
+  );
+
+}

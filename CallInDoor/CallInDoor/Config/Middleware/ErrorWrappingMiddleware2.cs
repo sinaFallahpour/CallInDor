@@ -1,4 +1,5 @@
 ﻿using Domain.DTO.Response;
+using Domain.Utilities;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
@@ -27,7 +28,7 @@ namespace CallInDoor.Config.Middleware
             {
                 await _next.Invoke(context);
             }
-            catch 
+            catch
             {
                 //_logger.LogError(EventIds.GlobalException, ex, ex.Message);
                 context.Response.StatusCode = 500;
@@ -36,8 +37,9 @@ namespace CallInDoor.Config.Middleware
             if (!context.Response.HasStarted)
             {
                 context.Response.ContentType = "application/json";
-
-                var response = new ApiResponse(context.Response.StatusCode);
+                List<string> error = new List<string> { PubicMessages.InternalServerMessage };
+                var response = new ApiBadRequestResponse(error, 500);
+                //var response = new ApiResponse(context.Response.StatusCode);
 
                 var defaultConst = new DefaultContractResolver()
                 {

@@ -51,7 +51,7 @@ namespace Service
             var header = GetAcceptLanguageHeader();
 
             //english or farsi or arab
-            if (header != "en-US" || header != "fa-IR" || header != "ar")
+            if (header != "en-US" && header != "fa-IR" && header != "ar")
             {
                 IsValid = false;
                 Errors.Add("Invalid Header");
@@ -84,6 +84,7 @@ namespace Service
         /// <returns></returns>
         public override List<KeyValueDTO> GetDataAnotationAndErrorMessages()
         {
+            var currentAcceptLAnguageHeader = GetAcceptLanguageHeader();
 
             var data = new DataAnotationAndErrorMessageDTO(_localizerShared);
             var model = new List<KeyValueDTO>();
@@ -101,14 +102,27 @@ namespace Service
         }
 
 
-
-
-
-
-        public override (bool succsseded, List<string> result) AddToShareResource(DataAnotationAndErrorMessageDTO model)
+        /// <summary>
+        /// گرفتن ادرس فایل ریسورس فعلی
+        /// </summary>
+        /// <returns></returns>
+        public override string GetCurrentResourceFileAddress()
         {
+            var currentAcceptLAnguageHeader = GetAcceptLanguageHeader();
+            var address = "";
+            if (currentAcceptLAnguageHeader == "fa-IR")
+                address = @"..\Domain\ShareResource.fa-IR.resx";
+            else if (currentAcceptLAnguageHeader == "en-US")
+                address = @"..\Domain\ShareResource.en-US.resx";
+            else if (currentAcceptLAnguageHeader == "ar")
+                address = @"..\Domain\ShareResource.ar.resx";
+            return address;
+        }
 
 
+
+        public override (bool succsseded, List<string> result) AddToShareResource(EditDataAnotationAndErrorMessageDTO model)
+        {
 
             bool IsValid = true;
             List<string> Errors = new List<string>();
@@ -116,28 +130,11 @@ namespace Service
             if (model == null)
             {
                 IsValid = false;
-                Errors.Add("Invalid date");
+                Errors.Add("Invalid data");
                 return (IsValid, Errors);
             }
 
-            //var acceptLanguage = GetAcceptLanguageHeader();
-            //var address = "";
-            //if (acceptLanguage == "")
-            //    address = @"..\Domain\ShareResource.en-ca.resx";
-            //else if (acceptLanguage == "")
-            //    address = @"..\Domain\ShareResource.en-ca.resx";
-            //else if (acceptLanguage == "")
-            //    address = @"..\Domain\ShareResource.en-ca.resx";
-
-
-
-            var address = "";
-            if (model.LanguageHeader == LanguageHeader.Persian)
-                address = @"..\Domain\ShareResource.fa-IR.resx";
-            else if (model.LanguageHeader == LanguageHeader.English)
-                address = @"..\Domain\ShareResource.en-US.resx";
-            else if (model.LanguageHeader == LanguageHeader.Arab)
-                address = @"..\Domain\ShareResource.ar.resx";
+            var address = GetCurrentResourceFileAddress();
 
             try
             {
@@ -146,8 +143,8 @@ namespace Service
                 //using (ResXResourceWriter resx = new ResXResourceWriter(@"..\Domain\ShareResource.en-ca.resx"))
                 using (ResXResourceWriter resx = new ResXResourceWriter(address))
                 {
-
-                    resx.AddResource(nameof(model.BlockUserMessage), model.BlockUserMessage);
+                    var sasasa = nameof(model.BlockUserMessage);
+                    resx.AddResource(sasasa, model.BlockUserMessage);
                     resx.AddResource(nameof(model.cardNameAlreadyExist), model.cardNameAlreadyExist);
                     resx.AddResource(nameof(model.ConfirmPhoneMessage), model.ConfirmPhoneMessage);
                     resx.AddResource(nameof(model.EditableProfileNotAllowed), model.EditableProfileNotAllowed);
@@ -225,16 +222,6 @@ namespace Service
 
 
 
-
-
-
-
-
-
-
-
-
-
             }
             catch
             {
@@ -244,5 +231,7 @@ namespace Service
             }
 
         }
+
+
     }
 }

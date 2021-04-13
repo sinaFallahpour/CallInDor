@@ -1,6 +1,10 @@
 import React from "react";
 import {
   Button,
+  UncontrolledDropdown,
+  DropdownMenu,
+  DropdownToggle,
+  DropdownItem,
   Modal,
   ModalHeader,
   ModalBody,
@@ -21,9 +25,17 @@ import {
   Alert,
   Spinner,
   Col,
+  UncontrolledButtonDropdown
 } from "reactstrap";
+import { history } from "../../../history";
 
-import { PlusSquare } from "react-feather";
+
+import { PlusSquareوChevronDown, Plus, ChevronDown } from "react-feather";
+
+
+// import CustomLoader from "./components/@vuexy/spinner/FullPageLoading";
+import ComponentSpinner from "../../../components/@vuexy/spinner/Loading-spinner";
+
 
 // import { modalForm } from "./ModalSourceCode"
 import { toast } from "react-toastify";
@@ -34,30 +46,65 @@ import agent from "../../../core/services/agent";
 
 import Joi from "joi-browser";
 import Form from "../../../components/common/form";
+import { Evented } from "leaflet";
 
 class ModalForm extends Form {
   state = {
     // data: {
     dataAnodations: [],
     // },
-    
-    loadingData:false,
+
+
+    languageHeader: { header: "fa-IR", language: "persian" },// ,"en-US","ar",
+
+
+    loadingData: false,
     Loading: false,
-    
+
   };
 
   schema = {
   };
 
   async populatingResources() {
-    const { data } = await agent.Resources.dataAnotationsList();
+    this.setState({ loadingData: true })
+    const { data } = await agent.Resources.dataAnotationsList(this.state.languageHeader.header);
     let dataAnodations = data.result.data;
     console.log(dataAnodations)
-    this.setState({ dataAnodations, Loading: false });
+    this.setState({ dataAnodations, loadingData: false });
+
+    alert(this.state.languageHeader.header)
   }
 
   async componentDidMount() {
     this.populatingResources();
+  }
+
+
+
+
+  // async ChanegLanguage() {
+  //   const { data } = await agent.Resources.dataAnotationsList();
+  //   let dataAnodations = data.result.data;
+  //   console.log(dataAnodations)
+  //   this.setState({ dataAnodations, Loading: false });
+  // }
+
+
+
+  async handleLanguageHeader(languageHeader) {
+    if (languageHeader == 0) {
+      this.setState({ languageHeader: { header: "fa-IR", language: "persian" } })
+    }
+    if (languageHeader == 1) {
+      this.setState({ languageHeader: { header: "en-Us", language: "english" } })
+    }
+    if (languageHeader == 2) {
+      this.setState({ languageHeader: { header: "ar", language: "arab" } })
+    }
+
+
+    this.populatingResources()
   }
 
   // updateRequiredFileChanged = async (index, e) => {
@@ -93,6 +140,15 @@ class ModalForm extends Form {
   //   });
   // };
 
+
+  onChange = (event, index) => {
+    var dataAnotations = this.state.dataAnodations;
+    var foundIndex = dataAnotations.findIndex(x => x.name == event.target.name);
+    dataAnotations[foundIndex] = { name: event.target.name, value: event.target.value };
+    this.setState({ dataAnotations })
+  }
+
+
   doSubmit = async (e) => {
     this.setState({ Loading: true });
 
@@ -102,24 +158,27 @@ class ModalForm extends Form {
 
 
     try {
-      const { dataAnodations } = this.state;
+      const { dataAnodations, languageHeader } = this.state;
 
 
-      var obj = {}
-      dataAnodations.forEach(function (data) {
-        Object.defineProperty(obj, data.name, {
-          value: data.value
-        })
-      });
 
-      console.log(obj)
-      // const obj = {
-      //   ...this.state.data,
-      // };
+      var rv = {};
+      for (var i = 0; i < dataAnodations.length; ++i)
+        rv[dataAnodations[i].name] = dataAnodations[i].value;
 
-      await agent.Resources.dataAnotationsList
 
-      const { data } = await agent.Resources.editDataAnotationAndErrorMessages(obj) ;
+      // var dddddd = {}
+      // dataAnodations.forEach(function (data) {
+      //   Object.defineProperty(dddddd, data.name, {
+      //     value: data.value
+      //   })
+      // });
+
+
+      alert(languageHeader.header)
+
+
+      const { data } = await agent.Resources.editDataAnotationAndErrorMessages(rv, languageHeader.header);
       if (data.result.status) toast.success(data.result.message);
     } catch (ex) {
 
@@ -130,17 +189,81 @@ class ModalForm extends Form {
   render() {
     const { dataAnodations, loadingData } = this.state;
     if (loadingData) {
-      return <> loading...</>
+      return <> <ComponentSpinner /></>
     }
 
 
     return (
       <React.Fragment>
         <Col sm="10" className="mx-auto">
+
+          <Button.Ripple
+            onClick={() => { history.push("/pages/DataAnotation") }}
+            className="mr-1 mb-1 bg-gradient-success" color="none">Error and warning Messages</Button.Ripple>
+
+          <Button.Ripple
+            onClick={() => { history.push("/pages/DataAnotation") }}
+            className="mr-1 mb-1 bg-gradient-info" color="none">Site Static Word</Button.Ripple>
+
+          {/* <Button.Ripple className="mr-1 mb-1 bg-gradient-warning" color="none">Warning</Button.Ripple> */}
           <Card>
-            <CardHeader>
+            {/* <CardHeader>
               <CardTitle> Edit data Anotation </CardTitle>
+            </CardHeader> */}
+
+            <CardHeader>
+              {/* <CardTitle> Edit data Anotation </CardTitle> */}
+              <Button
+                className="add-new-btn mb-2"
+                color="primary"
+                // onClick={this.toggleModal}
+                // onClick={() => {
+                //   this.handleSidebar(true, true);
+                // }}
+                // handleSidebar = (boolean, addNew = false) => {
+                //   this.setState({ modal: boolean });
+                //   if (addNew === true) this.setState({ currentData: null, addNew: true });
+                // };
+
+                outline
+              >
+                <Plus size={15} />
+                <span className="align-middle">Add New</span>
+              </Button>
+
+
+              <h2> Edit data Anotation</h2>
+
+
+
+              <div className="dropdown mr-1 mb-1">
+                <UncontrolledButtonDropdown>
+                  <DropdownToggle color="success" caret>
+                    {this.state.languageHeader.language}
+                    <ChevronDown size={15} />
+                  </DropdownToggle>
+                  <DropdownMenu>
+                    <DropdownItem tag="a"
+                      onClick={() => this.handleLanguageHeader(0)}
+                    >
+                      persian
+                     </DropdownItem>
+                    <DropdownItem tag="a"
+                      onClick={() => this.handleLanguageHeader(1)}
+                    >
+                      english
+                    </DropdownItem>
+                    <DropdownItem tag="a"
+                      onClick={() => this.handleLanguageHeader(2)}
+                    >
+                      arabic
+                   </DropdownItem>
+                  </DropdownMenu>
+                </UncontrolledButtonDropdown>
+              </div>
+
             </CardHeader>
+
             <CardBody>
               {/* {errorscustom &&
                 errorscustom.map((err, index) => {
@@ -158,121 +281,22 @@ class ModalForm extends Form {
                     return (
                       <Col md="4" className="p-1" key={index}>
                         <label htmlFor={item.name}>{item.name}</label>
-                        <input name={item.name} id={item.name} value={item.value} onChange={(e)=>{ }} required className={`form-control`} />
+                        <input
+                          name={item.name}
+                          id={item.name}
+                          value={item.value}
+                          onChange={(e) => {
+                            this.onChange(e, index)
+
+                            // this.setState({ [item.name]: e.target.value })
+                          }}
+                          required className={`form-control`} />
                       </Col>
                     )
                   })}
                 </FormGroup>
 
-                {/* 
-
-                {this.renderReactSelect(
-                  "roleId",
-                  "Role",
-                  roles.map((item) => ({
-                    value: item.id,
-                    label: item.name,
-                  }))
-                )} */}
-
-                {/* {this.renderInput("minSessionTime", "Min Session Time (For Chat, Chat Voice,...)")} */}
-
-                {/* <div className="form-group">
-                  <label>Tags</label>
-                  <ReactTagInput
-                    tags={this.state.tags}
-                    placeholder="Type and press enter"
-                    maxTags={60}
-                    editable={true}
-                    readOnly={false}
-                    removeOnBackspace={true}
-                    onChange={(newTags) => this.setState({ tags: newTags })}
-                    validator={(value) => {
-                      let isvalid = !!value.trim();
-                      if (!isvalid) {
-                        alert("tag cant be empty");
-                        return isvalid;
-                      }
-                      isvalid = value.length < 100;
-                      if (!isvalid) {
-                        alert("please enter less than 100 character");
-                      }
-                      // Return boolean to indicate validity
-                      return isvalid;
-                    }}
-                  />
-                </div> */}
-
-                {/* <div className="form-group">
-                  <label>Persian Tags</label>
-                  <ReactTagInput
-                    tags={this.state.persinaTags}
-                    placeholder="Type and press enter"
-                    maxTags={60}
-                    editable={true}
-                    readOnly={false}
-                    removeOnBackspace={true}
-                    onChange={(newTags) =>
-                      this.setState({ persinaTags: newTags })
-                    }
-                    validator={(value) => {
-                      let isvalid = !!value.trim();
-                      if (!isvalid) {
-                        alert("tag cant be empty");
-                        return isvalid;
-                      }
-                      isvalid = value.length < 100;
-                      if (!isvalid) {
-                        alert("please enter less than 100 character");
-                      }
-                      // Return boolean to indicate validity
-                      return isvalid;
-                    }}
-                  />
-                </div> */}
-
-                {/* <div className="form-group">
-                  <label htmlFor="isEnabled">Is Enabled</label>
-                  <input
-                    value={this.state.isEnabled}
-                    checked={this.state.isEnabled}
-                    onChange={(e) => {
-                      this.setState({ isEnabled: !this.state.isEnabled });
-                    }}
-                    name="isEnabled"
-                    id="isEnabled"
-                    type="checkbox"
-                    className="ml-1"
-                  />
-                </div> */}
-
-
-
-                {/* <div className="row">
-                  <input type="hidden" value="1" />
-                  <div className="form-group col-12 col-md-4">
-                    <label htmlFor="sa">File name (persian)</label>
-                    <input name="sa" id="sa" className={`form-control `} />
-                    {error && (
-                      <div className="  alert alert-danger">{error}</div>
-                    )}
-                  </div>
-
-                  <div className="form-group col-12 col-md-4">
-                    <label htmlFor="sa">File name (english)</label>
-                    <input name="sa" id="sa" className={`form-control `} />
-                    {error && (
-                      <div className="  alert alert-danger">{error}</div>
-                    )}
-                  </div>
-
-                  <div className="form-group col-4  col-md-3">
-                    <label></label>
-                    <Button type="button" className="form-control btn-danger">
-                      remove
-                    </Button>
-                  </div>
-                </div> */}
+               
 
 
                 {this.state.Loading ? (

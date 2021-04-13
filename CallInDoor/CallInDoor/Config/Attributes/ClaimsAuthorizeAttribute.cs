@@ -32,7 +32,7 @@ namespace CallInDoor.Config.Attributes
             if (!IsExist)
             {
 
-                ///این if دیگر بی کاربرد است چون همه ریسپتنس ها یکدست شد
+                ///این if دیگر بی کاربرد است چون همه ریسپانس ها یکدست شد
                 if (!IsAdmin)
                 {
                     List<string> errors = new List<string> { _localizerShared["UnauthorizedMessage"].Value.ToString() };

@@ -25,17 +25,18 @@ namespace Service.Interfaces.Resource
         /// <returns></returns>
         public abstract (bool succsseded, List<string> result) ValidateAcceptLanguageHeader();
 
-
-
-
-
+        /// <summary>
+        /// گرفتن ادرس فایل ریسورس فعلی
+        /// </summary>
+        /// <returns></returns>
+        public abstract string GetCurrentResourceFileAddress();
 
         /// <summary>
         ///ولیدیت کردن هدر accept language   
         /// </summary>
         /// <param name="model"></param>
         /// <returns></returns>
-        public abstract (bool succsseded, List<string> result) AddToShareResource(DataAnotationAndErrorMessageDTO mode);
+        public abstract (bool succsseded, List<string> result) AddToShareResource(EditDataAnotationAndErrorMessageDTO mode);
 
         public abstract List<KeyValueDTO> GetDataAnotationAndErrorMessages();
 

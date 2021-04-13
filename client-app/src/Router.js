@@ -592,7 +592,7 @@ class AppRouter extends React.Component {
               isLoggedIn={isLoggedIn}
               title="edit data anotation errro messages"
               exact
-              path="/pages/resourceManger/dataAnotation"
+              path="/pages/DataAnotation"
               role="admin"
               user={{ ...user }}
               component={DataAnotation}

@@ -93,32 +93,35 @@ namespace CallInDoor.Controllers
         [HttpPost("EditDataAnotationAndErrorMessages")]
         //[Authorize]
         [ClaimsAuthorize(IsAdmin = true)]
-        public ActionResult EditDataAnotationAndErrorMessages([FromBody] DataAnotationAndErrorMessageDTO model)
+        public ActionResult EditDataAnotationAndErrorMessages([FromBody] EditDataAnotationAndErrorMessageDTO model)
         {
             //////////var asasa = nameof(model.BlockUserMessage);
             //////////var saass = asasa;
-            //var res = _resourceServices.ValidateAcceptLanguageHeader();
-            //if (!res.succsseded)
+            ///
+            var userLangs = Request.HttpContext.Request.Headers["Accept-Language"].ToString();
+
+            var res = _resourceServices.ValidateAcceptLanguageHeader();
+            if (!res.succsseded)
+            {
+                return BadRequest(new ApiBadRequestResponse(res.result));
+            }
+            var currentUsername = _accountService.GetCurrentUserName();
+
+            //try
             //{
-            //    return BadRequest(new ApiBadRequestResponse(res.result));
+
+            var result = _resourceServices.AddToShareResource(model);
+            if (result.succsseded == false)
+            {
+                return BadRequest(new ApiBadRequestResponse(result.result));
+            }
+            return Ok(_commonService.OkResponse(null, true));
             //}
-            //var currentUsername = _accountService.GetCurrentUserName();
-
-            try
-            {
-
-                var result = _resourceServices.AddToShareResource(model);
-                if (result.succsseded == false)
-                {
-                    return BadRequest(new ApiBadRequestResponse(result.result));
-                }
-                return Ok(_commonService.OkResponse(null, false));
-            }
-            catch
-            {
-                List<string> error = new List<string> { PubicMessages.InternalServerMessage };
-                return StatusCode(StatusCodes.Status500InternalServerError, new ApiBadRequestResponse(error, 500));
-            }
+            //catch
+            //{
+            //    List<string> error = new List<string> { PubicMessages.InternalServerMessage };
+            //    return StatusCode(StatusCodes.Status500InternalServerError, new ApiBadRequestResponse(error, 500));
+            //}
         }
 
 

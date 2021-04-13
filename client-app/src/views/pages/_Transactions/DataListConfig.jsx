@@ -322,7 +322,7 @@ const CustomHeader = (props) => {
         </div>
       </div>
     </div>
-  );
+ );
 };
 
 class DataListConfig extends Component {

@@ -96,7 +96,13 @@ export const searchResult = [
         link: "/pages/Transactions",
         icon: "Circle",
       },
-
+      {
+        id: 14,
+        title: "language manager",
+        target: "language manager",
+        link: "/pages/DataAnotation",
+        icon: "Circle",
+      },
       {
         id: 1,
         target: "AnalyticsDashboard",

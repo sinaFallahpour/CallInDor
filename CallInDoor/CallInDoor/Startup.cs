@@ -40,6 +40,7 @@ using Service.Interfaces.InMemoryCache;
 using Service.Interfaces.Company;
 using Service.Interfaces.Resource;
 using Service.Interfaces.SmsService;
+using Domain.DTO.Resource;
 
 namespace CallInDoor
 {
@@ -133,7 +134,7 @@ namespace CallInDoor
 
 
 
-           
+
 
             //services.AddDbContext<ApplicationDbContext>(options =>
             //    options.UseSqlServer(
@@ -195,6 +196,7 @@ namespace CallInDoor
             services.AddScoped<ISmsService, SmsService>();
             services.AddScoped<IResourceServices, ResourceServices>();
             services.AddSingleton<IAuthorizationPolicyProvider, AuthorizationPolicyProvider>();
+            services.AddScoped<DataAnotationAndErrorMessageDTO>();
 
         }
 
