@@ -23,6 +23,7 @@ using Microsoft.Extensions.Localization;
 using Service.Interfaces.Account;
 using Service.Interfaces.Common;
 using Service.Interfaces.JwtManager;
+using Service.Interfaces.Resource;
 using Service.Interfaces.SmsService;
 
 namespace CallInDoor.Controllers
@@ -49,6 +50,9 @@ namespace CallInDoor.Controllers
         private IStringLocalizer<AccountController> _localizer;
         private IStringLocalizer<ShareResource> _localizerShared;
 
+        private readonly IResourceServices _resourceServices;
+
+
         public AccountController(
                      IHubContext<NotificationHub> hubContext,
         UserManager<AppUser> userManager,
@@ -60,7 +64,8 @@ namespace CallInDoor.Controllers
                    ISmsService smsService,
 
                IStringLocalizer<AccountController> localizer,
-                IStringLocalizer<ShareResource> localizerShared
+                IStringLocalizer<ShareResource> localizerShared,
+                IResourceServices resourceServices
             )
         {
             _hubContext = hubContext;
@@ -75,7 +80,7 @@ namespace CallInDoor.Controllers
             _jwtGenerator = jwtGenerator;
             _localizer = localizer;
             _localizerShared = localizerShared;
-
+            _resourceServices = resourceServices;
         }
 
         #endregion ctor
@@ -95,7 +100,8 @@ namespace CallInDoor.Controllers
 
             if (user == null)
             {
-                List<string> erros = new List<string> { _localizerShared["NotFound"].Value.ToString() };
+                //List<string> erros = new List<string> { _localizerShared["NotFound"].Value.ToString() };
+                List<string> erros = new List<string> { _resourceServices.GetErrorMessageByKey("NotFound") };
                 return Unauthorized(new ApiBadRequestResponse(erros, 401));
             }
 
@@ -103,11 +109,13 @@ namespace CallInDoor.Controllers
             {
                 user.IsOnline = !user.IsOnline;
                 await _context.SaveChangesAsync();
-                return Ok(_commonService.OkResponse(null, _localizerShared["SuccessMessage"].Value.ToString()));
+                //return Ok(_commonService.OkResponse(null, _localizerShared["SuccessMessage"].Value.ToString()));
+                return Ok(_commonService.OkResponse(null, _resourceServices.GetErrorMessageByKey("SuccessMessage")));
             }
             catch
             {
-                List<string> erroses = new List<string> { _localizerShared["InternalServerMessage"].Value.ToString() };
+                //List<string> erroses = new List<string> { _localizerShared["InternalServerMessage"].Value.ToString() };
+                List<string> erroses = new List<string> { _resourceServices.GetErrorMessageByKey("InternalServerMessage") };
                 return StatusCode(StatusCodes.Status500InternalServerError,
                     new ApiBadRequestResponse(erroses, 500));
             }
@@ -124,10 +132,13 @@ namespace CallInDoor.Controllers
         //[ClaimsAuthorize(IsAdmin = false)]
         public async Task<ActionResult> IsUserActive()
         {
+
+            return Ok(_resourceServices.GetErrorMessageByKey("SuccessMessage"));
             var currentUserName = _accountService.GetCurrentUserName();
             if (string.IsNullOrEmpty(currentUserName))
             {
-                List<string> erros = new List<string> { _localizerShared["UnauthorizedMessage"].Value.ToString() };
+                //List<string> erros = new List<string> { _localizerShared["UnauthorizedMessage"].Value.ToString() };
+                List<string> erros = new List<string> { _resourceServices.GetErrorMessageByKey("UnauthorizedMessage") };
                 return Unauthorized(new ApiBadRequestResponse(erros, 401));
             }
 
@@ -135,7 +146,8 @@ namespace CallInDoor.Controllers
 
             if (user == null)
             {
-                List<string> erros = new List<string> { _localizerShared["UnauthorizedMessage"].Value.ToString() };
+                //List<string> erros = new List<string> { _localizerShared["UnauthorizedMessage"].Value.ToString() };
+                List<string> erros = new List<string> { _resourceServices.GetErrorMessageByKey("UnauthorizedMessage") };
                 return Unauthorized(new ApiBadRequestResponse(erros, 401));
             }
 
@@ -199,7 +211,8 @@ namespace CallInDoor.Controllers
                 if (user.PhoneNumberConfirmed == true)
                 {
                     var errors = new List<string>();
-                    errors.Add(_localizer["PhoneNumberAlreadyExist"].Value.ToString());
+                    //errors.Add(_localizer["PhoneNumberAlreadyExist"].Value.ToString());
+                    errors.Add(_resourceServices.GetErrorMessageByKey("PhoneNumberAlreadyExist"));
                     return BadRequest(new ApiBadRequestResponse(errors));
                 }
                 user.verificationCode = code;
@@ -207,7 +220,8 @@ namespace CallInDoor.Controllers
                 //send code ;
 
                 await _context.SaveChangesAsync();
-                return Ok(_commonService.OkResponse(null, _localizerShared["SuccessMessage"].Value.ToString()));
+                //return Ok(_commonService.OkResponse(null, _localizerShared["SuccessMessage"].Value.ToString()));
+                return Ok(_commonService.OkResponse(null, _resourceServices.GetErrorMessageByKey("SuccessMessage") ));
 
             }
 
@@ -261,11 +275,13 @@ namespace CallInDoor.Controllers
                             await _smsService.RegistrerCode(code.ToString(), phonenumber);
 
                             //send Code
-                            return Ok(_commonService.OkResponse(null, _localizerShared["SuccessMessage"].Value.ToString()));
+                            //return Ok(_commonService.OkResponse(null, _localizerShared["SuccessMessage"].Value.ToString()));
+                            return Ok(_commonService.OkResponse(null, _resourceServices.GetErrorMessageByKey("SuccessMessage")));
                         }
 
                         transaction.Rollback();
-                        List<string> erros = new List<string> { _localizerShared["InternalServerMessage"].Value.ToString() };
+                        //List<string> erros = new List<string> { _localizerShared["InternalServerMessage"].Value.ToString() };
+                        List<string> erros = new List<string> { _resourceServices.GetErrorMessageByKey("InternalServerMessage")    };
                         return StatusCode(StatusCodes.Status500InternalServerError,
                                                                     new ApiBadRequestResponse(erros, 500));
                     }
@@ -281,7 +297,8 @@ namespace CallInDoor.Controllers
                 {
                     transaction.Rollback();
 
-                    List<string> erros = new List<string> { _localizerShared["InternalServerMessage"].Value.ToString() };
+                    //List<string> erros = new List<string> { _localizerShared["InternalServerMessage"].Value.ToString() };
+                    List<string> erros = new List<string> { _resourceServices.GetErrorMessageByKey("InternalServerMessage") };
                     return StatusCode(StatusCodes.Status500InternalServerError,
                        new ApiBadRequestResponse(erros, 500));
                 }
@@ -300,7 +317,8 @@ namespace CallInDoor.Controllers
             var user = await _accountService.FindUserByPhonenumber(model.PhoneNumber);
             if (user == null)
             {
-                List<string> erros = new List<string> { _localizerShared["InvalidPhoneNumber"].Value.ToString() };
+                //List<string> erros = new List<string> { _localizerShared["InvalidPhoneNumber"].Value.ToString() };
+                List<string> erros = new List<string> { _resourceServices.GetErrorMessageByKey("InvalidPhoneNumber") };
                 return BadRequest(new ApiBadRequestResponse(erros, 401));
             }
             var result = await _accountService.CheckPasswordAsync(user, model.Password);
@@ -318,21 +336,25 @@ namespace CallInDoor.Controllers
                     Token = await _jwtGenerator.CreateToken(user),
                     UserName = user.UserName,
                 };
-                return Ok(_commonService.OkResponse(userInfo, _localizerShared["SuccessMessage"].Value.ToString()));
+                //return Ok(_commonService.OkResponse(userInfo, _localizerShared["SuccessMessage"].Value.ToString()));
+                return Ok(_commonService.OkResponse(userInfo, _resourceServices.GetErrorMessageByKey("SuccessMessage")));
             }
 
             if (result.IsNotAllowed)
             {
-                List<string> erros = new List<string> { _localizerShared["ConfirmPhoneMessage"].Value.ToString() };
+                //List<string> erros = new List<string> { _localizerShared["ConfirmPhoneMessage"].Value.ToString() };
+                List<string> erros = new List<string> { _resourceServices.GetErrorMessageByKey("ConfirmPhoneMessage") };
                 return BadRequest(new ApiBadRequestResponse(erros, 401));
             }
             if (result.IsLockedOut)
             {
-                List<string> erros = new List<string> { _localizerShared["LockedOutMessage"].Value.ToString() };
+                //List<string> erros = new List<string> { _localizerShared["LockedOutMessage"].Value.ToString() };
+                List<string> erros = new List<string> { _resourceServices.GetErrorMessageByKey("LockedOutMessage") };
                 return BadRequest(new ApiBadRequestResponse(erros, 401));
             }
 
-            List<string> erroses = new List<string> { _localizerShared["UnMathPhoneNumberPassword"].Value.ToString() };
+            //List<string> erroses = new List<string> { _localizerShared["UnMathPhoneNumberPassword"].Value.ToString() };
+            List<string> erroses = new List<string> { _resourceServices.GetErrorMessageByKey("UnMathPhoneNumberPassword") };
             return Unauthorized(new ApiBadRequestResponse(erroses, 401));
 
         }
@@ -464,7 +486,8 @@ namespace CallInDoor.Controllers
                 UserName = user.UserName,
             };
 
-            return Ok(_commonService.OkResponse(userInfo, _localizerShared["SuccessMessage"].Value.ToString()));
+            //return Ok(_commonService.OkResponse(userInfo, _localizerShared["SuccessMessage"].Value.ToString()));
+            return Ok(_commonService.OkResponse(userInfo, _resourceServices.GetErrorMessageByKey("SuccessMessage")));
         }
 
         #endregion
@@ -481,7 +504,8 @@ namespace CallInDoor.Controllers
 
             if (user == null)
             {
-                List<string> erros = new List<string> { _localizerShared["InvalidPhoneNumber"].Value.ToString() };
+                //List<string> erros = new List<string> { _localizerShared["InvalidPhoneNumber"].Value.ToString() };
+                List<string> erros = new List<string> {_resourceServices.GetErrorMessageByKey("InvalidPhoneNumber") };
                 return Unauthorized(new ApiBadRequestResponse(erros, 401));
                 //return Unauthorized(new ApiResponse(401, _localizerShared["InvalidPhoneNumber"].Value.ToString()));
             }
@@ -493,7 +517,7 @@ namespace CallInDoor.Controllers
             user.verificationCodeExpireTime = DateTime.UtcNow.AddMinutes(3);
             await _context.SaveChangesAsync();
 
-            return Ok(_commonService.OkResponse(null, _localizerShared["SuccessMessage"].Value.ToString()));
+            return Ok(_commonService.OkResponse(null, _resourceServices.GetErrorMessageByKey("SuccessMessage")));
 
         }
 
@@ -511,13 +535,15 @@ namespace CallInDoor.Controllers
             var user = await _accountService.FindUserByPhonenumber(phoneNumber);
             if (user == null)
             {
-                List<string> erros = new List<string> { _localizerShared["InvalidPhoneNumber"].Value.ToString() };
+                //List<string> erros = new List<string> { _localizerShared["InvalidPhoneNumber"].Value.ToString() };
+                List<string> erros = new List<string> { _resourceServices.GetErrorMessageByKey("InvalidPhoneNumber") };
                 return Unauthorized(new ApiBadRequestResponse(erros, 401));
             }
             /*................................................. question.......................................*/
             if (!await _userManager.IsPhoneNumberConfirmedAsync(user))
             {
-                List<string> erros = new List<string> { _localizerShared["ConfirmPhoneMessage"].Value.ToString() };
+                //List<string> erros = new List<string> { _localizerShared["ConfirmPhoneMessage"].Value.ToString() };
+                List<string> erros = new List<string> { _resourceServices.GetErrorMessageByKey("ConfirmPhoneMessage") };
                 return Unauthorized(new ApiBadRequestResponse(erros, 401));
             }
             //var newpass = "123456";
@@ -529,7 +555,7 @@ namespace CallInDoor.Controllers
             {
                 //send Password to user
                 await _smsService.RecoveryPassword(newpass, user.PhoneNumber);
-                return Ok(_commonService.OkResponse(null, _localizerShared["SuccessMessage"].Value.ToString()));
+                return Ok(_commonService.OkResponse(null, _resourceServices.GetErrorMessageByKey("SuccessMessage")));
             }
             else
             {
@@ -572,7 +598,7 @@ namespace CallInDoor.Controllers
             var result = await _userManager.UpdateAsync(userFromDB);
 
             if (result.Succeeded)
-                return Ok(_commonService.OkResponse(new { }, _localizerShared["SuccessMessage"].Value.ToString()));
+                return Ok(_commonService.OkResponse(new { }, _resourceServices.GetErrorMessageByKey("SuccessMessage")));
             else
             {
                 var errors = new List<string>();
@@ -599,7 +625,7 @@ namespace CallInDoor.Controllers
             var result = await _userManager.ChangePasswordAsync(userfromDB, model.CurrentPassword, model.NewPassword);
 
             if (result.Succeeded)
-                return Ok(_commonService.OkResponse(new { }, _localizerShared["SuccessMessage"].Value.ToString()));
+                return Ok(_commonService.OkResponse(new { }, _resourceServices.GetErrorMessageByKey("SuccessMessage")));
             else
             {
                 if (result.Errors.Any(c => c.Code == "PasswordMismatch"))
@@ -980,7 +1006,7 @@ namespace CallInDoor.Controllers
             }
 
             await _context.SaveChangesAsync();
-            return Ok(_commonService.OkResponse(locked, _localizerShared["SuccessMessage"].Value.ToString()));
+            return Ok(_commonService.OkResponse(locked, _resourceServices.GetErrorMessageByKey("SuccessMessage")));
 
         }
 
@@ -1176,7 +1202,7 @@ namespace CallInDoor.Controllers
 
                         ////////return StatusCode(StatusCodes.Status500InternalServerError,
                         ////////              new ApiResponse(500, PubicMessages.InternalServerMessage));
-                    
+
                     }
                     else
                     {
