@@ -21,10 +21,9 @@ namespace Domain.Enums
         [Description("انگلیسی")]
         [Display(Name = "انگلیسی")]
         English,
-
         [Description("عرب")]
         [Display(Name = "عرب")]
-       Arab,
+        Arab,
 
 
     }

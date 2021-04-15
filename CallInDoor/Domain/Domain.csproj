@@ -120,7 +120,7 @@
     </EmbeddedResource>
     <EmbeddedResource Update="ShareResource.ar.resx">
       <Generator>PublicResXFileCodeGenerator</Generator>
-      <LastGenOutput>ShareResource.ar.Designer.cs</LastGenOutput>
+      <LastGenOutput>ShareResource-ar.Designer.cs</LastGenOutput>
     </EmbeddedResource>
     <EmbeddedResource Update="ShareResource.en-US.resx">
       <SubType>Designer</SubType>
@@ -169,6 +169,11 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>AddCommentServiceDTO.fa-IR.resx</DependentUpon>
     </Compile>
+    <Compile Update="ShareResource-ar.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>ShareResource.ar.resx</DependentUpon>
+    </Compile>
     <Compile Update="ShareResource.en-US.Designer.cs">
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
@@ -179,7 +184,7 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>ShareResource.fa-IR.resx</DependentUpon>
     </Compile>
-    <Compile Update="ShareResource.ar.Designer.cs">
+    <Compile Update="ShareResource.Designer.cs">
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
       <DependentUpon>ShareResource.ar.resx</DependentUpon>

@@ -3,10 +3,10 @@ import axios from "axios";
 import { func } from "prop-types";
 // import { history } from "../..";
 import { toast } from "react-toastify";
-export const baseUrl = "https://localhost:44377/";
-// export const baseUrl = "https://api.callindoor.ir/";
-axios.defaults.baseURL = "https://localhost:44377/api";
-// axios.defaults.baseURL = "https://api.callindoor.ir/api";
+// export const baseUrl = "https://localhost:44377/";
+  export const baseUrl = "https://api.callindoor.ir/";
+// axios.defaults.baseURL = "https://localhost:44377/api";
+  axios.defaults.baseURL = "https://api.callindoor.ir/api";
 
 // const token = window.localStorage.getItem("jwt");
 // axios.config.headers.Authorization = `Bearer ${token}`;
@@ -60,7 +60,13 @@ axios.interceptors.response.use(undefined, (error) => {
 
 export const requests = {
   get: (url) => axios.get(url),
+  getWithHeader: (url, headerValue) => axios.get(url, {
+    headers: { "accept-language": headerValue },
+  }),
   post: (url, body) => axios.post(url, body),
+  postWithHeader: (url, body, headerValue) => axios.post(url, body, {
+    headers: { "accept-language": headerValue },
+  }),
   put: (url, body) => axios.put(url, body),
   del: (url) => axios.delete(url),
   postForm: (url, file) => {
@@ -209,15 +215,15 @@ const Transactions = {
 
 const Resources = {
   dataAnotationsList: (acceptLanguageHeader) => {
-    setHeader(headerNames.acceptLanguage, acceptLanguageHeader)
- return   requests.get("/Resource/GetDataAnotationAndErrorMessages")
+    // setHeader(headerNames.acceptLanguage, acceptLanguageHeader)
+    return requests.getWithHeader("/Resource/GetDataAnotationAndErrorMessages", acceptLanguageHeader)
   },
   // listActive: () => requests.get("/Account/Role/GetAllActiveRolesInAdmin"),
   // details: (id) => requests.get(`/Account/Role/GetRoleByIdInAdmin?id=${id}`),
   // create: (role) => requests.post("/Account/Role/CreateRoleInAdmin", role),
   editDataAnotationAndErrorMessages: (model, acceptLanguageHeader) => {
-    setHeader(headerNames.acceptLanguage, acceptLanguageHeader)
-    return requests.post("/Resource/EditDataAnotationAndErrorMessages", model, acceptLanguageHeader)
+    // setHeader(headerNames.acceptLanguage, acceptLanguageHeader)
+    return requests.postWithHeader("/Resource/EditDataAnotationAndErrorMessages", model, acceptLanguageHeader)
   }
 };
 
@@ -270,17 +276,14 @@ export default {
 
 
 
-
-
-
 // "Accept-Language"
 function setHeader(headerName, headerValue) {
-   axios.interceptors.request.use(
+  axios.interceptors.request.use(
     (config) => {
-      alert(headerName)
-      alert(headerValue)
-       config.headers = { headerName: headerValue };
-       return config;
+      // alert(headerName)
+      console.log(headerValue)
+      config.headers = { "accept-language": headerValue };
+      return config;
     }
     // (error) => {
     //   return Promise.reject(error);

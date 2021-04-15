@@ -1,96 +1,18 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <root>
-  <!-- 
-    Microsoft ResX Schema 
-    
-    Version 2.0
-    
-    The primary goals of this format is to allow a simple XML format 
-    that is mostly human readable. The generation and parsing of the 
-    various data types are done through the TypeConverter classes 
-    associated with the data types.
-    
-    Example:
-    
-    ... ado.net/XML headers & schema ...
-    <resheader name="resmimetype">text/microsoft-resx</resheader>
-    <resheader name="version">2.0</resheader>
-    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
-    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
-    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
-    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
-    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
-        <value>[base64 mime encoded serialized .NET Framework object]</value>
-    </data>
-    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
-        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
-        <comment>This is a comment</comment>
-    </data>
-                
-    There are any number of "resheader" rows that contain simple 
-    name/value pairs.
-    
-    Each data row contains a name, and value. The row also contains a 
-    type or mimetype. Type corresponds to a .NET class that support 
-    text/value conversion through the TypeConverter architecture. 
-    Classes that don't support this are serialized and stored with the 
-    mimetype set.
-    
-    The mimetype is used for serialized objects, and tells the 
-    ResXResourceReader how to depersist the object. This is currently not 
-    extensible. For a given mimetype the value must be set accordingly:
-    
-    Note - application/x-microsoft.net.object.binary.base64 is the format 
-    that the ResXResourceWriter will generate, however the reader can 
-    read any of the formats listed below.
-    
-    mimetype: application/x-microsoft.net.object.binary.base64
-    value   : The object must be serialized with 
-            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
-            : and then encoded with base64 encoding.
-    
-    mimetype: application/x-microsoft.net.object.soap.base64
-    value   : The object must be serialized with 
-            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
-            : and then encoded with base64 encoding.
-
-    mimetype: application/x-microsoft.net.object.bytearray.base64
-    value   : The object must be serialized into a byte array 
-            : using a System.ComponentModel.TypeConverter
-            : and then encoded with base64 encoding.
-    -->
   <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
-    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
     <xsd:element name="root" msdata:IsDataSet="true">
       <xsd:complexType>
         <xsd:choice maxOccurs="unbounded">
-          <xsd:element name="metadata">
-            <xsd:complexType>
-              <xsd:sequence>
-                <xsd:element name="value" type="xsd:string" minOccurs="0" />
-              </xsd:sequence>
-              <xsd:attribute name="name" use="required" type="xsd:string" />
-              <xsd:attribute name="type" type="xsd:string" />
-              <xsd:attribute name="mimetype" type="xsd:string" />
-              <xsd:attribute ref="xml:space" />
-            </xsd:complexType>
-          </xsd:element>
-          <xsd:element name="assembly">
-            <xsd:complexType>
-              <xsd:attribute name="alias" type="xsd:string" />
-              <xsd:attribute name="name" type="xsd:string" />
-            </xsd:complexType>
-          </xsd:element>
           <xsd:element name="data">
             <xsd:complexType>
               <xsd:sequence>
                 <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
                 <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
               </xsd:sequence>
-              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="name" type="xsd:string" msdata:Ordinal="1" />
               <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
               <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
-              <xsd:attribute ref="xml:space" />
             </xsd:complexType>
           </xsd:element>
           <xsd:element name="resheader">
@@ -105,172 +27,55 @@
       </xsd:complexType>
     </xsd:element>
   </xsd:schema>
-  <resheader name="resmimetype">
-    <value>text/microsoft-resx</value>
-  </resheader>
-  <resheader name="version">
-    <value>2.0</value>
-  </resheader>
-  <resheader name="reader">
-    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </resheader>
-  <resheader name="writer">
-    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </resheader>
-  <data name="BlockUserMessage" xml:space="preserve">
-    <value>حساب کاربری شما قفل شده است</value>
-  </data>
-  <data name="cardNameAlreadyExist" xml:space="preserve">
-    <value>کارت موجود است</value>
-  </data>
-  <data name="ConfirmPhoneMessage" xml:space="preserve">
-    <value>لطفا حساب کاربری خود را تایید </value>
-  </data>
-  <data name="EditableProfileNotAllowed" xml:space="preserve">
-    <value>شما اجازه تصحیح پروفایل را ندارید</value>
-  </data>
-  <data name="ErrorMessage" xml:space="preserve">
-    <value>خطا در ثبت</value>
-  </data>
-  <data name="ForniddenMessage" xml:space="preserve">
-    <value>عدم دسترسی</value>
-  </data>
-  <data name="HasReserveRequest" xml:space="preserve">
-    <value>شما قبلا به این سرویس درخواست داده اید</value>
-  </data>
-  <data name="InCorrectPassword" xml:space="preserve">
-    <value>پسورد صحیح نمیباشد</value>
-  </data>
-  <data name="InternalServerMessage" xml:space="preserve">
-    <value>خطایی رخ داده است</value>
-  </data>
-  <data name="InvaliAmountForTransaction" xml:space="preserve">
-    <value>مبلغ ورودی بیشتر از موجودی کیف پول شما میباشد</value>
-  </data>
-  <data name="InvalidAnswer" xml:space="preserve">
-    <value>جواب نامعتبر است</value>
-  </data>
-  <data name="InvalidaServiceCategory" xml:space="preserve">
-    <value>سرویس نامعتبر است</value>
-  </data>
-  <data name="InvalidAttamp" xml:space="preserve">
-    <value>تلاش نامعتبر</value>
-  </data>
-  <data name="InvalidDiscointCode" xml:space="preserve">
-    <value>کد تخفیف نامعتبر است</value>
-  </data>
-  <data name="InvalidInput" xml:space="preserve">
-    <value>ورودی نامعتبر است</value>
-  </data>
-  <data name="InvalidPackageType" xml:space="preserve">
-    <value>نامعتبر</value>
-  </data>
-  <data name="InvalidPhoneNumber" xml:space="preserve">
-    <value>شماره موبایل صحیح نمیباشد</value>
-  </data>
-  <data name="InvalidQuestion" xml:space="preserve">
-    <value>سوال نامعتبر است</value>
-  </data>
-  <data name="InValidServiceType" xml:space="preserve">
-    <value>نوع سرویس نامعتبر است</value>
-  </data>
-  <data name="LockedOutMessage" xml:space="preserve">
-    <value>حساب کاربری قفل شده است</value>
-  </data>
-  <data name="Noquestoin" xml:space="preserve">
-    <value>سوالی موجود نیست</value>
-  </data>
-  <data name="NotEnoughtBalance" xml:space="preserve">
-    <value>موجودی کیف پول شما کافی نمیباشد</value>
-  </data>
-  <data name="NotFound" xml:space="preserve">
-    <value>نتیجه ایی یافت نشد</value>
-  </data>
-  <data name="NumberOfFreeMessagesCompleted" xml:space="preserve">
-    <value>تعداد پیام مجاز شما به پایان رسید</value>
-  </data>
-  <data name="PhoneNumberAlreadyExist" xml:space="preserve">
-    <value>شماره موبایل  تکراریست</value>
-  </data>
-  <data name="problemUploadingTheFileMessage" xml:space="preserve">
-    <value>خطایی در آپلود فایل رخ داده است</value>
-  </data>
-  <data name="ProfileRejectedMessage" xml:space="preserve">
-    <value>پروفایل شما برای این سرویس رد شده</value>
-  </data>
-  <data name="ProviderIsUnAvailableMessage" xml:space="preserve">
-    <value>سرویس دهنده در دسترس نمیباشد</value>
-  </data>
-  <data name="RequestNotConfirmedMessgaes" xml:space="preserve">
-    <value>درخواست توسط سرویس دهنده تایید نشده است</value>
-  </data>
-  <data name="ServiceIsDisabled" xml:space="preserve">
-    <value>این سرویس توسط ادمین غیر فعال گردید</value>
-  </data>
-  <data name="ServiceNotFound" xml:space="preserve">
-    <value>سرویس یافت نشد</value>
-  </data>
-  <data name="somethingWentWrongForChaing" xml:space="preserve">
-    <value>مشکلی رخ داده</value>
-  </data>
-  <data name="SuccessMessage" xml:space="preserve">
-    <value>ثبت موفقیت آمیز</value>
-  </data>
-  <data name="TextIsRequired" xml:space="preserve">
-    <value>متن پیام الزامیست</value>
-  </data>
-  <data name="TheFileIsInValid" xml:space="preserve">
-    <value>فرمت فایل نامعتبر است</value>
-  </data>
-  <data name="TheFileIsRequired" xml:space="preserve">
-    <value>انتخاب فایل الزامیست</value>
-  </data>
-  <data name="TheFileIsTooLarge" xml:space="preserve">
-    <value>حجم فایل زیاد است</value>
-  </data>
-  <data name="TicketIsClosedMessage" xml:space="preserve">
-    <value>تیکت بسته شده است</value>
-  </data>
-  <data name="UnauthorizedMessage" xml:space="preserve">
-    <value>عدم دسترسی</value>
-  </data>
-  <data name="UnMathPhoneNumberPassword" xml:space="preserve">
-    <value>رمز عبور یا  شماره موبایل صحیح نمی باشد</value>
-  </data>
-  <data name="VoiceIsrequired" xml:space="preserve">
-    <value>وویس الزامیست</value>
-  </data>
-  <data name="VoiceIsTooLarge" xml:space="preserve">
-    <value>حجم وویس زیاد است</value>
-  </data>
-  <data name="YouAreProviderOfThisService" xml:space="preserve">
-    <value>شما سرویس دهنده هستیدونمیتوانید بسته بخرید</value>
-  </data>
-  <data name="YouCantRequestToACompay" xml:space="preserve">
-    <value>شما نمیتوانید به حساب شرکتی درخواست دهید</value>
-  </data>
-  <data name="YouCantRequestToYourSelf" xml:space="preserve">
-    <value>درخواست نامعتبر</value>
-  </data>
-  <data name="YouCurrentlyHaveAnActivePackage" xml:space="preserve">
-    <value>شما درحال حاضر بسته فعال دارید</value>
-  </data>
-  <data name="YouDOntAnyWallet" xml:space="preserve">
-    <value>موجودی کیف پول شما کافی نیست</value>
-  </data>
-  <data name="YouDontHaveAnyPackage" xml:space="preserve">
-    <value>شما پلن فعالی ندارید</value>
-  </data>
-  <data name="YoudontHavePlanOrPlanIsExpired" xml:space="preserve">
-    <value>شما پلن فعالی ندارید یا زمان پلن به پایان رسید</value>
-  </data>
-  <data name="YouHaveReservedService" xml:space="preserve">
-    <value>شما قبلا در این دسته بندی عضو شرکت بوده اید</value>
-  </data>
-  <data name="YourPackageExpired" xml:space="preserve">
-    <value>بسته شمابه پایان رسیده</value>
-  </data>
-  <data name="YourPackageExpiredOrNoPlan" xml:space="preserve">
-    <value>شما بسته فعالی ندارید یا بسته شما منقصی شده</value>
-  </data>
-</root>
+<resheader name="resmimetype"><value>text/microsoft-resx</value></resheader><resheader name="version"><value>1.3</value></resheader><resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader><resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader><data name="BlockUserMessage"><value>حساب کاربری شما قفل شده است</value></data>
+  <data name="cardNameAlreadyExist"><value>کارت موجود است</value></data>
+  <data name="ConfirmPhoneMessage"><value>لطفا حساب کاربری خود را تایید </value></data>
+  <data name="EditableProfileNotAllowed"><value>شما اجازه تصحیح پروفایل را ندارید</value></data>
+  <data name="ErrorMessage"><value>خطا در ثبت</value></data>
+  <data name="ForniddenMessage"><value>عدم دسترسی</value></data>
+  <data name="HasReserveRequest"><value>شما قبلا به این سرویس درخواست داده اید</value></data>
+  <data name="InCorrectPassword"><value>پسورد صحیح نمیباشد</value></data>
+  <data name="InternalServerMessage"><value>خطایی رخ داده است</value></data>
+  <data name="InvaliAmountForTransaction"><value>مبلغ ورودی بیشتر از موجودی کیف پول شما میباشد</value></data>
+  <data name="InvalidAnswer"><value>جواب نامعتبر است</value></data>
+  <data name="InvalidaServiceCategory"><value>سرویس نامعتبر است</value></data>
+  <data name="InvalidAttamp"><value>تلاش نامعتبر</value></data>
+  <data name="InvalidDiscointCode"><value>کد تخفیف نامعتبر است</value></data>
+  <data name="InvalidInput"><value>ورودی نامعتبر است</value></data>
+  <data name="InvalidPackageType"><value>نامعتبر</value></data>
+  <data name="InvalidPhoneNumber"><value>شماره موبایل صحیح نمیباشد</value></data>
+  <data name="InvalidQuestion"><value>سوال نامعتبر است</value></data>
+  <data name="InValidServiceType"><value>نوع سرویس نامعتبر است</value></data>
+  <data name="LockedOutMessage"><value>حساب کاربری قفل شده است</value></data>
+  <data name="Noquestoin"><value>سوالی موجود نیست</value></data>
+  <data name="NotEnoughtBalance"><value>موجودی کیف پول شما کافی نمیباشد</value></data>
+  <data name="NotFound"><value>نتیجه ایی یافت نشد</value></data>
+  <data name="NumberOfFreeMessagesCompleted"><value>تعداد پیام مجاز شما به پایان رسید</value></data>
+  <data name="PhoneNumberAlreadyExist"><value>شماره موبایل  تکراریست</value></data>
+  <data name="problemUploadingTheFileMessage"><value>خطایی در آپلود فایل رخ داده است</value></data>
+  <data name="ProfileRejectedMessage"><value>پروفایل شما برای این سرویس رد شده</value></data>
+  <data name="ProviderIsUnAvailableMessage"><value>سرویس دهنده در دسترس نمیباشد</value></data>
+  <data name="RequestNotConfirmedMessgaes"><value>درخواست توسط سرویس دهنده تایید نشده است</value></data>
+  <data name="ServiceIsDisabled"><value>این سرویس توسط ادمین غیر فعال گردید</value></data>
+  <data name="ServiceNotFound"><value>سرویس یافت نشد</value></data>
+  <data name="somethingWentWrongForChaing"><value>مشکلی رخ داده</value></data>
+  <data name="SuccessMessage"><value>ثبت موفقیت آمیز</value></data>
+  <data name="TextIsRequired"><value>متن پیام الزامیست</value></data>
+  <data name="TheFileIsInValid"><value>فرمت فایل نامعتبر است</value></data>
+  <data name="TheFileIsRequired"><value>انتخاب فایل الزامیست</value></data>
+  <data name="TheFileIsTooLarge"><value>حجم فایل زیاد است</value></data>
+  <data name="TicketIsClosedMessage"><value>تیکت بسته شده است</value></data>
+  <data name="UnauthorizedMessage"><value>عدم دسترسی</value></data>
+  <data name="UnMathPhoneNumberPassword"><value>رمز عبور یا  شماره موبایل صحیح نمی باشد</value></data>
+  <data name="VoiceIsrequired"><value>وویس الزامیست</value></data>
+  <data name="VoiceIsTooLarge"><value>حجم وویس زیاد است</value></data>
+  <data name="YouAreProviderOfThisService"><value>شما سرویس دهنده هستیدونمیتوانید بسته بخرید11</value></data>
+  <data name="YouCantRequestToACompay"><value>شما نمیتوانید به حساب شرکتی درخواست دهید</value></data>
+  <data name="YouCantRequestToYourSelf"><value>درخواست نامعتبر</value></data>
+  <data name="YouCurrentlyHaveAnActivePackage"><value>شما درحال حاضر بسته فعال دارید</value></data>
+  <data name="YouDOntAnyWallet"><value>موجودی کیف پول شما کافی نیست</value></data>
+  <data name="YouDontHaveAnyPackage"><value>شما پلن فعالی ندارید</value></data>
+  <data name="YouHaveReservedService"><value>شما قبلا در این دسته بندی عضو شرکت بوده اید</value></data>
+  <data name="YourPackageExpired"><value>بسته شمابه پایان رسیده</value></data>
+  <data name="YourPackageExpiredOrNoPlan"><value>شما بسته فعالی ندارید یا بسته شما منقصی شده</value></data>
+  </root>

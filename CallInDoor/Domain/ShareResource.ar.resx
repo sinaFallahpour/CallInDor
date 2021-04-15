@@ -118,52 +118,52 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="BlockUserMessage" xml:space="preserve">
-    <value>Your account has been locked by admin</value>
+    <value>العرب</value>
   </data>
   <data name="cardNameAlreadyExist" xml:space="preserve">
-    <value>card name already exist</value>
+    <value>العرب</value>
   </data>
   <data name="ConfirmPhoneMessage" xml:space="preserve">
-    <value>Please confirm Your Account</value>
+    <value>العرب</value>
   </data>
   <data name="EditableProfileNotAllowed" xml:space="preserve">
-    <value>You are not allowed to edit profiles</value>
+    <value>العرب</value>
   </data>
   <data name="ErrorMessage" xml:space="preserve">
-    <value>Operation Failed</value>
+    <value>العرب</value>
   </data>
   <data name="ForniddenMessage" xml:space="preserve">
-    <value>Acess Denied</value>
+    <value>العرب</value>
   </data>
   <data name="HasReserveRequest" xml:space="preserve">
-    <value>You have a registered request to this service</value>
+    <value>العرب</value>
   </data>
   <data name="InCorrectPassword" xml:space="preserve">
-    <value>inCorrect password</value>
+    <value>العرب</value>
   </data>
   <data name="InternalServerMessage" xml:space="preserve">
-    <value>Sth went wrong</value>
+    <value>العرب</value>
   </data>
   <data name="InvaliAmountForTransaction" xml:space="preserve">
-    <value>the entry amount is more than your wallet balance</value>
+    <value>العرب</value>
   </data>
   <data name="InvalidAnswer" xml:space="preserve">
-    <value>invalid answer </value>
+    <value>العرب</value>
   </data>
   <data name="InvalidaServiceCategory" xml:space="preserve">
-    <value>invalid service category</value>
+    <value>العرب</value>
   </data>
   <data name="InvalidAttamp" xml:space="preserve">
-    <value>invalid attamp</value>
+    <value>العرب</value>
   </data>
   <data name="InvalidDiscointCode" xml:space="preserve">
-    <value>invalid discount code</value>
+    <value>العرب</value>
   </data>
   <data name="InvalidInput" xml:space="preserve">
-    <value>invalid input</value>
+    <value>العرب</value>
   </data>
   <data name="InvalidPackageType" xml:space="preserve">
-    <value>invalid package type</value>
+    <value>العرب</value>
   </data>
   <data name="InvalidPhoneNumber" xml:space="preserve">
     <value>invalid phone number</value>

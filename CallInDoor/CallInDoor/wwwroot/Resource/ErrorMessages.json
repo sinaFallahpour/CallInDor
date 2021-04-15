@@ -1,0 +1,871 @@
+{
+  "Dictionary": [
+    {
+      "Key": "BlockUserMessage",
+      "Languages": [
+        {
+          "Header": "fa-IR",
+          "Val": "111"
+        },
+        {
+          "Header": "en-US",
+          "Val": "1111"
+        },
+        {
+          "Header": "ar",
+          "Val": "arabic"
+        }
+      ]
+    },
+    {
+      "Key": "cardNameAlreadyExist",
+      "Languages": [
+        {
+          "Header": "fa-IR",
+          "Val": "string"
+        },
+        {
+          "Header": "en-US",
+          "Val": "string"
+        },
+        {
+          "Header": "ar",
+          "Val": "arabic"
+        }
+      ]
+    },
+    {
+      "Key": "ConfirmPhoneMessage",
+      "Languages": [
+        {
+          "Header": "fa-IR",
+          "Val": "string"
+        },
+        {
+          "Header": "en-US",
+          "Val": "string"
+        },
+        {
+          "Header": "ar",
+          "Val": "arabic"
+        }
+      ]
+    },
+    {
+      "Key": "EditableProfileNotAllowed",
+      "Languages": [
+        {
+          "Header": "fa-IR",
+          "Val": "string"
+        },
+        {
+          "Header": "en-US",
+          "Val": "string"
+        },
+        {
+          "Header": "ar",
+          "Val": "arabic"
+        }
+      ]
+    },
+    {
+      "Key": "ErrorMessage",
+      "Languages": [
+        {
+          "Header": "fa-IR",
+          "Val": "string"
+        },
+        {
+          "Header": "en-US",
+          "Val": "string"
+        },
+        {
+          "Header": "ar",
+          "Val": "arabic"
+        }
+      ]
+    },
+    {
+      "Key": "ForniddenMessage",
+      "Languages": [
+        {
+          "Header": "fa-IR",
+          "Val": "string"
+        },
+        {
+          "Header": "en-US",
+          "Val": "string"
+        },
+        {
+          "Header": "ar",
+          "Val": "arabic"
+        }
+      ]
+    },
+    {
+      "Key": "HasReserveRequest",
+      "Languages": [
+        {
+          "Header": "fa-IR",
+          "Val": "string"
+        },
+        {
+          "Header": "en-US",
+          "Val": "string"
+        },
+        {
+          "Header": "ar",
+          "Val": "arabic"
+        }
+      ]
+    },
+    {
+      "Key": "InCorrectPassword",
+      "Languages": [
+        {
+          "Header": "fa-IR",
+          "Val": "string"
+        },
+        {
+          "Header": "en-US",
+          "Val": "string"
+        },
+        {
+          "Header": "ar",
+          "Val": "arabic"
+        }
+      ]
+    },
+    {
+      "Key": "InternalServerMessage",
+      "Languages": [
+        {
+          "Header": "fa-IR",
+          "Val": "string"
+        },
+        {
+          "Header": "en-US",
+          "Val": "string"
+        },
+        {
+          "Header": "ar",
+          "Val": "arabic"
+        }
+      ]
+    },
+    {
+      "Key": "InvaliAmountForTransaction",
+      "Languages": [
+        {
+          "Header": "fa-IR",
+          "Val": "string"
+        },
+        {
+          "Header": "en-US",
+          "Val": "string"
+        },
+        {
+          "Header": "ar",
+          "Val": "arabic"
+        }
+      ]
+    },
+    {
+      "Key": "InvalidAnswer",
+      "Languages": [
+        {
+          "Header": "fa-IR",
+          "Val": "string"
+        },
+        {
+          "Header": "en-US",
+          "Val": "string"
+        },
+        {
+          "Header": "ar",
+          "Val": "arabic"
+        }
+      ]
+    },
+    {
+      "Key": "InvalidaServiceCategory",
+      "Languages": [
+        {
+          "Header": "fa-IR",
+          "Val": "string"
+        },
+        {
+          "Header": "en-US",
+          "Val": "string"
+        },
+        {
+          "Header": "ar",
+          "Val": "arabic"
+        }
+      ]
+    },
+    {
+      "Key": "InvalidAttamp",
+      "Languages": [
+        {
+          "Header": "fa-IR",
+          "Val": "string"
+        },
+        {
+          "Header": "en-US",
+          "Val": "string"
+        },
+        {
+          "Header": "ar",
+          "Val": "arabic"
+        }
+      ]
+    },
+    {
+      "Key": "InvalidDiscointCode",
+      "Languages": [
+        {
+          "Header": "fa-IR",
+          "Val": "string"
+        },
+        {
+          "Header": "en-US",
+          "Val": "string"
+        },
+        {
+          "Header": "ar",
+          "Val": "arabic"
+        }
+      ]
+    },
+    {
+      "Key": "InvalidInput",
+      "Languages": [
+        {
+          "Header": "fa-IR",
+          "Val": "string"
+        },
+        {
+          "Header": "en-US",
+          "Val": "string"
+        },
+        {
+          "Header": "ar",
+          "Val": "arabic"
+        }
+      ]
+    },
+    {
+      "Key": "InvalidPackageType",
+      "Languages": [
+        {
+          "Header": "fa-IR",
+          "Val": "string"
+        },
+        {
+          "Header": "en-US",
+          "Val": "string"
+        },
+        {
+          "Header": "ar",
+          "Val": "arabic"
+        }
+      ]
+    },
+    {
+      "Key": "InvalidPhoneNumber",
+      "Languages": [
+        {
+          "Header": "fa-IR",
+          "Val": "string"
+        },
+        {
+          "Header": "en-US",
+          "Val": "string"
+        },
+        {
+          "Header": "ar",
+          "Val": "arabic"
+        }
+      ]
+    },
+    {
+      "Key": "InvalidQuestion",
+      "Languages": [
+        {
+          "Header": "fa-IR",
+          "Val": "string"
+        },
+        {
+          "Header": "en-US",
+          "Val": "string"
+        },
+        {
+          "Header": "ar",
+          "Val": "arabic"
+        }
+      ]
+    },
+    {
+      "Key": "InValidServiceType",
+      "Languages": [
+        {
+          "Header": "fa-IR",
+          "Val": "string"
+        },
+        {
+          "Header": "en-US",
+          "Val": "string"
+        },
+        {
+          "Header": "ar",
+          "Val": "arabic"
+        }
+      ]
+    },
+    {
+      "Key": "LockedOutMessage",
+      "Languages": [
+        {
+          "Header": "fa-IR",
+          "Val": "string"
+        },
+        {
+          "Header": "en-US",
+          "Val": "string"
+        },
+        {
+          "Header": "ar",
+          "Val": "arabic"
+        }
+      ]
+    },
+    {
+      "Key": "Noquestoin",
+      "Languages": [
+        {
+          "Header": "fa-IR",
+          "Val": "string"
+        },
+        {
+          "Header": "en-US",
+          "Val": "string"
+        },
+        {
+          "Header": "ar",
+          "Val": "arabic"
+        }
+      ]
+    },
+    {
+      "Key": "NotEnoughtBalance",
+      "Languages": [
+        {
+          "Header": "fa-IR",
+          "Val": "string"
+        },
+        {
+          "Header": "en-US",
+          "Val": "string"
+        },
+        {
+          "Header": "ar",
+          "Val": "arabic"
+        }
+      ]
+    },
+    {
+      "Key": "NotFound",
+      "Languages": [
+        {
+          "Header": "fa-IR",
+          "Val": "پیدا نشئ"
+        },
+        {
+          "Header": "en-US",
+          "Val": "not found"
+        },
+        {
+          "Header": "ar",
+          "Val": "النتا قهاا"
+        }
+      ]
+    },
+    {
+      "Key": "NumberOfFreeMessagesCompleted",
+      "Languages": [
+        {
+          "Header": "fa-IR",
+          "Val": "string"
+        },
+        {
+          "Header": "en-US",
+          "Val": "string"
+        },
+        {
+          "Header": "ar",
+          "Val": "arabic"
+        }
+      ]
+    },
+    {
+      "Key": "PhoneNumberAlreadyExist",
+      "Languages": [
+        {
+          "Header": "fa-IR",
+          "Val": "string"
+        },
+        {
+          "Header": "en-US",
+          "Val": "string"
+        },
+        {
+          "Header": "ar",
+          "Val": "arabic"
+        }
+      ]
+    },
+    {
+      "Key": "خطایی در آپلود فایل رخ داده است",
+      "Languages": [
+        {
+          "Header": "fa-IR",
+          "Val": "string"
+        },
+        {
+          "Header": "en-US",
+          "Val": "English"
+        },
+        {
+          "Header": "ar",
+          "Val": "arabic"
+        }
+      ]
+    },
+    {
+      "Key": "ProfileRejectedMessage",
+      "Languages": [
+        {
+          "Header": "fa-IR",
+          "Val": "string"
+        },
+        {
+          "Header": "en-US",
+          "Val": "string"
+        },
+        {
+          "Header": "ar",
+          "Val": "arabic"
+        }
+      ]
+    },
+    {
+      "Key": "ProviderIsUnAvailableMessage",
+      "Languages": [
+        {
+          "Header": "fa-IR",
+          "Val": "string"
+        },
+        {
+          "Header": "en-US",
+          "Val": "string"
+        },
+        {
+          "Header": "ar",
+          "Val": "arabic"
+        }
+      ]
+    },
+    {
+      "Key": "RequestNotConfirmedMessgaes",
+      "Languages": [
+        {
+          "Header": "fa-IR",
+          "Val": "string"
+        },
+        {
+          "Header": "en-US",
+          "Val": "string"
+        },
+        {
+          "Header": "ar",
+          "Val": "arabic"
+        }
+      ]
+    },
+    {
+      "Key": "ServiceIsDisabled",
+      "Languages": [
+        {
+          "Header": "fa-IR",
+          "Val": "string"
+        },
+        {
+          "Header": "en-US",
+          "Val": "string"
+        },
+        {
+          "Header": "ar",
+          "Val": "arabic"
+        }
+      ]
+    },
+    {
+      "Key": "ServiceNotFound",
+      "Languages": [
+        {
+          "Header": "fa-IR",
+          "Val": "string"
+        },
+        {
+          "Header": "en-US",
+          "Val": "string"
+        },
+        {
+          "Header": "ar",
+          "Val": "arabic"
+        }
+      ]
+    },
+    {
+      "Key": "somethingWentWrongForChaing",
+      "Languages": [
+        {
+          "Header": "fa-IR",
+          "Val": "string"
+        },
+        {
+          "Header": "en-US",
+          "Val": "string"
+        },
+        {
+          "Header": "ar",
+          "Val": "arabic"
+        }
+      ]
+    },
+    {
+      "Key": "SuccessMessage",
+      "Languages": [
+        {
+          "Header": "fa-IR",
+          "Val": "string"
+        },
+        {
+          "Header": "en-US",
+          "Val": "string"
+        },
+        {
+          "Header": "ar",
+          "Val": "arabic"
+        }
+      ]
+    },
+    {
+      "Key": "TextIsRequired",
+      "Languages": [
+        {
+          "Header": "fa-IR",
+          "Val": "string"
+        },
+        {
+          "Header": "en-US",
+          "Val": "string"
+        },
+        {
+          "Header": "ar",
+          "Val": "arabic"
+        }
+      ]
+    },
+    {
+      "Key": "TheFileIsInValid",
+      "Languages": [
+        {
+          "Header": "fa-IR",
+          "Val": "string"
+        },
+        {
+          "Header": "en-US",
+          "Val": "string"
+        },
+        {
+          "Header": "ar",
+          "Val": "arabic"
+        }
+      ]
+    },
+    {
+      "Key": "TheFileIsRequired",
+      "Languages": [
+        {
+          "Header": "fa-IR",
+          "Val": "string"
+        },
+        {
+          "Header": "en-US",
+          "Val": "string"
+        },
+        {
+          "Header": "ar",
+          "Val": "arabic"
+        }
+      ]
+    },
+    {
+      "Key": "TheFileIsTooLarge",
+      "Languages": [
+        {
+          "Header": "fa-IR",
+          "Val": "string"
+        },
+        {
+          "Header": "en-US",
+          "Val": "string"
+        },
+        {
+          "Header": "ar",
+          "Val": "arabic"
+        }
+      ]
+    },
+    {
+      "Key": "TicketIsClosedMessage",
+      "Languages": [
+        {
+          "Header": "fa-IR",
+          "Val": "string"
+        },
+        {
+          "Header": "en-US",
+          "Val": "string"
+        },
+        {
+          "Header": "ar",
+          "Val": "arabic"
+        }
+      ]
+    },
+    {
+      "Key": "UnauthorizedMessage",
+      "Languages": [
+        {
+          "Header": "fa-IR",
+          "Val": "string"
+        },
+        {
+          "Header": "en-US",
+          "Val": "string"
+        },
+        {
+          "Header": "ar",
+          "Val": "arabic"
+        }
+      ]
+    },
+    {
+      "Key": "UnMathPhoneNumberPassword",
+      "Languages": [
+        {
+          "Header": "fa-IR",
+          "Val": "string"
+        },
+        {
+          "Header": "en-US",
+          "Val": "string"
+        },
+        {
+          "Header": "ar",
+          "Val": "arabic"
+        }
+      ]
+    },
+    {
+      "Key": "VoiceIsrequired",
+      "Languages": [
+        {
+          "Header": "fa-IR",
+          "Val": "string"
+        },
+        {
+          "Header": "en-US",
+          "Val": "string"
+        },
+        {
+          "Header": "ar",
+          "Val": "arabic"
+        }
+      ]
+    },
+    {
+      "Key": "VoiceIsTooLarge",
+      "Languages": [
+        {
+          "Header": "fa-IR",
+          "Val": "string"
+        },
+        {
+          "Header": "en-US",
+          "Val": "string"
+        },
+        {
+          "Header": "ar",
+          "Val": "arabic"
+        }
+      ]
+    },
+    {
+      "Key": "YouAreProviderOfThisService",
+      "Languages": [
+        {
+          "Header": "fa-IR",
+          "Val": "string"
+        },
+        {
+          "Header": "en-US",
+          "Val": "string"
+        },
+        {
+          "Header": "ar",
+          "Val": "arabic"
+        }
+      ]
+    },
+    {
+      "Key": "YouCantRequestToACompay",
+      "Languages": [
+        {
+          "Header": "fa-IR",
+          "Val": "string"
+        },
+        {
+          "Header": "en-US",
+          "Val": "string"
+        },
+        {
+          "Header": "ar",
+          "Val": "arabic"
+        }
+      ]
+    },
+    {
+      "Key": "YouCantRequestToYourSelf",
+      "Languages": [
+        {
+          "Header": "fa-IR",
+          "Val": "string"
+        },
+        {
+          "Header": "en-US",
+          "Val": "string"
+        },
+        {
+          "Header": "ar",
+          "Val": "arabic"
+        }
+      ]
+    },
+    {
+      "Key": "YouCurrentlyHaveAnActivePackage",
+      "Languages": [
+        {
+          "Header": "fa-IR",
+          "Val": "string"
+        },
+        {
+          "Header": "en-US",
+          "Val": "string"
+        },
+        {
+          "Header": "ar",
+          "Val": "arabic"
+        }
+      ]
+    },
+    {
+      "Key": "YouDOntAnyWallet",
+      "Languages": [
+        {
+          "Header": "fa-IR",
+          "Val": "string"
+        },
+        {
+          "Header": "en-US",
+          "Val": "string"
+        },
+        {
+          "Header": "ar",
+          "Val": "arabic"
+        }
+      ]
+    },
+    {
+      "Key": "YouDontHaveAnyPackage",
+      "Languages": [
+        {
+          "Header": "fa-IR",
+          "Val": "string"
+        },
+        {
+          "Header": "en-US",
+          "Val": "string"
+        },
+        {
+          "Header": "ar",
+          "Val": "arabic"
+        }
+      ]
+    },
+    {
+      "Key": "YouHaveReservedService",
+      "Languages": [
+        {
+          "Header": "fa-IR",
+          "Val": "string"
+        },
+        {
+          "Header": "en-US",
+          "Val": "string"
+        },
+        {
+          "Header": "ar",
+          "Val": "arabic"
+        }
+      ]
+    },
+    {
+      "Key": "YourPackageExpired",
+      "Languages": [
+        {
+          "Header": "fa-IR",
+          "Val": "string"
+        },
+        {
+          "Header": "en-US",
+          "Val": "string"
+        },
+        {
+          "Header": "ar",
+          "Val": "arabic"
+        }
+      ]
+    },
+    {
+      "Key": "YourPackageExpiredOrNoPlan",
+      "Languages": [
+        {
+          "Header": "fa-IR",
+          "Val": "string"
+        },
+        {
+          "Header": "en-US",
+          "Val": "string"
+        },
+        {
+          "Header": "ar",
+          "Val": "arabic"
+        }
+      ]
+    }
+  ]
+}

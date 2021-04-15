@@ -6,28 +6,11 @@ using System.Text;
 
 namespace Domain.DTO.Resource
 {
-    public class EditDataAnotationAndErrorMessageDTO
+    public class EditErrorMessageDTO
     {
 
-
-
-        public EditDataAnotationAndErrorMessageDTO()
-        {
-        }
-
-        //private string GetString(string name) => _localizer[name].Value.ToString();
-
-        /////////////// <summary>
-        /////////////// این نوع زبان را معلوم میکند
-        /////////////// </summary>
         [Required(ErrorMessage = "{0} is  Required")]
-        public LanguageHeader LanguageHeader { get; set; }
-
-
-
-
-
-        [Required(ErrorMessage = "{0} is  Required")]
+        //public string BlockUserMessage => GetString(nameof(BlockUserMessage));
         public string BlockUserMessage { get; set; }
         [Required(ErrorMessage = "{0} is  Required")]
         public string cardNameAlreadyExist { get; set; }
@@ -132,4 +115,17 @@ namespace Domain.DTO.Resource
 
 
     }
+
+
+    public class EditErrorMessageDTO2 : EditErrorMessageDTO
+    {
+        /// <summary>
+        /// این نوع زبان را معلوم میکند
+        /// </summary>
+        [Required(ErrorMessage = "{0} is  Required")]
+        public LanguageHeader LanguageHeader { get; set; }
+
+    }
+
+
 }

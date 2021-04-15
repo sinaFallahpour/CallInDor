@@ -30,7 +30,7 @@ import {
 import { history } from "../../../history";
 
 
-import { PlusSquareوChevronDown, Plus, ChevronDown } from "react-feather";
+import { PlusSquare, hevronDown, Plus, ChevronDown } from "react-feather";
 
 
 // import CustomLoader from "./components/@vuexy/spinner/FullPageLoading";
@@ -67,13 +67,11 @@ class ModalForm extends Form {
   };
 
   async populatingResources() {
-    this.setState({ loadingData: true })
+    await this.setState({ loadingData: true })
+    console.log("-------" + this.state.languageHeader.header)
     const { data } = await agent.Resources.dataAnotationsList(this.state.languageHeader.header);
     let dataAnodations = data.result.data;
-    console.log(dataAnodations)
     this.setState({ dataAnodations, loadingData: false });
-
-    alert(this.state.languageHeader.header)
   }
 
   async componentDidMount() {
@@ -94,51 +92,21 @@ class ModalForm extends Form {
 
   async handleLanguageHeader(languageHeader) {
     if (languageHeader == 0) {
-      this.setState({ languageHeader: { header: "fa-IR", language: "persian" } })
+      await this.setState({ languageHeader: { header: "fa-IR", language: "persian" } })
     }
-    if (languageHeader == 1) {
-      this.setState({ languageHeader: { header: "en-Us", language: "english" } })
+    else if (languageHeader == 1) {
+      await this.setState({ languageHeader: { header: "en-US", language: "english" } })
+      // await this.setState({ languageHeader: { header: "en-US", language: "english" } })
     }
-    if (languageHeader == 2) {
-      this.setState({ languageHeader: { header: "ar", language: "arab" } })
-    }
+    else
+      if (languageHeader == 2) {
+        await this.setState({ languageHeader: { header: "ar", language: "arab" } })
+      }
 
 
     this.populatingResources()
   }
 
-  // updateRequiredFileChanged = async (index, e) => {
-  //   this.setState({
-  //     requiredFiles: this.state.requiredFiles.map((item) =>
-  //       item?._id == index ? { ...item, fileName: e.target.value } : item
-  //     ),
-  //   });
-  // };
-
-  // updateRequiredFilePersianChanged = async (index, e) => {
-  //   this.setState({
-  //     requiredFiles: this.state.requiredFiles.map((item) =>
-  //       item?._id == index ? { ...item, persianFileName: e.target.value } : item
-  //     ),
-  //   });
-  // };
-
-  // addRequredFile = () => {
-  //   this.setState({
-  //     requiredFiles: [
-  //       ...this.state.requiredFiles,
-  //       { persianFileName: "", fileName: "", _id: Math.random() * 1000 },
-  //     ],
-  //   });
-  // };
-
-  // removeRequredFile = (index) => {
-  //   this.setState({
-  //     requiredFiles: this.state.requiredFiles.filter(function (reqFile) {
-  //       return reqFile._id !== index;
-  //     }),
-  //   });
-  // };
 
 
   onChange = (event, index) => {
@@ -175,7 +143,7 @@ class ModalForm extends Form {
       // });
 
 
-      alert(languageHeader.header)
+      // alert(languageHeader.header)
 
 
       const { data } = await agent.Resources.editDataAnotationAndErrorMessages(rv, languageHeader.header);
@@ -296,7 +264,7 @@ class ModalForm extends Form {
                   })}
                 </FormGroup>
 
-               
+
 
 
                 {this.state.Loading ? (

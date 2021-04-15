@@ -194,7 +194,7 @@ namespace CallInDoor
             services.AddScoped<IPaymentService, PaymentService>();
             services.AddScoped<ICompanyService, CompanyService>();
             services.AddScoped<ISmsService, SmsService>();
-            services.AddScoped<IResourceServices, ResourceServices>();
+            services.AddTransient<IResourceServices, ResourceServices>();
             services.AddSingleton<IAuthorizationPolicyProvider, AuthorizationPolicyProvider>();
             services.AddScoped<DataAnotationAndErrorMessageDTO>();
 
@@ -235,7 +235,7 @@ namespace CallInDoor
             {
                 new CultureInfo(PublicHelper.persianCultureName),
                 new CultureInfo(PublicHelper.EngCultureName),
-                new CultureInfo(PublicHelper.EngCultureName)
+                new CultureInfo(PublicHelper.arabCultureName)
             };
             var options = new RequestLocalizationOptions()
             {

@@ -36,6 +36,7 @@ namespace Domain.DTO.Resource
 
 
         [Required(ErrorMessage = "{0} is  Required")]
+        //public string BlockUserMessage => GetString(nameof(BlockUserMessage));
         public string BlockUserMessage => GetString(nameof(BlockUserMessage));
         [Required(ErrorMessage = "{0} is  Required")]
         public string cardNameAlreadyExist => GetString(nameof(cardNameAlreadyExist));
