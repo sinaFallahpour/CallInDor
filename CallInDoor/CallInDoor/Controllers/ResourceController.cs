@@ -43,7 +43,6 @@ namespace CallInDoor.Controllers
         private IStringLocalizer<ShareResource> _localizerShared;
 
 
-        private readonly IWebHostEnvironment _hostingEnvironment;
 
         public ResourceController(
 
@@ -62,7 +61,7 @@ namespace CallInDoor.Controllers
             _resourceServices = resourceServices;
             _localizerShared = localizerShared;
 
-            _hostingEnvironment = hostingEnvironment;
+
         }
 
 

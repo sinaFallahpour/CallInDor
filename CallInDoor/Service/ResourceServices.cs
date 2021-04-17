@@ -31,16 +31,13 @@ namespace Service
         private readonly IStringLocalizer<ShareResource> _localizerShared;
         private readonly IHostingEnvironment _hostingEnvironment;
 
-
-        public ResourceServices(IHttpContextAccessor httpContextAccessor, IStringLocalizer<ShareResource> localizerShared, IHostingEnvironment hostingEnvironment)
+        public ResourceServices(IHttpContextAccessor httpContextAccessor, IStringLocalizer<ShareResource> localizerShared,
+                                                    IHostingEnvironment hostingEnvironment)
         {
             _httpContextAccessor = httpContextAccessor;
             _localizerShared = localizerShared;
             _hostingEnvironment = hostingEnvironment;
         }
-
-
-
 
         #endregion
 
@@ -128,7 +125,7 @@ namespace Service
                 value = errorMessageDictionary.Dictionary.FirstOrDefault(c => c.Key == key)?
                            .Languages.FirstOrDefault(c => c.Header == "fa-IR").Val;
             }
-            else if (header == "fa-en-US")
+            else if (header == "en-US")
             {
                 value = errorMessageDictionary.Dictionary.FirstOrDefault(c => c.Key == key)?
                              .Languages.FirstOrDefault(c => c.Header == "en-US").Val;

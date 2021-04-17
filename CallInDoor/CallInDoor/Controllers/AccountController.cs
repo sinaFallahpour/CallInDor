@@ -132,7 +132,7 @@ namespace CallInDoor.Controllers
         //[ClaimsAuthorize(IsAdmin = false)]
         public async Task<ActionResult> IsUserActive()
         {
-
+             
             return Ok(_resourceServices.GetErrorMessageByKey("SuccessMessage"));
             var currentUserName = _accountService.GetCurrentUserName();
             if (string.IsNullOrEmpty(currentUserName))
