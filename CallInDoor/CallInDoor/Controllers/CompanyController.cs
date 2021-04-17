@@ -17,6 +17,7 @@ using CallInDoor.Hubs;
 using Microsoft.AspNetCore.SignalR;
 using CallInDoor.Config.Attributes;
 using Service.Interfaces.Company;
+using Service.Interfaces.Resource;
 
 namespace CallInDoor.Controllers
 {
@@ -37,6 +38,8 @@ namespace CallInDoor.Controllers
 
         private readonly IHubContext<NotificationHub> _hubContext;
         private IStringLocalizer<ShareResource> _localizerShared;
+        private readonly IResourceServices _resourceServices;
+
 
         public CompanyController(
 
@@ -45,7 +48,8 @@ namespace CallInDoor.Controllers
                    ICommonService commonService,
                    ICompanyService companyService,
                    IHubContext<NotificationHub> hubContext,
-                IStringLocalizer<ShareResource> localizerShared
+                IStringLocalizer<ShareResource> localizerShared,
+                IResourceServices resourceServices
             )
         {
             _context = context;
@@ -54,7 +58,7 @@ namespace CallInDoor.Controllers
             _companyService = companyService;
             _hubContext = hubContext;
             _localizerShared = localizerShared;
-
+            _resourceServices = resourceServices;
         }
 
 
@@ -191,14 +195,20 @@ namespace CallInDoor.Controllers
 
             if (wasITReservedForMeBefore)
             {
-                List<string> erros = new List<string> { _localizerShared["YouHaveReservedService"].Value.ToString() };
+                List<string> erros = new List<string> { 
+                    //_localizerShared["YouHaveReservedService"].Value.ToString()
+                _resourceServices.GetErrorMessageByKey("YouHaveReservedService")
+            };
                 return BadRequest(new ApiBadRequestResponse(erros));
             }
 
             var isProfileConfirmeds = await _accountService.IsProfileConfirmed(currentUsername, model.ServiceCategoryId);
             if (!isProfileConfirmeds)
             {
-                List<string> erros = new List<string> { _localizerShared["InvalidaServiceCategory"].Value.ToString() };
+                List<string> erros = new List<string> {
+                    //_localizerShared["InvalidaServiceCategory"].Value.ToString() 
+                _resourceServices.GetErrorMessageByKey("InvalidaServiceCategory")
+                };
                 return BadRequest(new ApiBadRequestResponse(erros));
             }
 
@@ -206,7 +216,11 @@ namespace CallInDoor.Controllers
             //اگر من به خودم دارم request میدهم
             if (companyUserName == currentUsername)
             {
-                List<string> erros = new List<string> { _localizerShared["YouCantRequestToYourSelf"].Value.ToString() };
+                List<string> erros = new List<string> {
+                    //_localizerShared["YouCantRequestToYourSelf"].Value.ToString() 
+                _resourceServices.GetErrorMessageByKey("YouCantRequestToYourSelf")
+
+                };
                 return BadRequest(new ApiBadRequestResponse(erros));
             }
 
@@ -214,7 +228,11 @@ namespace CallInDoor.Controllers
 
             if (isSubSetACompany)
             {
-                List<string> erros = new List<string> { _localizerShared["YouCantRequestToACompay"].Value.ToString() };
+                List<string> erros = new List<string> { 
+                    //_localizerShared["YouCantRequestToACompay"].Value.ToString() 
+                _resourceServices.GetErrorMessageByKey("YouCantRequestToACompay")
+
+                };
                 return BadRequest(new ApiBadRequestResponse(erros));
             }
 
@@ -246,24 +264,16 @@ namespace CallInDoor.Controllers
                 SenderUserName = currentUsername,
             };
 
-            try
-            {
-                await _context.CompanyServiceUserTBL.AddAsync(CompanyServiceUserTBL);
-                #region send notification
-                string companyConnectionId = usersFromDb.Where(c => c.UserName == currentUsername).FirstOrDefault().ConnectionId;
-                if (!string.IsNullOrEmpty(companyConnectionId))
-                    await _hubContext.Clients.Client(companyConnectionId).SendAsync("RequestToCompany", "you have new request as company ");
-                #endregion
-                await _context.NotificationTBL.AddAsync(notif);
-                await _context.SaveChangesAsync();
-                return Ok(_commonService.OkResponse(null, false));
-            }
-            catch
-            {
-                List<string> erros = new List<string> { _localizerShared["InternalServerMessage"].Value.ToString() };
-                return StatusCode(StatusCodes.Status500InternalServerError,
-                   new ApiBadRequestResponse(erros, 500));
-            }
+            await _context.CompanyServiceUserTBL.AddAsync(CompanyServiceUserTBL);
+            #region send notification
+            string companyConnectionId = usersFromDb.Where(c => c.UserName == currentUsername).FirstOrDefault().ConnectionId;
+            if (!string.IsNullOrEmpty(companyConnectionId))
+                await _hubContext.Clients.Client(companyConnectionId).SendAsync("RequestToCompany", "you have new request as company ");
+            #endregion
+            await _context.NotificationTBL.AddAsync(notif);
+            await _context.SaveChangesAsync();
+            return Ok(_commonService.OkResponse(null, false));
+
         }
 
 
@@ -288,7 +298,11 @@ namespace CallInDoor.Controllers
 
             if (requestFromDB == null)
             {
-                List<string> erros = new List<string> { _localizerShared["NotFound"].Value.ToString() };
+                List<string> erros = new List<string> { 
+                    //_localizerShared["NotFound"].Value.ToString() 
+                _resourceServices.GetErrorMessageByKey("NotFound")
+
+                };
                 return BadRequest(new ApiBadRequestResponse(erros, 404));
             }
 
@@ -343,7 +357,10 @@ namespace CallInDoor.Controllers
 
             if (requestFromDB == null)
             {
-                List<string> erros = new List<string> { _localizerShared["NotFound"].Value.ToString() };
+                List<string> erros = new List<string> { 
+                    //_localizerShared["NotFound"].Value.ToString()
+                _resourceServices.GetErrorMessageByKey("NotFound")
+                };
                 return BadRequest(new ApiBadRequestResponse(erros, 404));
             }
 
@@ -469,9 +486,11 @@ namespace CallInDoor.Controllers
 
             var companyUserFromDB = await _companyService.GetCompanyServiceUserTBL(userId, baseServiceFromDB.serviceTBLId);
 
-            if (companyUserFromDB == null)
+            if (!companyUserFromDB)
             {
-                List<string> erros = new List<string> { _localizerShared["InvalidAttamp"].Value.ToString() };
+                List<string> erros = new List<string> {
+                    _resourceServices.GetErrorMessageByKey("InvalidAttamp")
+                };
                 return BadRequest(new ApiBadRequestResponse(erros));
             }
 
@@ -493,17 +512,11 @@ namespace CallInDoor.Controllers
                 SenderUserName = currentUserName,
             };
 
-            try
-            {
+             
                 await _context.NotificationTBL.AddAsync(notif);
                 await _context.SaveChangesAsync();
                 return Ok(_commonService.OkResponse(null, false));
-            }
-            catch
-            {
-                List<string> erros = new List<string> { _localizerShared["InternalServerMessage"].Value.ToString() };
-                return StatusCode(StatusCodes.Status500InternalServerError, new ApiBadRequestResponse(erros, 500));
-            }
+             
         }
 
 
@@ -547,7 +560,11 @@ namespace CallInDoor.Controllers
 
             if (!isCompanyExist)
             {
-                List<string> erros = new List<string> { _localizerShared["InvalidAttamp"].Value.ToString() };
+                List<string> erros = new List<string> { 
+                    //_localizerShared["InvalidAttamp"].Value.ToString() 
+                    _resourceServices.GetErrorMessageByKey("InvalidAttamp")
+
+                };
                 return BadRequest(new ApiBadRequestResponse(erros));
             }
 
@@ -568,23 +585,12 @@ namespace CallInDoor.Controllers
                 EnglishText = "One of the companies you are a member of has disabled your service",
                 SenderUserName = currentUserName,
             };
-
-            try
-            {
+ 
                 await _context.NotificationTBL.AddAsync(notif);
                 await _context.SaveChangesAsync();
                 return Ok(_commonService.OkResponse(null, false));
-            }
-            catch
-            {
-                List<string> erros = new List<string> { _localizerShared["InternalServerMessage"].Value.ToString() };
-                return StatusCode(StatusCodes.Status500InternalServerError, new ApiBadRequestResponse(erros, 500));
-            }
+             
         }
-
-
-
-
 
 
 

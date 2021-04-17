@@ -74,7 +74,10 @@ namespace CallInDoor.Controllers
                    c.IsReaded,
                }).ToListAsync();
 
-            return Ok(_commonService.OkResponse(notifs, _localizerShared["SuccessMessage"].Value.ToString()));
+            //return Ok(_commonService.OkResponse(notifs, _localizerShared["SuccessMessage"].Value.ToString()));
+
+            return Ok(_commonService.OkResponse(notifs, false));
+
         }
 
 
@@ -132,7 +135,8 @@ namespace CallInDoor.Controllers
                    c.IsReaded,
                }).ToListAsync();
 
-            return Ok(_commonService.OkResponse(notifs, _localizerShared["SuccessMessage"].Value.ToString()));
+            //return Ok(_commonService.OkResponse(notifs, _localizerShared["SuccessMessage"].Value.ToString()));
+            return Ok(_commonService.OkResponse(notifs, false));
         }
 
 
@@ -169,17 +173,21 @@ namespace CallInDoor.Controllers
                }).FirstOrDefaultAsync();
 
             if (notif == null)
-                _commonService.NotFoundErrorReponse(false);
+                return BadRequest(_commonService.NotFoundErrorReponse(false));
 
 
             if (notif.UserName != currentusername)
             {
-                List<string> erros = new List<string> { _localizerShared["UnauthorizedMessage"].Value.ToString() };
-                return Unauthorized(new ApiBadRequestResponse(erros, 401));
+                //List<string> erros = new List<string> { _localizerShared["UnauthorizedMessage"].Value.ToString() };
+                //////////List<string> erros = new List<string> { _commonService.UnAuthorizeErrorReponse(, false) };
+                //////////return Unauthorized(new ApiBadRequestResponse(erros, 401));
+                return Unauthorized(_commonService.UnAuthorizeErrorReponse(false));
             }
 
 
-            return Ok(_commonService.OkResponse(notif, _localizerShared["SuccessMessage"].Value.ToString()));
+            //return Ok(_commonService.OkResponse(notif, _localizerShared["SuccessMessage"].Value.ToString()));
+            return Ok(_commonService.OkResponse(notif, false));
+
         }
 
 
@@ -202,7 +210,6 @@ namespace CallInDoor.Controllers
 
             var notif = await _context
                .NotificationTBL
-               //.AsNoTracking()
                .Where(C => C.UserName == currentusername && C.Id == Id)
               .FirstOrDefaultAsync();
 
@@ -210,20 +217,9 @@ namespace CallInDoor.Controllers
                 return NotFound(_commonService.NotFoundErrorReponse(false));
 
             notif.IsReaded = true;
+            await _context.SaveChangesAsync();
 
-            try
-            {
-
-                await _context.SaveChangesAsync();
-                return Ok(_commonService.OkResponse(null, false));
-            }
-            catch
-            {
-                List<string> erros = new List<string> { _localizerShared["InternalServerMessage"].Value.ToString() };
-                return StatusCode(StatusCodes.Status500InternalServerError,
-                   new ApiBadRequestResponse(erros, 500));
-            }
-
+            return Ok(_commonService.OkResponse(null, false));
         }
 
 

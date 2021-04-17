@@ -23,6 +23,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.SignalR;
 using CallInDoor.Hubs;
 using Service.Interfaces.SmsService;
+using Service.Interfaces.Resource;
 
 namespace CallInDoor.Controllers
 {
@@ -40,16 +41,13 @@ namespace CallInDoor.Controllers
         private readonly IServiceService _servicetypeService;
         private readonly ICommonService _commonService;
 
+        private readonly IResourceServices _resourceServices;
+
 
         private readonly ISmsService _smsService;
 
-
-
-
-
-
-        private IStringLocalizer<ShareResource> _localizerShared;
-        private IStringLocalizer<ServiceController> _locaLizer;
+        //private IStringLocalizer<ShareResource> _localizerShared;
+        //private IStringLocalizer<ServiceController> _locaLizer;
         public ServiceController(
         IHubContext<NotificationHub> hubContext,
 
@@ -59,8 +57,9 @@ namespace CallInDoor.Controllers
               IServiceService servicetypeService,
               ICommonService commonService,
               ISmsService smsService,
-             IStringLocalizer<ShareResource> localizerShared,
-              IStringLocalizer<ServiceController> locaLizer
+              //IStringLocalizer<ShareResource> localizerShared,
+              //IStringLocalizer<ServiceController> locaLizer,
+              IResourceServices resourceServices
 
             )
         {
@@ -70,9 +69,10 @@ namespace CallInDoor.Controllers
             _smsService = smsService;
             _roleManager = roleManager;
             _accountService = accountService;
-            _localizerShared = localizerShared;
-            _locaLizer = locaLizer;
+            //_localizerShared = localizerShared;
+            //_locaLizer = locaLizer;
             _servicetypeService = servicetypeService;
+            _resourceServices = resourceServices;
         }
 
         #endregion
@@ -184,8 +184,7 @@ namespace CallInDoor.Controllers
         {
             if (Id == null)
             {
-                List<string> erros = new List<string> { _localizerShared["NotFound"].Value.ToString() };
-                return NotFound(new ApiBadRequestResponse(erros, 404));
+                return BadRequest(_commonService.NotFoundErrorReponse(false));
             }
 
             var IsPersian = _commonService.IsPersianLanguage();
@@ -209,7 +208,9 @@ namespace CallInDoor.Controllers
                 })
              .ToListAsync();
             }
-            return Ok(_commonService.OkResponse(tags, _localizerShared["SuccessMessage"].Value.ToString()));
+            return Ok(_commonService.OkResponse(tags, false));
+
+            //return Ok(_commonService.OkResponse(tags, _localizerShared["SuccessMessage"].Value.ToString()));
         }
 
 
@@ -227,8 +228,7 @@ namespace CallInDoor.Controllers
         {
             if (Id == null)
             {
-                List<string> erros = new List<string> { _localizerShared["NotFound"].Value.ToString() };
-                return NotFound(new ApiBadRequestResponse(erros, 404));
+                return BadRequest(_commonService.NotFoundErrorReponse(false));
             }
             var serviceTimsandProice = await _context
                 .ServiceTBL
@@ -241,8 +241,9 @@ namespace CallInDoor.Controllers
                     c.MinPriceForService,
                     c.MinSessionTime,
                 }).ToListAsync();
+            return Ok(_commonService.OkResponse(serviceTimsandProice, false));
 
-            return Ok(_commonService.OkResponse(serviceTimsandProice, _localizerShared["SuccessMessage"].Value.ToString()));
+            //return Ok(_commonService.OkResponse(serviceTimsandProice, _localizerShared["SuccessMessage"].Value.ToString()));
         }
 
 
@@ -265,7 +266,10 @@ namespace CallInDoor.Controllers
                     c.MinPriceForService,
                     c.MinSessionTime
                 }).ToListAsync();
-            return Ok(_commonService.OkResponse(serviceTimsandProice, _localizerShared["SuccessMessage"].Value.ToString()));
+
+            return Ok(_commonService.OkResponse(serviceTimsandProice, false));
+
+            //return Ok(_commonService.OkResponse(serviceTimsandProice, _localizerShared["SuccessMessage"].Value.ToString()));
         }
 
 
@@ -439,9 +443,9 @@ namespace CallInDoor.Controllers
                          }).Distinct()
                           .AsQueryable();
 
-            var MyServiceTypes = await query.ToListAsync();
-            return Ok(_commonService.OkResponse(MyServiceTypes, _localizerShared["SuccessMessage"].Value.ToString()));
-
+            var myServiceTypes = await query.ToListAsync();
+            return Ok(_commonService.OkResponse(myServiceTypes, false));
+            //return Ok(_commonService.OkResponse(MyServiceTypes, _localizerShared["SuccessMessage"].Value.ToString()));
         }
 
 
@@ -474,12 +478,9 @@ namespace CallInDoor.Controllers
 
             if (Service == null)
             {
-                List<string> erros = new List<string> { _localizerShared["NotFound"].Value.ToString() };
-                return NotFound(new ApiBadRequestResponse(erros, 404));
-                //return NotFound(new ApiResponse(404, _localizerShared["NotFound"].Value.ToString()));
+                return BadRequest(_commonService.NotFoundErrorReponse(false));
             }
-            return Ok(_commonService.OkResponse(Service, _localizerShared["SuccessMessage"].Value.ToString()));
-
+            return Ok(_commonService.OkResponse(Service, false));
         }
 
 
@@ -531,16 +532,21 @@ namespace CallInDoor.Controllers
 
             if (serviceFromDB == null)
             {
-                List<string> erros = new List<string> { _localizerShared["NotFound"].Value.ToString() };
-                return NotFound(new ApiBadRequestResponse(erros, 404));
+
+                return BadRequest(_commonService.NotFoundErrorReponse(false));
+                //List<string> erros = new List<string> { _localizerShared["NotFound"].Value.ToString() };
+                //return NotFound(new ApiBadRequestResponse(erros, 404));
             }
 
             if (serviceFromDB.UserName != currentUsername)
             {
-                List<string> erros = new List<string> { _localizerShared["UnauthorizedMessage"].Value.ToString() };
-                return Unauthorized(new ApiBadRequestResponse(erros, 401));
+                List<string> erros = new List<string> {
+                    //_localizerShared["UnauthorizedMessage"].Value.ToString() 
+                _resourceServices.GetErrorMessageByKey("UnauthorizedMessage")
+                };
+                return BadRequest(new ApiBadRequestResponse(erros, 401));
             }
-            return Ok(_commonService.OkResponse(serviceFromDB, _localizerShared["SuccessMessage"].Value.ToString()));
+            return Ok(_commonService.OkResponse(serviceFromDB, false));
         }
 
 
@@ -569,18 +575,19 @@ namespace CallInDoor.Controllers
             #region  validation
             if (serviceFromDB == null)
             {
-                List<string> erros = new List<string> { _localizerShared["NotFound"].Value.ToString() };
-                return BadRequest(new ApiBadRequestResponse(erros, 404));
+                return BadRequest(_commonService.NotFoundErrorReponse(false));
             }
 
             if (serviceFromDB.UserName != currentUsername)
             {
-                List<string> erros = new List<string> { _localizerShared["UnauthorizedMessage"].Value.ToString() };
+
+                List<string> erros = new List<string> { _resourceServices.GetErrorMessageByKey("UnauthorizedMessage") };
+
                 return BadRequest(new ApiBadRequestResponse(erros, 401));
             }
             if (serviceFromDB.ServiceType == ServiceType.Service || serviceFromDB.ServiceType == ServiceType.Course)
             {
-                List<string> erros = new List<string> { _localizerShared["InValidServiceType"].Value.ToString() };
+                List<string> erros = new List<string> { _resourceServices.GetErrorMessageByKey("InValidServiceType") };
                 return BadRequest(new ApiBadRequestResponse(erros));
             }
             #endregion
@@ -604,7 +611,11 @@ namespace CallInDoor.Controllers
                 //serviceFromDB.ServiceTbl.Id
 
             };
-            return Ok(_commonService.OkResponse(response, _locaLizer["SuccesfullAddServiceMessage"].Value.ToString()));
+
+
+            //return Ok(_commonService.OkResponse(response, _locaLizer["SuccesfullAddServiceMessage"].Value.ToString()));
+            return Ok(_commonService.OkResponse(null, false));
+
         }
 
 
@@ -669,7 +680,7 @@ namespace CallInDoor.Controllers
             if (res2)
             {
                 var err = new List<string>();
-                err.Add(_localizerShared["ProfileRejectedMessage"].Value.ToString());
+                err.Add(_resourceServices.GetErrorMessageByKey("ProfileRejectedMessage"));
                 return BadRequest(new ApiBadRequestResponse(err));
             }
 
@@ -711,21 +722,15 @@ namespace CallInDoor.Controllers
 
             };
 
-            try
-            {
-                //await _context.BaseMyServiceTBL.AddAsync(BaseMyService);
-                await _context.MyChatServiceTBL.AddAsync(MyChatService);
 
-                await _context.SaveChangesAsync();
-                return Ok(_commonService.OkResponse(null, _locaLizer["SuccesfullAddServiceMessage"].Value.ToString()));
+            //await _context.BaseMyServiceTBL.AddAsync(BaseMyService);
+            await _context.MyChatServiceTBL.AddAsync(MyChatService);
 
-            }
-            catch
-            {
-                List<string> erros = new List<string> { _localizerShared["InternalServerMessage"].Value.ToString() };
-                return StatusCode(StatusCodes.Status500InternalServerError,
-                   new ApiBadRequestResponse(erros, 500));
-            }
+            await _context.SaveChangesAsync();
+            //return Ok(_commonService.OkResponse(null, _locaLizer["SuccesfullAddServiceMessage"].Value.ToString()));
+            return Ok(_commonService.OkResponse(null, false));
+
+
         }
 
 
@@ -755,14 +760,12 @@ namespace CallInDoor.Controllers
 
             if (serviceFromDB == null)
             {
-                List<string> erros = new List<string> { _localizerShared["NotFound"].Value.ToString() };
-                return BadRequest(new ApiBadRequestResponse(erros, 404));
+                return BadRequest(_commonService.NotFoundErrorReponse(false));
             }
 
             if (serviceFromDB.UserName != currentUsername)
             {
-                List<string> erros = new List<string> { _localizerShared["UnauthorizedMessage"].Value.ToString() };
-                return BadRequest(new ApiBadRequestResponse(erros, 401));
+                return BadRequest(_resourceServices.GetErrorMessageByKey("UnauthorizedMessage"));
             }
 
             //if (serviceFromDB.ConfirmedServiceType != ConfirmedServiceType.Pending)
@@ -824,19 +827,8 @@ namespace CallInDoor.Controllers
             serviceFromDB.MyChatsService.PriceForNonNativeCustomer = (double)model.PriceForNonNativeCustomer;
 
 
-            try
-            {
-                await _context.SaveChangesAsync();
-                return Ok(_commonService.OkResponse(null, _locaLizer["SuccesfullAddServiceMessage"].Value.ToString()));
-
-            }
-            catch
-            {
-                List<string> erros = new List<string> { _localizerShared["InternalServerMessage"].Value.ToString() };
-                return StatusCode(StatusCodes.Status500InternalServerError,
-                   new ApiBadRequestResponse(erros, 500));
-            }
-
+            await _context.SaveChangesAsync();
+            return Ok(_commonService.OkResponse(null, false));
 
         }
 
@@ -867,12 +859,13 @@ namespace CallInDoor.Controllers
 
             if (serviceFromDB == null)
             {
-                List<string> erros = new List<string> { _localizerShared["NotFound"].Value.ToString() };
-                return NotFound(new ApiBadRequestResponse(erros, 404));
+                return BadRequest(_commonService.NotFoundErrorReponse(false));
             }
             if (serviceFromDB.UserName != currentUsername)
             {
-                List<string> erros = new List<string> { _localizerShared["UnauthorizedMessage"].Value.ToString() };
+                List<string> erros = new List<string> {
+                    _resourceServices.GetErrorMessageByKey("UnauthorizedMessage")
+                };
                 return Unauthorized(new ApiBadRequestResponse(erros, 401));
             }
 
@@ -886,19 +879,10 @@ namespace CallInDoor.Controllers
 
             serviceFromDB.IsDeleted = true;
 
-            try
-            {
 
-                await _context.SaveChangesAsync();
-                return Ok(_commonService.OkResponse(serviceFromDB, _localizerShared["DeleteServiceMessage"].Value.ToString()));
 
-            }
-            catch
-            {
-                List<string> erros = new List<string> { _localizerShared["InternalServerMessage"].Value.ToString() };
-                return StatusCode(StatusCodes.Status500InternalServerError,
-                   new ApiBadRequestResponse(erros, 500));
-            }
+            await _context.SaveChangesAsync();
+            return Ok(_commonService.OkResponse(null, false));
 
 
         }
@@ -990,19 +974,14 @@ namespace CallInDoor.Controllers
                 BaseMyChatTBL = BaseMyService,
             };
 
-            try
-            {
-                //await _context.BaseMyServiceTBL.AddAsync(BaseMyService);
-                await _context.MyServiceServiceTBL.AddAsync(MyChatService);
-                await _context.SaveChangesAsync();
-                return Ok(_commonService.OkResponse(null, _locaLizer["SuccesfullAddServiceMessage"].Value.ToString()));
-            }
-            catch
-            {
-                List<string> erros = new List<string> { _localizerShared["InternalServerMessage"].Value.ToString() };
-                return StatusCode(StatusCodes.Status500InternalServerError,
-                   new ApiBadRequestResponse(erros, 500));
-            }
+
+            //await _context.BaseMyServiceTBL.AddAsync(BaseMyService);
+            await _context.MyServiceServiceTBL.AddAsync(MyChatService);
+            await _context.SaveChangesAsync();
+            //return Ok(_commonService.OkResponse(null, _locaLizer["SuccesfullAddServiceMessage"].Value.ToString()));
+            return Ok(_commonService.OkResponse(null, false));
+
+
 
         }
 
@@ -1058,18 +1037,19 @@ namespace CallInDoor.Controllers
 
             if (serviceFromDB == null)
             {
-                List<string> erros = new List<string> { _localizerShared["NotFound"].Value.ToString() };
-                return NotFound(new ApiBadRequestResponse(erros, 404));
+                return BadRequest(_commonService.NotFoundErrorReponse(false));
             }
-
             var currentUsername = _accountService.GetCurrentUserName();
             if (serviceFromDB.UserName != currentUsername)
             {
-                List<string> erros = new List<string> { _localizerShared["UnauthorizedMessage"].Value.ToString() };
+                List<string> erros = new List<string> {
+                    _resourceServices.GetErrorMessageByKey("UnauthorizedMessage")
+                };
                 return Unauthorized(new ApiBadRequestResponse(erros, 401));
             }
 
-            return Ok(_commonService.OkResponse(serviceFromDB, _localizerShared["SuccessMessage"].Value.ToString()));
+            return Ok(_commonService.OkResponse(serviceFromDB, false));
+
 
         }
 
@@ -1110,16 +1090,14 @@ namespace CallInDoor.Controllers
                 .FirstOrDefaultAsync();
 
             if (serviceFromDB == null)
-
             {
-                List<string> erros = new List<string> { _localizerShared["NotFound"].Value.ToString() };
-                return NotFound(new ApiBadRequestResponse(erros, 404));
+                return BadRequest(_commonService.NotFoundErrorReponse(false));
             }
 
             var currentUsername = _accountService.GetCurrentUserName();
             if (serviceFromDB.UserName != currentUsername)
             {
-                List<string> erros = new List<string> { _localizerShared["UnauthorizedMessage"].Value.ToString() };
+                List<string> erros = new List<string> { _resourceServices.GetErrorMessageByKey("UnauthorizedMessage") };
                 return Unauthorized(new ApiBadRequestResponse(erros, 401));
             }
 
@@ -1152,18 +1130,10 @@ namespace CallInDoor.Controllers
             serviceFromDB.MyServicesService.Tags = model.Tags + "," + model.CustomTags;
 
 
-            try
-            {
-                await _context.SaveChangesAsync();
-                return Ok(_commonService.OkResponse(null, _locaLizer["SuccesfullAddServiceMessage"].Value.ToString()));
-            }
-            catch
-            {
-                List<string> erros = new List<string> { _localizerShared["InternalServerMessage"].Value.ToString() };
-                return StatusCode(StatusCodes.Status500InternalServerError,
-                   new ApiBadRequestResponse(erros, 500));
+            await _context.SaveChangesAsync();
+            //return Ok(_commonService.OkResponse(null, _locaLizer["SuccesfullAddServiceMessage"].Value.ToString()));
+            return Ok(_commonService.OkResponse(null, false));
 
-            }
 
         }
 
@@ -1192,12 +1162,11 @@ namespace CallInDoor.Controllers
 
             if (serviceFromDB == null)
             {
-                List<string> erros = new List<string> { _localizerShared["NotFound"].Value.ToString() };
-                return BadRequest(new ApiBadRequestResponse(erros, 404));
+                return BadRequest(_commonService.NotFoundErrorReponse(false));
             }
             if (serviceFromDB.UserName != currentUsername)
             {
-                List<string> erros = new List<string> { _localizerShared["UnauthorizedMessage"].Value.ToString() };
+                List<string> erros = new List<string> { _resourceServices.GetErrorMessageByKey("UnauthorizedMessage") };
                 return BadRequest(new ApiBadRequestResponse(erros, 401));
             }
 
@@ -1211,18 +1180,9 @@ namespace CallInDoor.Controllers
 
             serviceFromDB.IsDeleted = true;
 
-            try
-            {
-                await _context.SaveChangesAsync();
-                return Ok(_commonService.OkResponse(null, _localizerShared["DeleteServiceMessage"].Value.ToString()));
 
-            }
-            catch
-            {
-                List<string> erros = new List<string> { _localizerShared["InternalServerMessage"].Value.ToString() };
-                return StatusCode(StatusCodes.Status500InternalServerError,
-                   new ApiBadRequestResponse(erros, 500));
-            }
+            await _context.SaveChangesAsync();
+            return Ok(_commonService.OkResponse(null, false));
 
 
         }
@@ -1265,7 +1225,9 @@ namespace CallInDoor.Controllers
             var previewFilreAddress = _servicetypeService.SvaeFileToHost("Upload/CoursePreview/", model.PreviewFile);
             if (previewFilreAddress == null)
             {
-                List<string> erros = new List<string> { _localizerShared["FileUploadErrorMessage"].Value.ToString() };
+                List<string> erros = new List<string> {
+                    _resourceServices.GetErrorMessageByKey("FileUploadErrorMessage")
+                };
                 return StatusCode(StatusCodes.Status500InternalServerError,
                    new ApiBadRequestResponse(erros, 500));
             }
@@ -1319,21 +1281,12 @@ namespace CallInDoor.Controllers
                 BaseMyChatTBL = BaseMyService,
             };
 
-            try
-            {
-                //await _context.BaseMyServiceTBL.AddAsync(BaseMyService);
-                await _context.MyCourseServiceTBL.AddAsync(MyCourseService);
 
-                await _context.SaveChangesAsync();
-                return Ok(_commonService.OkResponse(null, _locaLizer["SuccesfullAddServiceMessage"].Value.ToString()));
-            }
-            catch
-            {
-                List<string> erros = new List<string> { _localizerShared["InternalServerMessage"].Value.ToString() };
-                return StatusCode(StatusCodes.Status500InternalServerError,
-                   new ApiBadRequestResponse(erros, 500));
-            }
+            //await _context.BaseMyServiceTBL.AddAsync(BaseMyService);
+            await _context.MyCourseServiceTBL.AddAsync(MyCourseService);
 
+            await _context.SaveChangesAsync();
+            return Ok(_commonService.OkResponse(null, false));
         }
 
 
@@ -1381,14 +1334,16 @@ namespace CallInDoor.Controllers
 
             if (serviceFromDB == null)
             {
-                List<string> erros = new List<string> { _localizerShared["NotFound"].Value.ToString() };
-                return NotFound(new ApiBadRequestResponse(erros, 404));
+                return BadRequest(_commonService.NotFoundErrorReponse(false));
             }
 
 
             var currentUsername = _accountService.GetCurrentUserName();
             if (serviceFromDB.BaseMyChatTBL.UserName != currentUsername)
-                return Unauthorized(new ApiResponse(401, _localizerShared["UnauthorizedMessage"].Value.ToString()));
+            {
+                List<string> erros = new List<string> { _resourceServices.GetErrorMessageByKey("UnauthorizedMessage") };
+                return BadRequest(new ApiBadRequestResponse(erros, 401));
+            }
 
             //if (serviceFromDB.BaseMyChatTBL.ConfirmedServiceType != ConfirmedServiceType.Pending)
             //{
@@ -1411,19 +1366,10 @@ namespace CallInDoor.Controllers
             ////PreviewVideoAddress  
             ////topics
 
-            try
-            {
-                await _context.SaveChangesAsync();
-                return Ok(_commonService.OkResponse(null, _locaLizer["SuccesfullAddServiceMessage"].Value.ToString()));
-            }
-            catch
-            {
-                List<string> erros = new List<string> { _localizerShared["InternalServerMessage"].Value.ToString() };
-                return StatusCode(StatusCodes.Status500InternalServerError,
-                   new ApiBadRequestResponse(erros, 500));
+            await _context.SaveChangesAsync();
+            //return Ok(_commonService.OkResponse(null, _locaLizer["SuccesfullAddServiceMessage"].Value.ToString()));
+            return Ok(_commonService.OkResponse(null, false));
 
-
-            }
 
         }
         /////////////////////////////////////////////////////////تمام نشده
@@ -1446,8 +1392,7 @@ namespace CallInDoor.Controllers
             var username = await _context.Users.Where(c => c.Id == UserId).Select(c => c.UserName).FirstOrDefaultAsync();
             if (string.IsNullOrEmpty(username))
             {
-                List<string> erros = new List<string> { _localizerShared["NotFound"].Value.ToString() };
-                return BadRequest(new ApiBadRequestResponse(erros, 404));
+                return BadRequest(_commonService.NotFoundErrorReponse(false));
             }
 
 
@@ -1493,12 +1438,11 @@ namespace CallInDoor.Controllers
             //var profile = await _accountService.ProfileGet();
             if (userFromDB == null)
             {
-                List<string> erros = new List<string> { _localizerShared["NotFound"].Value.ToString() };
-                return BadRequest(new ApiBadRequestResponse(erros, 404));
+                return BadRequest(_commonService.NotFoundErrorReponse(false));
             }
-            return Ok(_commonService.OkResponse(userFromDB, _localizerShared["SuccessMessage"].Value.ToString()));
 
-
+            return Ok(_commonService.OkResponse(userFromDB, false));
+            //return Ok(_commonService.OkResponse(userFromDB, _localizerShared["SuccessMessage"].Value.ToString()));
         }
 
         #endregion
@@ -1588,11 +1532,10 @@ namespace CallInDoor.Controllers
 
             if (userFromDB == null)
             {
-                List<string> erros = new List<string> { _localizerShared["NotFound"].Value.ToString() };
-                return BadRequest(new ApiBadRequestResponse(erros, 404));
+                return BadRequest(_commonService.NotFoundErrorReponse(false));
             }
 
-            return Ok(_commonService.OkResponse(userFromDB, _localizerShared["SuccessMessage"].Value.ToString()));
+            return Ok(_commonService.OkResponse(userFromDB, false));
         }
 
 
@@ -1683,11 +1626,11 @@ namespace CallInDoor.Controllers
 
             if (userFromDB == null)
             {
-                List<string> erros = new List<string> { _localizerShared["NotFound"].Value.ToString() };
-                return BadRequest(new ApiBadRequestResponse(erros, 404));
+                return BadRequest(_commonService.NotFoundErrorReponse(false));
             }
+            return Ok(_commonService.OkResponse(userFromDB, false));
 
-            return Ok(_commonService.OkResponse(userFromDB, _localizerShared["SuccessMessage"].Value.ToString()));
+
         }
 
 
@@ -1705,8 +1648,9 @@ namespace CallInDoor.Controllers
             var username = await _context.Users.Where(c => c.Id == UserId).AsNoTracking().Select(c => c.UserName).FirstOrDefaultAsync();
             if (string.IsNullOrEmpty(username))
             {
-                List<string> erros = new List<string> { _localizerShared["NotFound"].Value.ToString() };
-                return BadRequest(new ApiBadRequestResponse(erros, 404));
+                return BadRequest(_commonService.NotFoundErrorReponse(false));
+                //List<string> erros = new List<string> { _localizerShared["NotFound"].Value.ToString() };
+                //return BadRequest(new ApiBadRequestResponse(erros, 404));
             }
 
             var isPersian = _commonService.IsPersianLanguage();
@@ -1725,7 +1669,10 @@ namespace CallInDoor.Controllers
                  .AsQueryable()
                  .ToListAsync();
 
-            return Ok(_commonService.OkResponse(categOryServciceNames, _localizerShared["SuccessMessage"].Value.ToString()));
+            //return Ok(_commonService.OkResponse(categOryServciceNames, _localizerShared["SuccessMessage"].Value.ToString()));
+
+
+            return Ok(_commonService.OkResponse(null, false));
 
         }
         #endregion
@@ -1963,8 +1910,7 @@ namespace CallInDoor.Controllers
                         .Where(c => c.ServiceId == model.ServiceId && c.IsDeleted == false && c.IsDisabledByCompany == false).FirstOrDefaultAsync();
             if (serviceFromDB == null)
             {
-                List<string> erros = new List<string> { _localizerShared["ServiceNotFound"].Value.ToString() };
-                return BadRequest(new ApiBadRequestResponse(erros));
+                return BadRequest(_commonService.NotFoundErrorReponse(false));
             }
 
             if (model.StarCount >= 3)
@@ -1997,19 +1943,13 @@ namespace CallInDoor.Controllers
 
 
 
-            try
-            {
+            
                 //await _context.BaseMyServiceTBL.AddAsync(BaseMyService);
                 await _context.ServiceCommentsTBL.AddAsync(comment);
                 await _context.SaveChangesAsync();
-                return Ok(_commonService.OkResponse(null, _localizerShared["SuccessMessage"].Value.ToString()));
-            }
-            catch
-            {
-                List<string> erros = new List<string> { _localizerShared["InternalServerMessage"].Value.ToString() };
-                return StatusCode(StatusCodes.Status500InternalServerError,
-                   new ApiBadRequestResponse(erros, 500));
-            }
+            //return Ok(_commonService.OkResponse(null, _localizerShared["SuccessMessage"].Value.ToString()));
+            return Ok(_commonService.OkResponse(null, false));
+
         }
 
         #endregion
@@ -2041,7 +1981,11 @@ namespace CallInDoor.Controllers
 
             if (questions.Count == 0)
             {
-                List<string> erros = new List<string> { _localizerShared["Noquestoin"].Value.ToString() };
+                List<string> erros = new List<string> {
+                    //_localizerShared["Noquestoin"].Value.ToString() 
+                        _resourceServices.GetErrorMessageByKey("Noquestoin")
+
+                };
                 return BadRequest(new ApiBadRequestResponse(erros));
             }
 
@@ -2053,12 +1997,19 @@ namespace CallInDoor.Controllers
                     var ques = questions.Where(c => c.questionId == item.QuestionId).FirstOrDefault();
                     if (ques == null)
                     {
-                        List<string> erros = new List<string> { _localizerShared["InvalidQuestion"].Value.ToString() };
+
+                        List<string> erros = new List<string> { 
+                            //_localizerShared["InvalidQuestion"].Value.ToString() 
+                        _resourceServices.GetErrorMessageByKey("InvalidQuestion")
+                        };
                         return BadRequest(new ApiBadRequestResponse(erros));
                     }
                     else if (ques.answerIds.Any(c => c == item.AnswerId) == false)
                     {
-                        List<string> erros = new List<string> { _localizerShared["InvalidAnswer"].Value.ToString() };
+                        List<string> erros = new List<string> {
+                            //_localizerShared["InvalidAnswer"].Value.ToString()
+                        _resourceServices.GetErrorMessageByKey("Noquestoin")
+                        };
                         return BadRequest(new ApiBadRequestResponse(erros));
                     }
                 }
@@ -2081,19 +2032,13 @@ namespace CallInDoor.Controllers
                 await _context.ServiceSurveyTBL.AddRangeAsync(SurveyTBLs);
             }
 
-            try
-            {
-                //await _context.BaseMyServiceTBL.AddAsync(BaseMyService);
-                await _context.SaveChangesAsync();
-                return Ok(_commonService.OkResponse(null, _localizerShared["SuccessMessage"].Value.ToString()));
-            }
-            catch
-            {
-                List<string> erros = new List<string> { _localizerShared["InternalServerMessage"].Value.ToString() };
-                return StatusCode(StatusCodes.Status500InternalServerError,
-                   new ApiBadRequestResponse(erros, 500));
 
-            }
+            //await _context.BaseMyServiceTBL.AddAsync(BaseMyService);
+            await _context.SaveChangesAsync();
+            //return Ok(_commonService.OkResponse(null, _localizerShared["SuccessMessage"].Value.ToString()));
+            return Ok(_commonService.OkResponse(null, false));
+
+
         }
 
         #endregion
@@ -2373,7 +2318,9 @@ namespace CallInDoor.Controllers
                     //////////////return Unauthorized(new ApiResponse(401, PubicMessages.UnAuthorizeMessage));
                 }
             }
-            return Ok(_commonService.OkResponse(serviceFromDB, _localizerShared["SuccessMessage"].Value.ToString()));
+            //return Ok(_commonService.OkResponse(serviceFromDB, _localizerShared["SuccessMessage"].Value.ToString()));
+            return Ok(_commonService.OkResponse(null, false));
+
         }
 
         #endregion
@@ -2431,7 +2378,7 @@ namespace CallInDoor.Controllers
             {
                 List<string> erros = new List<string> { PubicMessages.NotFoundMessage };
                 return BadRequest(new ApiBadRequestResponse(erros, 404));
-                
+
                 //////////////return NotFound(new ApiResponse(404, PubicMessages.NotFoundMessage));
             }
             var currentUsername = _accountService.GetCurrentUserName();
@@ -2449,7 +2396,10 @@ namespace CallInDoor.Controllers
                     //////////return Unauthorized(new ApiResponse(401, PubicMessages.UnAuthorizeMessage));
                 }
             }
-            return Ok(_commonService.OkResponse(serviceFromDB, _localizerShared["SuccessMessage"].Value.ToString()));
+
+
+            return Ok(_commonService.OkResponse(serviceFromDB, false));
+            //return Ok(_commonService.OkResponse(serviceFromDB, _localizerShared["SuccessMessage"].Value.ToString()));
 
         }
 

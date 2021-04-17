@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Localization;
 using Service.Interfaces.Common;
+using Service.Interfaces.Resource;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -18,12 +19,14 @@ namespace Service
     {
         private readonly IHostingEnvironment _hostingEnvironment;
         private IStringLocalizer<ShareResource> _localizerShared;
-
+        private readonly IResourceServices _resourceServices;
         public CommonService(IHostingEnvironment hostingEnvironment,
-            IStringLocalizer<ShareResource> localizerShared)
+            IStringLocalizer<ShareResource> localizerShared,
+            IResourceServices resourceServices)
         {
             _hostingEnvironment = hostingEnvironment;
             _localizerShared = localizerShared;
+            _resourceServices = resourceServices;
         }
 
         /// <summary>
@@ -74,10 +77,12 @@ namespace Service
             {
                 Status = 1,
                 data = data,
-                Message = _localizerShared["SuccessMessage"].Value.ToString()
+                //Message = _localizerShared["SuccessMessage"].Value.ToString()
+                Message = _resourceServices.GetErrorMessageByKey("SuccessMessage")
             },
-                _localizerShared["SuccessMessage"].Value.ToString()
-               );
+            _resourceServices.GetErrorMessageByKey("SuccessMessage")
+          //_localizerShared["SuccessMessage"].Value.ToString()
+          );
         }
 
 
@@ -103,33 +108,44 @@ namespace Service
 
         public object NotFoundErrorReponse(bool isAdmin)
         {
+            List<string> erros = new List<string>();
+
             if (isAdmin)
             {
-                return new ApiResponse(404, PubicMessages.NotFoundMessage) as ApiResponse;
+                //return new ApiResponse(404, PubicMessages.NotFoundMessage) as ApiResponse;
+                erros.Add(PubicMessages.NotFoundMessage);
+                return new ApiBadRequestResponse(erros, 404) as ApiResponse;
             }
-            List<string> erros = new List<string> { _localizerShared["NotFound"].Value.ToString() };
+            erros.Add(_resourceServices.GetErrorMessageByKey("NotFound"));
+
             return new ApiBadRequestResponse(erros, 404) as ApiBadRequestResponse;
         }
 
 
         public object UnAuthorizeErrorReponse(bool isAdmin)
         {
+            List<string> erros = new List<string>();
             if (isAdmin)
             {
-                return new ApiResponse(401, PubicMessages.UnAuthorizeMessage) as ApiResponse;
+                //return new ApiResponse(401, PubicMessages.UnAuthorizeMessage) as ApiResponse;
+                erros.Add(PubicMessages.UnAuthorizeMessage);
+                return new ApiBadRequestResponse(erros, 401) as ApiResponse;
             }
-            List<string> erros = new List<string> { _localizerShared["UnauthorizedMessage"].Value.ToString() };
+            erros.Add(_resourceServices.GetErrorMessageByKey("UnauthorizedMessage"));
             return new ApiBadRequestResponse(erros, 401) as ApiBadRequestResponse;
         }
 
 
         public object ForbiddenErrorReponse(bool isAdmin)
         {
+            List<string> erros = new List<string>();
             if (isAdmin)
             {
-                return new ApiResponse(403, PubicMessages.ForbiddenMessage) as ApiResponse;
+                //return new ApiResponse(403, PubicMessages.ForbiddenMessage) as ApiResponse;
+                erros.Add(PubicMessages.ForbiddenMessage);
+                return new ApiBadRequestResponse(erros, 403) as ApiResponse;
             }
-            List<string> erros = new List<string> { _localizerShared["ForniddenMessage"].Value.ToString() };
+            erros.Add(_resourceServices.GetErrorMessageByKey("ForniddenMessage"));
             return new ApiBadRequestResponse(erros, 401) as ApiBadRequestResponse;
         }
 

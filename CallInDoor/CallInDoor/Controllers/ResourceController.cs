@@ -82,7 +82,7 @@ namespace CallInDoor.Controllers
         public ActionResult EditErrorMessages([FromBody] EditErrorMessageDTO2 model)
         {
             (bool succsseded, List<string> result) res = (true, new List<string>());
-
+            var asas = _commonService.IsPersianLanguage();
             if (model.LanguageHeader == LanguageHeader.Persian)
             {
                 res = _resourceServices.EditJsonResource(model, "fa-IR");

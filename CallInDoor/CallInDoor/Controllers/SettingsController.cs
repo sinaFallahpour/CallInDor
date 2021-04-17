@@ -13,6 +13,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Service.Interfaces.Common;
+using Service.Interfaces.Resource;
 
 namespace CallInDoor.Controllers
 {
@@ -22,11 +23,13 @@ namespace CallInDoor.Controllers
     {
         private readonly DataContext _context;
         private readonly ICommonService _commonService;
+        private readonly IResourceServices _resourceServices;
 
-        public SettingsController(DataContext context, ICommonService commonService)
+        public SettingsController(DataContext context, ICommonService commonService, IResourceServices resourceServices)
         {
             _context = context;
             _commonService = commonService;
+            _resourceServices = resourceServices;
         }
 
 
@@ -68,7 +71,7 @@ namespace CallInDoor.Controllers
                 ServiceConfirmNotificationTextEnglish = settings.Where(c => c.Key == PublicHelper.ServiceConfimNotificationKeyName).SingleOrDefault()?.EnglishValue,
 
                 ServiceRejectNotificationText = settings.Where(c => c.Key == PublicHelper.ServiceRejectionKeyName).SingleOrDefault()?.Value,
-                ServiceRejectNotificationTextEnglish= settings.Where(c => c.Key == PublicHelper.ServiceRejectionKeyName).SingleOrDefault()?.EnglishValue
+                ServiceRejectNotificationTextEnglish = settings.Where(c => c.Key == PublicHelper.ServiceRejectionKeyName).SingleOrDefault()?.EnglishValue
 
 
 

@@ -16,6 +16,7 @@ using Domain.DTO.Category;
 using Service.Interfaces.Category;
 using CallInDoor.Config.Attributes;
 using Service.Interfaces.Common;
+using Service.Interfaces.Resource;
 
 namespace CallInDoor.Controllers
 {
@@ -39,6 +40,7 @@ namespace CallInDoor.Controllers
              IAccountService accountService,
              ICommonService commonService,
               ICategoryService categoryService
+               
             )
         {
             _context = context;

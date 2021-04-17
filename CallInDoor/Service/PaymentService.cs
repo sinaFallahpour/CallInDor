@@ -7,7 +7,9 @@ using Domain.Utilities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Localization;
 using Service.Interfaces.Account;
+using Service.Interfaces.Common;
 using Service.Interfaces.Payment;
+using Service.Interfaces.Resource;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -21,18 +23,25 @@ namespace Service
     {
 
         private readonly DataContext _context;
-        private IStringLocalizer<ShareResource> _localizerShared;
+        //private IStringLocalizer<ShareResource> _localizerShared;
         private readonly IAccountService _accountService;
+        private readonly ICommonService _commonService;
+        private readonly IResourceServices _resourceServices;
+
 
 
         public PaymentService(
             DataContext context,
-            IStringLocalizer<ShareResource> localizerShared,
-            IAccountService accountService)
+            //IStringLocalizer<ShareResource> localizerShared,
+            IAccountService accountService,
+            IResourceServices resourceServices,
+            ICommonService commonService)
         {
             _context = context;
-            _localizerShared = localizerShared;
+            //_localizerShared = localizerShared;
             _accountService = accountService;
+            _resourceServices = resourceServices;
+            _commonService = commonService;
         }
 
 
@@ -44,7 +53,7 @@ namespace Service
 
             if (model == null)
             {
-                string err = _localizerShared["NotFound"].Value.ToString();
+                string err = _resourceServices.GetErrorMessageByKey("NotFound");
                 IsValid = false;
                 Errors.Add(err);
                 return (IsValid, Errors);
@@ -52,35 +61,36 @@ namespace Service
 
             if (model.IsLimitedChat == false)
             {
-                string err = _localizerShared["InvalidAttamp"].Value.ToString();
+                string err = _resourceServices.GetErrorMessageByKey("InvalidAttamp");
                 IsValid = false;
                 Errors.Add(err);
             }
 
             if (model.ServiceType == ServiceType.Service || model.ServiceType == ServiceType.Course)
             {
-                string err = _localizerShared["InvalidAttamp"].Value.ToString();
+                string err = _resourceServices.GetErrorMessageByKey("InvalidAttamp");
                 IsValid = false;
                 Errors.Add(err);
             }
 
             if (model.PackageType == PackageType.Free)
             {
-                string err = _localizerShared["InvalidAttamp"].Value.ToString();
+                string err = _resourceServices.GetErrorMessageByKey("InvalidAttamp");
                 IsValid = false;
                 Errors.Add(err);
             }
 
             if (await HasPackage(model.Id))
             {
-                string err = "You have plan";
+                //string err = "You have plan";
+                string err = _resourceServices.GetErrorMessageByKey("YouHavePlan");
                 IsValid = false;
                 Errors.Add(err);
             }
 
             if (model.HasPlan_LimitedChatVoice && (model.ExpireTime_LimitedChatVoice < DateTime.Now /*!model.IsExpired_LimitedChatVoice*/ && model.AllMessageCount_LimitedChat - model.UsedMessageCount_LimitedChat != 0))
             {
-                string err = _localizerShared["YouCurrentlyHaveAnActivePackage"].Value.ToString();
+                string err = _resourceServices.GetErrorMessageByKey("YouCurrentlyHaveAnActivePackage");
                 IsValid = false;
                 Errors.Add(err);
             }
@@ -109,15 +119,12 @@ namespace Service
             if (clientFromDB.WalletBalance <= 0)
             {
                 IsValid = false;
-                Errors.Add(_localizerShared["NotEnoughtBalance"].Value.ToString());
+                Errors.Add(_resourceServices.GetErrorMessageByKey("NotEnoughtBalance"));
                 return (IsValid, Errors);
             }
 
-
-
             if (isNative)
             {
-
                 var discountPercent = disCountPercentFromDb == null ? 0 : disCountPercentFromDb.Percent;
 
                 var reducepercent = discountPercent /*+ SitePercent*/;
@@ -126,13 +133,13 @@ namespace Service
                 if (clientFromDB.WalletBalance < calculatedBalanc)
                 {
                     IsValid = false;
-                    Errors.Add(_localizerShared["NotEnoughtBalance"].Value.ToString());
+                    Errors.Add(_resourceServices.GetErrorMessageByKey("NotEnoughtBalance"));
                     return (IsValid, Errors);
                 }
                 if (clientFromDB.WalletBalance - calculatedBalanc <= 0)
                 {
                     IsValid = false;
-                    Errors.Add(_localizerShared["NotEnoughtBalance"].Value.ToString());
+                    Errors.Add(_resourceServices.GetErrorMessageByKey("NotEnoughtBalance"));
                     return (IsValid, Errors);
                 }
             }
@@ -145,25 +152,19 @@ namespace Service
                 if (clientFromDB.WalletBalance < calculatedBalanc)
                 {
                     IsValid = false;
-                    Errors.Add(_localizerShared["NotEnoughtBalance"].Value.ToString());
+                    Errors.Add(_resourceServices.GetErrorMessageByKey("NotEnoughtBalance"));
                     return (IsValid, Errors);
                 }
                 if (clientFromDB.WalletBalance - calculatedBalanc <= 0)
                 {
                     IsValid = false;
-                    Errors.Add(_localizerShared["NotEnoughtBalance"].Value.ToString());
+                    Errors.Add(_resourceServices.GetErrorMessageByKey("NotEnoughtBalance"));
                     return (IsValid, Errors);
                 }
             }
 
             return (IsValid, Errors);
         }
-
-
-
-
-
-
 
 
         /// <summary>
@@ -182,7 +183,7 @@ namespace Service
             if (userFromDB.WalletBalance <= 0)
             {
                 IsValid = false;
-                Errors.Add(_localizerShared["NotEnoughtBalance"].Value.ToString());
+                Errors.Add(_resourceServices.GetErrorMessageByKey("NotEnoughtBalance"));
                 return (IsValid, Errors);
             }
 
@@ -194,13 +195,13 @@ namespace Service
             if (userFromDB.WalletBalance < calculatedBalanc)
             {
                 IsValid = false;
-                Errors.Add(_localizerShared["NotEnoughtBalance"].Value.ToString());
+                Errors.Add(_resourceServices.GetErrorMessageByKey("NotEnoughtBalance"));
                 return (IsValid, Errors);
             }
             if (userFromDB.WalletBalance - calculatedBalanc <= 0)
             {
                 IsValid = false;
-                Errors.Add(_localizerShared["NotEnoughtBalance"].Value.ToString());
+                Errors.Add(_resourceServices.GetErrorMessageByKey("NotEnoughtBalance"));
                 return (IsValid, Errors);
             }
 
@@ -216,7 +217,7 @@ namespace Service
 
             if (model == null)
             {
-                string err = _localizerShared["NotFound"].Value.ToString();
+                string err = _resourceServices.GetErrorMessageByKey("NotFound");
                 IsValid = false;
                 Errors.Add(err);
                 return (IsValid, Errors);
@@ -224,21 +225,21 @@ namespace Service
 
             if (model.requestFromDB.IsLimitedChat == false)
             {
-                string err = _localizerShared["InvalidAttamp"].Value.ToString();
+                string err = _resourceServices.GetErrorMessageByKey("InvalidAttamp");
                 IsValid = false;
                 Errors.Add(err);
             }
 
             if (model.requestFromDB.ServiceType == ServiceType.Service || model.requestFromDB.ServiceType == ServiceType.Course)
             {
-                string err = _localizerShared["InvalidAttamp"].Value.ToString();
+                string err = _resourceServices.GetErrorMessageByKey("InvalidAttamp");
                 IsValid = false;
                 Errors.Add(err);
             }
 
             if (model.requestFromDB.PackageType == PackageType.Free)
             {
-                string err = _localizerShared["InvalidAttamp"].Value.ToString();
+                string err = _resourceServices.GetErrorMessageByKey("InvalidAttamp");
                 IsValid = false;
                 Errors.Add(err);
             }
@@ -253,14 +254,14 @@ namespace Service
 
             if (model.requestFromDB.HasPlan_LimitedChatVoice && (model.requestFromDB.ExpireTime_LimitedChatVoice < DateTime.Now /*!model.IsExpired_LimitedChatVoice*/ && model.requestFromDB.AllMessageCount_LimitedChat - model.requestFromDB.UsedMessageCount_LimitedChat != 0))
             {
-                string err = _localizerShared["YouCurrentlyHaveAnActivePackage"].Value.ToString();
+                string err = _resourceServices.GetErrorMessageByKey("YouCurrentlyHaveAnActivePackage")   ;
                 IsValid = false;
                 Errors.Add(err);
             }
 
             if (model.requestFromDB.HasPlan_LimitedChatVoice && (model.requestFromDB.ExpireTime_LimitedChatVoice < DateTime.Now /*!model.IsExpired_LimitedChatVoice*/ && model.requestFromDB.AllMessageCount_LimitedChat - model.requestFromDB.UsedMessageCount_LimitedChat != 0))
             {
-                string err = _localizerShared["YouCurrentlyHaveAnActivePackage"].Value.ToString();
+                string err = _resourceServices.GetErrorMessageByKey("YouCurrentlyHaveAnActivePackage")  ;
                 IsValid = false;
                 Errors.Add(err);
             }
@@ -300,7 +301,7 @@ namespace Service
         {
             var currentUserName = _accountService.GetCurrentUserName();
             var hasPlan = await _context.ServiceRequestTBL.AsNoTracking()
-                .AnyAsync(c => c.Id == requestId && c.ClienUserName == currentUserName && c.HasPlan_LimitedChatVoice == true );
+                .AnyAsync(c => c.Id == requestId && c.ClienUserName == currentUserName && c.HasPlan_LimitedChatVoice == true);
             //bool exist = await _context.BuyiedPackageTBL.AsNoTracking().AnyAsync(c => c.ServiceRequestId == requestId && c.UserName == currentUserName);
             return hasPlan;
 

@@ -16,6 +16,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Localization;
 using Service.Interfaces.Account;
 using Service.Interfaces.Common;
+using Service.Interfaces.Resource;
 
 namespace CallInDoor.Controllers
 {
@@ -32,8 +33,9 @@ namespace CallInDoor.Controllers
         private readonly IAccountService _accountService;
         private readonly ICommonService _commonService;
 
-        private IStringLocalizer<TransactoinController> _localizer;
-        private IStringLocalizer<ShareResource> _localizerShared;
+        //private IStringLocalizer<TransactoinController> _localizer;
+        //private IStringLocalizer<ShareResource> _localizerShared;
+        private readonly IResourceServices _resourceServices;
 
         public TransactoinController(
         UserManager<AppUser> userManager,
@@ -41,15 +43,17 @@ namespace CallInDoor.Controllers
                    IAccountService accountService,
                    ICommonService commonService,
                IStringLocalizer<TransactoinController> localizer,
-                IStringLocalizer<ShareResource> localizerShared
+                IStringLocalizer<ShareResource> localizerShared,
+                IResourceServices resourceServices
             )
         {
             _context = context;
             _userManager = userManager;
             _accountService = accountService;
             _commonService = commonService;
-            _localizer = localizer;
-            _localizerShared = localizerShared;
+            //_localizer = localizer;
+            //_localizerShared = localizerShared;
+            _resourceServices = resourceServices;
 
         }
 
@@ -244,7 +248,10 @@ namespace CallInDoor.Controllers
 
             if (userAcceptedBalance <= 0 || userAcceptedBalance - model.Amount <= 0)
             {
-                List<string> erros = new List<string> { _localizerShared["InvaliAmountForTransaction"].Value.ToString() };
+                List<string> erros = new List<string> {
+                _resourceServices.GetErrorMessageByKey("InvaliAmountForTransaction")
+
+                };
                 return BadRequest(new ApiBadRequestResponse(erros));
             }
 
@@ -263,18 +270,11 @@ namespace CallInDoor.Controllers
                 ProviderUserName = null,
             };
 
-            try
-            {
-                await _context.TransactionTBL.AddAsync(transaction);
-                await _context.SaveChangesAsync();
-                return Ok(_commonService.OkResponse(null, false));
-            }
-            catch
-            {
-                List<string> erros = new List<string> { _localizerShared["InternalServerMessage"].Value.ToString() };
-                return StatusCode(StatusCodes.Status500InternalServerError,
-                   new ApiBadRequestResponse(erros, 500));
-            }
+
+            await _context.TransactionTBL.AddAsync(transaction);
+            await _context.SaveChangesAsync();
+            return Ok(_commonService.OkResponse(null, false));
+
 
         }
 
@@ -319,20 +319,9 @@ namespace CallInDoor.Controllers
             var userfromDB = await _userManager.FindByNameAsync(curretnUserName);
             userfromDB.WalletBalance += (double)model.Amount;
 
-
-            try
-            {
-                await _context.TransactionTBL.AddAsync(transaction);
-                await _context.SaveChangesAsync();
-                return Ok(_commonService.OkResponse(null, false));
-            }
-            catch 
-            {
-                List<string> erros = new List<string> { _localizerShared["InternalServerMessage"].Value.ToString() };
-                return StatusCode(StatusCodes.Status500InternalServerError,
-                   new ApiBadRequestResponse(erros, 500));
-            }
-
+            await _context.TransactionTBL.AddAsync(transaction);
+            await _context.SaveChangesAsync();
+            return Ok(_commonService.OkResponse(null, false));
         }
 
 

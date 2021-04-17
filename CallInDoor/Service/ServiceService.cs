@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Localization;
 using Service.Interfaces.Account;
+using Service.Interfaces.Resource;
 using Service.Interfaces.ServiceType;
 using System;
 using System.Collections.Generic;
@@ -28,23 +29,25 @@ namespace Service
         private readonly IAccountService _accountService;
         private readonly RoleManager<AppRole> _roleManager;
 
-
-        private IStringLocalizer<ServiceService> _localizer;
+        //private IStringLocalizer<ServiceService> _localizer;
         private readonly IHostingEnvironment _hostingEnvironment;
+        private readonly IResourceServices _resourceServices;
 
         public ServiceService(
             DataContext context,
             IAccountService accountService,
             RoleManager<AppRole> roleManager,
-            IStringLocalizer<ServiceService> localizer,
-            IHostingEnvironment hostingEnvironment
+            //IStringLocalizer<ServiceService> localizer,
+            IHostingEnvironment hostingEnvironment,
+            IResourceServices resourceServices
                )
         {
             _context = context;
             _accountService = accountService;
             _roleManager = roleManager;
             _hostingEnvironment = hostingEnvironment;
-            _localizer = localizer;
+            _resourceServices = resourceServices;
+            //_localizer = localizer;
         }
 
         #endregion
@@ -208,7 +211,7 @@ namespace Service
                 await _context.SaveChangesAsync();
                 return true;
             }
-            catch 
+            catch
             {
                 return false;
             }
@@ -391,7 +394,7 @@ namespace Service
             if (!IsInPackage)
             {
                 IsValid = false;
-                Errors.Add(_localizer["package Type Not Exist"].Value.ToString());
+                Errors.Add(_resourceServices.GetErrorMessageByKey("PackageTypeNotExist"));
             }
 
 
@@ -399,7 +402,7 @@ namespace Service
             if (!IsInServiceType)
             {
                 IsValid = false;
-                Errors.Add(_localizer["service Type Not Exist"].Value.ToString());
+                Errors.Add(_resourceServices.GetErrorMessageByKey("PackageTypeNotExist"));
             }
 
             if (model.ServiceType == ServiceType.ChatVoice)
@@ -409,7 +412,7 @@ namespace Service
                     if (model.MessageCount == null || model.MessageCount == 0)
                     {
                         IsValid = false;
-                        Errors.Add(_localizer["MessageCount is Required"].Value.ToString());
+                        Errors.Add(_resourceServices.GetErrorMessageByKey("MessageCountIsRequired"));
                     }
                 }
             }
@@ -424,7 +427,7 @@ namespace Service
                         if (model.FreeMessageCount == null || model.FreeMessageCount == 0)
                         {
                             IsValid = false;
-                            Errors.Add(_localizer["Duration is Required"].Value.ToString());
+                            Errors.Add(_resourceServices.GetErrorMessageByKey("DurationIsRequired"));
                         }
                     }
             }
@@ -433,7 +436,7 @@ namespace Service
             if (model.ServiceType == ServiceType.Service || model.ServiceType == ServiceType.Course)
             {
                 IsValid = false;
-                Errors.Add(_localizer["Invalid ServiceType Type"].Value.ToString());
+                Errors.Add(_resourceServices.GetErrorMessageByKey("InValidServiceType"));
             }
 
 
@@ -448,7 +451,7 @@ namespace Service
             if (serviceFromDb == null)
             {
                 IsValid = false;
-                Errors.Add(_localizer["service Not Exist"].Value.ToString());
+                Errors.Add(_resourceServices.GetErrorMessageByKey("ServiceNotExist"));
             }
 
             else if (model.PriceForNativeCustomer < serviceFromDb.AcceptedMinPriceForNative)
@@ -545,7 +548,7 @@ namespace Service
                     if (model.MessageCount == null || model.MessageCount == 0)
                     {
                         IsValid = false;
-                        Errors.Add(_localizer["MessageCount is Required"].Value.ToString());
+                        Errors.Add(_resourceServices.GetErrorMessageByKey("MessageCountIsRequired"));
                     }
                 }
             }
@@ -560,7 +563,7 @@ namespace Service
                         if (model.FreeMessageCount == null || model.FreeMessageCount == 0)
                         {
                             IsValid = false;
-                            Errors.Add(_localizer["Duration is Required"].Value.ToString());
+                            Errors.Add(_resourceServices.GetErrorMessageByKey("DurationIsRequired"));
                         }
                     }
             }
@@ -568,7 +571,7 @@ namespace Service
             if (serviceFromDB.ServiceType == ServiceType.Service || serviceFromDB.ServiceType == ServiceType.Course)
             {
                 IsValid = false;
-                Errors.Add(_localizer["Invalid ServiceType Type"].Value.ToString());
+                Errors.Add(_resourceServices.GetErrorMessageByKey("InValidServiceType"));
             }
 
 
@@ -583,7 +586,7 @@ namespace Service
             if (serviceCategory == null)
             {
                 IsValid = false;
-                Errors.Add(_localizer["service Not Exist"].Value.ToString());
+                Errors.Add(_resourceServices.GetErrorMessageByKey("ServiceNotExist"));
             }
 
             else if (model.PriceForNativeCustomer < serviceCategory.AcceptedMinPriceForNative)
@@ -668,13 +671,13 @@ namespace Service
             if (!IsInServiceType)
             {
                 IsValid = false;
-                Errors.Add(_localizer["service Type Not Exist"].Value.ToString());
+                Errors.Add(_resourceServices.GetErrorMessageByKey("ServiceTypeNotExist"));
             }
             if (model.ServiceType != ServiceType.Service)
             {
                 IsValid = false;
                 //Errors.Add($"Invalid ServiceType Type");
-                Errors.Add(_localizer["Invalid ServiceType Type"].Value.ToString());
+                Errors.Add(_resourceServices.GetErrorMessageByKey("InValidServiceType"));
             }
 
 
@@ -688,7 +691,7 @@ namespace Service
             if (serviceFromDb == null)
             {
                 IsValid = false;
-                Errors.Add(_localizer["service Not Exist"].Value.ToString());
+                Errors.Add(_resourceServices.GetErrorMessageByKey("ServiceNotExist"));
             }
             else if (model.Price < serviceFromDb.MinPriceForService)
             {
@@ -865,7 +868,7 @@ namespace Service
             if (serviceFromDb == null)
             {
                 IsValid = false;
-                Errors.Add(_localizer["service Not Exist"].Value.ToString());
+                Errors.Add(_resourceServices.GetErrorMessageByKey("ServiceNotExist"));
             }
             if (model.Price < 0)
             {

@@ -9,6 +9,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Localization;
 using Service.Interfaces.Account;
 using Service.Interfaces.RequestService;
+using Service.Interfaces.Resource;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -21,21 +22,25 @@ namespace Service
     public class RequestService : IRequestService
     {
         #region ctor
-        private IStringLocalizer<ShareResource> _localizerShared;
+
         private readonly DataContext _context;
         private readonly IHostingEnvironment _hostingEnvironment;
         private readonly IAccountService _accountService;
-
-        public RequestService(IStringLocalizer<ShareResource> localizerShared,
+        //private IStringLocalizer<ShareResource> _localizerShared;
+        private readonly IResourceServices _resourceServices;
+        public RequestService(
             DataContext context,
             IHostingEnvironment hostingEnvironment,
-            IAccountService accountService
+            IAccountService accountService,
+            //IStringLocalizer<ShareResource> localizerShared,
+            IResourceServices resourceServices
             )
         {
-            _localizerShared = localizerShared;
+            //_localizerShared = localizerShared;
             _context = context;
             _hostingEnvironment = hostingEnvironment;
             _accountService = accountService;
+            _resourceServices = resourceServices;
         }
 
 
@@ -56,7 +61,7 @@ namespace Service
             if (baseServiceFromDB == null)
             {
                 IsValid = false;
-                Errors.Add(_localizerShared["NotFound"].Value.ToString());
+                Errors.Add(_resourceServices.GetErrorMessageByKey("NotFound"));
                 return (IsValid, Errors);
             }
 
@@ -65,7 +70,7 @@ namespace Service
             if (baseServiceFromDB.MyChatsService?.PackageType != PackageType.Free)
             {
                 IsValid = false;
-                Errors.Add(_localizerShared["InvalidPackageType"].Value.ToString());
+                Errors.Add(_resourceServices.GetErrorMessageByKey("InvalidPackageType"));
                 return (IsValid, Errors);
             }
             //****************************  End PackageType  Validate  ***************************************//
@@ -75,7 +80,7 @@ namespace Service
             if (baseServiceFromDB.UserName.ToLower() == curentUSerName)
             {
                 IsValid = false;
-                Errors.Add(_localizerShared["YouCantRequestToYourSelf"].Value.ToString());
+                Errors.Add(_resourceServices.GetErrorMessageByKey("YouCantRequestToYourSelf"));
                 return (IsValid, Errors);
 
             }
@@ -85,7 +90,7 @@ namespace Service
             if (baseServiceFromDB.ServiceType != ServiceType.ChatVoice)
             {
                 IsValid = false;
-                Errors.Add(_localizerShared["InValidServiceType"].Value.ToString());
+                Errors.Add(_resourceServices.GetErrorMessageByKey("InValidServiceType"));
                 return (IsValid, Errors);
             }
 
@@ -95,14 +100,14 @@ namespace Service
                 baseServiceFromDB.ProfileConfirmType != ProfileConfirmType.Confirmed)
             {
                 IsValid = false;
-                Errors.Add(_localizerShared["NotFound"].Value.ToString());
+                Errors.Add(_resourceServices.GetErrorMessageByKey("NotFound"));
                 return (IsValid, Errors);
             }
 
             if (hasReserveRequest)
             {
                 IsValid = false;
-                Errors.Add(_localizerShared["HasReserveRequest"].Value.ToString());
+                Errors.Add(_resourceServices.GetErrorMessageByKey("HasReserveRequest"));
                 return (IsValid, Errors);
             }
 
@@ -117,7 +122,7 @@ namespace Service
                 if (!isonline)
                 {
                     IsValid = false;
-                    Errors.Add(_localizerShared["ProviderIsUnAvailableMessage"].Value.ToString());
+                    Errors.Add(_resourceServices.GetErrorMessageByKey("ProviderIsUnAvailableMessage"));
                     return (IsValid, Errors);
                 }
             }
@@ -145,7 +150,7 @@ namespace Service
             if (baseServiceFromDB == null)
             {
                 IsValid = false;
-                Errors.Add(_localizerShared["NotFound"].Value.ToString());
+                Errors.Add(_resourceServices.GetErrorMessageByKey("NotFound"));
                 return (IsValid, Errors);
             }
 
@@ -154,7 +159,7 @@ namespace Service
             if (baseServiceFromDB.MyChatsService.PackageType != PackageType.limited)
             {
                 IsValid = false;
-                Errors.Add(_localizerShared["InvalidPackageType"].Value.ToString());
+                Errors.Add(_resourceServices.GetErrorMessageByKey("InvalidPackageType"));
                 return (IsValid, Errors);
             }
             //****************************  End PackageType  Validate  ***************************************//
@@ -164,7 +169,7 @@ namespace Service
             if (baseServiceFromDB.UserName.ToLower() == curentUSerName)
             {
                 IsValid = false;
-                Errors.Add(_localizerShared["YouCantRequestToYourSelf"].Value.ToString());
+                Errors.Add(_resourceServices.GetErrorMessageByKey("YouCantRequestToYourSelf"));
                 return (IsValid, Errors);
             }
 
@@ -173,7 +178,7 @@ namespace Service
             if (baseServiceFromDB.ServiceType != ServiceType.ChatVoice)
             {
                 IsValid = false;
-                Errors.Add(_localizerShared["InValidServiceType"].Value.ToString());
+                Errors.Add(_resourceServices.GetErrorMessageByKey("InValidServiceType"));
                 return (IsValid, Errors);
             }
 
@@ -183,14 +188,14 @@ namespace Service
                 baseServiceFromDB.ProfileConfirmType != ProfileConfirmType.Confirmed)
             {
                 IsValid = false;
-                Errors.Add(_localizerShared["NotFound"].Value.ToString());
+                Errors.Add(_resourceServices.GetErrorMessageByKey("NotFound"));
                 return (IsValid, Errors);
             }
 
             if (hasReserveRequest)
             {
                 IsValid = false;
-                Errors.Add(_localizerShared["HasReserveRequest"].Value.ToString());
+                Errors.Add(_resourceServices.GetErrorMessageByKey("HasReserveRequest"));
                 return (IsValid, Errors);
             }
 
@@ -206,7 +211,7 @@ namespace Service
                 if (!isonline)
                 {
                     IsValid = false;
-                    Errors.Add(_localizerShared["ProviderIsUnAvailableMessage"].Value.ToString());
+                    Errors.Add(_resourceServices.GetErrorMessageByKey("ProviderIsUnAvailableMessage"));
                     return (IsValid, Errors);
                 }
             }
@@ -229,7 +234,7 @@ namespace Service
             if (requestfromDB == null)
             {
                 IsValid = false;
-                Errors.Add(_localizerShared["NotFound"].Value.ToString());
+                Errors.Add(_resourceServices.GetErrorMessageByKey("NotFound"));
                 return (IsValid, Errors);
             }
 
@@ -238,14 +243,14 @@ namespace Service
             if (requestfromDB.ServiceRequestStatus != ServiceRequestStatus.Confirmed)
             {
                 IsValid = false;
-                Errors.Add(_localizerShared["RequestNotConfirmedMessgaes"].Value.ToString());
+                Errors.Add(_resourceServices.GetErrorMessageByKey("RequestNotConfirmedMessgaes"));
                 return (IsValid, Errors);
             }
 
             if (requestfromDB.PackageType == PackageType.Free)
             {
                 IsValid = false;
-                Errors.Add(_localizerShared["InvalidPackageType"].Value.ToString());
+                Errors.Add(_resourceServices.GetErrorMessageByKey("InvalidPackageType"));
                 return (IsValid, Errors);
             }
 
@@ -254,21 +259,21 @@ namespace Service
             if (!requestfromDB.HasPlan_LimitedChatVoice)
             {
                 IsValid = false;
-                Errors.Add(_localizerShared["YouDontHaveAnyPackage"].Value.ToString());
+                Errors.Add(_resourceServices.GetErrorMessageByKey("YouDontHaveAnyPackage"));
                 return (IsValid, Errors);
             }
 
             if (requestfromDB.ExpireTime_LimitedChatVoice < DateTime.Now)
             {
                 IsValid = false;
-                Errors.Add(_localizerShared["YourPackageExpired"].Value.ToString());
+                Errors.Add(_resourceServices.GetErrorMessageByKey("YourPackageExpired"));
                 return (IsValid, Errors);
             }
 
             if (requestfromDB.UsedMessageCount_LimitedChat >= requestfromDB.AllMessageCount_LimitedChat)
             {
                 IsValid = false;
-                Errors.Add(_localizerShared["NumberOfFreeMessagesCompleted"].Value.ToString());
+                Errors.Add(_resourceServices.GetErrorMessageByKey("NumberOfFreeMessagesCompleted"));
                 return (IsValid, Errors);
             }
 
@@ -286,7 +291,7 @@ namespace Service
             if (chatVoiceValueFromRedis == null)
             {
                 IsValid = false;
-                Errors.Add(_localizerShared["NotFound"].Value.ToString());
+                Errors.Add(_resourceServices.GetErrorMessageByKey("NotFound"));
                 return (IsValid, Errors);
             }
 
@@ -294,14 +299,14 @@ namespace Service
             if (chatVoiceValueFromRedis.EndTime == null && DateTime.Now <= chatVoiceValueFromRedis.EndTime)
             {
                 IsValid = false;
-                Errors.Add(_localizerShared["YourPackageExpired"].Value.ToString());
+                Errors.Add(_resourceServices.GetErrorMessageByKey("YourPackageExpired"));
                 return (IsValid, Errors);
             }
 
             if (chatVoiceValueFromRedis.RequestStatusForRedis == RequestStatusForRedis.BadPlan)
             {
                 IsValid = false;
-                Errors.Add(_localizerShared["YourPackageExpiredOrNoPlan"].Value.ToString());
+                Errors.Add(_resourceServices.GetErrorMessageByKey("YourPackageExpiredOrNoPlan"));
                 return (IsValid, Errors);
             }
 
@@ -325,7 +330,7 @@ namespace Service
 
                 IsValid = false;
 
-                Errors.Add(_localizerShared["TheFileIsRequired"].Value.ToString());
+                Errors.Add(_resourceServices.GetErrorMessageByKey("TheFileIsRequired"));
 
                 //Errors.Add("File Is required");
                 return (IsValid, Errors);
@@ -334,7 +339,7 @@ namespace Service
             else if (model.IsFile && IsInValidFile(model.File))
             {
                 IsValid = false;
-                Errors.Add(_localizerShared["TheFileIsInValid"].Value.ToString());
+                Errors.Add(_resourceServices.GetErrorMessageByKey("TheFileIsInValid"));
                 return (IsValid, Errors);
             }
 
@@ -342,7 +347,7 @@ namespace Service
             if (model.IsFile && model.File.Length > 500000000)
             {
                 IsValid = false;
-                Errors.Add(_localizerShared["TheFileIsTooLarge"].Value.ToString());
+                Errors.Add(_resourceServices.GetErrorMessageByKey("TheFileIsTooLarge"));
                 return (IsValid, Errors);
             }
 
@@ -355,7 +360,7 @@ namespace Service
             if (model.IsVoice && model.Voice == null)
             {
                 IsValid = false;
-                Errors.Add(_localizerShared["VoiceIsrequired"].Value.ToString());
+                Errors.Add(_resourceServices.GetErrorMessageByKey("VoiceIsrequired"));
                 return (IsValid, Errors);
             }
             //else if (model.IsVoice && IsInValidFile(model.Voice))
@@ -369,7 +374,7 @@ namespace Service
             if (model.IsVoice && model.Voice.Length > 500000000)
             {
                 IsValid = false;
-                Errors.Add(_localizerShared["VoiceIsTooLarge"].Value.ToString());
+                Errors.Add(_resourceServices.GetErrorMessageByKey("VoiceIsTooLarge"));
                 return (IsValid, Errors);
             }
 
@@ -490,7 +495,7 @@ namespace Service
             if (cientBalance <= 0)
             {
                 IsValid = false;
-                Errors.Add(_localizerShared["NotEnoughtBalance"].Value.ToString());
+                Errors.Add(_resourceServices.GetErrorMessageByKey("NotEnoughtBalance"));
                 return (IsValid, Errors);
             }
 
@@ -502,7 +507,7 @@ namespace Service
                     if (cientBalance < requestfromDB.PriceForNativeCustomer)
                     {
                         IsValid = false;
-                        Errors.Add(_localizerShared["NotEnoughtBalance"].Value.ToString());
+                        Errors.Add(_resourceServices.GetErrorMessageByKey("NotEnoughtBalance"));
                         return (IsValid, Errors);
                     }
 
@@ -510,7 +515,7 @@ namespace Service
                     if (cientBalance - requestfromDB.PriceForNativeCustomer <= 0)
                     {
                         IsValid = false;
-                        Errors.Add(_localizerShared["NotEnoughtBalance"].Value.ToString());
+                        Errors.Add(_resourceServices.GetErrorMessageByKey("NotEnoughtBalance"));
                         return (IsValid, Errors);
                     }
                 }
@@ -519,7 +524,7 @@ namespace Service
                     if (cientBalance < requestfromDB.PriceForNonNativeCustomer)
                     {
                         IsValid = false;
-                        Errors.Add(_localizerShared["NotEnoughtBalance"].Value.ToString());
+                        Errors.Add(_resourceServices.GetErrorMessageByKey("NotEnoughtBalance"));
                         return (IsValid, Errors);
                     }
 
@@ -528,7 +533,7 @@ namespace Service
                     if (cientBalance - requestfromDB.PriceForNonNativeCustomer <= 0)
                     {
                         IsValid = false;
-                        Errors.Add(_localizerShared["NotEnoughtBalance"].Value.ToString());
+                        Errors.Add(_resourceServices.GetErrorMessageByKey("NotEnoughtBalance"));
                         return (IsValid, Errors);
                     }
 

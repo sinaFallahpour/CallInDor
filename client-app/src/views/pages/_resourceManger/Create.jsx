@@ -55,7 +55,7 @@ class ModalForm extends Form {
     // },
 
 
-    languageHeader: { header: "fa-IR", language: "persian" },// ,"en-US","ar",
+    languageHeader: { header: "fa-IR", enumVal: 0, language: "persian" },// ,"en-US","ar",
 
 
     loadingData: false,
@@ -92,15 +92,15 @@ class ModalForm extends Form {
 
   async handleLanguageHeader(languageHeader) {
     if (languageHeader == 0) {
-      await this.setState({ languageHeader: { header: "fa-IR", language: "persian" } })
+      await this.setState({ languageHeader: { header: "fa-IR", enumVal: 0, language: "persian" } })
     }
     else if (languageHeader == 1) {
-      await this.setState({ languageHeader: { header: "en-US", language: "english" } })
+      await this.setState({ languageHeader: { header: "en-US", enumVal: 2, language: "english" } })
       // await this.setState({ languageHeader: { header: "en-US", language: "english" } })
     }
     else
       if (languageHeader == 2) {
-        await this.setState({ languageHeader: { header: "ar", language: "arab" } })
+        await this.setState({ languageHeader: { header: "ar", enumVal: 2, language: "arab" } })
       }
 
 
@@ -130,7 +130,7 @@ class ModalForm extends Form {
 
 
 
-      var rv = {};
+      var rv = { enumVal: languageHeader.enumVal };
       for (var i = 0; i < dataAnodations.length; ++i)
         rv[dataAnodations[i].name] = dataAnodations[i].value;
 

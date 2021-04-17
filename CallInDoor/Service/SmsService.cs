@@ -1,6 +1,7 @@
 ﻿using Domain;
 using Microsoft.Extensions.Localization;
 using Newtonsoft.Json;
+using Service.Interfaces.Resource;
 using Service.Interfaces.SmsService;
 using System;
 using System.Collections.Generic;
@@ -15,13 +16,19 @@ namespace Service
     {
 
         private readonly IHttpClientFactory _ClientFactory;
-        private IStringLocalizer<ShareResource> _localizerShared;
+        //private IStringLocalizer<ShareResource> _localizerShared;
+        private readonly IResourceServices _resourceServices;
+
         //private readonly IlogService _ilog;
 
-        public SmsService(IHttpClientFactory httpClientFactory, IStringLocalizer<ShareResource> localizerShared/*, IlogService ilog*/)
+        public SmsService(IHttpClientFactory httpClientFactory,
+            IResourceServices resourceServices
+            //IStringLocalizer<ShareResource> localizerShared
+            /*, IlogService ilog*/)
         {
             _ClientFactory = httpClientFactory;
-            _localizerShared = localizerShared;
+            //_localizerShared = localizerShared;
+            _resourceServices = resourceServices;
             //_ilog = ilog;
         }
         public async Task<(bool isSuccess, string error)> SendMessage(string To, string data, string pattern)
@@ -29,7 +36,7 @@ namespace Service
             if (string.IsNullOrWhiteSpace(To) || string.IsNullOrWhiteSpace(data) || string.IsNullOrWhiteSpace(pattern))
             {
                 //return (false, "ورودی ها نادرست است");
-                return (false, _localizerShared["InvalidInput"].Value.ToString());
+                return (false, _resourceServices.GetErrorMessageByKey("InvalidInput"));
             }
 
             try
@@ -51,12 +58,12 @@ namespace Service
                 var client = _ClientFactory.CreateClient();
                 var response = await client.SendAsync(request);
                 response.Dispose();
-                
-                return (true, _localizerShared["SuccessMessage"].Value.ToString());
+
+                return (true, _resourceServices.GetErrorMessageByKey("SuccessMessage"));
             }
-            catch 
+            catch
             {
-                return (false, _localizerShared["InternalServerMessage"].Value.ToString());
+                return (false, _resourceServices.GetErrorMessageByKey("InternalServerMessage"));
             }
         }
 
@@ -76,15 +83,15 @@ namespace Service
                 {
                     ["code"] = code,
                 }), "bxsok98udn");
-                return (true, _localizerShared["SuccessMessage"].Value.ToString());
+                return (true, _resourceServices.GetErrorMessageByKey("SuccessMessage"));
             }
-            catch 
+            catch
             {
-                return (false, _localizerShared["InternalServerMessage"].Value.ToString());
+                return (false, _resourceServices.GetErrorMessageByKey("InternalServerMessage"));
             }
         }
 
-      
+
 
 
         /// <summary>
@@ -102,11 +109,11 @@ namespace Service
                 {
                     ["password"] = code,
                 }), "p9wywk8a9d");
-                return (true, _localizerShared["SuccessMessage"].Value.ToString());
+                return (true, _resourceServices.GetErrorMessageByKey("SuccessMessage"));
             }
             catch
             {
-                return (false, _localizerShared["InternalServerMessage"].Value.ToString());
+                return (false, _resourceServices.GetErrorMessageByKey("InternalServerMessage"));
             }
         }
 
@@ -127,14 +134,14 @@ namespace Service
                 {
                     ["serviceName"] = code,
                 }), "usdpft2ewz");
-                return (true, _localizerShared["SuccessMessage"].Value.ToString());
+                return (true, _resourceServices.GetErrorMessageByKey("SuccessMessage"));
             }
             catch
             {
-                return (false, _localizerShared["InternalServerMessage"].Value.ToString());
+                return (false, _resourceServices.GetErrorMessageByKey("InternalServerMessage"));
             }
         }
-        
+
 
 
 

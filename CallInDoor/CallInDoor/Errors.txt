@@ -1,4 +1,12 @@
-﻿ return Ok(new ApiOkResponse(new DataFormat()
+﻿return BadRequest(_commonService.NotFoundErrorReponse(false));
+return Ok(_commonService.OkResponse(serviceFromDB, false));
+
+ 
+
+ 
+ 
+ 
+ return Ok(new ApiOkResponse(new DataFormat()
 {
     Status = 1,
     data = userInfo,

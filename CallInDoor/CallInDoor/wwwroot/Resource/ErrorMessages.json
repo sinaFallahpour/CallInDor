@@ -5,7 +5,7 @@
       "Languages": [
         {
           "Header": "fa-IR",
-          "Val": "111"
+          "Val": "ff"
         },
         {
           "Header": "en-US",
@@ -22,7 +22,7 @@
       "Languages": [
         {
           "Header": "fa-IR",
-          "Val": "string"
+          "Val": "ff"
         },
         {
           "Header": "en-US",
@@ -39,7 +39,7 @@
       "Languages": [
         {
           "Header": "fa-IR",
-          "Val": "string"
+          "Val": "ff"
         },
         {
           "Header": "en-US",
@@ -56,7 +56,7 @@
       "Languages": [
         {
           "Header": "fa-IR",
-          "Val": "string"
+          "Val": "ff"
         },
         {
           "Header": "en-US",
@@ -311,15 +311,15 @@
       "Languages": [
         {
           "Header": "fa-IR",
-          "Val": "string"
+          "Val": "InValid ServiceType"
         },
         {
           "Header": "en-US",
-          "Val": "string"
+          "Val": "InValid ServiceType"
         },
         {
           "Header": "ar",
-          "Val": "arabic"
+          "Val": "InValid ServiceType"
         }
       ]
     },
@@ -866,6 +866,211 @@
           "Val": "arabic"
         }
       ]
+    },
+    {
+      "Key": "ThisServiceCategoryIsNotEnabled",
+      "Languages": [
+        {
+          "Header": "fa-IR",
+          "Val": "this service category is not Enabled"
+        },
+        {
+          "Header": "en-US",
+          "Val": "this service category is not Enabled"
+        },
+        {
+          "Header": "ar",
+          "Val": "this service category is not Enabled"
+        }
+      ]
+    },
+    {
+      "Key": "YouHaveAnActivePackageForTopTens",
+      "Languages": [
+        {
+          "Header": "fa-IR",
+          "Val": "You Have An Active Package For Top Ten"
+        },
+        {
+          "Header": "en-US",
+          "Val": "You Have An Active Package For Top Ten"
+        },
+        {
+          "Header": "ar",
+          "Val": "You Have An Active Package For Top Ten"
+        }
+      ]
+    },
+    {
+      "Key": "YouHaveNotRegisteredAnyServicesInThisCategory",
+      "Languages": [
+        {
+          "Header": "fa-IR",
+          "Val": "You have not registered any services in this category"
+        },
+        {
+          "Header": "en-US",
+          "Val": "You have not registered any services in this category"
+        },
+        {
+          "Header": "ar",
+          "Val": "You have not registered any services in this category"
+        }
+      ]
+    },
+    {
+      "Key": "ProviderDontAcceptYourServiceUpTONow",
+      "Languages": [
+        {
+          "Header": "fa-IR",
+          "Val": "Provider dont accept your service up to now"
+        },
+        {
+          "Header": "en-US",
+          "Val": "Provider dont accept your service up to now"
+        },
+        {
+          "Header": "ar",
+          "Val": "Provider dont accept your service up to now"
+        }
+      ]
+    },
+    {
+      "Key": "InvalidAttamptYouAreCompany",
+      "Languages": [
+        {
+          "Header": "fa-IR",
+          "Val": "invalid attampt. you are company"
+        },
+        {
+          "Header": "en-US",
+          "Val": "invalid attampt. you are company"
+        },
+        {
+          "Header": "ar",
+          "Val": "invalid attampt. you are company"
+        }
+      ]
+    },
+    {
+      "Key": "ProblemUploadingTheFile",
+      "Languages": [
+        {
+          "Header": "fa-IR",
+          "Val": "problem uploading the file"
+        },
+        {
+          "Header": "en-US",
+          "Val": "problem uploading the file"
+        },
+        {
+          "Header": "ar",
+          "Val": "problem uploading the file"
+        }
+      ]
+    },
+    {
+      "Key": "YouHavePlan",
+      "Languages": [
+        {
+          "Header": "fa-IR",
+          "Val": "you have plan"
+        },
+        {
+          "Header": "en-US",
+          "Val": "you have plan"
+        },
+        {
+          "Header": "ar",
+          "Val": "you have plan"
+        }
+      ]
+    },
+    {
+      "Key": "PackageTypeNotExist",
+      "Languages": [
+        {
+          "Header": "fa-IR",
+          "Val": "package type not exist"
+        },
+        {
+          "Header": "en-US",
+          "Val": "package type not exist"
+        },
+        {
+          "Header": "ar",
+          "Val": "package type not exist"
+        }
+      ]
+    },
+    {
+      "Key": "MessageCountIsRequired",
+      "Languages": [
+        {
+          "Header": "fa-IR",
+          "Val": "MessageCount Is Required"
+        },
+        {
+          "Header": "en-US",
+          "Val": "MessageCount Is Required"
+        },
+        {
+          "Header": "ar",
+          "Val": "MessageCount Is Required"
+        }
+      ]
+    },
+    {
+      "Key": "DurationIsRequired",
+      "Languages": [
+        {
+          "Header": "fa-IR",
+          "Val": "Duration Is Required"
+        },
+        {
+          "Header": "en-US",
+          "Val": "Duration Is Required"
+        },
+        {
+          "Header": "ar",
+          "Val": "Duration Is Required"
+        }
+      ]
+    },
+    {
+      "Key": "ServiceNotExist",
+      "Languages": [
+        {
+          "Header": "fa-IR",
+          "Val": "service Not Exist"
+        },
+        {
+          "Header": "en-US",
+          "Val": "service Not Exist"
+        },
+        {
+          "Header": "ar",
+          "Val": "service Not Exist"
+        }
+      ]
+    },
+    {
+      "Key": "ServiceTypeNotExist",
+      "Languages": [
+        {
+          "Header": "fa-IR",
+          "Val": "ServiceType Not Exist"
+        },
+        {
+          "Header": "en-US",
+          "Val": "ServiceType Not Exist"
+        },
+        {
+          "Header": "ar",
+          "Val": "ServiceType Not Exist"
+        }
+      ]
     }
+
   ]
 }

@@ -3,10 +3,10 @@ import axios from "axios";
 import { func } from "prop-types";
 // import { history } from "../..";
 import { toast } from "react-toastify";
-// export const baseUrl = "https://localhost:44377/";
-  export const baseUrl = "https://api.callindoor.ir/";
-// axios.defaults.baseURL = "https://localhost:44377/api";
-  axios.defaults.baseURL = "https://api.callindoor.ir/api";
+export const baseUrl = "https://localhost:44377/";
+// // // // // export const baseUrl = "https://api.callindoor.ir/";
+axios.defaults.baseURL = "https://localhost:44377/api";
+// // // // // axios.defaults.baseURL = "https://api.callindoor.ir/api";
 
 // const token = window.localStorage.getItem("jwt");
 // axios.config.headers.Authorization = `Bearer ${token}`;
@@ -214,17 +214,22 @@ const Transactions = {
 
 
 const Resources = {
-  dataAnotationsList: (acceptLanguageHeader) => {
-    // setHeader(headerNames.acceptLanguage, acceptLanguageHeader)
-    return requests.getWithHeader("/Resource/GetDataAnotationAndErrorMessages", acceptLanguageHeader)
-  },
+  dataAnotationsList: (language) => requests.get(`/Resource/GetErrorMessages?languageHeader=${language}`),
+
+  // // // {
+  // // //   // setHeader(headerNames.acceptLanguage, acceptLanguageHeader)
+  // // //   return requests.getWithHeader("/Resource/GetDataAnotationAndErrorMessages", acceptLanguageHeader)
+  // // // },
   // listActive: () => requests.get("/Account/Role/GetAllActiveRolesInAdmin"),
   // details: (id) => requests.get(`/Account/Role/GetRoleByIdInAdmin?id=${id}`),
   // create: (role) => requests.post("/Account/Role/CreateRoleInAdmin", role),
-  editDataAnotationAndErrorMessages: (model, acceptLanguageHeader) => {
-    // setHeader(headerNames.acceptLanguage, acceptLanguageHeader)
-    return requests.postWithHeader("/Resource/EditDataAnotationAndErrorMessages", model, acceptLanguageHeader)
-  }
+  editDataAnotationAndErrorMessages: (model, acceptLanguageHeader) => requests.post("/Resource/EditErrorMessagess", model)
+
+
+  //   {
+  //   // setHeader(headerNames.acceptLanguage, acceptLanguageHeader)
+  //   return requests.postWithHeader("/Resource/EditDataAnotationAndErrorMessages", model, acceptLanguageHeader)
+  // }
 };
 
 

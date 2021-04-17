@@ -58,15 +58,10 @@ namespace Service
 
 
 
-
-
-
-
         public async Task<string> SaveFileToHost(string path, string lastPath, IFormFile file)
         {
 
-            //try
-            //{
+
             string uniqueVideoFileName = null;
             if (string.IsNullOrWhiteSpace(_hostingEnvironment.WebRootPath))
                 _hostingEnvironment.WebRootPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot");
@@ -95,11 +90,7 @@ namespace Service
 
             return path + uniqueVideoFileName;
 
-            //}
-            //catch
-            //{
-            //    return null;
-            //}
+
         }
 
 

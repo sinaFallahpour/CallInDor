@@ -16,6 +16,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Localization;
 using Service.Interfaces.Account;
 using Service.Interfaces.Common;
+using Service.Interfaces.Resource;
 using Service.Interfaces.Ticket;
 
 namespace CallInDoor.Controllers
@@ -36,16 +37,20 @@ namespace CallInDoor.Controllers
 
 
 
-        private IStringLocalizer<TiketController> _localizer;
-        private IStringLocalizer<ShareResource> _localizerShared;
+        //private IStringLocalizer<TiketController> _localizer;
+        //private IStringLocalizer<ShareResource> _localizerShared;
+
+        private readonly IResourceServices _resourceServices;
+
         public TiketController(
         UserManager<AppUser> userManager,
             DataContext context,
                    IAccountService accountService,
                    ICommonService commonService,
                    ITicketService ticketService,
-               IStringLocalizer<TiketController> localizer,
-                IStringLocalizer<ShareResource> localizerShared
+                //IStringLocalizer<TiketController> localizer,
+                // IStringLocalizer<ShareResource> localizerShared,
+                IResourceServices resourceServices
             )
         {
             _context = context;
@@ -53,8 +58,9 @@ namespace CallInDoor.Controllers
             _accountService = accountService;
             _commonService = commonService;
             _ticketService = ticketService;
-            _localizer = localizer;
-            _localizerShared = localizerShared;
+            //_localizer = localizer;
+            //_localizerShared = localizerShared;
+            _resourceServices = resourceServices;
         }
 
         #endregion ctor
@@ -171,7 +177,8 @@ namespace CallInDoor.Controllers
                    c.TiketStatus,
                    c.IsAdminSendNewMessgae,
                }).ToListAsync();
-            return Ok(_commonService.OkResponse(tikets, _localizerShared["SuccessMessage"].Value.ToString()));
+            //return Ok(_commonService.OkResponse(tikets, _localizerShared["SuccessMessage"].Value.ToString()));
+            return Ok(_commonService.OkResponse(tikets, true));
         }
 
 
@@ -322,7 +329,7 @@ namespace CallInDoor.Controllers
             if (ticketFromDB.TiketStatus == TiketStatus.Closed)
             {
                 var errors = new List<string>();
-                errors.Add(_localizerShared["TicketIsClosedMessage"].Value.ToString());
+                errors.Add(_resourceServices.GetErrorMessageByKey("TicketIsClosedMessage"));
                 return BadRequest(new ApiBadRequestResponse(errors));
             }
 
@@ -337,24 +344,11 @@ namespace CallInDoor.Controllers
                 CreateDate = DateTime.Now,
             };
 
-            try
-            {
-                await _context.TiketMessagesTBL.AddAsync(tiketMessage);
-                await _context.SaveChangesAsync();
-                return Ok(_commonService.OkResponse(null, false));
-            }
-            catch
-            {
 
-                List<string> erroses2 = new List<string> { PubicMessages.InternalServerMessage };
-                return StatusCode(StatusCodes.Status500InternalServerError, new ApiBadRequestResponse(erroses2, 500));
+            await _context.TiketMessagesTBL.AddAsync(tiketMessage);
+            await _context.SaveChangesAsync();
+            return Ok(_commonService.OkResponse(null, false));
 
-
-
-                //////////////return StatusCode(StatusCodes.Status500InternalServerError,
-                ////////////// new ApiResponse(500, PubicMessages.InternalServerMessage));
-
-            }
         }
 
 
@@ -414,31 +408,15 @@ namespace CallInDoor.Controllers
             }
             catch
             {
-
-                List<string> erroses2 = new List<string> { "problem uploading the file" };
-                return StatusCode(StatusCodes.Status500InternalServerError, new ApiBadRequestResponse(erroses2, 500));
-
-                ////////////////return StatusCode(StatusCodes.Status500InternalServerError,
-                ////////////////             new ApiResponse(500, "problem uploading the file"));
-
+                List<string> erroses2 = new List<string> { _resourceServices.GetErrorMessageByKey("ProblemUploadingTheFile") };
+                return BadRequest(erroses2);
+                //return StatusCode(StatusCodes.Status500InternalServerError, new ApiBadRequestResponse(erroses2, 500));
             }
 
-            try
-            {
-                await _context.TiketMessagesTBL.AddAsync(tiketMessage);
-                await _context.SaveChangesAsync();
-                return Ok(_commonService.OkResponse(tiketMessage.FileAddress, true));
-            }
-            catch
-            {
+            await _context.TiketMessagesTBL.AddAsync(tiketMessage);
+            await _context.SaveChangesAsync();
+            return Ok(_commonService.OkResponse(tiketMessage.FileAddress, true));
 
-                List<string> erroses2 = new List<string> { "problem uploading the file" };
-                return StatusCode(StatusCodes.Status500InternalServerError, new ApiBadRequestResponse(erroses2, 500));
-
-                //////////return StatusCode(StatusCodes.Status500InternalServerError,
-                ////////// new ApiResponse(500, PubicMessages.InternalServerMessage));
-
-            }
         }
 
 
@@ -485,7 +463,8 @@ namespace CallInDoor.Controllers
             if (ticketFromDB.TiketStatus == TiketStatus.Closed)
             {
                 var errors = new List<string>();
-                errors.Add(_localizerShared["TicketIsClosedMessage"].Value.ToString());
+                //errors.Add(_localizerShared["TicketIsClosedMessage"].Value.ToString());
+                errors.Add(_resourceServices.GetErrorMessageByKey("TicketIsClosedMessage"));
                 return BadRequest(new ApiBadRequestResponse(errors));
             }
 
@@ -496,7 +475,7 @@ namespace CallInDoor.Controllers
             }
             catch
             {
-                List<string> erroses2 = new List<string> { _localizerShared["problemUploadingTheFileMessage"].Value.ToString() };
+                List<string> erroses2 = new List<string> { _resourceServices.GetErrorMessageByKey("ProblemUploadingTheFile") };
                 return StatusCode(StatusCodes.Status500InternalServerError, new ApiBadRequestResponse(erroses2, 500));
 
 
@@ -506,23 +485,11 @@ namespace CallInDoor.Controllers
             }
 
 
-            try
-            {
-                await _context.TiketMessagesTBL.AddAsync(tiketMessage);
-                await _context.SaveChangesAsync();
-                return Ok(_commonService.OkResponse(tiketMessage.FileAddress, false));
-            }
-            catch
-            {
 
-                List<string> erroses2 = new List<string> { _localizerShared["InternalServerMessage"].Value.ToString() };
-                return StatusCode(StatusCodes.Status500InternalServerError, new ApiBadRequestResponse(erroses2, 500));
+            await _context.TiketMessagesTBL.AddAsync(tiketMessage);
+            await _context.SaveChangesAsync();
+            return Ok(_commonService.OkResponse(tiketMessage.FileAddress, false));
 
-
-                ////////////return StatusCode(StatusCodes.Status500InternalServerError,
-                ////////////                        new ApiResponse(500, _localizerShared["InternalServerMessage"].Value.ToString()));
-
-            }
         }
 
 
@@ -659,8 +626,7 @@ namespace CallInDoor.Controllers
                    HasNewMessage = c.IsAdminSendNewMessgae,
                    c.TiketStatus
                }).FirstOrDefaultAsync();
-
-            return Ok(_commonService.OkResponse(messages, _localizerShared["SuccessMessage"].Value.ToString()));
+            return Ok(_commonService.OkResponse(messages, false));
         }
 
 
@@ -688,17 +654,10 @@ namespace CallInDoor.Controllers
                 _commonService.NotFoundErrorReponse(false);
 
             tiket.IsAdminSendNewMessgae = false;
-            try
-            {
-                await _context.SaveChangesAsync();
-                return Ok(_commonService.OkResponse(null, false));
-            }
-            catch
-            {
-                List<string> erros = new List<string> { _localizerShared["InternalServerMessage"].Value.ToString() };
-                return StatusCode(StatusCodes.Status500InternalServerError,
-                   new ApiBadRequestResponse(erros, 500));
-            }
+
+            await _context.SaveChangesAsync();
+            return Ok(_commonService.OkResponse(null, false));
+
         }
 
 
@@ -724,18 +683,10 @@ namespace CallInDoor.Controllers
                 _commonService.NotFoundErrorReponse(false);
 
             tiket.IsUserSendNewMessgae = false;
-            try
-            {
-                await _context.SaveChangesAsync();
-                return Ok(_commonService.OkResponse(null, false));
-            }
-            catch
-            {
 
-                List<string> erros = new List<string> { _localizerShared["InternalServerMessage"].Value.ToString() };
-                return StatusCode(StatusCodes.Status500InternalServerError,
-                                                   new ApiBadRequestResponse(erros, 500));
-            }
+            await _context.SaveChangesAsync();
+            return Ok(_commonService.OkResponse(null, false));
+
         }
 
 

@@ -14,6 +14,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Localization;
 using Service.Interfaces.Account;
 using Service.Interfaces.Common;
+using Service.Interfaces.Resource;
 
 namespace CallInDoor.Controllers
 {
@@ -33,6 +34,7 @@ namespace CallInDoor.Controllers
 
         private IStringLocalizer<CardController> _localizer;
         private IStringLocalizer<ShareResource> _localizerShared;
+        private readonly IResourceServices _resourceServices;
 
         public CardController(
 
@@ -41,7 +43,8 @@ namespace CallInDoor.Controllers
                    IAccountService accountService,
                    ICommonService commonService,
                IStringLocalizer<CardController> localizer,
-                IStringLocalizer<ShareResource> localizerShared
+                IStringLocalizer<ShareResource> localizerShared,
+                IResourceServices resourceServices
             )
         {
             _context = context;
@@ -50,7 +53,7 @@ namespace CallInDoor.Controllers
             _commonService = commonService;
             _localizer = localizer;
             _localizerShared = localizerShared;
-
+            _resourceServices = resourceServices;
         }
 
         #endregion ctor
@@ -64,7 +67,10 @@ namespace CallInDoor.Controllers
         {
             if (!User.Identity.IsAuthenticated)
             {
-                List<string> erros = new List<string> { _localizerShared["UnauthorizedMessage"].Value.ToString() };
+                List<string> erros = new List<string> { 
+                    //_localizerShared["UnauthorizedMessage"].Value.ToString() ,
+                    _resourceServices.GetErrorMessageByKey("UnauthorizedMessage")
+            };
                 return Unauthorized(new ApiBadRequestResponse(erros, 401));
             }
 
@@ -73,7 +79,10 @@ namespace CallInDoor.Controllers
             AppUser userFromDB = await _userManager.FindByNameAsync(currentusername);
             if (userFromDB == null)
             {
-                List<string> erros = new List<string> { _localizerShared["UnauthorizedMessage"].Value.ToString() };
+                List<string> erros = new List<string> { 
+                    //_localizerShared["UnauthorizedMessage"].Value.ToString() 
+                _resourceServices.GetErrorMessageByKey("UnauthorizedMessage")
+                };
                 return Unauthorized(new ApiBadRequestResponse(erros, 401));
             }
 
@@ -142,7 +151,8 @@ namespace CallInDoor.Controllers
             if (cardFromDB)
             {
                 var errors = new List<string>();
-                errors.Add(_localizerShared["card name already exist"].Value.ToString());
+                //errors.Add(_localizerShared["card name already exist"].Value.ToString());
+                errors.Add(_resourceServices.GetErrorMessageByKey("card name already exist"));
                 return BadRequest(new ApiBadRequestResponse(errors));
             }
 
@@ -162,7 +172,11 @@ namespace CallInDoor.Controllers
             }
             catch
             {
-                List<string> erros = new List<string> { _localizerShared["InternalServerMessage"].Value.ToString() };
+                List<string> erros = new List<string> { 
+                    //_localizerShared["InternalServerMessage"].Value.ToString() 
+                     _resourceServices.GetErrorMessageByKey("InternalServerMessage")
+
+                };
                 return StatusCode(StatusCodes.Status500InternalServerError,
                    new ApiBadRequestResponse(erros, 500));
             }
@@ -182,7 +196,8 @@ namespace CallInDoor.Controllers
             if (cardFromDBExist)
             {
                 var errors = new List<string>();
-                errors.Add(_localizerShared["card name already exist"].Value.ToString());
+                //errors.Add(_localizerShared["card name already exist"].Value.ToString());
+                errors.Add(_resourceServices.GetErrorMessageByKey("card name already exist"));
                 return BadRequest(new ApiBadRequestResponse(errors));
             }
 
@@ -194,19 +209,12 @@ namespace CallInDoor.Controllers
             cardFromDB.CardName = model.CardName;
             cardFromDB.CardName = model.CardNumber;
 
-            try
-            {
-                await _context.SaveChangesAsync();
-                return Ok(_commonService.OkResponse(null, false));
-            }
-            catch
-            {
-                List<string> erros = new List<string> { _localizerShared["InternalServerMessage"].Value.ToString() };
-                return StatusCode(StatusCodes.Status500InternalServerError,
-                   new ApiBadRequestResponse(erros, 500));
-            }
+
+            await _context.SaveChangesAsync();
+            return Ok(_commonService.OkResponse(null, false));
+
         }
-        
+
 
 
 
@@ -218,28 +226,18 @@ namespace CallInDoor.Controllers
         {
             var currentUsername = _accountService.GetCurrentUserName();
             var cardFromDB = await _context.CardTBL.Where(c => c.Id == id && c.IsDeleted == false).FirstOrDefaultAsync();
-
             if (cardFromDB == null)
                 return NotFound(_commonService.NotFoundErrorReponse(false));
 
             cardFromDB.IsDeleted = true;
-
-            try
-            {
-                await _context.SaveChangesAsync();
-                return Ok(_commonService.OkResponse(null, false));
-            }
-            catch
-            {
-                List<string> erros = new List<string> { _localizerShared["InternalServerMessage"].Value.ToString() };
-                return StatusCode(StatusCodes.Status500InternalServerError,
-                   new ApiBadRequestResponse(erros, 500));
-            }
+            
+            await _context.SaveChangesAsync();
+            return Ok(_commonService.OkResponse(null, false));
         }
-    
-    
-    
-    
-    
+
+
+
+
+
     }
 }

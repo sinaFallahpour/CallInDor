@@ -69,7 +69,8 @@ namespace CallInDoor.Controllers
                     c.UserName
                 }).Distinct().CountAsync();
 
-            return Ok(_commonService.OkResponse(ProvidersCount, _localizerShared["SuccessMessage"].Value.ToString()));
+            //return Ok(_commonService.OkResponse(ProvidersCount, _localizerShared["SuccessMessage"].Value.ToString()));
+            return Ok(_commonService.OkResponse(ProvidersCount, false));
         }
 
 
@@ -88,7 +89,8 @@ namespace CallInDoor.Controllers
                   .CountAsync();
             //.Distinct().CountAsync();
 
-            return Ok(_commonService.OkResponse(ServicesCount, _localizerShared["SuccessMessage"].Value.ToString()));
+            //return Ok(_commonService.OkResponse(ServicesCount, _localizerShared["SuccessMessage"].Value.ToString()));
+            return Ok(_commonService.OkResponse(ServicesCount, false));
         }
 
 
@@ -105,7 +107,9 @@ namespace CallInDoor.Controllers
         public async Task<ActionResult> GetAllUsersCount()
         {
             int usersCount = await _userManager.Users.AsNoTracking().CountAsync();
-            return Ok(_commonService.OkResponse(usersCount, _localizerShared["SuccessMessage"].Value.ToString()));
+            //return Ok(_commonService.OkResponse(usersCount, _localizerShared["SuccessMessage"].Value.ToString()));
+            return Ok(_commonService.OkResponse(usersCount, false));
+
         }
 
 
@@ -259,7 +263,9 @@ namespace CallInDoor.Controllers
                     c.PersianName,
                 }).ToListAsync();
 
-            return Ok(_commonService.OkResponse(allServiceTypes, _localizerShared["SuccessMessage"].Value.ToString()));
+            //return Ok(_commonService.OkResponse(allServiceTypes, _localizerShared["SuccessMessage"].Value.ToString()));
+            return Ok(_commonService.OkResponse(allServiceTypes, false));
+
         }
 
 

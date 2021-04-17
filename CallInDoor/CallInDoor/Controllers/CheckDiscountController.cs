@@ -14,6 +14,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Localization;
 using Service.Interfaces.Account;
 using Service.Interfaces.Common;
+using Service.Interfaces.Resource;
 
 namespace CallInDoor.Controllers
 {
@@ -28,17 +29,21 @@ namespace CallInDoor.Controllers
         private readonly ICommonService _commonService;
 
         private IStringLocalizer<ShareResource> _localizerShared;
+        private readonly IResourceServices _resourceServices;
+
         public CheckDiscountController(
             DataContext context,
                    IAccountService accountService,
                    ICommonService commonService,
-                IStringLocalizer<ShareResource> localizerShared
+                IStringLocalizer<ShareResource> localizerShared,
+                IResourceServices resourceServices
             )
         {
             _context = context;
             _accountService = accountService;
             _commonService = commonService;
             _localizerShared = localizerShared;
+            _resourceServices = resourceServices;
         }
 
         #endregion ctor
@@ -376,7 +381,11 @@ namespace CallInDoor.Controllers
             CheckDiscountTBL discountFromDB = await _context.CheckDiscountTBL.Where(c => c.Code.ToLower().Trim() == disCountCode.ToLower().Trim()).FirstOrDefaultAsync();
             if (discountFromDB == null || discountFromDB.ExpireTime < DateTime.Now)
             {
-                List<string> erros = new List<string> { _localizerShared["InvalidDiscointCode"].Value.ToString() };
+                List<string> erros = new List<string> { 
+                    
+                    //_localizerShared["InvalidDiscointCode"].Value.ToString()
+                    _resourceServices.GetErrorMessageByKey("InvalidDiscointCode")
+                };
                 return BadRequest(new ApiBadRequestResponse(erros));
             }
 
@@ -391,21 +400,30 @@ namespace CallInDoor.Controllers
 
             if (requestFromDB == null)
             {
-                List<string> erros = new List<string> { _localizerShared["InvalidDiscointCode"].Value.ToString() };
+                List<string> erros = new List<string> { 
+                    //_localizerShared["InvalidDiscointCode"].Value.ToString()
+                _resourceServices.GetErrorMessageByKey("InvalidDiscointCode")
+
+                };
                 return BadRequest(new ApiBadRequestResponse(erros));
 
             }
 
             if (discountFromDB.ServiceId != requestFromDB.ServiceId)
             {
-                List<string> erros = new List<string> { _localizerShared["InvalidDiscointCode"].Value.ToString() };
+                List<string> erros = new List<string> {
+                    //_localizerShared["InvalidDiscointCode"].Value.ToString() 
+                _resourceServices.GetErrorMessageByKey("InvalidDiscointCode")
+
+                };
                 return BadRequest(new ApiBadRequestResponse(erros));
             }
 
 
 
 
-            return Ok(_commonService.OkResponse(discountFromDB.Percent, _localizerShared["SuccessMessage"].Value.ToString()));
+            //return Ok(_commonService.OkResponse(discountFromDB.Percent, _localizerShared["SuccessMessage"].Value.ToString()));
+            return Ok(_commonService.OkResponse(discountFromDB.Percent, false));
         }
 
 

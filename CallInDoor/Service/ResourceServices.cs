@@ -182,48 +182,6 @@ namespace Service
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
         //public override string SetKeyName(string keyName, object id)
         //{
         //    var key = keyName + id;
@@ -551,10 +509,6 @@ namespace Service
         //    }
 
         //}
-
-
-
-
 
 
     }

@@ -18,6 +18,7 @@ using Microsoft.Extensions.Localization;
 using Service.Interfaces.Account;
 using Service.Interfaces.Common;
 using Service.Interfaces.Payment;
+using Service.Interfaces.Resource;
 
 namespace CallInDoor.Controllers
 {
@@ -34,12 +35,15 @@ namespace CallInDoor.Controllers
 
         private readonly ICommonService _commonService;
         private IStringLocalizer<ShareResource> _localizerShared;
+        private readonly IResourceServices _resourceServices;
+
         public PaymentController(
             DataContext context,
             IPaymentService paymentService,
               IAccountService accountService,
               ICommonService commonService,
-             IStringLocalizer<ShareResource> localizerShared
+             IStringLocalizer<ShareResource> localizerShared,
+             IResourceServices resourceServices
             )
         {
             _context = context;
@@ -47,6 +51,7 @@ namespace CallInDoor.Controllers
             _commonService = commonService;
             _accountService = accountService;
             _localizerShared = localizerShared;
+            _resourceServices = resourceServices;
         }
 
         #endregion
@@ -82,13 +87,14 @@ namespace CallInDoor.Controllers
             #region wsome validation
             if (query == null)
             {
-                List<string> erros = new List<string> { _localizerShared["NotFound"].Value.ToString() };
-                return BadRequest(new ApiBadRequestResponse(erros));
+                //List<string> erros = new List<string> { _localizerShared["NotFound"].Value.ToString() };
+                //return BadRequest(new ApiBadRequestResponse(erros));
+                return BadRequest(_commonService.NotFoundErrorReponse(false));
             }
 
             if (query.requestFromDB.ServiceRequestStatus != ServiceRequestStatus.Confirmed)
             {
-                List<string> erros = new List<string> { "Provider dont accept your service up to now" };
+                List<string> erros = new List<string> { _resourceServices.GetErrorMessageByKey("ProviderDontAcceptYourServiceUpTONow") };
                 return BadRequest(new ApiBadRequestResponse(erros));
             }
 
@@ -103,7 +109,8 @@ namespace CallInDoor.Controllers
                 || disCountPercentFromDb.ServiceId != query.ServiceTBLId))
             {
                 List<string> errors = new List<string>();
-                errors.Add(_localizerShared["InvalidDiscountCode"].Value.ToString());
+                //errors.Add(_localizerShared["InvalidDiscountCode"].Value.ToString());
+                errors.Add(_resourceServices.GetErrorMessageByKey("InvalidDiscointCode"));
                 return BadRequest(new ApiBadRequestResponse(errors));
             }
             #endregion
@@ -126,7 +133,10 @@ namespace CallInDoor.Controllers
 
             if (currentUsername != clientFromDB?.UserName)
             {
-                List<string> erros = new List<string> { _localizerShared["YouAreProviderOfThisService"].Value.ToString() };
+                List<string> erros = new List<string> {
+                    //_localizerShared["YouAreProviderOfThisService"].Value.ToString()
+                    _resourceServices.GetErrorMessageByKey("YouAreProviderOfThisService")
+                };
                 return BadRequest(new ApiBadRequestResponse(erros));
             }
 
@@ -322,17 +332,9 @@ namespace CallInDoor.Controllers
             query.requestFromDB.HasPlan_LimitedChatVoice = true;
             query.requestFromDB.ExpireTime_LimitedChatVoice = DateTime.Now.AddMonths(2);
 
-            try
-            {
-                await _context.SaveChangesAsync();
-                return Ok(_commonService.OkResponse(null, false));
-            }
-            catch
-            {
-                List<string> erros = new List<string> { _localizerShared["InternalServerMessage"].Value.ToString() };
-                return StatusCode(StatusCodes.Status500InternalServerError,
-                   new ApiBadRequestResponse(erros, 500));
-            }
+            await _context.SaveChangesAsync();
+            return Ok(_commonService.OkResponse(null, false));
+
         }
 
 
@@ -367,13 +369,15 @@ namespace CallInDoor.Controllers
             #region some validatio
             if (query == null)
             {
-                List<string> erros = new List<string> { _localizerShared["NotFound"].Value.ToString() };
-                return BadRequest(new ApiBadRequestResponse(erros));
+                //List<string> erros = new List<string> { _localizerShared["NotFound"].Value.ToString() };
+                //return BadRequest(new ApiBadRequestResponse(erros));
+                return BadRequest(_commonService.NotFoundErrorReponse(false));
             }
 
             if (query.requestFromDB.ServiceRequestStatus != ServiceRequestStatus.Confirmed)
             {
-                List<string> erros = new List<string> { "Provider dont accept your service up to now" };
+                //List<string> erros = new List<string> { "Provider dont accept your service up to now" };
+                List<string> erros = new List<string> { _resourceServices.GetErrorMessageByKey("Provider dont accept your service up to now") };
                 return BadRequest(new ApiBadRequestResponse(erros));
             }
             #endregion
@@ -387,7 +391,8 @@ namespace CallInDoor.Controllers
                 || disCountPercentFromDb.ServiceId != query.ServiceTBLId))
             {
                 List<string> errors = new List<string>();
-                errors.Add(_localizerShared["InvalidDiscountCode"].Value.ToString());
+                //errors.Add(_localizerShared["InvalidDiscountCode"].Value.ToString());
+                errors.Add(_resourceServices.GetErrorMessageByKey("InvalidDiscountCode"));
                 return BadRequest(new ApiBadRequestResponse(errors));
             }
             #endregion
@@ -409,7 +414,8 @@ namespace CallInDoor.Controllers
 
             if (currentUsername != clientFromDB?.UserName)
             {
-                List<string> erros = new List<string> { _localizerShared["YouAreProviderOfThisService"].Value.ToString() };
+                //List<string> erros = new List<string> { _localizerShared["YouAreProviderOfThisService"].Value.ToString() };
+                List<string> erros = new List<string> { _resourceServices.GetErrorMessageByKey("YouAreProviderOfThisService") };
                 return BadRequest(new ApiBadRequestResponse(erros));
             }
             var isNative = _accountService.IsNative(clientFromDB, providerFromDB);
@@ -485,17 +491,10 @@ namespace CallInDoor.Controllers
             //query.requestFromDB.HasPlan_LimitedChatVoice = true;
             //query.requestFromDB.ExpireTime_LimitedChatVoice = DateTime.Now.AddMonths(2);
 
-            try
-            {
-                await _context.SaveChangesAsync();
-                return Ok(_commonService.OkResponse(null, false));
-            }
-            catch
-            {
-                List<string> erros = new List<string> { _localizerShared["InternalServerMessage"].Value.ToString() };
-                return StatusCode(StatusCodes.Status500InternalServerError,
-                   new ApiBadRequestResponse(erros, 500));
-            }
+
+            await _context.SaveChangesAsync();
+            return Ok(_commonService.OkResponse(null, false));
+
         }
 
         #region  تمدید  بسته
@@ -531,8 +530,9 @@ namespace CallInDoor.Controllers
 
             if (query == null)
             {
-                List<string> erros = new List<string> { _localizerShared["NotFound"].Value.ToString() };
-                return BadRequest(new ApiBadRequestResponse(erros));
+                //List<string> erros = new List<string> { _localizerShared["NotFound"].Value.ToString() };
+                //return BadRequest(new ApiBadRequestResponse(erros));
+                return BadRequest(_commonService.NotFoundErrorReponse(false));
             }
 
             var disCountPercentFromDb = await _context.CheckDiscountTBL.Where(c => c.Code == model.DisCountCode)
@@ -545,7 +545,8 @@ namespace CallInDoor.Controllers
                 || disCountPercentFromDb.ServiceId != query.ServiceTBLId))
             {
                 List<string> errors = new List<string>();
-                errors.Add(_localizerShared["InvalidDiscountCode"].Value.ToString());
+                //errors.Add(_localizerShared["InvalidDiscountCode"].Value.ToString());
+                errors.Add(_resourceServices.GetErrorMessageByKey("InvalidDiscountCode"));
                 return BadRequest(new ApiBadRequestResponse(errors));
             }
             #endregion
@@ -566,7 +567,10 @@ namespace CallInDoor.Controllers
 
             if (currentUsername != clientFromDB?.UserName)
             {
-                List<string> erros = new List<string> { _localizerShared["YouAreProviderOfThisService"].Value.ToString() };
+                List<string> erros = new List<string> {
+                    //_localizerShared["YouAreProviderOfThisService"].Value.ToString() 
+                _resourceServices.GetErrorMessageByKey("YouAreProviderOfThisService")
+                };
                 return BadRequest(new ApiBadRequestResponse(erros));
             }
 
@@ -616,17 +620,10 @@ namespace CallInDoor.Controllers
             query.requestFromDB.ExpireTime_LimitedChatVoice = DateTime.Now.AddMonths(2);
             query.requestFromDB.AllMessageCount_LimitedChat += (int)query.MessageCount_baseService;
 
-            try
-            {
-                await _context.SaveChangesAsync();
-                return Ok(_commonService.OkResponse(null, false));
-            }
-            catch
-            {
-                List<string> erros = new List<string> { _localizerShared["InternalServerMessage"].Value.ToString() };
-                return StatusCode(StatusCodes.Status500InternalServerError,
-                   new ApiBadRequestResponse(erros, 500));
-            }
+
+            await _context.SaveChangesAsync();
+            return Ok(_commonService.OkResponse(null, false));
+
         }
 
 
@@ -666,12 +663,14 @@ namespace CallInDoor.Controllers
             #region some validation
             if (query == null)
             {
-                List<string> erros = new List<string> { _localizerShared["NotFound"].Value.ToString() };
-                return BadRequest(new ApiBadRequestResponse(erros));
+                //List<string> erros = new List<string> { _localizerShared["NotFound"].Value.ToString() };
+                //return BadRequest(new ApiBadRequestResponse(erros));
+                return BadRequest(_commonService.NotFoundErrorReponse(false));
             }
             if (query.requestFromDB.ServiceRequestStatus != ServiceRequestStatus.Confirmed)
             {
-                List<string> erros = new List<string> { "Provider dont accept your service up to now" };
+                //List<string> erros = new List<string> { "Provider dont accept your service up to now" };
+                List<string> erros = new List<string> { _resourceServices.GetErrorMessageByKey("ProviderDontAcceptYourServiceUpTONow") };
                 return BadRequest(new ApiBadRequestResponse(erros));
             }
             #endregion
@@ -686,7 +685,8 @@ namespace CallInDoor.Controllers
                 || disCountPercentFromDb.ServiceId != query.ServiceTBLId))
             {
                 List<string> errors = new List<string>();
-                errors.Add(_localizerShared["InvalidDiscountCode"].Value.ToString());
+                //errors.Add(_localizerShared["InvalidDiscountCode"].Value.ToString());
+                errors.Add(_resourceServices.GetErrorMessageByKey("InvalidDiscountCode"));
                 return BadRequest(new ApiBadRequestResponse(errors));
             }
             #endregion
@@ -709,7 +709,10 @@ namespace CallInDoor.Controllers
 
             if (currentUsername != clientFromDB?.UserName)
             {
-                List<string> erros = new List<string> { _localizerShared["YouAreProviderOfThisService"].Value.ToString() };
+                List<string> erros = new List<string> {
+                    //_localizerShared["YouAreProviderOfThisService"].Value.ToString() 
+                    _resourceServices.GetErrorMessageByKey("YouAreProviderOfThisService")
+                };
                 return BadRequest(new ApiBadRequestResponse(erros));
             }
 
@@ -791,26 +794,15 @@ namespace CallInDoor.Controllers
             //////////query.requestFromDB.ExpireTime_LimitedChatVoice = DateTime.Now.AddMonths(2);
             //////////query.requestFromDB.AllMessageCount_LimitedChat += (int)query.MessageCount_baseService;
 
-            try
-            {
-                await _context.SaveChangesAsync();
-                return Ok(_commonService.OkResponse(null, false));
-            }
-            catch
-            {
-                List<string> erros = new List<string> { _localizerShared["InternalServerMessage"].Value.ToString() };
-                return StatusCode(StatusCodes.Status500InternalServerError,
-                   new ApiBadRequestResponse(erros, 500));
-            }
+            await _context.SaveChangesAsync();
+            return Ok(_commonService.OkResponse(null, false));
+
         }
 
 
 
 
         #endregion
-
-
-
         [NonAction]
         public async Task AddPackage(ServiceRequestTBL serviceRequest, int? discountId, bool isRenew, BuyiedPackageStatus buyiedPackageStatus, double? mainPrice, double? finalPrice, int sitePecent, int messageCount, BuyiedPackageType buyiedPackageType, DateTime expireTime)
         {
@@ -940,7 +932,7 @@ namespace CallInDoor.Controllers
         /// <returns></returns>
         [HttpPost("BuyTopTenPackageWithWallet")]
         //[Authorize]
-        [ClaimsAuthorize(IsAdmin = false)]
+        //[ClaimsAuthorize(IsAdmin = false)]
         public async Task<ActionResult> BuyTopTenPackageWithWallet([FromBody] BuyTopTenPackageDTO model)
         {
             var currentUsername = _accountService.GetCurrentUserName();
@@ -948,8 +940,10 @@ namespace CallInDoor.Controllers
                                                             .Where(c => c.Id == model.PackageId).FirstOrDefaultAsync();
             if (topTenPackageFromDB == null)
             {
-                List<string> erros = new List<string> { _localizerShared["NotFound"].Value.ToString() };
-                return BadRequest(new ApiBadRequestResponse(erros));
+                //List<string> erros = new List<string> { _localizerShared["NotFound"].Value.ToString() };
+                //return BadRequest(new ApiBadRequestResponse(erros));
+
+                return BadRequest(_commonService.NotFoundErrorReponse(false));
             }
 
             var isEnabled = await _context.ServiceTBL.AsNoTracking()
@@ -958,7 +952,7 @@ namespace CallInDoor.Controllers
                                         .FirstOrDefaultAsync();
             if (!isEnabled)
             {
-                List<string> erros = new List<string> { "this service category is not Enabled" };
+                List<string> erros = new List<string> { _resourceServices.GetErrorMessageByKey("ThisServiceCategoryIsNotEnabled") };
                 return BadRequest(new ApiBadRequestResponse(erros));
             }
 
@@ -970,7 +964,7 @@ namespace CallInDoor.Controllers
                                 x.ExpireTime < DateTime.Now);
             if (exsist)
             {
-                List<string> erros = new List<string> { "you have active package for top ten" };
+                List<string> erros = new List<string> { _resourceServices.GetErrorMessageByKey("YouHaveAnActivePackageForTopTen") };
                 return BadRequest(new ApiBadRequestResponse(erros));
             }
 
@@ -988,7 +982,7 @@ namespace CallInDoor.Controllers
             var haveService = await _context.BaseMyServiceTBL.AsNoTracking().AnyAsync(c => c.ServiceId == topTenPackageFromDB.ServiceId && c.UserName == currentUsername);
             if (!haveService)
             {
-                List<string> erros = new List<string> { "You have not registered any services in this category" };
+                List<string> erros = new List<string> { "YouHaveNotRegisteredAnyServicesInThisCategory" };
                 return BadRequest(new ApiBadRequestResponse(erros));
             }
 
@@ -1003,7 +997,8 @@ namespace CallInDoor.Controllers
                 || disCountPercentFromDb.ServiceId != topTenPackageFromDB.ServiceId /*query.ServiceTBLId*/))
             {
                 List<string> errors = new List<string>();
-                errors.Add(_localizerShared["InvalidDiscountCode"].Value.ToString());
+                //errors.Add(_localizerShared["InvalidDiscountCode"].Value.ToString());
+                errors.Add(_resourceServices.GetErrorMessageByKey("InvalidDiscountCode"));
                 return BadRequest(new ApiBadRequestResponse(errors));
             }
             #endregion
