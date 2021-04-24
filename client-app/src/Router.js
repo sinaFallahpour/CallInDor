@@ -191,9 +191,8 @@ const EditService = lazy(() => import("./views/pages/_Serices/EditService"));
 
 
 
-// const Services = lazy(() => import("./views/pages/_Serices/Services"));
-const DataAnotation = lazy(() => import("./views/pages/_resourceManger/Create"));
-// const EditService = lazy(() => import("./views/pages/_Serices/EditService"));
+const DataAnotation = lazy(() => import("./views/pages/_resourceManger/_DataAnotation"));
+const StaticWord = lazy(() => import("./views/pages/_resourceManger/_StaticWord"));
 
 
 
@@ -587,7 +586,7 @@ class AppRouter extends React.Component {
               component={Services}
             />
            */}
-          
+
             <RouteConfig
               isLoggedIn={isLoggedIn}
               title="edit data anotation errro messages"
@@ -597,6 +596,17 @@ class AppRouter extends React.Component {
               user={{ ...user }}
               component={DataAnotation}
             />
+
+            <RouteConfig
+              isLoggedIn={isLoggedIn}
+              title="edit static word of the site"
+              exact
+              path="/pages/staticWord"
+              role="admin"
+              user={{ ...user }}
+              component={StaticWord}
+            />
+
             {/* <RouteConfig
               isLoggedIn={isLoggedIn}
               title="Edit Service"

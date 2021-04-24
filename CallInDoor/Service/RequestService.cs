@@ -222,9 +222,6 @@ namespace Service
 
 
 
-
-
-
         public (bool succsseded, List<string> result) ValidateSendChatToLimitedChatService(ServiceRequestTBL requestfromDB)
         {
             bool IsValid = true;
@@ -282,8 +279,6 @@ namespace Service
         }
 
 
-
-
         public (bool succsseded, List<string> result) ValidateRedisSendChatVoiceDuration(RedisValueForDurationChatVoice chatVoiceValueFromRedis)
         {
             bool IsValid = true;
@@ -312,9 +307,6 @@ namespace Service
 
             return (IsValid, Errors);
         }
-
-
-
 
 
 
@@ -386,9 +378,6 @@ namespace Service
         }
 
 
-
-
-
         /// <summary>
         /// محاسبه قیمت ودر صد کاهش
         /// </summary>
@@ -403,9 +392,6 @@ namespace Service
         }
 
 
-
-
-
         /// <summary>
         /// 
         /// </summary>
@@ -418,9 +404,6 @@ namespace Service
                 return true;
             return false;
         }
-
-
-
 
 
         public bool IsInValidFile(IFormFile file)
@@ -438,9 +421,6 @@ namespace Service
                 return ChatMessageType.Voice;
             return ChatMessageType.Text;
         }
-
-
-
 
 
         public async Task<string> SaveFileToHost(string path, string lastPath, IFormFile file, bool IsVoice = false)
@@ -478,10 +458,6 @@ namespace Service
             return path + uniqueVideoFileName;
 
         }
-
-
-
-
 
         public (bool succsseded, List<string> result) ValidateWallet(double? cientBalance, ServiceRequestTBL requestfromDB, bool isNativeCustomer)
         {

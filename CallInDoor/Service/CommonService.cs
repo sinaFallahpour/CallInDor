@@ -217,5 +217,14 @@ namespace Service
             return false;
         }
 
+
+
+
+
+        public string GetCurrentCulture()
+        {
+            return CultureInfo.CurrentCulture.Name;
+        }
+
     }
 }

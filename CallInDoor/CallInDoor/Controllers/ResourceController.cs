@@ -41,6 +41,7 @@ namespace CallInDoor.Controllers
         private readonly IResourceServices _resourceServices;
 
         private IStringLocalizer<ShareResource> _localizerShared;
+        private readonly IWebHostEnvironment _env;
 
 
 
@@ -51,7 +52,7 @@ namespace CallInDoor.Controllers
                    ICommonService commonService,
                    IResourceServices resourceServices,
                  IStringLocalizer<ShareResource> localizerShared,
-                IWebHostEnvironment hostingEnvironment
+                IWebHostEnvironment env
 
             )
         {
@@ -60,7 +61,7 @@ namespace CallInDoor.Controllers
             _commonService = commonService;
             _resourceServices = resourceServices;
             _localizerShared = localizerShared;
-
+            _env = env;
 
         }
 
@@ -69,6 +70,8 @@ namespace CallInDoor.Controllers
 
 
 
+        #region error messages   
+
         [HttpGet("GetErrorMessages")]
         public ActionResult GetErrorMessages(LanguageHeader languageHeader)
         {
@@ -76,13 +79,11 @@ namespace CallInDoor.Controllers
             return Ok(_commonService.OkResponse(keyValueDTO, true));
         }
 
-
         [HttpPost("EditErrorMessagess")]
         [ClaimsAuthorize(IsAdmin = true)]
         public ActionResult EditErrorMessages([FromBody] EditErrorMessageDTO2 model)
         {
             (bool succsseded, List<string> result) res = (true, new List<string>());
-            var asas = _commonService.IsPersianLanguage();
             if (model.LanguageHeader == LanguageHeader.Persian)
             {
                 res = _resourceServices.EditJsonResource(model, "fa-IR");
@@ -101,11 +102,55 @@ namespace CallInDoor.Controllers
                 return BadRequest(new ApiBadRequestResponse(res.result));
             }
 
-            //string towrite = JsonConvert.SerializeObject(errorMessageDictionary);
-            //System.IO.File.WriteAllText(filePath, towrite);
             return Ok(_commonService.OkResponse(null, PubicMessages.SuccessMessage));
 
         }
+
+        #endregion
+
+
+
+        #region static word of site
+
+
+        [HttpGet("GetStaticWord")]
+        public ActionResult GetStaticWord(LanguageHeader languageHeader)
+        {
+            List<KeyValueDTO> keyValueDTO = _resourceServices.GetAllStaticWord(languageHeader);
+            return Ok(_commonService.OkResponse(keyValueDTO, true));
+        }
+
+        [HttpPost("EditStaticWord")]
+        [ClaimsAuthorize(IsAdmin = true)]
+        public ActionResult EditStaticWord([FromBody] EditStaticWordDTO2 model)
+        {
+            (bool succsseded, List<string> result) res = (true, new List<string>());
+            if (model.LanguageHeader == LanguageHeader.Persian)
+            {
+                res = _resourceServices.EditStaticWordJsonResource(model, "fa-IR");
+            }
+            else if (model.LanguageHeader == LanguageHeader.English)
+            {
+                res = _resourceServices.EditStaticWordJsonResource(model, "en-US");
+            }
+            else if (model.LanguageHeader == LanguageHeader.Arab)
+            {
+                res = _resourceServices.EditStaticWordJsonResource(model, "ar");
+            }
+
+            if (!res.succsseded)
+            {
+                return BadRequest(new ApiBadRequestResponse(res.result));
+            }
+
+            return Ok(_commonService.OkResponse(null, PubicMessages.SuccessMessage));
+
+        }
+
+
+        #endregion 
+
+
 
 
 

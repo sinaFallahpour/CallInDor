@@ -78,7 +78,7 @@ namespace Domain.DTO.Resource
         [Required(ErrorMessage = "{0} is  Required")]
         public string PhoneNumberAlreadyExist { get; set; }
         [Required(ErrorMessage = "{0} is  Required")]
-        public string problemUploadingTheFileMessage { get; set; }
+        public string ProblemUploadingTheFileMessage { get; set; }
         [Required(ErrorMessage = "{0} is  Required")]
         public string ProfileRejectedMessage { get; set; }
         [Required(ErrorMessage = "{0} is  Required")]

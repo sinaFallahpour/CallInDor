@@ -24,7 +24,7 @@ namespace Service.Interfaces.Resource
         public abstract string GetErrorMessageByKey(string key);
 
         /// <summary>
-        /// Edit value Of ErrorMessages
+        /// Edit value Of ErrorMessages in json File
         /// </summary>
         /// <param name="model"></param>
         /// <param name="errorMessageDictionary"></param>
@@ -35,7 +35,30 @@ namespace Service.Interfaces.Resource
 
 
 
+        /// <summary>
+        /// convert static word json file to C# Object
+        /// </summary>
+        /// <returns></returns>
+        public abstract ErrorMessageDictionary GetStaticWordObject();
 
+
+
+        /// <summary>
+        /// Edit Value Of Static Word of site  in json File
+        /// </summary>
+        /// <param name="model"></param>
+        /// <param name="headerName"></param>
+        /// <returns></returns>
+        public abstract (bool succsseded, List<string> result) EditStaticWordJsonResource(EditStaticWordDTO2 model, string headerName);
+
+
+
+        /// <summary>
+        /// Get All Static Word Of Site Drfom Json File
+        /// </summary>
+        /// <param name="languageHeader"></param>
+        /// <returns></returns>
+        public abstract List<KeyValueDTO> GetAllStaticWord(LanguageHeader languageHeader);
 
 
 

@@ -215,6 +215,13 @@ const Transactions = {
 
 const Resources = {
   dataAnotationsList: (language) => requests.get(`/Resource/GetErrorMessages?languageHeader=${language}`),
+  editDataAnotationAndErrorMessages: (model) => requests.post("/Resource/EditErrorMessagess", model),
+
+
+  StaticWordList: (language) => requests.get(`/Resource/GetStaticWord?languageHeader=${language}`),
+  editStaticWordList: (model) => requests.post("/Resource/EditStaticWord", model)
+
+
 
   // // // {
   // // //   // setHeader(headerNames.acceptLanguage, acceptLanguageHeader)
@@ -223,7 +230,6 @@ const Resources = {
   // listActive: () => requests.get("/Account/Role/GetAllActiveRolesInAdmin"),
   // details: (id) => requests.get(`/Account/Role/GetRoleByIdInAdmin?id=${id}`),
   // create: (role) => requests.post("/Account/Role/CreateRoleInAdmin", role),
-  editDataAnotationAndErrorMessages: (model, acceptLanguageHeader) => requests.post("/Resource/EditErrorMessagess", model)
 
 
   //   {

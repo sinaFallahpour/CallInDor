@@ -25,6 +25,12 @@ namespace Service.Interfaces.Common
         public bool IsPersianLanguage();
 
 
+        /// <summary>
+        /// گرفتن زبان فعلی کاربر
+        /// </summary>
+        /// <returns></returns>
+        public string GetCurrentCulture();
+
 
 
     }

@@ -68,8 +68,8 @@ class ModalForm extends Form {
 
   async populatingResources() {
     await this.setState({ loadingData: true })
-    console.log("-------" + this.state.languageHeader.header)
-    const { data } = await agent.Resources.dataAnotationsList(this.state.languageHeader.header);
+    console.log("-------" + this.state.languageHeader.enumVal)
+    const { data } = await agent.Resources.dataAnotationsList(this.state.languageHeader.enumVal);
     let dataAnodations = data.result.data;
     this.setState({ dataAnodations, loadingData: false });
   }
@@ -79,37 +79,24 @@ class ModalForm extends Form {
   }
 
 
-
-
-  // async ChanegLanguage() {
-  //   const { data } = await agent.Resources.dataAnotationsList();
-  //   let dataAnodations = data.result.data;
-  //   console.log(dataAnodations)
-  //   this.setState({ dataAnodations, Loading: false });
-  // }
-
-
-
   async handleLanguageHeader(languageHeader) {
     if (languageHeader == 0) {
       await this.setState({ languageHeader: { header: "fa-IR", enumVal: 0, language: "persian" } })
     }
     else if (languageHeader == 1) {
-      await this.setState({ languageHeader: { header: "en-US", enumVal: 2, language: "english" } })
+      await this.setState({ languageHeader: { header: "en-US", enumVal: 1, language: "english" } })
       // await this.setState({ languageHeader: { header: "en-US", language: "english" } })
     }
     else
       if (languageHeader == 2) {
         await this.setState({ languageHeader: { header: "ar", enumVal: 2, language: "arab" } })
       }
-
-
     this.populatingResources()
   }
 
 
 
-  onChange = (event, index) => {
+  handleOnChange = (event, index) => {
     var dataAnotations = this.state.dataAnodations;
     var foundIndex = dataAnotations.findIndex(x => x.name == event.target.name);
     dataAnotations[foundIndex] = { name: event.target.name, value: event.target.value };
@@ -130,7 +117,7 @@ class ModalForm extends Form {
 
 
 
-      var rv = { enumVal: languageHeader.enumVal };
+      var rv = { languageHeader: languageHeader.enumVal };
       for (var i = 0; i < dataAnodations.length; ++i)
         rv[dataAnodations[i].name] = dataAnodations[i].value;
 
@@ -141,11 +128,6 @@ class ModalForm extends Form {
       //     value: data.value
       //   })
       // });
-
-
-      // alert(languageHeader.header)
-
-
       const { data } = await agent.Resources.editDataAnotationAndErrorMessages(rv, languageHeader.header);
       if (data.result.status) toast.success(data.result.message);
     } catch (ex) {
@@ -170,7 +152,9 @@ class ModalForm extends Form {
             className="mr-1 mb-1 bg-gradient-success" color="none">Error and warning Messages</Button.Ripple>
 
           <Button.Ripple
-            onClick={() => { history.push("/pages/DataAnotation") }}
+
+          
+            onClick={() => { history.push("/pages/staticWord") }}
             className="mr-1 mb-1 bg-gradient-info" color="none">Site Static Word</Button.Ripple>
 
           {/* <Button.Ripple className="mr-1 mb-1 bg-gradient-warning" color="none">Warning</Button.Ripple> */}
@@ -254,7 +238,7 @@ class ModalForm extends Form {
                           id={item.name}
                           value={item.value}
                           onChange={(e) => {
-                            this.onChange(e, index)
+                            this.handleOnChange(e, index)
 
                             // this.setState({ [item.name]: e.target.value })
                           }}

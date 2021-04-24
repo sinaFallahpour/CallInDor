@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Localization;
 using Newtonsoft.Json;
+using Service.Interfaces.Common;
 using Service.Interfaces.Resource;
 using System;
 using System.Collections;
@@ -30,17 +31,34 @@ namespace Service
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IStringLocalizer<ShareResource> _localizerShared;
         private readonly IHostingEnvironment _hostingEnvironment;
+        //private readonly ICommonService _CommonService;
 
         public ResourceServices(IHttpContextAccessor httpContextAccessor, IStringLocalizer<ShareResource> localizerShared,
-                                                    IHostingEnvironment hostingEnvironment)
+                                 IHostingEnvironment hostingEnvironment)
         {
             _httpContextAccessor = httpContextAccessor;
             _localizerShared = localizerShared;
             _hostingEnvironment = hostingEnvironment;
+            //_CommonService = CommonService;
+
         }
 
         #endregion
 
+
+        private string GetErrorMessageJsonPath()
+        {
+            return Path.Combine(_hostingEnvironment.WebRootPath, "Resource/ErrorMessages.json");
+        }
+
+
+        private string GetStaticWordJsonPath()
+        {
+            return Path.Combine(_hostingEnvironment.WebRootPath, "Resource/StaticWord.json");
+        }
+
+
+        
 
 
         /// <summary>
@@ -49,7 +67,8 @@ namespace Service
         /// <returns></returns>
         public override string GetCurrentAcceptLanguageHeader()
         {
-            var userLangs = _httpContextAccessor.HttpContext.Request.Headers["Accept-Language"].ToString();
+            var userLangs = CultureInfo.CurrentCulture.Name;
+            //var userLangs = _httpContextAccessor.HttpContext.Request.Headers["Accept-Language"].ToString();
             var firstLang = userLangs.Split(',').FirstOrDefault();
             var defaultLang = string.IsNullOrEmpty(firstLang) ? "en-US" : firstLang;
             return defaultLang;
@@ -63,11 +82,44 @@ namespace Service
         /// <returns></returns>
         public override ErrorMessageDictionary GetErrorMessageObject()
         {
-            var filePath = Path.Combine(_hostingEnvironment.WebRootPath, "Resource/ErrorMessages.json");
+            string filePath = GetErrorMessageJsonPath();
             string jsonString = System.IO.File.ReadAllText(filePath);
             var errorMessageDictionary = JsonConvert.DeserializeObject<ErrorMessageDictionary>(jsonString);
             return errorMessageDictionary;
         }
+
+
+        /// <summary>
+        /// Get value of a key by key name
+        /// </summary>
+        /// <param name="key"></param>
+        /// <returns></returns>
+        public override string GetErrorMessageByKey(string key)
+        {
+            ErrorMessageDictionary errorMessageDictionary = GetErrorMessageObject();
+            var header = GetCurrentAcceptLanguageHeader();
+
+            string value = "";
+            if (header == "fa-IR")
+            {
+                value = errorMessageDictionary.Dictionary.FirstOrDefault(c => c.Key == key)?
+                           .Languages.FirstOrDefault(c => c.Header == "fa-IR").Val;
+            }
+            else if (header == "en-US")
+            {
+                value = errorMessageDictionary.Dictionary.FirstOrDefault(c => c.Key == key)?
+                             .Languages.FirstOrDefault(c => c.Header == "en-US").Val;
+            }
+            else if (header == "ar")
+            {
+                value = errorMessageDictionary.Dictionary.FirstOrDefault(c => c.Key == key)?
+                             .Languages.FirstOrDefault(c => c.Header == "ar").Val;
+            }
+            return value;
+        }
+
+
+
 
         /// <summary>
         /// get  all erroe messages
@@ -108,35 +160,7 @@ namespace Service
         }
 
 
-        /// <summary>
-        /// Get value of a key by key name
-        /// </summary>
-        /// <param name="key"></param>
-        /// <param name="languageHeader"></param>
-        /// <returns></returns>
-        public override string GetErrorMessageByKey(string key)
-        {
-            ErrorMessageDictionary errorMessageDictionary = GetErrorMessageObject();
-            var header = GetCurrentAcceptLanguageHeader();
 
-            string value = "";
-            if (header == "fa-IR")
-            {
-                value = errorMessageDictionary.Dictionary.FirstOrDefault(c => c.Key == key)?
-                           .Languages.FirstOrDefault(c => c.Header == "fa-IR").Val;
-            }
-            else if (header == "en-US")
-            {
-                value = errorMessageDictionary.Dictionary.FirstOrDefault(c => c.Key == key)?
-                             .Languages.FirstOrDefault(c => c.Header == "en-US").Val;
-            }
-            else if (header == "ar")
-            {
-                value = errorMessageDictionary.Dictionary.FirstOrDefault(c => c.Key == key)?
-                             .Languages.FirstOrDefault(c => c.Header == "ar").Val;
-            }
-            return value;
-        }
 
         /// <summary>
         /// Edit value Of ErrorMessages
@@ -150,7 +174,6 @@ namespace Service
             bool IsValid = true;
             List<string> Errors = new List<string>();
 
-
             ErrorMessageDictionary errorMessageDictionary = GetErrorMessageObject();
 
             try
@@ -160,11 +183,13 @@ namespace Service
                     var errorMessage = errorMessageDictionary.Dictionary.FirstOrDefault(c => c.Key == item.Name);
                     if (errorMessage != null)
                     {
-                        errorMessage.Languages.FirstOrDefault(c => c.Header == headerName).Val = item.GetValue(model).ToString();
+                        var val = item.GetValue(model).ToString();
+                        //errorMessage.Languages.FirstOrDefault(c => c.Header == headerName).Val = ;
+                        errorMessageDictionary.Dictionary.FirstOrDefault(c => c.Key == item.Name).Languages.FirstOrDefault(c => c.Header == headerName).Val = val;
                     }
                 }
 
-                return (IsValid, Errors);
+                //return (IsValid, Errors);
             }
             catch (Exception ex)
             {
@@ -173,7 +198,175 @@ namespace Service
                 return (IsValid, Errors);
             }
 
+            string filePath = GetErrorMessageJsonPath();
+            string towrite = JsonConvert.SerializeObject(errorMessageDictionary);
+            System.IO.File.WriteAllText(filePath, towrite);
+            return (IsValid, Errors);
         }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        /// <summary>
+        /// get  object off json StaticWord json file from wwwroot
+        /// </summary>
+        /// <returns></returns>
+        public override ErrorMessageDictionary GetStaticWordObject()
+        {
+            string filePath = GetStaticWordJsonPath();
+            string jsonString = System.IO.File.ReadAllText(filePath);
+            var errorMessageDictionary = JsonConvert.DeserializeObject<ErrorMessageDictionary>(jsonString);
+            return errorMessageDictionary;
+        }
+
+
+
+
+
+
+
+            /// <summary>
+            /// get  all erroe messages
+            /// </summary>
+            /// <param name="languageHeader"></param>
+            /// <param name="errorMessageDictionary"></param>
+            /// <returns></returns>
+        public override List<KeyValueDTO> GetAllStaticWord(LanguageHeader languageHeader)
+        {
+            ErrorMessageDictionary errorMessageDictionary = GetStaticWordObject();
+            var keyValueDTO = new List<KeyValueDTO>();
+            if (languageHeader == LanguageHeader.Persian)
+            {
+                keyValueDTO = errorMessageDictionary.Dictionary.Select(c => new KeyValueDTO
+                {
+                    Name = c.Key,
+                    Value = c.Languages.FirstOrDefault(c => c.Header == "fa-IR").Val
+                }).ToList();
+            }
+            else if (languageHeader == LanguageHeader.English)
+            {
+                keyValueDTO = errorMessageDictionary.Dictionary.Select(c => new KeyValueDTO
+                {
+                    Name = c.Key,
+                    Value = c.Languages.FirstOrDefault(c => c.Header == "en-US").Val
+                }).ToList();
+            }
+            else if (languageHeader == LanguageHeader.Arab)
+            {
+                keyValueDTO = errorMessageDictionary.Dictionary.Select(c => new KeyValueDTO
+                {
+                    Name = c.Key,
+                    Value = c.Languages.FirstOrDefault(c => c.Header == "ar").Val
+                }).ToList();
+            }
+
+            return keyValueDTO;
+        }
+
+
+
+
+        /// <summary>
+        /// Edit value Of ErrorMessages
+        /// </summary>
+        /// <param name="model"></param>
+        /// <param name="errorMessageDictionary"></param>
+        /// <param name="headerName"></param>
+        /// <returns></returns>
+        public override (bool succsseded, List<string> result) EditStaticWordJsonResource(EditStaticWordDTO2 model, string headerName)
+        {
+            bool IsValid = true;
+            List<string> Errors = new List<string>();
+
+            ErrorMessageDictionary errorMessageDictionary = GetStaticWordObject();
+
+            try
+            {
+                foreach (var item in model.GetType().GetProperties())
+                {
+                    var errorMessage = errorMessageDictionary.Dictionary.FirstOrDefault(c => c.Key == item.Name);
+                    if (errorMessage != null)
+                    {
+                        var val = item.GetValue(model).ToString();
+                        //errorMessage.Languages.FirstOrDefault(c => c.Header == headerName).Val = ;
+                        errorMessageDictionary.Dictionary.FirstOrDefault(c => c.Key == item.Name).Languages.FirstOrDefault(c => c.Header == headerName).Val = val;
+                    }
+                }
+
+                //return (IsValid, Errors);
+            }
+            catch (Exception ex)
+            {
+                IsValid = false;
+                Errors.Add(ex.Message + " ,,  " + ex.InnerException + ",,  ");
+                return (IsValid, Errors);
+            }
+
+            string filePath = GetStaticWordJsonPath();
+            string towrite = JsonConvert.SerializeObject(errorMessageDictionary);
+            System.IO.File.WriteAllText(filePath, towrite);
+            return (IsValid, Errors);
+        }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -448,7 +641,7 @@ namespace Service
 
         //            resx.AddResource(nameof(model.NumberOfFreeMessagesCompleted), model.NumberOfFreeMessagesCompleted);
         //            resx.AddResource(nameof(model.PhoneNumberAlreadyExist), model.PhoneNumberAlreadyExist);
-        //            resx.AddResource(nameof(model.problemUploadingTheFileMessage), model.problemUploadingTheFileMessage);
+        //            resx.AddResource(nameof(model.problemUploadingTheFileMessage), model.ProblemUploadingTheFileMessage);
         //            resx.AddResource(nameof(model.ProfileRejectedMessage), model.ProfileRejectedMessage);
         //            resx.AddResource(nameof(model.ProviderIsUnAvailableMessage), model.ProviderIsUnAvailableMessage);
         //            resx.AddResource(nameof(model.RequestNotConfirmedMessgaes), model.RequestNotConfirmedMessgaes);
@@ -509,7 +702,5 @@ namespace Service
         //    }
 
         //}
-
-
     }
 }
