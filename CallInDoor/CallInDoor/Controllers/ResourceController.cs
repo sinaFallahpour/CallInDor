@@ -304,22 +304,6 @@ namespace CallInDoor.Controllers
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
         //////    //[HttpGet("res")]
         //////    //public async Task<ActionResult> AddToResourse()
         //////    //{

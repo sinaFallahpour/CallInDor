@@ -34,12 +34,15 @@ namespace Domain
             builder.Entity<MyChatServiceTBL>()
                 .HasOne(c => c.BaseMyChatTBL)
                 .WithOne(c => c.MyChatsService)
-                .HasForeignKey<MyChatServiceTBL>(c => c.BaseId);
+                .HasForeignKey<MyChatServiceTBL>(c => c.BaseId)
+                .OnDelete(DeleteBehavior.Cascade);
 
             builder.Entity<MyServiceServiceTBL>()
                           .HasOne(c => c.BaseMyChatTBL)
                           .WithOne(c => c.MyServicesService)
-                          .HasForeignKey<MyServiceServiceTBL>(c => c.BaseId);
+                          .HasForeignKey<MyServiceServiceTBL>(c => c.BaseId)
+                             .OnDelete(DeleteBehavior.Cascade)
+                          ;
 
 
 

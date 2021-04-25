@@ -4,14 +4,16 @@ using Domain;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace Domain.Migrations
 {
     [DbContext(typeof(DataContext))]
-    partial class DataContextModelSnapshot : ModelSnapshot
+    [Migration("20210424094941_test2")]
+    partial class test2
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -1781,8 +1783,7 @@ namespace Domain.Migrations
                 {
                     b.HasOne("Domain.Entities.BaseMyServiceTBL", "BaseMyChatTBL")
                         .WithOne("MyChatsService")
-                        .HasForeignKey("Domain.Entities.MyChatServiceTBL", "BaseId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .HasForeignKey("Domain.Entities.MyChatServiceTBL", "BaseId");
                 });
 
             modelBuilder.Entity("Domain.Entities.MyCourseServiceTBL", b =>
@@ -1807,8 +1808,7 @@ namespace Domain.Migrations
 
                     b.HasOne("Domain.Entities.BaseMyServiceTBL", "BaseMyChatTBL")
                         .WithOne("MyServicesService")
-                        .HasForeignKey("Domain.Entities.MyServiceServiceTBL", "BaseId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .HasForeignKey("Domain.Entities.MyServiceServiceTBL", "BaseId");
 
                     b.HasOne("Domain.Entities.SpecialityTBL", "SpecialityTBL")
                         .WithMany()
