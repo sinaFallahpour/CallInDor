@@ -193,6 +193,8 @@ namespace CallInDoor.Controllers
                 };
                 return BadRequest(new ApiBadRequestResponse(erros));
             }
+
+
             var result = await _accountService.UpdateProfile(user, certificationFromDB, model);
             if (result)
                 return Ok(_commonService.OkResponse(null, false));
@@ -223,8 +225,12 @@ namespace CallInDoor.Controllers
                          select new
                          {
                              serviceId = s.Id,
-                             serviceName = s.Name,
-                             ServicePersianName = s.PersianName,
+
+                             //serviceName = s.Name,
+                             //ServicePersianName = s.PersianName,
+
+                             serviceName = _commonService.GetNameByCulture(s),
+                             //ServicePersianName = s.PersianName,
                              ServidceTypeRequiredCertificatesTBL = s.ServidceTypeRequiredCertificatesTBL.Select(c => new { c.Id, c.FileName, c.PersianFileName, c.ServiceId })
                          }).Distinct()
                           .AsQueryable();

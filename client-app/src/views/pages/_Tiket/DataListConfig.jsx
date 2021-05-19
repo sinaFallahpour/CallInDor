@@ -680,11 +680,6 @@ class DataListConfig extends Component {
 
 
 
-
-
-
-
-
   dateReturn = () => {
     const date = new Date();
     const timeString = date.getHours() + ":" + date.getMinutes() + ":00";

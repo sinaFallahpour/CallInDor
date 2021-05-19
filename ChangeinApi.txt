@@ -1,0 +1,13 @@
+/api/Home/GetAllServiceTypes
+/api/Account/ConfirmProfileForAdmin  =======nakarad bayad bokne
+/api/Category/GetAllNotSubcategoryByServiceId
+/api/Category/GetAllSubcategoryByServiceId
+/api/Category/GetAll =======nakarad bayad bokne
+
+
+
+/api/userService/GetChatServiceInfoForUpdate  ------------>
+GetChatServiceDetailsInAdmin
+GetAllProvideServicesInAdmin
+SearchService
+ 

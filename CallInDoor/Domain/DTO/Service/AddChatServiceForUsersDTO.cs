@@ -1,4 +1,5 @@
-﻿using Domain.Enums;
+﻿using Domain.CustonValidation;
+using Domain.Enums;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -10,23 +11,20 @@ namespace Domain.DTO.Service
     {
 
 
-        
-
-
         public int? Id { get; set; }
 
 
         //[Required(ErrorMessage = "{0} is  Required")]
-        [Range(-90, +90, ErrorMessage = "The  {0} should be between {1} and {2}")]
-        [Display(Name = "Latitude")]
-        public double? Latitude { get; set; }
+        ////////[Range(-90, +90, ErrorMessage = "The  {0} should be between {1} and {2}")]
+        ////////[Display(Name = "Latitude")]
+        ////////public double? Latitude { get; set; }
 
 
 
-        //[Required(ErrorMessage = "{0} is  Required")]
-        [Range(-180, +180, ErrorMessage = "The  {0} should be between {1} and {2}")]
-        [Display(Name = "Longitude")]
-        public double? Longitude { get; set; }
+        //////////[Required(ErrorMessage = "{0} is  Required")]
+        ////////[Range(-180, +180, ErrorMessage = "The  {0} should be between {1} and {2}")]
+        ////////[Display(Name = "Longitude")]
+        ////////public double? Longitude { get; set; }
 
 
 
@@ -137,12 +135,26 @@ namespace Domain.DTO.Service
 
 
 
+
         /// <summary>
+        /// voice,video,chat,course,service    
         /// vide or chat or seice or course ,...
         /// </summary>
         [Required(ErrorMessage = "{0} is  Required")]
+        [ServiceTypes(ErrorMessage = "inValidServiceType", ServiceTypes   ="0,1,2" )]
         [Display(Name = "ServiceType")]
-        public ServiceType? ServiceType { get; set; }
+        public string ServiceTypes { get; set; }
+
+
+
+
+
+        ///////////////////// <summary>
+        ///////////////////// vide or chat or seice or course ,...
+        ///////////////////// </summary>
+        //////////////////[Required(ErrorMessage = "{0} is  Required")]
+        //////////////////[Display(Name = "ServiceType")]
+        //////////////////public ServiceType? ServiceType { get; set; }
 
 
 

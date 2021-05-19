@@ -32,6 +32,13 @@ namespace Service.Interfaces.Common
         public string GetCurrentCulture();
 
 
+        /// <summary>
+        ///    گرفتن مقدار نیم داینامیک مدل های دیتا بیسی 
+        /// </summary>
+        /// <returns></returns>
+        public string GetNameByCulture(object item);
+
+        
 
     }
 }

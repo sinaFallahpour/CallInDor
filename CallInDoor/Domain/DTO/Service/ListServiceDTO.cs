@@ -14,11 +14,11 @@ namespace Domain.DTO.Service
 
         public string PersianName { get; set; }
 
+        public string ImageAddress { get; set; }
+
+        public bool IsProfileOptional { get; set; }
 
 
-        public   bool IsProfileOptional { get; set; }
-        
-        
         /// <summary>
         /// رنگ سرویس
         /// </summary>

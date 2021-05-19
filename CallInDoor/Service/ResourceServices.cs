@@ -89,6 +89,39 @@ namespace Service
         }
 
 
+
+
+
+        /// <summary>
+        /// Get value of a key by key name aand header 
+        /// </summary>
+        /// <param name="key"></param>
+        /// <returns></returns>
+        public override string GetErrorMessageByKeyAndHeader(string key , string  header)
+        {
+            ErrorMessageDictionary errorMessageDictionary = GetErrorMessageObject();
+            //var header = GetCurrentAcceptLanguageHeader();
+
+            string value = "";
+            if (header == "fa-IR")
+            {
+                value = errorMessageDictionary.Dictionary.FirstOrDefault(c => c.Key == key)?
+                           .Languages.FirstOrDefault(c => c.Header == "fa-IR").Val;
+            }
+            else if (header == "en-US")
+            {
+                value = errorMessageDictionary.Dictionary.FirstOrDefault(c => c.Key == key)?
+                             .Languages.FirstOrDefault(c => c.Header == "en-US").Val;
+            }
+            else if (header == "ar")
+            {
+                value = errorMessageDictionary.Dictionary.FirstOrDefault(c => c.Key == key)?
+                             .Languages.FirstOrDefault(c => c.Header == "ar").Val;
+            }
+            return value;
+        }
+
+
         /// <summary>
         /// Get value of a key by key name
         /// </summary>

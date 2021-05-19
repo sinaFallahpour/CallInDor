@@ -24,7 +24,7 @@ import Create from "./Create";
 // import ModalEditForm from "./ModalEditForm";
 
 import Spinner from "../../../components/@vuexy/spinner/Loading-spinner";
-import agent from "../../../core/services/agent";
+import agent, { baseUrl } from "../../../core/services/agent";
 
 import { history } from "../../../history";
 
@@ -54,6 +54,18 @@ class Table extends React.Component {
       //   headerCheckboxSelectionFilteredOnly: true,
       //   headerCheckboxSelection: true,
       // },
+
+      {
+        headerName: "Image",
+        field: "imageAddress",
+        width: 220,
+
+        cellRenderer: function (params) {
+          console.clear()
+          console.log(params)
+          return `<img src="${baseUrl + params.data.imageAddress}"  style="height:100%" title=${params.data.title} />`
+        },
+      },
       {
         headerName: "Title",
         field: "title",
@@ -91,10 +103,10 @@ class Table extends React.Component {
           return params.value === true ? (
             <div className="badge badge-pill badge-light-success">Active</div>
           ) : (
-              <div className="badge badge-pill badge-light-warning">
-                DeActivated
-              </div>
-            );
+            <div className="badge badge-pill badge-light-warning">
+              DeActivated
+            </div>
+          );
         },
       },
       {
@@ -112,14 +124,14 @@ class Table extends React.Component {
               defaultChecked={true}
             />
           ) : (
-              <Checkbox
-                disabled
-                color="primary"
-                icon={<Check className="vx-icon" size={16} />}
-                label=""
-                defaultChecked={false}
-              />
-            );
+            <Checkbox
+              disabled
+              color="primary"
+              icon={<Check className="vx-icon" size={16} />}
+              label=""
+              defaultChecked={false}
+            />
+          );
         },
       },
       {
@@ -137,14 +149,14 @@ class Table extends React.Component {
               defaultChecked={true}
             />
           ) : (
-              <Checkbox
-                disabled
-                color="primary"
-                icon={<Check className="vx-icon" size={16} />}
-                label=""
-                defaultChecked={false}
-              />
-            );
+            <Checkbox
+              disabled
+              color="primary"
+              icon={<Check className="vx-icon" size={16} />}
+              label=""
+              defaultChecked={false}
+            />
+          );
         },
       },
 
@@ -305,26 +317,28 @@ class Table extends React.Component {
                 {this.state.loading ? (
                   <Spinner></Spinner>
                 ) : (
-                    <ContextLayout.Consumer>
-                      {(context) => (
-                        <AgGridReact
-                          gridOptions={{}}
-                          // rowSelection="multiple"
-                          defaultColDef={defaultColDef}
-                          columnDefs={columnDefs}
-                          rowData={rowData}
-                          onGridReady={this.onGridReady}
-                          colResizeDefault={"shift"}
-                          animateRows={true}
-                          floatingFilter={true}
-                          pagination={true}
-                          paginationPageSize={this.state.paginationPageSize}
-                          pivotPanelShow="always"
-                          enableRtl={context.state.direction === "rtl"}
-                        />
-                      )}
-                    </ContextLayout.Consumer>
-                  )}
+                  <ContextLayout.Consumer>
+                    {(context) => (
+                      <AgGridReact
+
+                        rowHeight={140}
+                        gridOptions={{}}
+                        // rowSelection="multiple"
+                        defaultColDef={defaultColDef}
+                        columnDefs={columnDefs}
+                        rowData={rowData}
+                        onGridReady={this.onGridReady}
+                        colResizeDefault={"shift"}
+                        animateRows={true}
+                        floatingFilter={true}
+                        pagination={true}
+                        paginationPageSize={this.state.paginationPageSize}
+                        pivotPanelShow="always"
+                        enableRtl={context.state.direction === "rtl"}
+                      />
+                    )}
+                  </ContextLayout.Consumer>
+                )}
               </div>
             )}
           </CardBody>

@@ -1,6 +1,9 @@
 ﻿using Domain;
+using Domain.DTO.Language;
 using Domain.DTO.Response;
+using Domain.Entities;
 using Domain.Utilities;
+using Helper.Models.Entities;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Localization;
@@ -10,6 +13,7 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
+using System.Reflection;
 using System.Text;
 using System.Web.Http.ModelBinding;
 
@@ -20,6 +24,7 @@ namespace Service
         private readonly IHostingEnvironment _hostingEnvironment;
         private IStringLocalizer<ShareResource> _localizerShared;
         private readonly IResourceServices _resourceServices;
+
         public CommonService(IHostingEnvironment hostingEnvironment,
             IStringLocalizer<ShareResource> localizerShared,
             IResourceServices resourceServices)
@@ -217,14 +222,187 @@ namespace Service
             return false;
         }
 
-
-
-
-
         public string GetCurrentCulture()
         {
             return CultureInfo.CurrentCulture.Name;
         }
 
+        public string GetNameByCulture(object item)
+        {
+            string value = "";
+            foreach (PropertyInfo propertyInfo in item.GetType().GetProperties())
+            {
+                //CategoryTBL
+                if (item.GetType() == typeof(CategoryTBL))
+                {
+                    LanguageDTO model = new LanguageDTO
+                    {
+                        Persian = "PersianTitle",
+                        English = "Title",
+                        Arab = "ArabTitle",
+                    };
+                    value = GetObjectValue(item, model, propertyInfo);
+                }
+
+
+                //AnswerTBL
+                if (item.GetType() == typeof(AnswerTBL))
+                {
+                    LanguageDTO model = new LanguageDTO
+                    {
+                        Persian = "Text",
+                        English = "EnglishText",
+                        Arab = "ArabText",
+                    };
+                    value = GetObjectValue(item, model, propertyInfo);
+                }
+
+                //AreaTBL
+                if (item.GetType() == typeof(AreaTBL))
+                {
+                    LanguageDTO model = new LanguageDTO
+                    {
+                        Persian = "PersianTitle",
+                        English = "Title",
+                        Arab = "ArabTitle",
+                    };
+                    value = GetObjectValue(item, model, propertyInfo);
+                }
+
+                //CheckDiscountTBL
+                if (item.GetType() == typeof(CheckDiscountTBL))
+                {
+                    LanguageDTO model = new LanguageDTO
+                    {
+                        Persian = "PersianTitle",
+                        English = "EnglishTitle",
+                        Arab = "ArabTitle",
+                    };
+                    value = GetObjectValue(item, model, propertyInfo);
+                }
+
+
+                //NotificationTBL
+                if (item.GetType() == typeof(NotificationTBL))
+                {
+                    LanguageDTO model = new LanguageDTO
+                    {
+                        Persian = "TextPersian",
+                        English = "EnglishText",
+                        Arab = "ArabText",
+                    };
+                    value = GetObjectValue(item, model, propertyInfo);
+                }
+
+                //QuestionPullTBL
+                if (item.GetType() == typeof(QuestionPullTBL))
+                {
+                    LanguageDTO model = new LanguageDTO
+                    {
+                        Persian = "Text",
+                        English = "EnglishText",
+                        Arab = "ArabText",
+                    };
+                    value = GetObjectValue(item, model, propertyInfo);
+                }
+
+
+                //ServiceTagsTBL
+                if (item.GetType() == typeof(ServiceTagsTBL))
+                {
+                    LanguageDTO model = new LanguageDTO
+                    {
+                        Persian = "PersianTagName",
+                        English = "TagName",
+                        Arab = "ArabTagName",
+                    };
+                    value = GetObjectValue(item, model, propertyInfo);
+                }
+
+
+                //ServiceTBL
+                if (item.GetType() == typeof(ServiceTBL))
+                {
+                    LanguageDTO model = new LanguageDTO
+                    {
+                        Persian = "PersianName",
+                        English = "Name",
+                        Arab = "ArabName",
+                    };
+                    value = GetObjectValue(item, model, propertyInfo);
+                }
+
+
+                //ServidceTypeRequiredCertificatesTBL
+                if (item.GetType() == typeof(ServidceTypeRequiredCertificatesTBL))
+                {
+                    LanguageDTO model = new LanguageDTO
+                    {
+                        Persian = "PersianFileName",
+                        English = "FileName",
+                        Arab = "ArabFileName",
+                    };
+                    value = GetObjectValue(item, model, propertyInfo);
+                }
+
+                //SettingTBL
+                if (item.GetType() == typeof(SettingTBL))
+                {
+                    LanguageDTO model = new LanguageDTO
+                    {
+                        Persian = "Value",
+                        English = "EnglishValue",
+                        Arab = "ArabValue",
+                    };
+                    value = GetObjectValue(item, model, propertyInfo);
+                }
+
+                //SpecialityTBL
+                if (item.GetType() == typeof(SpecialityTBL))
+                {
+                    LanguageDTO model = new LanguageDTO
+                    {
+                        Persian = "PersianName",
+                        English = "EnglishName",
+                        Arab = "ArabName",
+                    };
+                    value = GetObjectValue(item, model, propertyInfo);
+                }
+            }
+            return value;
+        }
+        
+        private string GetObjectValue(object item, LanguageDTO model, PropertyInfo propertyInfo)
+        {
+            string value = "";
+            var curentCulture = GetCurrentCulture();
+            if (curentCulture == PublicHelper.persianCultureName)
+            {
+                if (propertyInfo.Name == model.Persian)
+                {
+                    value = propertyInfo.GetValue(item, null).ToString();
+                }
+            }
+            else if (curentCulture == PublicHelper.arabCultureName)
+            {
+                if (propertyInfo.Name == model.Arab)
+                {
+                    value = propertyInfo.GetValue(item, null).ToString();
+                }
+            }
+            else
+            {
+                if (propertyInfo.Name == model.English)
+                {
+                    value = propertyInfo.GetValue(item, null).ToString();
+                }
+            }
+            return value;
+        }
+    
+    
+    
+    
+    
     }
 }

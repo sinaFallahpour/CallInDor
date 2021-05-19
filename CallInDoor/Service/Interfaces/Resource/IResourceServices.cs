@@ -15,6 +15,16 @@ namespace Service.Interfaces.Resource
 
         public abstract List<KeyValueDTO> GetAllErrorMessage(LanguageHeader languageHeader);
 
+
+
+        /// <summary>
+        /// Get value of a key by key name and header 
+        /// </summary>
+        /// <param name="key"></param>
+        /// <returns></returns>
+        public abstract string GetErrorMessageByKeyAndHeader(string key, string header);
+
+
         /// <summary>
         /// Get value of a key by key name
         /// </summary>

@@ -36,7 +36,7 @@ class Create extends React.Component {
     isSubCategory: true,
     serviceId: null,
     parentId: null,
-
+    image:null,
     categories: [],
     services: [],
 
@@ -87,6 +87,7 @@ class Create extends React.Component {
       const {
         title,
         persianTitle,
+        image,
         isEnabled,
         isForCourse,
         isSubCategory,
@@ -108,10 +109,23 @@ class Create extends React.Component {
         serviceName,
         parentName,
       };
-      const { data } = await agent.Category.create(obj);
+
+
+      let form = new FormData();
+      form.append('title', title);
+      form.append('persianTitle', persianTitle);
+      form.append('isEnabled', isEnabled);
+      form.append('isForCourse', isForCourse);
+      form.append('isSubCategory', isSubCategory);
+      form.append('serviceId', serviceId);
+      form.append('parentId', parentId);
+      form.append('serviceName', serviceName);
+      form.append('parentName', parentName);
+      form.append('image', image);
+
+      const { data } = await agent.Category.create(form);
       if (data.result.status) {
         toast.success(data.result.message);
-
         obj.id = data.result.data.id;
         this.props.GetAllCategory(obj);
       }
@@ -218,6 +232,21 @@ class Create extends React.Component {
                   className="text-right"
                 />
               </FormGroup>
+
+              <FormGroup>
+                <h5 for="persianTitle">Image:</h5>
+                <Input
+                  type="file"
+                  id="image"
+                  // value={this.state.persianTitle}
+                  onChange={(e) =>
+                    this.setState({ image: e.target.files[0] })
+                  }
+                  placeholder="image"
+                  className="text-right"
+                />
+              </FormGroup>
+
 
               <FormGroup>
                 <h5 className="text-bold-600">Service types</h5>

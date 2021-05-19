@@ -186,7 +186,7 @@ namespace CallInDoor.Controllers
                                 && c.ClienUserName == currentUsername)
                                 .Include(c => c.ChatServiceMessagesTBL)
                                 .Include(c => c.ChatForLimitedServiceMessagesTBL)
-                                .AsQueryable();
+                                .AsQueryable().ToList();
 
             var myProviderservices = _context.ServiceRequestTBL
                                 .Where(c =>
@@ -195,7 +195,7 @@ namespace CallInDoor.Controllers
                                     c.ProvideUserName == currentUsername)
                                 .Include(c => c.ChatServiceMessagesTBL)
                                 .Include(c => c.ChatForLimitedServiceMessagesTBL)
-                                .AsQueryable();
+                                .AsQueryable().ToList();
 
             var myClientRequestJoinWithUser = await (from c in myClientservices
                                                          //join chat in _context.ChatServiceMessagesTBL
@@ -393,7 +393,7 @@ namespace CallInDoor.Controllers
                                       && (c.ClientUserName == currentUsername || c.ProviderUserName == currentUsername))
                                                  .Select(c => new customModeWithId { Id = c.Id, SenderUserName = c.SenderUserName }).ToListAsync();
 
-            chats = chats.Where(c => c.SenderUserName == currentUsername).ToList();
+            chats = chats.Where(c => c.SenderUserName != currentUsername).ToList();
 
 
             foreach (var item in chats)

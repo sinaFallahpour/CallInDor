@@ -15,6 +15,7 @@ namespace Domain.DTO.Service
     public class customModeWithId {
         public int  Id { get; set; }
 
+        //public string SenderUserName { get; set; }
         public string SenderUserName { get; set; }
         //public SendetMesageType SendetMesageType { get; set; }
     }

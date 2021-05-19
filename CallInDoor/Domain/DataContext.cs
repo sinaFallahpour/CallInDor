@@ -51,8 +51,8 @@ namespace Domain
                .HasIndex(x => new { x.SerialNumber });
 
 
-            builder.Entity<BaseMyServiceTBL>()
-               .HasIndex(x => new { x.ServiceName, x.ServiceType });
+            //builder.Entity<BaseMyServiceTBL>()
+            //   .HasIndex(x => new { x.ServiceName, x.ServiceType });
             //.HasName("");
 
             builder.Entity<BaseMyServiceTBL>()
@@ -60,8 +60,8 @@ namespace Domain
             //.HasName("");
 
 
-            builder.Entity<BaseMyServiceTBL>()
-               .HasIndex(x => new { x.ServiceType });
+            //builder.Entity<BaseMyServiceTBL>()
+            //   .HasIndex(x => new { x.ServiceType });
 
 
 

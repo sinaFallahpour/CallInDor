@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Http;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Text;
@@ -25,6 +26,8 @@ namespace Domain.DTO.Category
         [MaxLength(100, ErrorMessage = "The maximum {0} length is {1} characters")]
         public string PersianTitle { get; set; }
 
+
+        public IFormFile Image { get; set; }
 
 
         /// <summary>
@@ -58,7 +61,7 @@ namespace Domain.DTO.Category
         /// آیدی سرویس
         /// </summary>
         public int? ServiceId { get; set; }
-      
+
 
         #endregion
 
@@ -66,5 +69,5 @@ namespace Domain.DTO.Category
 
 
 
-  
+
 }

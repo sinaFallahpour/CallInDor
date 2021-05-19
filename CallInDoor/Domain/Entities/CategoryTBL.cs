@@ -24,6 +24,12 @@ namespace Domain.Entities
 
 
 
+        /// <summary>
+        /// تصویر دسته ها برای نمایش
+        /// </summary>
+        public string ImageAddress { get; set; }
+
+
 
         /// <summary>
         /// آیا فعال است؟
@@ -40,6 +46,20 @@ namespace Domain.Entities
         /// آیا این دسته بندی از نوع ساب کتوری است
         /// </summary>
         public bool IsSubCategory { get; set; }
+
+
+
+
+
+        /// <summary>
+        ///آیا این دسته برای کار پرداز هست یا نه 
+        /// </summary>
+        public bool IsSupplier { get; set; }
+
+
+
+
+
 
         #region  Relation 
 

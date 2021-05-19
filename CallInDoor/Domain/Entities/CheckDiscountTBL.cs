@@ -76,8 +76,8 @@ namespace Domain.Entities
 
 
         public List<TransactionTBL> Transactions { get; set; }
-       
-        public List<BuyiedPackageTBL> BuyiedPackageTBLs{ get; set; }
+
+        public List<BuyiedPackageTBL> BuyiedPackageTBLs { get; set; }
 
 
         #endregion

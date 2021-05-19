@@ -28,7 +28,7 @@ import Form from "../../../components/common/form";
 // import { Formik, Field, Form  } from "formik";
 // import * as Yup from "yup";
 
-import agent from "../../../core/services/agent";
+import agent,{baseUrl} from "../../../core/services/agent";
 
 import "react-block-ui/dist/style.css";
 import BlockUi from "react-block-ui";
@@ -46,8 +46,20 @@ class EditService extends Form {
       minSessionTime: "",
       acceptedMinPriceForNative: "",
       acceptedMinPriceForNonNative: "",
+
+
+
+      sitePercent: "",
+      topTenPackagePrice: "",
+      usersCount: "",
+      dayCount: "",
+      hourCount: "",
+
+      image: null,
       roleId: null,
     },
+    imageAddress: "",
+
     roles: [],
 
     tags: [],
@@ -92,6 +104,47 @@ class EditService extends Form {
       .max(10000000000000)
       .label("minimum Price For Non Native User"),
 
+
+
+    sitePercent: Joi.number()
+      .required()
+      .min(0)
+      .max(100)
+      .label("minimum for site Percent"),
+
+
+    topTenPackagePrice: Joi.number()
+      .required()
+      .min(0)
+      .max(10000)
+      .label("minimum for top Ten Package Price"),
+
+
+
+    usersCount: Joi.number()
+      .required()
+      .min(0)
+      .max(10000)
+      .label("minimum for usersCount"),
+
+
+
+    dayCount: Joi.number()
+      .required()
+      .min(0)
+      .max(365)
+      .label("minimum for count of day of witch a person can be top"),
+
+
+    hourCount: Joi.number()
+      .required()
+      .min(0)
+      .max(24)
+      .label("minimum for count of day of witch a person can be top"),
+
+
+    image: Joi.optional().label("image"),
+
     roleId: Joi.string().required().label("role"),
 
     roles: Joi.label("roles"),
@@ -114,6 +167,13 @@ class EditService extends Form {
         minSessionTime,
         acceptedMinPriceForNative,
         acceptedMinPriceForNonNative,
+        imageAddress,
+        sitePercent,
+        topTenPackagePrice,
+        usersCount,
+        dayCount,
+        hourCount,
+
         roleId,
         requiredCertificates,
       } = data.result.data;
@@ -127,8 +187,15 @@ class EditService extends Form {
           minSessionTime,
           acceptedMinPriceForNative,
           acceptedMinPriceForNonNative,
+          sitePercent,
+          topTenPackagePrice,
+          usersCount,
+          dayCount,
+          hourCount,
+
           roleId,
         },
+        imageAddress,
         requiredFiles: requiredCertificates?.map((item) => {
           return { ...item, _id: Math.random() * 100 };
         }),
@@ -203,20 +270,56 @@ class EditService extends Form {
         persinaTags: persinaTags?.length == 0 ? null : persinaTags.join(),
         requiredFiles,
       };
-      const { data } = await agent.ServiceTypes.update(obj);
-      if (data.result.status) toast.success(data.result.message);
-    } catch (ex) {
-      console.log(ex);
-      if (ex?.response?.status == 400) {
-        const errorscustom = ex?.response?.data?.errors;
-        this.setState({ errorscustom });
-      } else if (ex?.response) {
-        const errorMessage = ex?.response?.data?.Message;
-        this.setState({ errorMessage });
-        toast.error(errorMessage, {
-          autoClose: 10000,
-        });
+
+
+      let form = new FormData();
+      for (var key in obj) {
+        form.append(key, obj[key]);
       }
+      form.append("image", this.state.image)
+
+      // data.append('RequiredFiles',
+      //   '[{"id":-8792234,"fileName":"velit est in incididunt",
+      //  "persianFileName": "velit in id consequat"}, { "id": -12505022, "fileName": "ex nulla", "persianFileName": "irure esse in anim cupidatat" }]');
+
+
+      // form.delete('RequiredFiles');
+      form.delete('requiredFiles');
+
+      // form.append("RequiredFiles", obj.requiredFiles)
+      var index = 0;
+      for (var pair of obj.requiredFiles) {
+
+        // form.append("RequiredFiles[" + index + "].id", pair?.id);
+        // form.append("RequiredFiles[" + index + "].fileName", pair?.fileName);
+        // form.append("RequiredFiles[" + index + "].persianFileName", pair?.persianFileName);
+
+        form.append("RequiredFiles[" + index + "].id", pair?.id ? pair.id : "");
+        form.append("RequiredFiles[" + index + "].fileName", pair?.fileName);
+        form.append("RequiredFiles[" + index + "].persianFileName", pair?.persianFileName);
+
+
+        index++;
+      }
+
+      const { data } = await agent.ServiceTypes.update(form);
+      if (data.result.status) toast.success(data.result.message);
+
+      this.populatinService()
+    } catch (ex) {
+      console.log(ex)
+
+      // console.log(ex);
+      // if (ex?.response?.status == 400) {
+      //   const errorscustom = ex?.response?.data?.errors;
+      //   this.setState({ errorscustom });
+      // } else if (ex?.response) {
+      //   const errorMessage = ex?.response?.data?.Message;
+      //   this.setState({ errorMessage });
+      //   toast.error(errorMessage, {
+      //     autoClose: 10000,
+      //   });
+      // }
     }
     setTimeout(() => {
       this.setState({ Loading: false });
@@ -236,6 +339,9 @@ class EditService extends Form {
             <CardTitle> Edit Category </CardTitle>
           </CardHeader>
 
+
+          <img src={baseUrl + this.state.imageAddress} className="d-block mx-auto " style={{ maxHeight: "300px" }} />
+
           <CardBody>
             {errorscustom &&
               errorscustom.map((err, index) => {
@@ -250,6 +356,8 @@ class EditService extends Form {
               {this.renderInput("name", "Name")}
               {this.renderInput("persianName", "PersianName")}
               {this.renderInput("color", "Color")}
+              {this.renderInput("sitePercent", "Site percent(%)", "number")}
+
               {this.renderInput(
                 "minPriceForService",
                 "Minimm Price (For Service)$"
@@ -267,6 +375,38 @@ class EditService extends Form {
                 "minSessionTime",
                 "Min Session Time (minutes) (For Chat,Voice,video)$"
               )}
+
+
+              {this.renderInput(
+                "topTenPackagePrice",
+                "TopTenPackagePrice"
+              )}
+
+              {this.renderInput(
+                "usersCount",
+                "count of top  people can buy this package"
+              )}
+
+              {this.renderInput(
+                "dayCount",
+                "day Count eitch a person can be yop  count of top  people can buy this package"
+              )}
+
+              {this.renderInput(
+                "hourCount",
+                "time (HOUR) witch a person can be top"
+              )}
+
+              {this.renderInput(
+                "image",
+                "image",
+                "file"
+              )}
+
+
+
+
+
 
               {this.renderReactSelect(
                 "roleId",

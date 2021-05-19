@@ -69,8 +69,10 @@ namespace CallInDoor.Controllers
                    .Select(c => new
                    {
                        c.Id,
-                       c.Text,
-                       c.EnglishText,
+
+                       Text = _commonService.GetNameByCulture(c),
+                       //c.Text,
+                       //c.EnglishText,
                        c.Key,
                        serviceName = c.Service != null ? c.Service.Name + $"({c.Service.PersianName})" : null,
                        //c.IsEnabled,
@@ -135,8 +137,16 @@ namespace CallInDoor.Controllers
                 .Select(c => new
                 {
                     c.Id,
-                    c.Text,
-                    c.EnglishText,
+
+                    //c.Text,
+                    //c.EnglishText,
+
+                    Text = _commonService.GetNameByCulture(c),
+
+                    
+                    
+                    
+                    
                     //c.IsEnabled,
                     c.Key,
 

@@ -1,4 +1,5 @@
-﻿using Domain.Enums;
+﻿using Domain.CustonValidation;
+using Domain.Enums;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -17,17 +18,17 @@ namespace Domain.DTO.Service
         //public string UserName { get; set; }
 
 
-        //[Required(ErrorMessage = "{0} is  Required")]
-        [Range(-90, +90, ErrorMessage = "The  {0} should be between {1} and {2}")]
-        [Display(Name = "Latitude")]
-        public double? Latitude { get; set; }
+        //////////////////[Required(ErrorMessage = "{0} is  Required")]
+        ////////////////[Range(-90, +90, ErrorMessage = "The  {0} should be between {1} and {2}")]
+        ////////////////[Display(Name = "Latitude")]
+        ////////////////public double? Latitude { get; set; }
 
 
 
-        //[Required(ErrorMessage = "{0} is  Required")]
-        [Range(-180, +180, ErrorMessage = "The  {0} should be between {1} and {2}")]
-        [Display(Name = "Longitude")]
-        public double? Longitude { get; set; }
+        //////////////////[Required(ErrorMessage = "{0} is  Required")]
+        ////////////////[Range(-180, +180, ErrorMessage = "The  {0} should be between {1} and {2}")]
+        ////////////////[Display(Name = "Longitude")]
+        ////////////////public double? Longitude { get; set; }
 
 
 
@@ -44,17 +45,27 @@ namespace Domain.DTO.Service
 
         #region  دیفالت بین همشونه
 
+        ///// <summary>
+        ///// vide or chat or seice or course ,...
+        ///// </summary>
+        //[Required(ErrorMessage = "{0} is  Required")]
+        //[Display(Name = "ServiceType")]
+         public ServiceType? ServiceType { get; set; }
+
+
         /// <summary>
+        /// voice,video,chat,course,service    
         /// vide or chat or seice or course ,...
         /// </summary>
         [Required(ErrorMessage = "{0} is  Required")]
+        [ServiceTypes(ErrorMessage = "inValidServiceType", ServiceTypes = "3")]
         [Display(Name = "ServiceType")]
-        public ServiceType? ServiceType { get; set; }
+        public string ServiceTypes { get; set; }
 
 
 
         //public bool IsActive { get; set; }
-      
+
         #endregion
 
 
@@ -125,7 +136,7 @@ namespace Domain.DTO.Service
         /// <summary>
         /// مجموع تگ هایی که  سیستم معرفی میکند و تگ های که خودش وارد میکند
         /// </summary>
-      
+
         [MaxLength(1000, ErrorMessage = "The maximum {0} length is {1} characters")]
         [Display(Name = "Tags")]
         public string Tags { get; set; }
@@ -133,7 +144,7 @@ namespace Domain.DTO.Service
 
         [MaxLength(1000, ErrorMessage = "The maximum {0} length is {1} characters")]
         [Display(Name = "CustomTags")]
-        public string  CustomTags { get; set; }
+        public string CustomTags { get; set; }
 
 
         #region Relation
@@ -143,9 +154,9 @@ namespace Domain.DTO.Service
         public int? SubCatId { get; set; }
 
 
-  
+
         public int? AreaId { get; set; }
- 
+
         public int? SpecialityId { get; set; }
 
 

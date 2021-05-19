@@ -10,6 +10,7 @@ import {
   Alert,
   Col,
   Spinner,
+  FormText,
 } from "reactstrap";
 
 import Joi from "joi-browser";
@@ -18,7 +19,7 @@ import Form from "../../../components/common/form";
 // import { Formik, Field, Form  } from "formik";
 // import * as Yup from "yup";
 
-import agent from "../../../core/services/agent";
+import agent, { baseUrl } from "../../../core/services/agent";
 import { toast } from "react-toastify";
 
 // const formSchema = Yup.object().shape({
@@ -45,8 +46,10 @@ class EditCategory extends Form {
       serviceName: "",
       parentId: null,
       serviceId: null,
+      image: null
       // parentId: null,
     },
+    imageAddress: "",
     isEnabled: null,
     isForCourse: null,
     isSubCategory: null,
@@ -66,6 +69,8 @@ class EditCategory extends Form {
     persianTitle: Joi.string().required().label("PersianTitle"),
 
     parentId: Joi.optional().label("parent"),
+    image: Joi.optional().label("image"),
+
 
     // isEnabled: Joi
     // .boolean()
@@ -107,16 +112,17 @@ class EditCategory extends Form {
         isSubCategory,
         serviceId,
         parentId,
+        imageAddress
       } = data.result.data;
       this.setState({
         data: { id, title: title, persianTitle, serviceId, parentId },
         isEnabled,
         isForCourse,
-        isSubCategory
+        isSubCategory,
+        imageAddress
       });
     } catch (ex) {
       console.clear();
-
       if (ex?.response?.status == 404 || ex?.response?.status == 400) {
         return this.props.history.replace("/not-found");
       }
@@ -142,11 +148,35 @@ class EditCategory extends Form {
     try {
       const { isEnabled, isForCourse, isSubCategory } = this.state
       const obj = { ...this.state.data, isEnabled, isForCourse, isSubCategory };
-      const { data } = await agent.Category.update(obj);
+
+
+      let form = new FormData();
+      for (var key in obj) {
+        form.append(key, obj[key]);
+      }
+      form.append("image", this.state.image)
+
+      // let form = new FormData();
+      // form.append('title', title);
+      // form.append('persianTitle', persianTitle);
+      // form.append('isEnabled', isEnabled);
+      // form.append('isForCourse', isForCourse);
+      // form.append('isSubCategory', isSubCategory);
+      // form.append('serviceId', serviceId);
+      // form.append('parentId', parentId);
+      // form.append('serviceName', serviceName);
+      // form.append('parentName', parentName);
+      // form.append('image', image);
+
+
+
+      const { data } = await agent.Category.update(form);
 
       if (data.result.status) {
         toast.success(data.result.message);
       }
+      this.populatinCategory()
+
     } catch (ex) {
       // console.log(ex);
       // if (ex?.response?.status == 400) {
@@ -187,6 +217,7 @@ class EditCategory extends Form {
                 );
               })}
 
+            <img src={baseUrl + this.state.imageAddress} className="d-block mx-auto " style={{ maxHeight: "300px" }} />
             <form onSubmit={this.handleSubmit}>
               {this.renderInput("title", "Title")}
               {this.renderInput("persianTitle", "persianTitle")}
@@ -205,6 +236,12 @@ class EditCategory extends Form {
                 "serviceId",
                 "Service",
                 services.map((item) => ({ value: item.id, label: item.name }))
+              )}
+
+              {this.renderInput(
+                "image",
+                "image",
+                "file"
               )}
 
               {/* {this.renderCheckBox("isEnabled", "Is Enabled", "checbox")} */}

@@ -46,6 +46,11 @@ class ModalForm extends Form {
       acceptedMinPriceForNative: "",
       acceptedMinPriceForNonNative: "",
       sitePercent: "",
+      usersCount: "",
+      hourCount: "",
+      dayCount: "",
+      image: null,
+
       roleId: null,
     },
     tags: [],
@@ -92,7 +97,43 @@ class ModalForm extends Form {
       .max(10000000000000)
       .label("minimum Price For Non Native User"),
 
+
+
+    topTenPackagePrice: Joi.number()
+      .required()
+      .min(0)
+      .max(10000)
+      .label("minimum for top Ten Package Price"),
+
     sitePercent: Joi.number().required().min(0).max(100).label("Site percent"),
+
+
+    usersCount: Joi.number()
+      .required()
+      .min(0)
+      .max(10000)
+      .label("minimum for usersCount"),
+
+
+
+    dayCount: Joi.number()
+      .required()
+      .min(0)
+      .max(365)
+      .label("minimum for count of day of witch a person can be top"),
+
+
+
+    hourCount: Joi.number()
+      .required()
+      .min(0)
+      .max(24)
+      .label("minimum for count of day of witch a person can be top"),
+
+
+
+    image: Joi.optional().label("image"),
+
 
     roleId: Joi.string().required().label("role"),
     roles: Joi.label("roles"),
@@ -144,6 +185,13 @@ class ModalForm extends Form {
   doSubmit = async (e) => {
     this.setState({ Loading: true });
 
+
+    // data.append('RequiredFiles',
+    //   `[{"id":-8792234,"fileName":"velit est in incididunt",
+    //  "persianFileName":"velit in id consequat"}
+    //  ,{"id":-12505022,"fileName":"ex nulla","persianFileName":"irure esse in anim cupidatat"}]`);
+
+
     const errorMessage = "";
     const errorscustom = [];
     this.setState({ errorMessage, errorscustom });
@@ -157,7 +205,23 @@ class ModalForm extends Form {
         requiredFiles,
       };
 
-      const { data } = await agent.ServiceTypes.create(obj);
+      let form = new FormData();
+      for (var key in obj) {
+        form.append(key, obj[key]);
+      }
+      form.append("image", this.state.image)
+
+      var index = 0;
+      for (var pair of obj.requiredFiles) {
+        var requireFile = pair[key];
+        form.append("RequiredFiles[" + index + "].Id", requireFile.id);
+        form.append("RequiredFiles[" + index + "].FileName", requireFile.fileName);
+        form.append("RequiredFiles[" + index + "].PersianFileName", requireFile.persianFileName);
+        index++;
+      }
+
+
+      const { data } = await agent.ServiceTypes.create(form);
       if (data.result.status) toast.success(data.result.message);
     } catch (ex) {
       // console.log(ex);
@@ -223,6 +287,34 @@ class ModalForm extends Form {
                   "minSessionTime",
                   "Min Session Time (minutes) (For Chat,Voice,video)$"
                 )}
+
+                {this.renderInput(
+                  "topTenPackagePrice",
+                  "TopTenPackagePrice"
+                )}
+
+                {this.renderInput(
+                  "usersCount",
+                  "count of top  people can buy this package"
+                )}
+
+                {this.renderInput(
+                  "dayCount",
+                  "day Count eitch a person can be yop  count of top  people can buy this package"
+                )}
+
+                {this.renderInput(
+                  "hourCount",
+                  "time (HOUR) witch a person can be top"
+                )}
+
+                {this.renderInput(
+                  "image",
+                  "image",
+                  "file"
+                )}
+
+
 
                 {this.renderReactSelect(
                   "roleId",

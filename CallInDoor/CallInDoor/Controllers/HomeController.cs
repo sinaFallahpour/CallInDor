@@ -249,6 +249,8 @@ namespace CallInDoor.Controllers
 
         #region 
 
+
+        //##
         // GET: api/GetAllServiceForAdmin
         [HttpGet("GetAllServiceTypes")]
         [AllowAnonymous]
@@ -259,15 +261,16 @@ namespace CallInDoor.Controllers
                 {
                     c.Id,
                     c.Color,
-                    c.Name,
-                    c.PersianName,
+                    c.ImageAddress,
+                    Name = _commonService.GetNameByCulture(c),
+                    ////////////////////////////////////////////////////////c.Name,
+                    ////////////////////////////////////////////////////////c.PersianName,
                 }).ToListAsync();
 
             //return Ok(_commonService.OkResponse(allServiceTypes, _localizerShared["SuccessMessage"].Value.ToString()));
             return Ok(_commonService.OkResponse(allServiceTypes, false));
 
         }
-
 
         #endregion
 

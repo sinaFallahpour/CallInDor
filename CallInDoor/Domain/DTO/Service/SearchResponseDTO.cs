@@ -18,10 +18,10 @@ namespace Domain.DTO.Service
         public string ImageAddress { get; set; }
 
         public string CategoryName { get; set; }
-        public string CategoryPersianName { get; set; }
+        //public string CategoryPersianName { get; set; }
 
         public string SubCategoryName { get; set; }
-        public string SubCategoryPersianName { get; set; }
+        //public string SubCategoryPersianName { get; set; }
 
         public string Bio { get; set; }
 
@@ -33,7 +33,8 @@ namespace Domain.DTO.Service
         public int StarCount { get; set; }
 
 
-        public List<ServiceType> ServiceTypes { get; set; }
+        //////public List<ServiceType> ServiceTypes { get; set; }
+        public string ServiceTypes { get; set; }
 
 
         //public PackageType? PackageType  { get; set; }

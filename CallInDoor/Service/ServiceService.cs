@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Localization;
 using Service.Interfaces.Account;
+using Service.Interfaces.Common;
 using Service.Interfaces.Resource;
 using Service.Interfaces.ServiceType;
 using System;
@@ -28,6 +29,8 @@ namespace Service
         private readonly DataContext _context;
         private readonly IAccountService _accountService;
         private readonly RoleManager<AppRole> _roleManager;
+        private readonly ICommonService _commonService;
+
 
         //private IStringLocalizer<ServiceService> _localizer;
         private readonly IHostingEnvironment _hostingEnvironment;
@@ -37,6 +40,7 @@ namespace Service
             DataContext context,
             IAccountService accountService,
             RoleManager<AppRole> roleManager,
+            ICommonService commonService,
             //IStringLocalizer<ServiceService> localizer,
             IHostingEnvironment hostingEnvironment,
             IResourceServices resourceServices
@@ -45,6 +49,7 @@ namespace Service
             _context = context;
             _accountService = accountService;
             _roleManager = roleManager;
+            _commonService = commonService;
             _hostingEnvironment = hostingEnvironment;
             _resourceServices = resourceServices;
             //_localizer = localizer;
@@ -98,6 +103,7 @@ namespace Service
                     IsEnabled = c.IsEnabled,
                     Name = c.Name,
                     PersianName = c.PersianName,
+                    ImageAddress = c.ImageAddress,
                     RoleName = c.AppRole.Name,
                     SitePercent = c.SitePercent,
                     IsProfileOptional = c.IsProfileOptional,
@@ -134,6 +140,15 @@ namespace Service
                 AcceptedMinPriceForNonNative = (double)model.AcceptedMinPriceForNonNative,
                 SitePercent = (int)model.SitePercent,
             };
+
+
+            //upload immage
+            if (model.Image != null && model.Image.Length > 0 && model.Image.IsImage())
+            {
+                var imageAddress = await SaveFileToHost("Upload/Service/", "", model.Image);
+                serviceType.ImageAddress = imageAddress;
+            }
+
 
 
             ///add top-ten
@@ -242,10 +257,37 @@ namespace Service
                 serviceFromDB.AcceptedMinPriceForNonNative = (double)model.AcceptedMinPriceForNonNative;
                 serviceFromDB.RoleId = model.RoleId;
 
-                serviceFromDB.TopTenPackageTBL.FirstOrDefault().Count = (int)model.UsersCount;
-                serviceFromDB.TopTenPackageTBL.FirstOrDefault().DayCount = model.DayCount;
-                serviceFromDB.TopTenPackageTBL.FirstOrDefault().HourCount = model.HourCount;
-                serviceFromDB.TopTenPackageTBL.FirstOrDefault().Price = (double)model.TopTenPackagePrice;
+
+                //upload immage
+                if (model.Image != null && model.Image.Length > 0 && model.Image.IsImage())
+                {
+                    var imageAddress = await SaveFileToHost("Upload/Service/", serviceFromDB.ImageAddress, model.Image);
+                    serviceFromDB.ImageAddress = imageAddress;
+                }
+
+
+
+                if (serviceFromDB.TopTenPackageTBL.Count == 0)
+                {
+                    ///add top-ten
+                    var topTenPackageTBL = new TopTenPackageTBL()
+                    {
+                        CreateDate = DateTime.Now,
+                        Count = (int)model.UsersCount,
+                        //ServiceTbl = serviceType,
+                        DayCount = model.DayCount,
+                        HourCount = model.HourCount,
+                        Price = (double)model.TopTenPackagePrice,
+                    };
+                    serviceFromDB.TopTenPackageTBL = new List<TopTenPackageTBL>() { topTenPackageTBL };
+                }
+                else
+                {
+                    serviceFromDB.TopTenPackageTBL.FirstOrDefault().Count = (int)model.UsersCount;
+                    serviceFromDB.TopTenPackageTBL.FirstOrDefault().DayCount = model.DayCount;
+                    serviceFromDB.TopTenPackageTBL.FirstOrDefault().HourCount = model.HourCount;
+                    serviceFromDB.TopTenPackageTBL.FirstOrDefault().Price = (double)model.TopTenPackagePrice;
+                }
 
 
 
@@ -369,7 +411,7 @@ namespace Service
                 var result = await _context.SaveChangesAsync();
                 return true;
             }
-            catch
+            catch (Exception ex)
             {
                 return false;
             }
@@ -397,15 +439,15 @@ namespace Service
                 Errors.Add(_resourceServices.GetErrorMessageByKey("PackageTypeNotExist"));
             }
 
+            //////////var IsInServiceType = Enum.IsDefined(typeof(ServiceType), model.ServiceType);
+            //////////if (!IsInServiceType)
+            //////////{
+            //////////    IsValid = false;
+            //////////    Errors.Add(_resourceServices.GetErrorMessageByKey("PackageTypeNotExist"));
+            //////////}
 
-            var IsInServiceType = Enum.IsDefined(typeof(ServiceType), model.ServiceType);
-            if (!IsInServiceType)
-            {
-                IsValid = false;
-                Errors.Add(_resourceServices.GetErrorMessageByKey("PackageTypeNotExist"));
-            }
-
-            if (model.ServiceType == ServiceType.ChatVoice)
+            //////////////if (model.ServiceType == ServiceType.ChatVoice)
+            if (model.ServiceTypes.Contains("0"))
             {
                 if (model.PackageType == PackageType.limited)
                 {
@@ -418,7 +460,8 @@ namespace Service
             }
 
             ///اگراز نوع وویس کال یا ویدیو کال بود دگه زمان باید بررسی شود
-            if (model.ServiceType == ServiceType.VideoCal || model.ServiceType == ServiceType.VoiceCall)
+             ////////////if (model.ServiceType == ServiceType.VideoCal || model.ServiceType == ServiceType.VoiceCall)
+            if (model.ServiceTypes.Contains("1") || model.ServiceTypes.Contains("2"))
             {
                 if (model.PackageType == PackageType.limited)
                     //ما دیگه توی  ویدیو کال یا وویس کال   فری نداریم
@@ -433,7 +476,8 @@ namespace Service
             }
 
 
-            if (model.ServiceType == ServiceType.Service || model.ServiceType == ServiceType.Course)
+            ////////if (model.ServiceType == ServiceType.Service || model.ServiceType == ServiceType.Course)
+            if (model.ServiceTypes.Contains("3") || model.ServiceTypes.Contains("3"))
             {
                 IsValid = false;
                 Errors.Add(_resourceServices.GetErrorMessageByKey("InValidServiceType"));
@@ -541,7 +585,8 @@ namespace Service
             //    Errors.Add(_localizer["service Type Not Exist"].Value.ToString());
             //}
 
-            if (serviceFromDB.ServiceType == ServiceType.ChatVoice)
+            //if (serviceFromDB.ServiceType == ServiceType.ChatVoice)
+            if (serviceFromDB.ServiceTypes.Contains("0"))
             {
                 if (serviceFromDB.MyChatsService.PackageType == PackageType.limited)
                 {
@@ -554,7 +599,8 @@ namespace Service
             }
 
             ///اگراز نوع وویس کال یا ویدیو کال بود دگه زمان باید بررسی شود
-            if (serviceFromDB.ServiceType == ServiceType.VideoCal || serviceFromDB.ServiceType == ServiceType.VoiceCall)
+            //////////if (serviceFromDB.ServiceType == ServiceType.VideoCal || serviceFromDB.ServiceType == ServiceType.VoiceCall)
+            if (serviceFromDB.ServiceTypes.Contains("1") || serviceFromDB.ServiceTypes.Contains("2"))
             {
                 if (serviceFromDB.MyChatsService.PackageType == PackageType.limited)
                     //ما دیگه توی  ویدیو کال یا وویس کال   فری نداریم
@@ -568,7 +614,8 @@ namespace Service
                     }
             }
 
-            if (serviceFromDB.ServiceType == ServiceType.Service || serviceFromDB.ServiceType == ServiceType.Course)
+            //////////if (serviceFromDB.ServiceType == ServiceType.Service || serviceFromDB.ServiceType == ServiceType.Course)
+            if (serviceFromDB.ServiceTypes.Contains("3") || serviceFromDB.ServiceTypes.Contains("4"))
             {
                 IsValid = false;
                 Errors.Add(_resourceServices.GetErrorMessageByKey("InValidServiceType"));
@@ -667,18 +714,19 @@ namespace Service
             List<string> Errors = new List<string>();
 
 
-            var IsInServiceType = Enum.IsDefined(typeof(ServiceType), model.ServiceType);
-            if (!IsInServiceType)
-            {
-                IsValid = false;
-                Errors.Add(_resourceServices.GetErrorMessageByKey("ServiceTypeNotExist"));
-            }
-            if (model.ServiceType != ServiceType.Service)
-            {
-                IsValid = false;
-                //Errors.Add($"Invalid ServiceType Type");
-                Errors.Add(_resourceServices.GetErrorMessageByKey("InValidServiceType"));
-            }
+            ////////var IsInServiceType = Enum.IsDefined(typeof(ServiceType), model.ServiceType);
+            ////////if (!IsInServiceType)
+            ////////{
+            ////////    IsValid = false;
+            ////////    Errors.Add(_resourceServices.GetErrorMessageByKey("ServiceTypeNotExist"));
+            ////////}
+            //////if (model.ServiceType != ServiceType.Service)
+            //////////if(model.ServiceTypes !="3")
+            //////////{
+            //////////    IsValid = false;
+            //////////    //Errors.Add($"Invalid ServiceType Type");
+            //////////    Errors.Add(_resourceServices.GetErrorMessageByKey("InValidServiceType"));
+            //////////}
 
 
             //validate serviceTypes
@@ -1032,7 +1080,7 @@ namespace Service
 
 
         public async Task<ServiceProviderResponseTypeDTO> GetAllProvideServicesForAdmin(int? page, int? perPage,
-                    string searchedWord, DateTime createDate, ServiceType? serviceType, ConfirmedServiceType? confirmedServiceType)
+                    string searchedWord, DateTime createDate, ServiceType? serviceType, string serviceTypes, ConfirmedServiceType? confirmedServiceType)
         {
 
             var QueryAble = _context.BaseMyServiceTBL
@@ -1053,8 +1101,10 @@ namespace Service
             if (createDate != null)
                 QueryAble = QueryAble.Where(c => c.CreateDate > createDate);
 
-            if (serviceType != null)
-                QueryAble = QueryAble.Where(c => c.ServiceType == serviceType);
+            //if (serviceType != null)
+            //    QueryAble = QueryAble.Where(c => c.ServiceType == serviceType);
+            if (!string.IsNullOrEmpty(serviceTypes))
+                QueryAble = QueryAble.Where(c => c.ServiceTypes.Contains(serviceTypes));
 
             if (confirmedServiceType != null)
                 QueryAble = QueryAble.Where(c => c.ConfirmedServiceType == confirmedServiceType);
@@ -1066,7 +1116,8 @@ namespace Service
                 ConfirmedServiceType = c.ConfirmedServiceType,
                 ServiceName = c.ServiceName,
                 UserName = c.UserName,
-                ServiceType = c.ServiceType,
+                //////ServiceType = c.ServiceType,
+                ServiceTypes = c.ServiceTypes,
                 ServiceTypeName = c.ServiceTbl.Name,
                 IsDisabledByCompany = c.IsDisabledByCompany
             });
@@ -1099,8 +1150,9 @@ namespace Service
 
 
 
+
         public async Task<ServiceProviderResponseTypeDTO> GetAllProvideServicesForNotAdmin(int? page, int? perPage, string searchedWord,
-            DateTime createDate, ServiceType? serviceType, ConfirmedServiceType? confirmedServiceType)
+            DateTime createDate, ServiceType? serviceType, string serviceTypes, ConfirmedServiceType? confirmedServiceType)
         {
             var currentRole = _accountService.GetCurrentRole();
             var roleFromDB = await _roleManager.FindByNameAsync(currentRole);
@@ -1125,11 +1177,13 @@ namespace Service
             if (createDate != null)
                 QueryAble = QueryAble.Where(c => c.CreateDate > createDate);
 
-            if (serviceType != null)
-                QueryAble = QueryAble.Where(c => c.ServiceType == serviceType);
+            ////////if (serviceType != null)
+            ////////    QueryAble = QueryAble.Where(c => c.ServiceType == serviceType);
 
-            if (confirmedServiceType != null)
-                QueryAble = QueryAble.Where(c => c.ConfirmedServiceType == confirmedServiceType);
+            if (string.IsNullOrEmpty(serviceTypes))
+
+                if (confirmedServiceType != null)
+                    QueryAble = QueryAble.Where(c => c.ConfirmedServiceType == confirmedServiceType);
 
 
             var query = QueryAble.Select(c => new ProvideServicesDTO
@@ -1139,7 +1193,8 @@ namespace Service
                 ConfirmedServiceType = c.ConfirmedServiceType,
                 ServiceName = c.ServiceName,
                 UserName = c.UserName,
-                ServiceType = c.ServiceType,
+                //////ServiceType = c.ServiceType,
+                ServiceTypes = c.ServiceTypes,
                 ServiceTypeName = c.ServiceTbl.Name,
                 IsDisabledByCompany = c.IsDisabledByCompany,
             });
@@ -1173,29 +1228,6 @@ namespace Service
 
 
 
-        public string SvaeFileToHost(string path, IFormFile file)
-        {
-            try
-            {
-                if (file == null)
-                    return null;
-                string uniqueFileName = null;
-                var uploadsFolder = Path.Combine(_hostingEnvironment.WebRootPath, path);
-                uniqueFileName = (Guid.NewGuid().ToString().GetImgUrlFriendly() + "_" + file.FileName);
-                string filePath = Path.Combine(uploadsFolder, uniqueFileName);
-
-                using (var stream = new FileStream(filePath, FileMode.Create))
-                {
-                    file.CopyTo(stream);
-                }
-                //model.PhotoAddress = "/Upload/Slider/" + uniqueFileName;
-                return path + uniqueFileName;
-            }
-            catch
-            {
-                return null;
-            }
-        }
 
 
 
@@ -1259,17 +1291,24 @@ namespace Service
             }
 
 
-            if (model.ServiceType != null)
+            //if (model.ServiceType != null)
+            //{
+            //    QueryAble = QueryAble.Where(c => c.ServiceType == model.ServiceType);
+            //}
+
+            if (string.IsNullOrEmpty(model.ServiceTypes))
             {
-                QueryAble = QueryAble.Where(c => c.ServiceType == model.ServiceType);
+                QueryAble = QueryAble.Where(c => c.ServiceTypes.Contains(model.ServiceTypes));
             }
 
 
             if (model.MinPrice != null)
             {
-                if (model.ServiceType != null)
+                //////if (model.ServiceType != null)
+                if (!string.IsNullOrEmpty(model.ServiceTypes))
                 {
-                    if (model.ServiceType == ServiceType.VoiceCall || model.ServiceType == ServiceType.ChatVoice || model.ServiceType == ServiceType.VoiceCall)
+                    ////if (model.ServiceType == ServiceType.VoiceCall || model.ServiceType == ServiceType.ChatVoice || model.ServiceType == ServiceType.VoiceCall)
+                    if (model.ServiceTypes.Contains("0") || model.ServiceTypes.Contains("1") || model.ServiceTypes.Contains("2"))
                     {
                         //QueryAble = QueryAble.Include(c => c.MyChatsService)
                         //    .Where(c => c.MyChatsService.PriceForNativeCustomer >= model.MinPrice);
@@ -1279,7 +1318,8 @@ namespace Service
                         //////////if (model.IsPriceDesc)
                         //////////    QueryAble = QueryAble.OrderByDescending(c => c.MyChatsService.PriceForNativeCustomer);
                     }
-                    if (model.ServiceType == ServiceType.Service)
+                    ////////if (model.ServiceType == ServiceType.Service)
+                    if (model.ServiceTypes.Contains("3"))
                     {
                         //QueryAble = QueryAble.Include(c => c.MyServicesService)
                         //       .Where(c => c.MyServicesService.Price >= model.MinPrice);
@@ -1290,7 +1330,8 @@ namespace Service
                         ////////if (model.IsPriceDesc)
                         ////////    QueryAble = QueryAble.OrderByDescending(c => c.MyServicesService.Price);
                     }
-                    if (model.ServiceType == ServiceType.Course)
+                    ////////if (model.ServiceType == ServiceType.Course)
+                    if (model.ServiceTypes.Contains("4"))
                     {
                         //    QueryAble = QueryAble.Include(c => c.MyCourseService)
                         //           .Where(c => c.MyCourseService.Price >= model.MinPrice);
@@ -1308,9 +1349,11 @@ namespace Service
 
             if (model.MaxPrice != null)
             {
-                if (model.ServiceType != null)
+                //////if(model.ServiceType != null)
+                if (!string.IsNullOrEmpty(model.ServiceTypes))
                 {
-                    if (model.ServiceType != ServiceType.Course || model.ServiceType != ServiceType.Service)
+                    //if (model.ServiceType != ServiceType.Course || model.ServiceType != ServiceType.Service)
+                    if (model.ServiceTypes.Contains("0") || model.ServiceTypes.Contains("1") || model.ServiceTypes.Contains("2"))
                     {
                         //QueryAble = QueryAble.Include(c => c.MyChatsService)
                         //    .Where(c => c.MyChatsService.PriceForNativeCustomer <= model.MaxPrice);
@@ -1319,7 +1362,9 @@ namespace Service
                         //if (model.IsPriceDesc)
                         //    QueryAble = QueryAble.OrderByDescending(c => c.MyChatsService.PriceForNativeCustomer);
                     }
-                    if (model.ServiceType == ServiceType.Service)
+
+                    ////////if (model.ServiceType == ServiceType.Service)
+                    if (model.ServiceTypes.Contains("3"))
                     {
                         //QueryAble = QueryAble.Include(c => c.MyServicesService)
                         //       .Where(c => c.MyServicesService.Price <= model.MaxPrice);
@@ -1330,13 +1375,15 @@ namespace Service
                         //if (model.IsPriceDesc)
                         //    QueryAble = QueryAble.OrderByDescending(c => c.MyServicesService.Price);
                     }
-                    if (model.ServiceType == ServiceType.Course)
+                    //if (model.ServiceType == ServiceType.Course)
+                    if (model.ServiceTypes.Contains("4"))
+
                     {
                         //QueryAble = QueryAble.Include(c => c.MyCourseService)
                         //       .Where(c => c.MyCourseService.Price <= model.MaxPrice);
 
                         QueryAble = QueryAble
-                              .Where(c => c.MyCourseService.Price <= model.MaxPrice);
+                          .Where(c => c.MyCourseService.Price <= model.MaxPrice);
 
                         //if (model.IsPriceDesc)
                         //   QueryAble = QueryAble.OrderByDescending(c => c.MyCourseService.Price);
@@ -1380,11 +1427,15 @@ namespace Service
                              //q,
                              //q.StarCount,
 
-                             categoryTitle = s.CategoryTBL.Title,
-                             categoryPersianTitle = s.CategoryTBL.PersianTitle,
-                             subCategoryTitle = s.SubCategoryTBL.Title,
-                             subCategoryPersianTitle = s.SubCategoryTBL.PersianTitle,
-                             ServiceTypes = s.ServiceType
+                             //categoryTitle = s.CategoryTBL.Title,
+                             categoryTitle = _commonService.GetNameByCulture(s.CategoryTBL),
+                             ////categoryPersianTitle = s.CategoryTBL.PersianTitle,
+                             ///
+                             ////subCategoryTitle =  s.SubCategoryTBL.Title,
+                             subCategoryTitle = _commonService.GetNameByCulture(s.SubCategoryTBL),
+                             ////subCategoryPersianTitle = s.SubCategoryTBL.PersianTitle,
+                             //////ServiceTypes = s.ServiceType
+                             ServiceTypes = s.ServiceTypes
                          });
 
 
@@ -1410,11 +1461,12 @@ namespace Service
                     ImageAddress = x.FirstOrDefault().u.ImageAddress,
 
                     CategoryName = x.FirstOrDefault().categoryTitle,
-                    CategoryPersianName = x.FirstOrDefault().categoryPersianTitle,
+                    ////CategoryPersianName = x.FirstOrDefault().categoryPersianTitle,
 
                     SubCategoryName = x.FirstOrDefault().subCategoryTitle,
-                    SubCategoryPersianName = x.FirstOrDefault().subCategoryPersianTitle,
-                    ServiceTypes = x.Select(y => y.ServiceTypes).Distinct().ToList(),
+                    ////SubCategoryPersianName = x.FirstOrDefault().subCategoryPersianTitle,
+                    //////////////ServiceTypes = x.FirstOrDefault().ServiceTypes x.Select(y => y.ServiceTypes).Distinct().ToList(),
+                    ServiceTypes = x.FirstOrDefault()?.ServiceTypes,
                     //StarCount = x.FirstOrDefault().StarCount
                     StarCount = x.FirstOrDefault().u.StarCount
                     //Username = c.Key,
@@ -1435,5 +1487,75 @@ namespace Service
 
 
         }
+
+
+
+        public string SvaeFileToHost(string path, IFormFile file)
+        {
+            try
+            {
+                if (file == null)
+                    return null;
+                string uniqueFileName = null;
+                var uploadsFolder = Path.Combine(_hostingEnvironment.WebRootPath, path);
+                uniqueFileName = (Guid.NewGuid().ToString().GetImgUrlFriendly() + "_" + file.FileName);
+                string filePath = Path.Combine(uploadsFolder, uniqueFileName);
+
+                using (var stream = new FileStream(filePath, FileMode.Create))
+                {
+                    file.CopyTo(stream);
+                }
+                //model.PhotoAddress = "/Upload/Slider/" + uniqueFileName;
+                return path + uniqueFileName;
+            }
+            catch
+            {
+                return null;
+            }
+        }
+
+
+
+        public async Task<string> SaveFileToHost(string path, string lastPath, IFormFile file)
+        {
+            try
+            {
+                string uniqueVideoFileName = null;
+                if (string.IsNullOrWhiteSpace(_hostingEnvironment.WebRootPath))
+                {
+                    _hostingEnvironment.WebRootPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot");
+                }
+                var uploadsFolder = Path.Combine(_hostingEnvironment.WebRootPath, path);
+                uniqueVideoFileName = (Guid.NewGuid().ToString().GetImgUrlFriendly() + "_" + file.FileName);
+                string filePath = Path.Combine(uploadsFolder, uniqueVideoFileName);
+
+                using (var stream = new FileStream(filePath, FileMode.Create))
+                {
+                    await file.CopyToAsync(stream);
+                }
+
+                //Delete LastImage Image
+                if (!string.IsNullOrEmpty(lastPath))
+                {
+                    //var LastVideoPath = lastPath?.Substring(1);
+                    var LastPath = Path.Combine(_hostingEnvironment.WebRootPath, lastPath);
+                    if (System.IO.File.Exists(LastPath))
+                    {
+                        System.IO.File.Delete(LastPath);
+                    }
+                }
+                //update Newe video Address To database
+                //user.VideoAddress = "/Upload/User/" + uniqueVideoFileName;
+
+                return path + uniqueVideoFileName;
+
+            }
+            catch
+            {
+                return null;
+            }
+        }
+
+
     }
 }

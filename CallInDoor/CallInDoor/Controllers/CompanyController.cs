@@ -18,6 +18,7 @@ using Microsoft.AspNetCore.SignalR;
 using CallInDoor.Config.Attributes;
 using Service.Interfaces.Company;
 using Service.Interfaces.Resource;
+using Domain.Utilities;
 
 namespace CallInDoor.Controllers
 {
@@ -255,12 +256,18 @@ namespace CallInDoor.Controllers
 
             var notif = new NotificationTBL()
             {
+
+
+
+
                 CreateDate = DateTime.UtcNow,
                 IsReaded = false,
                 NotificationStatus = NotificationStatus.RequestToCompany,
                 UserName = companyUserName,
-                TextPersian = "شما یک درخواست عضویت در شرکت دارید",
-                EnglishText = "you have new request as company ",
+                TextPersian = _resourceServices.GetErrorMessageByKeyAndHeader("YouHaveNewRequestAsCompany", PublicHelper.persianCultureName),
+                //"شما یک درخواست عضویت در شرکت دارید",
+                EnglishText = _resourceServices.GetErrorMessageByKeyAndHeader("YouHaveNewRequestAsCompany", PublicHelper.EngCultureName),
+                //"you have new request as company ",
                 SenderUserName = currentUsername,
             };
 
@@ -268,7 +275,8 @@ namespace CallInDoor.Controllers
             #region send notification
             string companyConnectionId = usersFromDb.Where(c => c.UserName == currentUsername).FirstOrDefault().ConnectionId;
             if (!string.IsNullOrEmpty(companyConnectionId))
-                await _hubContext.Clients.Client(companyConnectionId).SendAsync("RequestToCompany", "you have new request as company ");
+                await _hubContext.Clients.Client(companyConnectionId).SendAsync("RequestToCompany", _resourceServices.GetErrorMessageByKey("YouHaveNewRequestAsCompany"));
+            //await _hubContext.Clients.Client(companyConnectionId).SendAsync("RequestToCompany", "you have new request as company ");
             #endregion
             await _context.NotificationTBL.AddAsync(notif);
             await _context.SaveChangesAsync();
@@ -319,8 +327,15 @@ namespace CallInDoor.Controllers
             var notification = new NotificationTBL()
             {
                 CreateDate = DateTime.UtcNow,
-                EnglishText = "your request has been accepted",
-                TextPersian = "درخواست شما قبول شده است",
+                //EnglishText = "your request has been accepted",
+                //TextPersian = "درخواست شما قبول شده است",
+
+                EnglishText = _resourceServices.GetErrorMessageByKeyAndHeader("YourRequestHasBeenAccepted", PublicHelper.EngCultureName),
+                //"your request has been accepted",
+                TextPersian = _resourceServices.GetErrorMessageByKeyAndHeader("YourRequestHasBeenAccepted", PublicHelper.persianCultureName),
+                //"درخواست شما قبول شده است",
+
+
                 IsReaded = false,
                 NotificationStatus = NotificationStatus.AcceptRequestToCompany,
                 SenderUserName = currentUserName,
@@ -376,18 +391,25 @@ namespace CallInDoor.Controllers
             var notification = new NotificationTBL()
             {
                 CreateDate = DateTime.UtcNow,
-                EnglishText = "your request has been accepted",
-                TextPersian = "درخواست شما قبول شده است",
+                EnglishText = _resourceServices.GetErrorMessageByKeyAndHeader("YourRequestHasBeenRejected", PublicHelper.EngCultureName),
+                //"your request has been accepted",
+                TextPersian = _resourceServices.GetErrorMessageByKeyAndHeader("YourRequestHasBeenRejected", PublicHelper.persianCultureName),
+                //"درخواست شما رد شده است",
                 IsReaded = false,
                 NotificationStatus = NotificationStatus.AcceptRequestToCompany,
                 SenderUserName = currentUserName,
                 UserName = requestFromDB.subSetUserName,
             };
             bool isPersian = _commonService.IsPersianLanguage();
-            string confirmMessage = isPersian ? notification.TextPersian : notification.EnglishText;
+            string confirmMessage = _commonService.GetNameByCulture(notification);
+            //string confirmMessage = isPersian ? notification.TextPersian : notification.EnglishText;
+
 
             if (!string.IsNullOrEmpty(userFromDB?.ConnectionId))
                 await _hubContext.Clients.Client(userFromDB?.ConnectionId).SendAsync("AcceptRequestToCompany", confirmMessage);
+
+
+            await _context.NotificationTBL.AddAsync(notification);
             await _context.SaveChangesAsync();
             return Ok(_commonService.OkResponse(null, false));
         }
@@ -473,10 +495,9 @@ namespace CallInDoor.Controllers
                 return BadRequest(_commonService.NotFoundErrorReponse(false));
             }
 
-
             if (!baseServiceFromDB.IsEnabled)
             {
-                List<string> erros = new List<string> { _localizerShared["ServiceIsDisabled"].Value.ToString() };
+                List<string> erros = new List<string> { _resourceServices.GetErrorMessageByKey("ServiceIsDisabled") };
                 return BadRequest(new ApiBadRequestResponse(erros, 404));
             }
 
@@ -503,20 +524,23 @@ namespace CallInDoor.Controllers
 
             var notif = new NotificationTBL()
             {
+
                 CreateDate = DateTime.UtcNow,
                 IsReaded = false,
                 NotificationStatus = NotificationStatus.CompanyDeleteTheSubset,
                 UserName = userId,
-                TextPersian = "یکی از شرکت هایی که در ان عضو هستید سرویس شمارا غیر فعال کرده",
-                EnglishText = "One of the companies you are a member of has disabled your service",
+                TextPersian = _resourceServices.GetErrorMessageByKeyAndHeader("OneOfTheCompaniesYouAreAMemberOfHasDisabledYourService", PublicHelper.persianCultureName),
+                //"یکی از شرکت هایی که در ان عضو هستید سرویس شمارا غیر فعال کرده",
+                EnglishText = _resourceServices.GetErrorMessageByKeyAndHeader("OneOfTheCompaniesYouAreAMemberOfHasDisabledYourService", PublicHelper.EngCultureName),
+                //"One of the companies you are a member of has disabled your service",
                 SenderUserName = currentUserName,
             };
+            //#todo ----> send notif to user
 
-             
-                await _context.NotificationTBL.AddAsync(notif);
-                await _context.SaveChangesAsync();
-                return Ok(_commonService.OkResponse(null, false));
-             
+            await _context.NotificationTBL.AddAsync(notif);
+            await _context.SaveChangesAsync();
+            return Ok(_commonService.OkResponse(null, false));
+
         }
 
 
@@ -549,7 +573,10 @@ namespace CallInDoor.Controllers
 
             if (!baseServiceFromDB.IsEnabled)
             {
-                List<string> erros = new List<string> { _localizerShared["ServiceIsDisabled"].Value.ToString() };
+                List<string> erros = new List<string> {
+                    _resourceServices.GetErrorMessageByKey("ServiceIsDisabled"),
+                    //_localizerShared["ServiceIsDisabled"].Value.ToString()
+                };
                 return BadRequest(new ApiBadRequestResponse(erros, 404));
             }
 
@@ -581,30 +608,20 @@ namespace CallInDoor.Controllers
                 IsReaded = false,
                 NotificationStatus = NotificationStatus.CompanyDeleteTheSubset,
                 UserName = userId,
-                TextPersian = "یکی از شرکت هایی که در ان عضو هستید سرویس شمارا غیر فعال کرده",
-                EnglishText = "One of the companies you are a member of has disabled your service",
+                TextPersian = _resourceServices.GetErrorMessageByKeyAndHeader("OneOfTheCompaniesYouAreAMemberOfHasDisabledYourService", PublicHelper.persianCultureName),
+                //"یکی از شرکت هایی که در ان عضو هستید سرویس شمارا غیر فعال کرده",
+                EnglishText = _resourceServices.GetErrorMessageByKeyAndHeader("OneOfTheCompaniesYouAreAMemberOfHasDisabledYourService", PublicHelper.EngCultureName),
+                //"One of the companies you are a member of has disabled your service",
                 SenderUserName = currentUserName,
             };
- 
-                await _context.NotificationTBL.AddAsync(notif);
-                await _context.SaveChangesAsync();
-                return Ok(_commonService.OkResponse(null, false));
-             
+            //#todo  -->  send notif to user
+
+            await _context.NotificationTBL.AddAsync(notif);
+            await _context.SaveChangesAsync();
+            return Ok(_commonService.OkResponse(null, false));
         }
 
-
-
-
-
-
-
-
-
-
-
-
-
-        //left from company
-
+        //#Todo  left from company
+    
     }
 }

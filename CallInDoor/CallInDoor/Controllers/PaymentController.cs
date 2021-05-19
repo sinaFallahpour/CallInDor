@@ -982,7 +982,8 @@ namespace CallInDoor.Controllers
             var haveService = await _context.BaseMyServiceTBL.AsNoTracking().AnyAsync(c => c.ServiceId == topTenPackageFromDB.ServiceId && c.UserName == currentUsername);
             if (!haveService)
             {
-                List<string> erros = new List<string> { "YouHaveNotRegisteredAnyServicesInThisCategory" };
+                //List<string> erros = new List<string> { "YouHaveNotRegisteredAnyServicesInThisCategory" };
+                List<string> erros = new List<string> { _resourceServices.GetErrorMessageByKey("YouHaveNotRegisteredAnyServicesInThisCategory") };
                 return BadRequest(new ApiBadRequestResponse(erros));
             }
 

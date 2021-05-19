@@ -11,7 +11,9 @@ namespace Domain.DTO.Service
         public string ServiceName { get; set; }
         public int? Page { get; set; }
         public int? PerPage { get; set; }
-        public ServiceType? ServiceType { get; set; }
+        ////////public ServiceType? ServiceType { get; set; }
+        public string  ServiceTypes { get; set; }
+
 
 
         public int? ServiceCatgoryId { get; set; }

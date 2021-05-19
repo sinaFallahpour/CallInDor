@@ -68,8 +68,29 @@ namespace Domain.Entities
 
 
 
+
+
+
+
+        /// <summary>
+        /// video or voice  or chat or course or service  shayad ham  karpardaz
+        //value should be 0,1,2,3,4,5
+        /// </summary>
+        public string ServiceTypes { get; set; }
+
+
+
+
+
+
+
+
+
+
+
         /// <summary>
         /// vide or chat or service or course ,...
+        //#TODO --> should be delete  
         /// </summary>
         public ServiceType ServiceType { get; set; }
 
@@ -85,11 +106,11 @@ namespace Domain.Entities
         /// آیا این  حذف شده
         /// </summary>
         public bool IsDeleted { get; set; }
-        
-        
-        
-        
-        
+
+
+
+
+
         /// <summary>
         /// آیا این سرویسی توسط کمپانی ایی که در ان عضو است 
         /// disabled شده؟؟
@@ -113,11 +134,11 @@ namespace Domain.Entities
         /// تعداد کل ستار های زیر 3 که این سرویس دارد  
         /// </summary>
         public int Under3StarCount { get; set; }
-        
-        
-        
-        
-        
+
+
+
+
+
         #region  Relation
 
 

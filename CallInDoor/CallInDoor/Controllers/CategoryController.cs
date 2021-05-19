@@ -40,7 +40,7 @@ namespace CallInDoor.Controllers
              IAccountService accountService,
              ICommonService commonService,
               ICategoryService categoryService
-               
+
             )
         {
             _context = context;
@@ -66,6 +66,7 @@ namespace CallInDoor.Controllers
                 c.Id,
                 c.Title,
                 c.PersianTitle,
+                c.ImageAddress,
                 c.ParentId,
                 c.IsEnabled,
                 c.IsForCourse,
@@ -92,20 +93,44 @@ namespace CallInDoor.Controllers
         [HttpGet("GetAllNotSubcategoryByServiceId")]
         public async Task<ActionResult> GetAllNotSubcategoryByServiceId(int serviceId)
         {
+
+            var topUsernames = await _context.BaseMyServiceTBL.AsNoTracking().Where(c => c.ServiceId == serviceId)
+                      .OrderByDescending(c => c.StarCount)
+                      .ThenBy(c => c.Under3StarCount)
+                      .ThenByDescending(c => c.CreateDate)
+                      .Take(6)
+                      .Select(c => c.UserName)
+                      .ToListAsync();
+
+
+            var usres = await _context.Users.Where(c => topUsernames.Contains(c.UserName))
+                .Select(c => new Top6UserOfCategoryDTO
+                {
+                    ImageAddress = c.ImageAddress,
+                    Name = c.Name,
+                    LastName = c.LastName,
+                    IsOnline = c.IsOnline,
+                    StarCount = c.StarCount,
+                })
+                .ToListAsync();
+
+
             var cats = await _context.CategoryTBL.Where(c => c.IsEnabled == true &&
              c.ServiceId == serviceId && c.IsSubCategory == false)
                 .AsNoTracking()
              .Select(c => new
              {
                  c.Id,
-                 c.Title,
-                 c.PersianTitle,
+                 //c.Title,
+                 //c.PersianTitle,
+                 Title = _commonService.GetNameByCulture(c),
+                 c.ImageAddress,
                  c.IsEnabled,
                  c.ParentId,
                  c.ServiceId,
                  c.IsForCourse,
                  c.IsSubCategory,
-
+                 users = usres
              })
                 .ToListAsync();
 
@@ -113,24 +138,54 @@ namespace CallInDoor.Controllers
         }
         #endregion
 
+
+
+         
         #region Get All Subcategory ByServiceId
         //گرفتن تمام دسته بندی هایی یک سرویس خاص(آن هایی مه ساب کتگوری هستند)  ت
         [HttpGet("GetAllSubcategoryByServiceId")]
         public async Task<ActionResult> GetAllSubcategoryByServiceId(int serviceId)
         {
+
+            var topUsernames = await _context.BaseMyServiceTBL.AsNoTracking().Where(c => c.ServiceId == serviceId)
+                    .OrderByDescending(c => c.StarCount)
+                    .ThenBy(c => c.Under3StarCount)
+                    .ThenByDescending(c => c.CreateDate)
+                    .Take(6)
+                    .Select(c => c.UserName)
+                    .ToListAsync();
+
+
+            var usres = await _context.Users.Where(c => topUsernames.Contains(c.UserName))
+                .Select(c => new Top6UserOfCategoryDTO
+                {
+                    ImageAddress = c.ImageAddress,
+                    Name = c.Name,
+                    LastName = c.LastName,
+                    IsOnline = c.IsOnline,
+                    StarCount = c.StarCount,
+                })
+                .ToListAsync();
+
+
+
             var cats = await _context.CategoryTBL.Where(c => c.IsEnabled == true &&
              c.ServiceId == serviceId && c.IsSubCategory == true)
                 .AsNoTracking()
              .Select(c => new
              {
                  c.Id,
-                 c.Title,
-                 c.PersianTitle,
+                 //c.Title,
+                 //c.PersianTitle,
+                 Title = _commonService.GetNameByCulture(c),
+
+                 c.ImageAddress,
                  c.IsEnabled,
                  c.ParentId,
                  c.ServiceId,
                  c.IsForCourse,
                  c.IsSubCategory,
+                 users = usres
              })
                 .ToListAsync();
             return Ok(_commonService.OkResponse(cats, PubicMessages.SuccessMessage));
@@ -167,6 +222,7 @@ namespace CallInDoor.Controllers
                    c.Id,
                    c.Title,
                    c.PersianTitle,
+                   c.ImageAddress,
                    c.IsEnabled,
                    c.IsSubCategory,
                    c.IsForCourse,
@@ -197,6 +253,7 @@ namespace CallInDoor.Controllers
                    c.Id,
                    c.Title,
                    c.PersianTitle,
+                   c.ImageAddress,
                    c.IsEnabled,
                    c.IsSubCategory,
                    c.IsForCourse,
@@ -221,7 +278,7 @@ namespace CallInDoor.Controllers
         [HttpPost("Create")]
         [Authorize(Roles = PublicHelper.ADMINROLE)]
         [ClaimsAuthorize(IsAdmin = true)]
-        public async Task<ActionResult> Create([FromBody] CreateCategoryDTO model)
+        public async Task<ActionResult> Create([FromForm] CreateCategoryDTO model)
         {
 
             if (model.ServiceId == null)
@@ -230,7 +287,18 @@ namespace CallInDoor.Controllers
                 errors.Add("service is required");
                 return BadRequest(new ApiBadRequestResponse(errors));
             }
-
+            if (model.Image == null || model.Image.Length <= 0)
+            {
+                var errors = new List<string>();
+                errors.Add("image file is required ");
+                return BadRequest(new ApiBadRequestResponse(errors));
+            }
+            if (!model.Image.IsImage())
+            {
+                var errors = new List<string>();
+                errors.Add("invalid file format. please inter image format");
+                return BadRequest(new ApiBadRequestResponse(errors));
+            }
 
             var category = await _categoryService.Create(model);
             if (category != null)
@@ -253,7 +321,7 @@ namespace CallInDoor.Controllers
         [HttpPut("Update")]
         [Authorize(Roles = PublicHelper.ADMINROLE)]
         [ClaimsAuthorize(IsAdmin = true)]
-        public async Task<IActionResult> Update([FromBody] CreateCategoryDTO model)
+        public async Task<IActionResult> Update([FromForm] CreateCategoryDTO model)
         {
 
             var service = _categoryService.GetById(model.Id);
@@ -261,9 +329,18 @@ namespace CallInDoor.Controllers
             {
                 List<string> erros = new List<string> { PubicMessages.NotFoundMessage };
                 return BadRequest(new ApiBadRequestResponse(erros, 404));
-
                 //return NotFound(new ApiResponse(404, _localizerShared["NotFound"].Value.ToString()));
             }
+
+
+            if (model.Image != null && !model.Image.IsImage())
+            {
+                var errors = new List<string>();
+                errors.Add("invalid file format. please inter image format");
+                return BadRequest(new ApiBadRequestResponse(errors));
+            }
+
+
             var result = await _categoryService.Update(service, model);
             if (result)
                 return Ok(_commonService.OkResponse(null, PubicMessages.SuccessMessage));
@@ -362,8 +439,9 @@ namespace CallInDoor.Controllers
                .Select(c => new
                {
                    c.Id,
-                   c.Title,
-                   c.PersianTitle,
+                   //c.Title,
+                   //c.PersianTitle,
+                   Title = _commonService.GetNameByCulture(c),
                    c.IsEnabled,
                    c.IsProfessional,
                    serviceName = c.Service.Name,

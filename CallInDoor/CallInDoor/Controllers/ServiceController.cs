@@ -1,4 +1,5 @@
-﻿using System;
+﻿
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -97,12 +98,19 @@ namespace CallInDoor.Controllers
                    c.Id,
                    c.Name,
                    c.PersianName,
+                   c.ImageAddress,
                    c.SitePercent,
                    c.IsEnabled,
                    c.MinPriceForService,
                    c.MinSessionTime,
                    c.AcceptedMinPriceForNative,
                    c.AcceptedMinPriceForNonNative,
+
+                   topTenPackagePrice = c.TopTenPackageTBL.FirstOrDefault().Price,
+                   usersCount = c.TopTenPackageTBL.FirstOrDefault().Count,
+                   dayCount = c.TopTenPackageTBL.FirstOrDefault().DayCount,
+                   hourCount = c.TopTenPackageTBL.FirstOrDefault().HourCount,
+
                    c.Color,
                    c.IsProfileOptional,
                    RoleId = c.AppRole.Id,
@@ -145,6 +153,7 @@ namespace CallInDoor.Controllers
                       c.IsEnabled,
                       c.Name,
                       c.PersianName,
+                      c.ImageAddress,
                       c.SitePercent,
                       c.Color,
                       RoleName = c.AppRole.Name,
@@ -154,10 +163,7 @@ namespace CallInDoor.Controllers
                       c.MinSessionTime,
                       c.MinPriceForService
                   }).ToListAsync();
-
             return Ok(_commonService.OkResponse(AllServices, PubicMessages.SuccessMessage));
-
-
         }
 
 
@@ -186,30 +192,15 @@ namespace CallInDoor.Controllers
             {
                 return BadRequest(_commonService.NotFoundErrorReponse(false));
             }
-
             var IsPersian = _commonService.IsPersianLanguage();
 
-            List<GetTagsDTO> tags;
-            if (IsPersian)
+            var tags = await _context.ServiceTags.AsNoTracking().Where(c => c.ServiceId == Id).Select(c => new GetTagsDTO
             {
-                tags = await _context.ServiceTags.AsNoTracking().Where(c => c.ServiceId == Id).Select(c => new GetTagsDTO
-                {
-                    Id = c.Id,
-                    TagName = c.PersianTagName
-                })
-               .ToListAsync();
-            }
-            else
-            {
-                tags = await _context.ServiceTags.AsNoTracking().Where(c => c.ServiceId == Id).Select(c => new GetTagsDTO
-                {
-                    Id = c.Id,
-                    TagName = c.TagName,
-                })
-             .ToListAsync();
-            }
+                Id = c.Id,
+                TagName = _commonService.GetNameByCulture(c)
+            })
+            .ToListAsync();
             return Ok(_commonService.OkResponse(tags, false));
-
             //return Ok(_commonService.OkResponse(tags, _localizerShared["SuccessMessage"].Value.ToString()));
         }
 
@@ -283,12 +274,11 @@ namespace CallInDoor.Controllers
         [HttpPost("CreateForAdmin")]
         [Authorize(Roles = PublicHelper.ADMINROLE)]
         [ClaimsAuthorize(IsAdmin = true)]
-        public async Task<ActionResult> CreateForAdmin([FromBody] CreateServiceDTO model)
+        public async Task<ActionResult> CreateForAdmin([FromForm] CreateServiceDTO model)
         {
             var res = await validateCreateServiceForAdmin(model, false);
             if (!res.succsseded)
                 return BadRequest(new ApiBadRequestResponse(res.result));
-
 
             var result = await _servicetypeService.Create(model);
             if (result)
@@ -308,12 +298,83 @@ namespace CallInDoor.Controllers
 
 
 
+        [NonAction]
+        public (bool succsseded, List<string> result) ValidateImageInEditMode(IFormFile image)
+        {
+            bool IsValid = true;
+            var errors = new List<string>();
+            if (image != null && !image.IsImage())
+            {
+                IsValid = false;
+                errors.Add("invalid file format. please enter image format");
+                return (IsValid, errors);
+            }
+            return (IsValid, errors);
+        }
+
+
+        [NonAction]
+        public (bool succsseded, List<string> result) ValidateImageCreateMode(IFormFile image)
+        {
+            bool IsValid = true;
+            var errors = new List<string>();
+
+            if (image == null || image.Length <= 0)
+            {
+                IsValid = false;
+                errors.Add("image file is required ");
+                return (IsValid, errors);
+            }
+            if (!image.IsImage())
+            {
+                IsValid = false;
+                errors.Add("invalid file format. please enter image format");
+                return (IsValid, errors);
+            }
+            return (IsValid, errors);
+
+        }
+
+
         #region Validate  ko30Sher
         [NonAction]
         public async Task<(bool succsseded, List<string> result)> validateCreateServiceForAdmin(CreateServiceDTO model, bool isEditMode)
         {
             bool IsValid = true;
             var errors = new List<string>();
+
+
+            if (isEditMode)
+            {
+                var res = ValidateImageInEditMode(model.Image);
+                if (!res.succsseded)
+                    return res;
+            }
+            else
+            {
+                var res = ValidateImageCreateMode(model.Image);
+                if (!res.succsseded)
+                    return res;
+            }
+
+            //else
+            //{
+            //    if (model.Image == null || model.Image.Length <= 0)
+            //    {
+            //        IsValid = false;
+            //        errors.Add("image file is required ");
+            //        return (IsValid, errors);
+            //    }
+            //    if (!model.Image.IsImage())
+            //    {
+            //        IsValid = false;
+            //        errors.Add("invalid file format. please enter image format");
+            //        return (IsValid, errors);
+            //    }
+            //}
+
+
+
 
             if (model.DayCount == null && model.HourCount == null)
             {
@@ -376,9 +437,9 @@ namespace CallInDoor.Controllers
 
 
         [HttpPut("UpdateServiceForAdmin")]
-        [Authorize(Roles = PublicHelper.ADMINROLE)]
-        [ClaimsAuthorize(IsAdmin = true)]
-        public async Task<IActionResult> UpdateServiceForAdmin([FromBody] CreateServiceDTO model)
+        //[Authorize(Roles = PublicHelper.ADMINROLE)]
+        //[ClaimsAuthorize(IsAdmin = true)]
+        public async Task<IActionResult> UpdateServiceForAdmin([FromForm] CreateServiceDTO model)
         {
             #region validation
             var res = await validateCreateServiceForAdmin(model, true);
@@ -389,10 +450,7 @@ namespace CallInDoor.Controllers
             {
                 List<string> erros = new List<string> { PubicMessages.NotFoundMessage };
                 return BadRequest(new ApiBadRequestResponse(erros, 404));
-
-
                 //////////return NotFound(new ApiResponse(404, "service " + PubicMessages.NotFoundMessage));
-
             }
 
             #endregion
@@ -413,6 +471,8 @@ namespace CallInDoor.Controllers
 
 
         #endregion
+
+
         #region  MyService
 
 
@@ -437,7 +497,8 @@ namespace CallInDoor.Controllers
                          select new ServiceCategoryDTO
                          {
                              ServiceId = s.Id,
-                             ServiceName = isPersian ? s.PersianName : s.Name,
+                             //ServiceName = isPersian ? s.PersianName : s.Name,
+                             ServiceName = _commonService.GetNameByCulture(s),
                              Color = s.Color,
                              IsDisabledByCompany = bs.IsDisabledByCompany
                          }).Distinct()
@@ -471,7 +532,8 @@ namespace CallInDoor.Controllers
                {
                    c.Id,
                    c.ServiceName,
-                   c.ServiceType,
+                   c.ServiceTypes,
+                   //c.ServiceType,
                    c.IsDisabledByCompany,
                    //c.IsActive
                }).ToListAsync();
@@ -517,7 +579,8 @@ namespace CallInDoor.Controllers
                     c.CatId,
                     c.SubCatId,
                     c.ServiceName,
-                    c.ServiceType,
+                    c.ServiceTypes,
+                    ////////////c.ServiceType,
                     c.UserName,
                     c.ConfirmedServiceType,
                     c.IsDeleted,
@@ -585,7 +648,8 @@ namespace CallInDoor.Controllers
 
                 return BadRequest(new ApiBadRequestResponse(erros, 401));
             }
-            if (serviceFromDB.ServiceType == ServiceType.Service || serviceFromDB.ServiceType == ServiceType.Course)
+            //////if (serviceFromDB.ServiceType == ServiceType.Service || serviceFromDB.ServiceType == ServiceType.Course)
+             if (serviceFromDB.ServiceTypes.Contains("3") || serviceFromDB.ServiceTypes.Contains("4") )
             {
                 List<string> erros = new List<string> { _resourceServices.GetErrorMessageByKey("InValidServiceType") };
                 return BadRequest(new ApiBadRequestResponse(erros));
@@ -594,7 +658,9 @@ namespace CallInDoor.Controllers
 
             var response = new
             {
-                serviceFromDB.ServiceType,
+
+                serviceFromDB.ServiceTypes,
+                //////////serviceFromDB.ServiceType,
                 serviceFromDB.ServiceName,
                 serviceFromDB.MyChatsService.PackageType,
                 serviceFromDB.MyChatsService.BeTranslate,
@@ -652,19 +718,23 @@ namespace CallInDoor.Controllers
             if (!res.succsseded)
                 return BadRequest(new ApiBadRequestResponse(res.result));
 
-            if (model.ServiceType == ServiceType.ChatVoice)
-            {
-                if (model.PackageType == PackageType.Free)
-                    model.MessageCount = null;
-                else
-                    model.FreeMessageCount = null;
-                //model.Duration = null;
-            }
-            else
-            {
-                model.MessageCount = null;
-                model.FreeMessageCount = null;
-            }
+
+
+
+            ////////////////if (model.ServiceType == ServiceType.ChatVoice)
+            ////////////////{
+            ////////////////    if (model.PackageType == PackageType.Free)
+            ////////////////        model.MessageCount = null;
+            ////////////////    else
+            ////////////////        model.FreeMessageCount = null;
+            ////////////////    //model.Duration = null;
+            ////////////////}
+            ////////////////else
+            ////////////////{
+            ////////////////    model.MessageCount = null;
+            ////////////////    model.FreeMessageCount = null;
+            ////////////////}
+
 
             var currentUsername = _accountService.GetCurrentUserName();
 
@@ -689,13 +759,14 @@ namespace CallInDoor.Controllers
                 IsProfileOptional = serviceFromDb.IsProfileOptional,
                 ConfirmedServiceType = ConfirmedServiceType.Pending,
                 IsEditableService = false,
-                Latitude = model.Latitude,
-                Longitude = model.Longitude,
+                //Latitude = model.Latitude,
+                //Longitude = model.Longitude,
                 StarCount = 0,
                 Under3StarCount = 0,
                 CreateDate = DateTime.Now,
                 ServiceName = model.ServiceName,
-                ServiceType = (ServiceType)model.ServiceType,
+                ServiceTypes = model.ServiceTypes,
+                //////////ServiceType = (ServiceType)model.ServiceType,
                 UserName = currentUsername,
                 ServiceId = model.ServiceId,
                 CatId = model.CatId,
@@ -782,14 +853,17 @@ namespace CallInDoor.Controllers
             if (!res.succsseded)
                 return BadRequest(new ApiBadRequestResponse(res.result));
 
-            if (serviceFromDB.ServiceType == ServiceType.ChatVoice)
+            //if (serviceFromDB.ServiceType == ServiceType.ChatVoice)
+            if (serviceFromDB.ServiceTypes.Contains("0"))
             {
                 if (serviceFromDB.MyChatsService.PackageType == PackageType.Free)
                     serviceFromDB.MyChatsService.FreeMessageCount = model.FreeMessageCount;
                 else
                     serviceFromDB.MyChatsService.MessageCount = model.MessageCount;
             }
-            else if (serviceFromDB.ServiceType == ServiceType.VideoCal || serviceFromDB.ServiceType == ServiceType.VoiceCall)
+
+            //if (serviceFromDB.ServiceType == ServiceType.VideoCal || serviceFromDB.ServiceType == ServiceType.VoiceCall)
+            if (serviceFromDB.ServiceTypes.Contains("1") || serviceFromDB.ServiceTypes.Contains("2"))
             {
                 //model.MessageCount = null;
                 //model.FreeMessageCount = null;
@@ -806,8 +880,8 @@ namespace CallInDoor.Controllers
 
 
             serviceFromDB.ServiceName = model.ServiceName;
-            serviceFromDB.Latitude = model.Latitude;
-            serviceFromDB.Longitude = model.Longitude;
+            //////////////serviceFromDB.Latitude = model.Latitude;
+            //////////////serviceFromDB.Longitude = model.Longitude;
 
 
             //serviceFromDB.ServiceType = (ServiceType)model.ServiceType;
@@ -909,7 +983,6 @@ namespace CallInDoor.Controllers
             .Where(c => c.Id == model.ServiceId)
             .Select(c => new ServiceTBLVM
             {
-
                 IsProfileOptional = c.IsProfileOptional,
                 MinPriceForService = c.MinPriceForService,
                 Id = c.Id,
@@ -939,11 +1012,12 @@ namespace CallInDoor.Controllers
             {
                 IsProfileOptional = serviceFromDb.IsProfileOptional,
                 ConfirmedServiceType = ConfirmedServiceType.Pending,
-                Latitude = model.Latitude,
-                Longitude = model.Longitude,
+                ////////Latitude = model.Latitude,
+                ////////Longitude = model.Longitude,
                 CreateDate = DateTime.Now,
                 ServiceName = model.ServiceName,
-                ServiceType = (ServiceType)model.ServiceType,
+                ServiceTypes = "3",
+                //ServiceType = (ServiceType)model.ServiceType,
                 UserName = curentUsername,
                 ServiceId = model.ServiceId,
                 CatId = model.CatId,
@@ -1020,7 +1094,8 @@ namespace CallInDoor.Controllers
                    c.CatId,
                    c.SubCatId,
                    c.ServiceName,
-                   c.ServiceType,
+                   c.ServiceTypes,
+                   //c.ServiceType,
                    c.ServiceId,
                    c.UserName,
                    c.ConfirmedServiceType,
@@ -1110,8 +1185,8 @@ namespace CallInDoor.Controllers
             //}
 
             serviceFromDB.ServiceName = model.ServiceName;
-            serviceFromDB.Latitude = model.Latitude;
-            serviceFromDB.Longitude = model.Longitude;
+            ////////serviceFromDB.Latitude = model.Latitude;
+            ////////serviceFromDB.Longitude = model.Longitude;
             //serviceFromDB.ServiceType = (ServiceType)model.ServiceType;
             //serviceFromDB.CatId = model.CatId;
             //serviceFromDB.SubCatId = model.SubCatId;
@@ -1251,12 +1326,13 @@ namespace CallInDoor.Controllers
             var BaseMyService = new BaseMyServiceTBL()
             {
                 IsProfileOptional = serviceFromDb.IsProfileOptional,
-                Latitude = model.Latitude,
-                Longitude = model.Longitude,
+                //////////////Latitude = model.Latitude,
+                //////////////Longitude = model.Longitude,
                 ConfirmedServiceType = ConfirmedServiceType.Pending,
                 CreateDate = DateTime.Now,
                 ServiceName = model.ServiceName,
-                ServiceType = ServiceType.Course,
+                //////ServiceType = ServiceType.Course,
+                ServiceTypes = "4",
                 UserName = currentUsername,
                 ServiceId = model.ServiceId,
                 CatId = model.CatId,
@@ -1355,8 +1431,8 @@ namespace CallInDoor.Controllers
 
             serviceFromDB.BaseMyChatTBL.ServiceName = model.ServiceName;
             serviceFromDB.BaseMyChatTBL.CatId = model.CatId;
-            serviceFromDB.BaseMyChatTBL.Latitude = model.Latitude;
-            serviceFromDB.BaseMyChatTBL.Longitude = model.Longitude;
+            //////////////serviceFromDB.BaseMyChatTBL.Latitude = model.Latitude;
+            //////////////serviceFromDB.BaseMyChatTBL.Longitude = model.Longitude;
 
             serviceFromDB.Description = model.Description;
             serviceFromDB.NewCategory = model.NewCategory;
@@ -1408,11 +1484,14 @@ namespace CallInDoor.Controllers
                 {
                     c.Id,
                     c.ServiceName,
-                    c.ServiceType,
-                    CategoryName = isPersian ? c.CategoryTBL.PersianTitle : c.CategoryTBL.Title,
+                    c.ServiceTypes,
+                    //////c.ServiceType,
+                    //CategoryName = isPersian ? c.CategoryTBL.PersianTitle : c.CategoryTBL.Title,
+                    CategoryName = _commonService.GetNameByCulture(c.CategoryTBL),
                     //CategoryPersianName = c.CategoryTBL.PersianTitle,
 
-                    SubCategoryName = isPersian ? c.SubCategoryTBL.PersianTitle : c.SubCategoryTBL.Title,
+                    //SubCategoryName = isPersian ? c.SubCategoryTBL.PersianTitle : c.SubCategoryTBL.Title,
+                    SubCategoryName = _commonService.GetNameByCulture(c.SubCategoryTBL),
                     //SubCategoryPersianName = c.SubCategoryTBL.PersianTitle,
 
                     ChatService = new
@@ -1480,8 +1559,10 @@ namespace CallInDoor.Controllers
                     ImageAddress = user.ImageAddress,
 
                     c.ServiceName,
-                    c.ServiceType,
-                    CategoryName = isPersian ? c.CategoryTBL.PersianTitle : c.CategoryTBL.Title,
+                    c.ServiceTypes,
+                    //////c.ServiceType,
+                    //CategoryName =  isPersian ? c.CategoryTBL.PersianTitle : c.CategoryTBL.Title,
+                    CategoryName = _commonService.GetNameByCulture(c.CategoryTBL),
                     //CategoryPersianName = c.CategoryTBL.PersianTitle,
                     ServiceStar = c.StarCount,
                     ServiceUnder3Start = c.Under3StarCount,
@@ -1571,7 +1652,8 @@ namespace CallInDoor.Controllers
                     ImageAddress = user.ImageAddress,
 
                     c.ServiceName,
-                    c.ServiceType,
+                    c.ServiceTypes,
+                    //c.ServiceType,
                     CategoryName = isPersian ? c.CategoryTBL.PersianTitle : c.CategoryTBL.Title,
                     //CategoryPersianName = c.CategoryTBL.PersianTitle,
                     ServiceStar = c.StarCount,
@@ -1687,6 +1769,10 @@ namespace CallInDoor.Controllers
         //[ClaimsAuthorize(IsAdmin = false)]
         public async Task<ActionResult> SearchService([FromBody] SearchDTO model)
         {
+            int serviceType;
+            var result = int.TryParse(model.ServiceTypes, out serviceType);
+            model.ServiceTypes = result ? serviceType.ToString() : 0.ToString();
+
             ResponseDTO res = await _servicetypeService.SearchService(model);
             return Ok(_commonService.OkResponse(res, false));
         }
@@ -1737,11 +1823,14 @@ namespace CallInDoor.Controllers
                                   ImageAddress = u.ImageAddress,
                                   StarCount = u.StarCount,
 
-                                  CategoryName = q.CategoryTBL.Title /*s.CategoryTBL.Title*/,
-                                  CategoryPersianName = q.CategoryTBL.PersianTitle /*s.CategoryTBL.PersianTitle */,
-                                  SubCategoryName = q.SubCategoryTBL.Title /*s.CategoryTBL.Title*/,
-                                  SubCategoryPersianName = q.SubCategoryTBL.PersianTitle /*s.CategoryTBL.PersianTitle*/,
-                                  ServiceTypes = q.ServiceType  /*q.Select(y => y.ServiceType).Distinct().ToList()*/ /*s.ServiceType*/
+                                  //CategoryName =   q.CategoryTBL.Title /*s.CategoryTBL.Title*/,
+                                  CategoryName = _commonService.GetNameByCulture(q.CategoryTBL)   /*s.CategoryTBL.Title*/,
+                                  ////CategoryPersianName = q.CategoryTBL.PersianTitle /*s.CategoryTBL.PersianTitle */,
+                                  //SubCategoryName = q.SubCategoryTBL.Title /*s.CategoryTBL.Title*/,
+                                  SubCategoryName = _commonService.GetNameByCulture(q.SubCategoryTBL),
+
+                                  //SubCategoryPersianName = q.SubCategoryTBL.PersianTitle /*s.CategoryTBL.PersianTitle*/,
+                                  ServiceTypes = q.ServiceTypes  /*q.Select(y => y.ServiceType).Distinct().ToList()*/ /*s.ServiceType*/
                               })
                               .ToListAsync();
 
@@ -1758,11 +1847,14 @@ namespace CallInDoor.Controllers
                     ImageAddress = x.FirstOrDefault().ImageAddress,
 
                     CategoryName = x.FirstOrDefault().CategoryName,
-                    CategoryPersianName = x.FirstOrDefault().CategoryPersianName,
+                    //CategoryPersianName = x.FirstOrDefault().CategoryPersianName,
 
                     SubCategoryName = x.FirstOrDefault().SubCategoryName,
-                    SubCategoryPersianName = x.FirstOrDefault().SubCategoryPersianName,
-                    ServiceTypes = x.Select(y => y.ServiceTypes).Distinct().ToList(),
+                    //SubCategoryPersianName = x.FirstOrDefault().SubCategoryPersianName,
+
+
+                    //ServiceTypes = x.Select(y => y.ServiceTypes).Distinct().ToList(),
+                    ServiceTypes = x.FirstOrDefault().ServiceTypes,
                     StarCount = x.FirstOrDefault().StarCount
 
                 }).Take(4)
@@ -1943,10 +2035,10 @@ namespace CallInDoor.Controllers
 
 
 
-            
-                //await _context.BaseMyServiceTBL.AddAsync(BaseMyService);
-                await _context.ServiceCommentsTBL.AddAsync(comment);
-                await _context.SaveChangesAsync();
+
+            //await _context.BaseMyServiceTBL.AddAsync(BaseMyService);
+            await _context.ServiceCommentsTBL.AddAsync(comment);
+            await _context.SaveChangesAsync();
             //return Ok(_commonService.OkResponse(null, _localizerShared["SuccessMessage"].Value.ToString()));
             return Ok(_commonService.OkResponse(null, false));
 
@@ -2243,15 +2335,15 @@ namespace CallInDoor.Controllers
         [PermissionAuthorize(PublicPermissions.Service.GetAllProvidedService)]
         [PermissionDBCheck(IsAdmin = true, requiredPermission = new string[] { PublicPermissions.Service.GetAllProvidedService })]
         public async Task<ActionResult> GetAllProvideServicesInAdmin(int? page, int? perPage,
-                   string searchedWord, DateTime createDate, ServiceType? serviceType, ConfirmedServiceType? confirmedServiceType)
+                   string searchedWord, DateTime createDate, ServiceType? serviceType, string serviceTypes, ConfirmedServiceType? confirmedServiceType)
         {
             var currentRole = _accountService.GetCurrentRole();
             if (currentRole != PublicHelper.ADMINROLE)
             {
-                var res = await _servicetypeService.GetAllProvideServicesForNotAdmin(page, perPage, searchedWord, createDate, serviceType, confirmedServiceType);
+                var res = await _servicetypeService.GetAllProvideServicesForNotAdmin(page, perPage, searchedWord, createDate, serviceType, serviceTypes, confirmedServiceType);
                 return Ok(_commonService.OkResponse(res, PubicMessages.SuccessMessage));
             }
-            var result = await _servicetypeService.GetAllProvideServicesForAdmin(page, perPage, searchedWord, createDate, serviceType, confirmedServiceType);
+            var result = await _servicetypeService.GetAllProvideServicesForAdmin(page, perPage, searchedWord, createDate, serviceType, serviceTypes, confirmedServiceType);
             return Ok(_commonService.OkResponse(result, PubicMessages.SuccessMessage));
         }
 
@@ -2289,7 +2381,8 @@ namespace CallInDoor.Controllers
                     c.CreateDate,
                     c.Id,
                     c.ServiceName,
-                    c.ServiceType,
+                    c.ServiceTypes,
+                    ////c.ServiceType,
                     c.CatId,
                     c.SubCatId,
                     c.UserName,
@@ -2362,7 +2455,8 @@ namespace CallInDoor.Controllers
                               CategoryTitile = c.CategoryTBL.Title,
                               SubcategoryTitile = c.SubCategoryTBL.Title,
                               c.ServiceName,
-                              c.ServiceType,
+                              c.ServiceTypes,
+                              ////c.ServiceType,
                               c.UserName,
                               confirmedServiceType = c.ConfirmedServiceType,
                               c.CreateDate,

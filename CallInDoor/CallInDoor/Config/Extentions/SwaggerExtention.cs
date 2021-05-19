@@ -22,6 +22,7 @@ namespace CallInDoor.Config.Extentions
                 c.SwaggerDoc("v1", new OpenApiInfo
                 {
                     Version = "v1",
+                   
                     Title = "callInDoor API",
                     Description = "callIndoors api",
                     TermsOfService = new Uri(PublicHelper.swaggerProductionUrl),
@@ -41,6 +42,7 @@ namespace CallInDoor.Config.Extentions
 
                 c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme()
                 {
+                    
                     Description = "JWT Authorization header {token}",
                     Name = "Authorization",
                     In = ParameterLocation.Header,
@@ -61,7 +63,6 @@ namespace CallInDoor.Config.Extentions
                               Scheme = "oauth2",
                               Name = "Bearer",
                               In = ParameterLocation.Header,
-
                             },
                             new List<string>()
                           }

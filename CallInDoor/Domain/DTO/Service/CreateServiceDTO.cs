@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Http;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Text;
@@ -156,6 +157,10 @@ namespace Domain.DTO.Account
 
         [Required(ErrorMessage = "{0} is resquired")]
         public string RoleId { get; set; }
+
+
+        public IFormFile Image { get; set; }
+
 
 
     }

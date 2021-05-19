@@ -55,6 +55,8 @@
   <ItemGroup>
     <Folder Include="wwwroot\Upload\CoursePreview\" />
     <Folder Include="wwwroot\Upload\ChatRequestFile\" />
+    <Folder Include="wwwroot\Upload\Category\" />
+    <Folder Include="wwwroot\Upload\Service\" />
     <Folder Include="wwwroot\Upload\Tickets\" />
     <Folder Include="wwwroot\Upload\ProfileCertificate\" />
     <Folder Include="wwwroot\Upload\Topics\" />

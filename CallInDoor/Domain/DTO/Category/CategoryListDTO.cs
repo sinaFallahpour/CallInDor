@@ -10,6 +10,7 @@ namespace Domain.DTO.Category
         public int Id { get; set; }
         public string Title { get; set; }
         public string PersianTitle { get; set; }
+        public string ImageAddress { get; set; }
         public bool IsEnabled { get; set; }
         public int? ParentId { get; set; }
         public int? ServiceId { get; set; }

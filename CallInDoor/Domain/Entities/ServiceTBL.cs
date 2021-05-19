@@ -23,6 +23,13 @@ namespace Domain.Entities
         public string PersianName { get; set; }
 
 
+
+        /// <summary>
+        /// تصویر سرویس ها برای نمایش
+        /// </summary>
+        public string ImageAddress { get; set; }
+
+
         /// <summary>
         /// رنگ سرویس
         /// </summary>
@@ -30,6 +37,7 @@ namespace Domain.Entities
         [MinLength(1, ErrorMessage = "The minimum {0} length is {1} characters")]
         [MaxLength(100, ErrorMessage = "The maximum {0} length is {1} characters")]
         public string Color { get; set; }
+
 
 
 

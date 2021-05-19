@@ -101,7 +101,9 @@ namespace CallInDoor.Controllers
                .AsNoTracking()
                .CountAsync();
 
-            return Ok(_commonService.OkResponse(notisCount, _localizerShared["SuccessMessage"].Value.ToString()));
+            return Ok(_commonService.OkResponse(notisCount, false));
+
+            //return Ok(_commonService.OkResponse(notisCount, _localizerShared["SuccessMessage"].Value.ToString()));
         }
 
 
@@ -130,7 +132,8 @@ namespace CallInDoor.Controllers
                {
                    c.SenderUserName,
                    c.Id,
-                   Text = isPersian ? c.TextPersian : c.EnglishText,
+                   //Text = isPersian ? c.TextPersian : c.EnglishText,
+                   Text = _commonService.GetNameByCulture(c),
                    c.CreateDate,
                    c.IsReaded,
                }).ToListAsync();
@@ -167,7 +170,8 @@ namespace CallInDoor.Controllers
                    c.SenderUserName,
                    c.Id,
                    c.UserName,
-                   Text = isPersian ? c.TextPersian : c.EnglishText,
+                   //Text = isPersian ? c.TextPersian : c.EnglishText,
+                   Text = _commonService.GetNameByCulture(c),
                    c.CreateDate,
                    c.IsReaded,
                }).FirstOrDefaultAsync();

@@ -38,7 +38,7 @@ class Form extends Component {
     this.doSubmit();
   };
 
-  handleChange = ({ currentTarget: input }) => {
+  handleChange = ({ currentTarget: input, target }) => {
     const errors = { ...this.state.errors };
     const errorMessage = this.validateProperty(input);
     if (errorMessage) errors[input.name] = errorMessage;
@@ -46,7 +46,20 @@ class Form extends Component {
 
     const data = { ...this.state.data };
 
-    data[input.name] = input.value;
+    if (input.type == 'file') {
+      // console.log("rgffrgrgrgr");
+      // console.log(input)
+      // console.log(target)
+      // data[input.name] = target.files[0];
+      // console.log(input.files[0])
+      // image
+      this.setState({ image: target.files[0] });
+      return
+      alert(1)
+      //  e.target.files[0]
+    }
+    else
+      data[input.name] = input.value;
 
     this.setState({ data, errors });
   };

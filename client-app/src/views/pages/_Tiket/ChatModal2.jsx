@@ -503,7 +503,7 @@ class Chat extends React.Component {
 
                       {/* fileHandler = (event) => {
                         this.setState({ file: event.target.files[0] });
-  }; */}
+                      }; */}
 
                       {/* <Button type="button" color="primary mr-1"> */}
 

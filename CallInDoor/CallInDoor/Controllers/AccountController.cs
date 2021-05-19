@@ -37,7 +37,6 @@ namespace CallInDoor.Controllers
 
         private readonly IHubContext<NotificationHub> _hubContext;
 
-
         private readonly DataContext _context;
         private readonly UserManager<AppUser> _userManager;
         private readonly RoleManager<AppRole> _roleManager;
@@ -94,7 +93,6 @@ namespace CallInDoor.Controllers
         [ClaimsAuthorize(IsAdmin = false)]
         public async Task<ActionResult> ActiveORDeactiveUser()
         {
-
             var currentUserName = _accountService.GetCurrentUserName();
             var user = await _userManager.FindByNameAsync(currentUserName);
 
@@ -164,6 +162,7 @@ namespace CallInDoor.Controllers
         [HttpGet("CheckTokenIsValid")]
         public async Task<ActionResult> CheckTokenIsValid()
         {
+           
 
             var result = await _accountService.CheckTokenIsValid();
             if (!result)
@@ -219,7 +218,7 @@ namespace CallInDoor.Controllers
 
                 await _context.SaveChangesAsync();
                 //return Ok(_commonService.OkResponse(null, _localizerShared["SuccessMessage"].Value.ToString()));
-                return Ok(_commonService.OkResponse(null, _resourceServices.GetErrorMessageByKey("SuccessMessage") ));
+                return Ok(_commonService.OkResponse(null, _resourceServices.GetErrorMessageByKey("SuccessMessage")));
 
             }
 
@@ -227,6 +226,7 @@ namespace CallInDoor.Controllers
 
             var newUser = new AppUser
             {
+                ImageAddress = "download.jfif",
                 UserName = model.CountryCode.ToString().Trim() + model.PhoneNumber.Trim(),
                 SerialNumber = SerialNumber,
                 PhoneNumber = model.CountryCode.ToString().Trim() + model.PhoneNumber.Trim(),
@@ -279,7 +279,7 @@ namespace CallInDoor.Controllers
 
                         transaction.Rollback();
                         //List<string> erros = new List<string> { _localizerShared["InternalServerMessage"].Value.ToString() };
-                        List<string> erros = new List<string> { _resourceServices.GetErrorMessageByKey("InternalServerMessage")    };
+                        List<string> erros = new List<string> { _resourceServices.GetErrorMessageByKey("InternalServerMessage") };
                         return StatusCode(StatusCodes.Status500InternalServerError,
                                                                     new ApiBadRequestResponse(erros, 500));
                     }
@@ -503,7 +503,7 @@ namespace CallInDoor.Controllers
             if (user == null)
             {
                 //List<string> erros = new List<string> { _localizerShared["InvalidPhoneNumber"].Value.ToString() };
-                List<string> erros = new List<string> {_resourceServices.GetErrorMessageByKey("InvalidPhoneNumber") };
+                List<string> erros = new List<string> { _resourceServices.GetErrorMessageByKey("InvalidPhoneNumber") };
                 return Unauthorized(new ApiBadRequestResponse(erros, 401));
                 //return Unauthorized(new ApiResponse(401, _localizerShared["InvalidPhoneNumber"].Value.ToString()));
             }

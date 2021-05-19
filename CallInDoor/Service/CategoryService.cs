@@ -2,10 +2,14 @@
 using Domain;
 using Domain.DTO.Category;
 using Domain.Entities;
+using Domain.Utilities;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Service.Interfaces.Category;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -18,13 +22,17 @@ namespace Service
 
         private readonly DataContext _context;
         private readonly IMapper _mapper;
+        private readonly IHostingEnvironment _hostingEnvironment;
+
         public CategoryService(
             DataContext context,
-             IMapper mapper
+             IMapper mapper,
+             IHostingEnvironment hostingEnvironment
                )
         {
             _context = context;
             _mapper = mapper;
+            _hostingEnvironment = hostingEnvironment;
 
         }
 
@@ -60,9 +68,9 @@ namespace Service
                 PersianTitle = c.PersianTitle,
                 ServiceId = c.ServiceId,
                 Title = c.Title,
-                IsSubCategory=c.IsSubCategory,
-                IsForCourse=c.IsForCourse
-                
+                IsSubCategory = c.IsSubCategory,
+                IsForCourse = c.IsForCourse
+
             }).ToList();
         }
 
@@ -75,7 +83,7 @@ namespace Service
         /// </summary>
         public async Task<List<CategoryListDTO>> GetAllCateWithChildren(int serviceId)
         {
-            var cats = await _context.CategoryTBL.Where(c => c.IsEnabled == true && c.ServiceId ==serviceId)
+            var cats = await _context.CategoryTBL.Where(c => c.IsEnabled == true && c.ServiceId == serviceId)
                 .Include(c => c.Children)
                 .AsNoTracking()
                 .ToListAsync();
@@ -95,6 +103,10 @@ namespace Service
         public async Task<CategoryTBL> Create(CreateCategoryDTO model)
         {
             if (model == null) return null;
+
+            //save file
+
+
             var Category = new CategoryTBL()
             {
                 Title = model.Title,
@@ -105,9 +117,18 @@ namespace Service
                 IsForCourse = model.IsForCourse,
                 IsSubCategory = model.IsSubCategory
             };
+            //upload immage
+            if (model.Image != null && model.Image.Length > 0 && model.Image.IsImage())
+            {
+                var imageAddress = await SaveFileToHost("Upload/Category/", "", model.Image);
+                Category.ImageAddress = imageAddress;
+            }
+
+
+
             try
             {
-                var category = _context.CategoryTBL.AddAsync(Category);
+                var category = await _context.CategoryTBL.AddAsync(Category);
                 await _context.SaveChangesAsync();
                 return Category;
             }
@@ -142,6 +163,13 @@ namespace Service
                 categoryFromDB.ServiceId = model.ServiceId;
                 categoryFromDB.IsForCourse = model.IsForCourse;
                 categoryFromDB.IsSubCategory = model.IsSubCategory;
+
+
+                if (model.Image != null && model.Image.Length > 0 && model.Image.IsImage())
+                {
+                    var imageAddress = await SaveFileToHost("Upload/Category/", categoryFromDB.ImageAddress, model.Image);
+                    categoryFromDB.ImageAddress = imageAddress;
+                }
 
                 var result = await _context.SaveChangesAsync();
                 return true;
@@ -281,7 +309,7 @@ namespace Service
                 await _context.SaveChangesAsync();
                 return areaFreomDB;
             }
-            catch  
+            catch
             {
                 return null;
             }
@@ -410,10 +438,51 @@ namespace Service
             return (IsValid, Errors);
         }
 
-
-
-
         #endregion
+
+
+        public async Task<string> SaveFileToHost(string path, string lastPath, IFormFile file)
+        {
+            try
+            {
+                string uniqueVideoFileName = null;
+                if (string.IsNullOrWhiteSpace(_hostingEnvironment.WebRootPath))
+                {
+                    _hostingEnvironment.WebRootPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot");
+                }
+
+                var uploadsFolder = Path.Combine(_hostingEnvironment.WebRootPath, path);
+                uniqueVideoFileName = (Guid.NewGuid().ToString().GetImgUrlFriendly() + "_" + file.FileName);
+                string filePath = Path.Combine(uploadsFolder, uniqueVideoFileName);
+
+                using (var stream = new FileStream(filePath, FileMode.Create))
+                {
+                    await file.CopyToAsync(stream);
+                }
+
+                //Delete LastImage Image
+                if (!string.IsNullOrEmpty(lastPath))
+                {
+                    //var LastVideoPath = lastPath?.Substring(1);
+                    var LastPath = Path.Combine(_hostingEnvironment.WebRootPath, lastPath);
+                    if (System.IO.File.Exists(LastPath))
+                    {
+                        System.IO.File.Delete(LastPath);
+                    }
+                }
+                //update Newe video Address To database
+                //user.VideoAddress = "/Upload/User/" + uniqueVideoFileName;
+
+                return path + uniqueVideoFileName;
+
+            }
+            catch(Exception ex)
+            {
+                return null;
+            }
+        }
+
+
 
     }
 }
