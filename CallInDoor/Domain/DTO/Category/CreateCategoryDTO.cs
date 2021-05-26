@@ -47,6 +47,11 @@ namespace Domain.DTO.Category
         public bool IsSubCategory { get; set; }
 
 
+        /// <summary>
+        /// آیا ایم دسته یندی برای کارپرداز است
+        /// </summary>
+        public bool IsSupplier { get; set; }
+
 
         #region  Relation 
 

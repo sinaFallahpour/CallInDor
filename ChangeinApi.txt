@@ -10,4 +10,18 @@
 GetChatServiceDetailsInAdmin
 GetAllProvideServicesInAdmin
 SearchService
+
+/api/Payment/BuyTopTenPackageWithWallet
+AddTrasanctionForNonNative
  
+
+
+
+
+
+
+
+**********************************************************   add new       *********************************************
+
+ /UpdateCurrentUserCultureName
+GetCurrentUserCultureName

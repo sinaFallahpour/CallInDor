@@ -6,11 +6,11 @@
       "Languages": [
         {
           "Header": "fa-IR",
-          "Val": "f1111"
+          "Val": "حساب کاربری شما قفل شده است"
         },
         {
           "Header": "en-US",
-          "Val": "1111"
+          "Val": "Your account has been locked by admin"
         },
         {
           "Header": "ar",
@@ -23,11 +23,11 @@
       "Languages": [
         {
           "Header": "fa-IR",
-          "Val": "string"
+          "Val": "کارت موجود است"
         },
         {
           "Header": "en-US",
-          "Val": "string"
+          "Val": "card name already exist"
         },
         {
           "Header": "ar",
@@ -40,11 +40,11 @@
       "Languages": [
         {
           "Header": "fa-IR",
-          "Val": "string"
+          "Val": "لطفا حساب کاربری خود را تایید "
         },
         {
           "Header": "en-US",
-          "Val": "string"
+          "Val": "Please confirm Your Account"
         },
         {
           "Header": "ar",
@@ -57,11 +57,11 @@
       "Languages": [
         {
           "Header": "fa-IR",
-          "Val": "string"
+          "Val": "شما اجازه تصحیح پروفایل را ندارید"
         },
         {
           "Header": "en-US",
-          "Val": "string"
+          "Val": "You are not allowed to edit profiles"
         },
         {
           "Header": "ar",
@@ -74,11 +74,11 @@
       "Languages": [
         {
           "Header": "fa-IR",
-          "Val": "string"
+          "Val": "خطا در ثبت"
         },
         {
           "Header": "en-US",
-          "Val": "string"
+          "Val": "Operation Failed"
         },
         {
           "Header": "ar",
@@ -91,11 +91,11 @@
       "Languages": [
         {
           "Header": "fa-IR",
-          "Val": "string"
+          "Val": "عدم دسترسی"
         },
         {
           "Header": "en-US",
-          "Val": "string"
+          "Val": "Acess Denied"
         },
         {
           "Header": "ar",
@@ -108,11 +108,11 @@
       "Languages": [
         {
           "Header": "fa-IR",
-          "Val": "string"
+          "Val": "شما قبلا به این سرویس درخواست داده اید"
         },
         {
           "Header": "en-US",
-          "Val": "string"
+          "Val": "You have a registered request to this service"
         },
         {
           "Header": "ar",
@@ -125,11 +125,11 @@
       "Languages": [
         {
           "Header": "fa-IR",
-          "Val": "string"
+          "Val": "پسورد صحیح نمیباشد"
         },
         {
           "Header": "en-US",
-          "Val": "string"
+          "Val": "in Correct password"
         },
         {
           "Header": "ar",
@@ -142,11 +142,11 @@
       "Languages": [
         {
           "Header": "fa-IR",
-          "Val": "string"
+          "Val": "خطایی رخ داده است"
         },
         {
           "Header": "en-US",
-          "Val": "string"
+          "Val": "Sth went wrong"
         },
         {
           "Header": "ar",
@@ -159,11 +159,11 @@
       "Languages": [
         {
           "Header": "fa-IR",
-          "Val": "string"
+          "Val": "مبلغ ورودی بیشتر از موجودی شما میباشد"
         },
         {
           "Header": "en-US",
-          "Val": "string"
+          "Val": "the entry amount is more than your balance"
         },
         {
           "Header": "ar",
@@ -176,11 +176,11 @@
       "Languages": [
         {
           "Header": "fa-IR",
-          "Val": "string"
+          "Val": "جواب نامعتبر است"
         },
         {
           "Header": "en-US",
-          "Val": "string"
+          "Val": "invalid answer "
         },
         {
           "Header": "ar",
@@ -193,11 +193,11 @@
       "Languages": [
         {
           "Header": "fa-IR",
-          "Val": "string"
+          "Val": "سرویس نامعتبر است"
         },
         {
           "Header": "en-US",
-          "Val": "string"
+          "Val": "invalid service category"
         },
         {
           "Header": "ar",
@@ -210,11 +210,11 @@
       "Languages": [
         {
           "Header": "fa-IR",
-          "Val": "string"
+          "Val": "تلاش نامعتبر"
         },
         {
           "Header": "en-US",
-          "Val": "string"
+          "Val": "invalid attamp"
         },
         {
           "Header": "ar",
@@ -227,11 +227,11 @@
       "Languages": [
         {
           "Header": "fa-IR",
-          "Val": "string"
+          "Val": "کد تخفیف نامعتبر است"
         },
         {
           "Header": "en-US",
-          "Val": "string"
+          "Val": "invalid discount code"
         },
         {
           "Header": "ar",
@@ -244,11 +244,11 @@
       "Languages": [
         {
           "Header": "fa-IR",
-          "Val": "string"
+          "Val": "ورودی نامعتبر است"
         },
         {
           "Header": "en-US",
-          "Val": "string"
+          "Val": "invalid input"
         },
         {
           "Header": "ar",
@@ -261,11 +261,11 @@
       "Languages": [
         {
           "Header": "fa-IR",
-          "Val": "string"
+          "Val": "نامعتبر package type"
         },
         {
           "Header": "en-US",
-          "Val": "string"
+          "Val": "invalid package type"
         },
         {
           "Header": "ar",
@@ -278,11 +278,11 @@
       "Languages": [
         {
           "Header": "fa-IR",
-          "Val": "string"
+          "Val": "شماره موبایل صحیح نمیباشد"
         },
         {
           "Header": "en-US",
-          "Val": "string"
+          "Val": "invalid phone number"
         },
         {
           "Header": "ar",
@@ -295,11 +295,11 @@
       "Languages": [
         {
           "Header": "fa-IR",
-          "Val": "string"
+          "Val": "سوال نامعتبر است"
         },
         {
           "Header": "en-US",
-          "Val": "string"
+          "Val": "invalid question"
         },
         {
           "Header": "ar",
@@ -312,11 +312,11 @@
       "Languages": [
         {
           "Header": "fa-IR",
-          "Val": "InValid ServiceType"
+          "Val": " نوع سرویس نامعتبر است"
         },
         {
           "Header": "en-US",
-          "Val": "InValid ServiceType"
+          "Val": "In valid ServiceType"
         },
         {
           "Header": "ar",
@@ -329,11 +329,11 @@
       "Languages": [
         {
           "Header": "fa-IR",
-          "Val": "string"
+          "Val": "حساب کاربری قفل شده است"
         },
         {
           "Header": "en-US",
-          "Val": "string"
+          "Val": "user account locked out"
         },
         {
           "Header": "ar",
@@ -346,11 +346,11 @@
       "Languages": [
         {
           "Header": "fa-IR",
-          "Val": "string"
+          "Val": "سوالی موجود نیست"
         },
         {
           "Header": "en-US",
-          "Val": "string"
+          "Val": "there is no question"
         },
         {
           "Header": "ar",
@@ -363,11 +363,11 @@
       "Languages": [
         {
           "Header": "fa-IR",
-          "Val": "string"
+          "Val": "موجودی کیف پول شما کافی نمیباشد"
         },
         {
           "Header": "en-US",
-          "Val": "string"
+          "Val": "your wallet balance is not enough"
         },
         {
           "Header": "ar",
@@ -380,7 +380,7 @@
       "Languages": [
         {
           "Header": "fa-IR",
-          "Val": "not found"
+          "Val": "نتیجه ایی یافت نشد"
         },
         {
           "Header": "en-US",
@@ -397,11 +397,11 @@
       "Languages": [
         {
           "Header": "fa-IR",
-          "Val": "string"
+          "Val": "تعداد پیام مجاز شما به پایان رسید"
         },
         {
           "Header": "en-US",
-          "Val": "string"
+          "Val": "Your authorized message count has expired"
         },
         {
           "Header": "ar",
@@ -414,11 +414,11 @@
       "Languages": [
         {
           "Header": "fa-IR",
-          "Val": "string"
+          "Val": "شماره موبایل  تکراریست"
         },
         {
           "Header": "en-US",
-          "Val": "string"
+          "Val": "phone number  already  exist"
         },
         {
           "Header": "ar",
@@ -431,11 +431,11 @@
       "Languages": [
         {
           "Header": "fa-IR",
-          "Val": "string"
+          "Val": "خطایی در آپلود فایل رخ داده است"
         },
         {
           "Header": "en-US",
-          "Val": "English"
+          "Val": "there is a problem to uploading the file"
         },
         {
           "Header": "ar",
@@ -448,11 +448,11 @@
       "Languages": [
         {
           "Header": "fa-IR",
-          "Val": "string"
+          "Val": "پروفایل شما برای این سرویس رد شده"
         },
         {
           "Header": "en-US",
-          "Val": "string"
+          "Val": "your profile rejected for this service"
         },
         {
           "Header": "ar",
@@ -465,11 +465,11 @@
       "Languages": [
         {
           "Header": "fa-IR",
-          "Val": "string"
+          "Val": "سرویس دهنده در دسترس نمیباشد"
         },
         {
           "Header": "en-US",
-          "Val": "string"
+          "Val": "provide is not available"
         },
         {
           "Header": "ar",
@@ -482,11 +482,11 @@
       "Languages": [
         {
           "Header": "fa-IR",
-          "Val": "string"
+          "Val": "درخواست توسط سرویس دهنده تایید نشده است"
         },
         {
           "Header": "en-US",
-          "Val": "string"
+          "Val": "request not confirmed by provider messgaes"
         },
         {
           "Header": "ar",
@@ -499,11 +499,11 @@
       "Languages": [
         {
           "Header": "fa-IR",
-          "Val": "string"
+          "Val": "این سرویس توسط ادمین غیر فعال گردید"
         },
         {
           "Header": "en-US",
-          "Val": "string"
+          "Val": "service is disable"
         },
         {
           "Header": "ar",
@@ -516,11 +516,11 @@
       "Languages": [
         {
           "Header": "fa-IR",
-          "Val": "string"
+          "Val": "سرویس یافت نشد"
         },
         {
           "Header": "en-US",
-          "Val": "string"
+          "Val": "service notfound"
         },
         {
           "Header": "ar",
@@ -533,11 +533,11 @@
       "Languages": [
         {
           "Header": "fa-IR",
-          "Val": "string"
+          "Val": "مشکلی رخ داده"
         },
         {
           "Header": "en-US",
-          "Val": "string"
+          "Val": "something went wrong"
         },
         {
           "Header": "ar",
@@ -550,11 +550,11 @@
       "Languages": [
         {
           "Header": "fa-IR",
-          "Val": "string"
+          "Val": "ثبت موفقیت آمیز"
         },
         {
           "Header": "en-US",
-          "Val": "string"
+          "Val": "successful Submit"
         },
         {
           "Header": "ar",
@@ -567,11 +567,11 @@
       "Languages": [
         {
           "Header": "fa-IR",
-          "Val": "string"
+          "Val": "متن پیام الزامیست"
         },
         {
           "Header": "en-US",
-          "Val": "string"
+          "Val": "text Is required"
         },
         {
           "Header": "ar",
@@ -584,11 +584,11 @@
       "Languages": [
         {
           "Header": "fa-IR",
-          "Val": "string"
+          "Val": "فرمت فایل نامعتبر است"
         },
         {
           "Header": "en-US",
-          "Val": "string"
+          "Val": "file format is invalid"
         },
         {
           "Header": "ar",
@@ -601,11 +601,11 @@
       "Languages": [
         {
           "Header": "fa-IR",
-          "Val": "string"
+          "Val": "انتخاب فایل الزامیست"
         },
         {
           "Header": "en-US",
-          "Val": "string"
+          "Val": "file is required"
         },
         {
           "Header": "ar",
@@ -618,11 +618,11 @@
       "Languages": [
         {
           "Header": "fa-IR",
-          "Val": "string"
+          "Val": "حجم فایل زیاد است"
         },
         {
           "Header": "en-US",
-          "Val": "string"
+          "Val": "file is too large"
         },
         {
           "Header": "ar",
@@ -635,11 +635,11 @@
       "Languages": [
         {
           "Header": "fa-IR",
-          "Val": "string"
+          "Val": "تیکت بسته شده است"
         },
         {
           "Header": "en-US",
-          "Val": "string"
+          "Val": "the tiket isclosed"
         },
         {
           "Header": "ar",
@@ -652,11 +652,11 @@
       "Languages": [
         {
           "Header": "fa-IR",
-          "Val": "string"
+          "Val": "عدم دسترسی"
         },
         {
           "Header": "en-US",
-          "Val": "string"
+          "Val": "you are  unauthorized"
         },
         {
           "Header": "ar",
@@ -669,11 +669,11 @@
       "Languages": [
         {
           "Header": "fa-IR",
-          "Val": "string"
+          "Val": "رمز عبور یا  شماره موبایل صحیح نمی باشد"
         },
         {
           "Header": "en-US",
-          "Val": "string"
+          "Val": "invalid phone number or password"
         },
         {
           "Header": "ar",
@@ -686,11 +686,11 @@
       "Languages": [
         {
           "Header": "fa-IR",
-          "Val": "string"
+          "Val": "وویس الزامیست"
         },
         {
           "Header": "en-US",
-          "Val": "string"
+          "Val": "voice is required"
         },
         {
           "Header": "ar",
@@ -703,11 +703,11 @@
       "Languages": [
         {
           "Header": "fa-IR",
-          "Val": "string"
+          "Val": "حجم وویس زیاد است"
         },
         {
           "Header": "en-US",
-          "Val": "string"
+          "Val": "vocie is too large"
         },
         {
           "Header": "ar",
@@ -720,11 +720,11 @@
       "Languages": [
         {
           "Header": "fa-IR",
-          "Val": "string"
+          "Val": "شما سرویس دهنده هستیدونمیتوانید بسته بخرید"
         },
         {
           "Header": "en-US",
-          "Val": "string"
+          "Val": "you are provider of service . you cant buy package"
         },
         {
           "Header": "ar",
@@ -737,11 +737,11 @@
       "Languages": [
         {
           "Header": "fa-IR",
-          "Val": "string"
+          "Val": "شما نمیتوانید به حساب شرکتی درخواست دهید"
         },
         {
           "Header": "en-US",
-          "Val": "string"
+          "Val": "you cant request to a compay because you are a company"
         },
         {
           "Header": "ar",
@@ -754,11 +754,11 @@
       "Languages": [
         {
           "Header": "fa-IR",
-          "Val": "string"
+          "Val": "درخواست نامعتبر"
         },
         {
           "Header": "en-US",
-          "Val": "string"
+          "Val": "invalid request"
         },
         {
           "Header": "ar",
@@ -771,11 +771,11 @@
       "Languages": [
         {
           "Header": "fa-IR",
-          "Val": "string"
+          "Val": "شما درحال حاضر بسته فعال دارید"
         },
         {
           "Header": "en-US",
-          "Val": "string"
+          "Val": "you currently have an active package"
         },
         {
           "Header": "ar",
@@ -788,11 +788,11 @@
       "Languages": [
         {
           "Header": "fa-IR",
-          "Val": "string"
+          "Val": "موجودی کیف پول شما کافی نیست"
         },
         {
           "Header": "en-US",
-          "Val": "string"
+          "Val": "you dont have wallet"
         },
         {
           "Header": "ar",
@@ -805,11 +805,11 @@
       "Languages": [
         {
           "Header": "fa-IR",
-          "Val": "string"
+          "Val": "شما پلن فعالی ندارید"
         },
         {
           "Header": "en-US",
-          "Val": "string"
+          "Val": "you dont have any  active package"
         },
         {
           "Header": "ar",
@@ -822,7 +822,7 @@
       "Languages": [
         {
           "Header": "fa-IR",
-          "Val": "string"
+          "Val": "شما قبلا در این دسته بندی عضو شرکت بوده اید"
         },
         {
           "Header": "en-US",
@@ -839,7 +839,7 @@
       "Languages": [
         {
           "Header": "fa-IR",
-          "Val": "string"
+          "Val": "بسته شمابه پایان رسیده"
         },
         {
           "Header": "en-US",
@@ -856,7 +856,7 @@
       "Languages": [
         {
           "Header": "fa-IR",
-          "Val": "string"
+          "Val": "شما بسته فعالی ندارید یا بسته شما منقصی شده"
         },
         {
           "Header": "en-US",
@@ -873,7 +873,7 @@
       "Languages": [
         {
           "Header": "fa-IR",
-          "Val": "this service category is not Enabled"
+          "Val": "این سته بندی غیر فعال می باشد"
         },
         {
           "Header": "en-US",
@@ -890,11 +890,11 @@
       "Languages": [
         {
           "Header": "fa-IR",
-          "Val": "You Have An Active Package For Top Ten"
+          "Val": "شما پکیج فعال برای تاپ 10 شدن دارید"
         },
         {
           "Header": "en-US",
-          "Val": "You Have An Active Package For Top Ten"
+          "Val": "you have an active Package for top ten"
         },
         {
           "Header": "ar",
@@ -907,7 +907,7 @@
       "Languages": [
         {
           "Header": "fa-IR",
-          "Val": "You have not registered any services in this category"
+          "Val": "شما هیچ سرویسی در این دسته بندی ثبت نکرده اید"
         },
         {
           "Header": "en-US",
@@ -924,7 +924,7 @@
       "Languages": [
         {
           "Header": "fa-IR",
-          "Val": "Provider dont accept your service up to now"
+          "Val": "سرویس دهنده سرویس شمار ا تایید نکرده."
         },
         {
           "Header": "en-US",
@@ -941,7 +941,7 @@
       "Languages": [
         {
           "Header": "fa-IR",
-          "Val": "invalid attampt. you are company"
+          "Val": "تلاش نا معتبر شما کمپانی هستید"
         },
         {
           "Header": "en-US",
@@ -958,11 +958,11 @@
       "Languages": [
         {
           "Header": "fa-IR",
-          "Val": "ProblemUploadingTheFileMessage"
+          "Val": "خطایی در آپلود فایل رخ داده است"
         },
         {
           "Header": "en-US",
-          "Val": "ProblemUploadingTheFileMessage"
+          "Val": "Problem Uploading The File Message"
         },
         {
           "Header": "ar",
@@ -975,7 +975,7 @@
       "Languages": [
         {
           "Header": "fa-IR",
-          "Val": "problem uploading the file"
+          "Val": "خطایی در آپلود فایل رخ داده است"
         },
         {
           "Header": "en-US",
@@ -992,7 +992,7 @@
       "Languages": [
         {
           "Header": "fa-IR",
-          "Val": "you have plan"
+          "Val": "شما پلم ثبت شده دارید"
         },
         {
           "Header": "en-US",
@@ -1009,7 +1009,7 @@
       "Languages": [
         {
           "Header": "fa-IR",
-          "Val": "package type not exist"
+          "Val": "package type یافت نشد"
         },
         {
           "Header": "en-US",
@@ -1026,7 +1026,7 @@
       "Languages": [
         {
           "Header": "fa-IR",
-          "Val": "MessageCount Is Required"
+          "Val": "MessageCount الزامیست"
         },
         {
           "Header": "en-US",
@@ -1043,7 +1043,7 @@
       "Languages": [
         {
           "Header": "fa-IR",
-          "Val": "Duration Is Required"
+          "Val": "Duration الزامیست"
         },
         {
           "Header": "en-US",
@@ -1060,7 +1060,7 @@
       "Languages": [
         {
           "Header": "fa-IR",
-          "Val": "service Not Exist"
+          "Val": "سرویس یافت نشد"
         },
         {
           "Header": "en-US",
@@ -1077,11 +1077,11 @@
       "Languages": [
         {
           "Header": "fa-IR",
-          "Val": "ServiceType Not Exist"
+          "Val": "ServiceType یافت نشد"
         },
         {
           "Header": "en-US",
-          "Val": "ServiceType Not Exist"
+          "Val": "serviceType not exist"
         },
         {
           "Header": "ar",
@@ -1154,6 +1154,74 @@
         {
           "Header": "ar",
           "Val": "your request has been rejected"
+        }
+      ]
+    },
+    {
+      "Key": "ConfirmWithdrawalMessage",
+      "Languages": [
+        {
+          "Header": "fa-IR",
+          "Val": "درخواست برداشت پول شما توسط تیم پشتیبانی تایید شده(callIndoor)"
+        },
+        {
+          "Header": "en-US",
+          "Val": "your withdrawal request confirmed by Support team (callIndoor)"
+        },
+        {
+          "Header": "ar",
+          "Val": "your request has been rejected"
+        }
+      ]
+    },
+    {
+      "Key": "RejectWithdrawalMessage",
+      "Languages": [
+        {
+          "Header": "fa-IR",
+          "Val": "درخواست برداشت پول شما توسط تیم پشتیبانی رد شده(callIndoor)"
+        },
+        {
+          "Header": "en-US",
+          "Val": "your withdrawal request rejected by Support team (callIndoor)"
+        },
+        {
+          "Header": "ar",
+          "Val": "your request has been rejected"
+        }
+      ]
+    },
+    {
+      "Key": "InvaliCultureName",
+      "Languages": [
+        {
+          "Header": "fa-IR",
+          "Val": "زبان نامعتبر است"
+        },
+        {
+          "Header": "en-US",
+          "Val": "invalid language"
+        },
+        {
+          "Header": "ar",
+          "Val": "invalid language"
+        }
+      ]
+    },
+    {
+      "Key": "YouHavePendingRequest",
+      "Languages": [
+        {
+          "Header": "fa-IR",
+          "Val": "شما یک درخواست در حال بررسی دارید. لطفا تا تایید این درخواست شکیبا باشید"
+        },
+        {
+          "Header": "en-US",
+          "Val": "you cant make a withdrawal request because you have a in progress request"
+        },
+        {
+          "Header": "ar",
+          "Val": "you cant make a withdrawal request because you have a in progress request"
         }
       ]
     }

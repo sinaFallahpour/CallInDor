@@ -16,6 +16,8 @@ namespace Domain.DTO.Category
         public int? ServiceId { get; set; }
         public bool IsForCourse { get; set; }
         public bool IsSubCategory { get; set; }
+        public bool IsSupplier { get; set; }
+
         public List<CategoryListDTO> Children { get; set; }
     }
 }

@@ -72,6 +72,7 @@ namespace CallInDoor.Controllers
                 c.IsForCourse,
                 c.IsSubCategory,
                 serviceName = c.Service.Name,
+                IsSupplier = c.IsSupplier,
                 serviceId = c.Service.Id,
             }).FirstOrDefaultAsync();
 
@@ -130,6 +131,7 @@ namespace CallInDoor.Controllers
                  c.ServiceId,
                  c.IsForCourse,
                  c.IsSubCategory,
+                 c.IsSupplier,
                  users = usres
              })
                 .ToListAsync();
@@ -140,7 +142,7 @@ namespace CallInDoor.Controllers
 
 
 
-         
+
         #region Get All Subcategory ByServiceId
         //گرفتن تمام دسته بندی هایی یک سرویس خاص(آن هایی مه ساب کتگوری هستند)  ت
         [HttpGet("GetAllSubcategoryByServiceId")]
@@ -185,6 +187,7 @@ namespace CallInDoor.Controllers
                  c.ServiceId,
                  c.IsForCourse,
                  c.IsSubCategory,
+                 c.IsSupplier,
                  users = usres
              })
                 .ToListAsync();
@@ -226,6 +229,7 @@ namespace CallInDoor.Controllers
                    c.IsEnabled,
                    c.IsSubCategory,
                    c.IsForCourse,
+                   c.IsSupplier,
                    serviceName = c.Service.Name,
                    parentName = c.Parent.Title,
                }).ToListAsync();
@@ -257,6 +261,7 @@ namespace CallInDoor.Controllers
                    c.IsEnabled,
                    c.IsSubCategory,
                    c.IsForCourse,
+                   c.IsSupplier,
                    serviceName = c.Service.Name,
                    parentName = c.Parent.Title,
                }).ToListAsync();

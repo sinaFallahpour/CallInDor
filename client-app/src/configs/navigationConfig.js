@@ -187,6 +187,16 @@ const navigationConfig = [
     // parentOf: ["/pages/test"],
   },
   {
+    id: "user withdrawl request",
+    title: "user withdrawl request",
+    type: "item",
+    role: "Admin",
+    // permissions: [Permission.getAllProvidedService],
+    icon: <Icon.Tablet size={20} />,
+    navLink: "/pages/userWithdrawlRequest",
+    // parentOf: ["/pages/test"],
+  },
+  {
     id: "language manager",
     title: "resource manager",
     type: "item",

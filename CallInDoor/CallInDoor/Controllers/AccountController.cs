@@ -87,6 +87,45 @@ namespace CallInDoor.Controllers
         #region User
 
 
+
+        /// <summary>
+        /// update user language
+        /// </summary>
+        /// <param name="cultureName"></param>
+        /// <returns></returns>
+        [HttpPut("UpdateCurrentUserCultureName")]
+        [ClaimsAuthorize(IsAdmin = false)]
+        public async Task<ActionResult> UpdateCurrentUserCultureName(string cultureName)
+        {
+            var res = PublicHelper.IsCultureValid(cultureName);
+            if (!res)
+            {
+                var errors = new List<string>();
+                errors.Add(_resourceServices.GetErrorMessageByKey("InvaliCultureName"));
+                return BadRequest(new ApiBadRequestResponse(errors));
+            }
+
+
+            var currentUserName = _accountService.GetCurrentUserName();
+            var userFromDB = await _context.Users.Where(c => c.UserName == currentUserName).FirstOrDefaultAsync();
+
+            if (userFromDB != null)
+                userFromDB.CultureName = cultureName;
+            return Ok(_commonService.OkResponse(null, _resourceServices.GetErrorMessageByKey("SuccessMessage")));
+        }
+
+
+
+        [HttpGet("GetCurrentUserCultureName")]
+        [ClaimsAuthorize(IsAdmin = false)]
+        public async Task<ActionResult> GetCurrentUserCultureName()
+        {
+            var currentUserName = _accountService.GetCurrentUserName();
+            var cultureName = await _context.Users.Where(c => c.UserName == currentUserName).Select(c => c.CultureName).FirstOrDefaultAsync();
+            return Ok(_commonService.OkResponse(cultureName, _resourceServices.GetErrorMessageByKey("SuccessMessage")));
+        }
+
+
         #region UpdateProfile
 
         [HttpPut("ActiveORDeactiveUser")]
@@ -162,7 +201,7 @@ namespace CallInDoor.Controllers
         [HttpGet("CheckTokenIsValid")]
         public async Task<ActionResult> CheckTokenIsValid()
         {
-           
+
 
             var result = await _accountService.CheckTokenIsValid();
             if (!result)
@@ -226,6 +265,7 @@ namespace CallInDoor.Controllers
 
             var newUser = new AppUser
             {
+                CultureName = model.CultureName,
                 ImageAddress = "download.jfif",
                 UserName = model.CountryCode.ToString().Trim() + model.PhoneNumber.Trim(),
                 SerialNumber = SerialNumber,

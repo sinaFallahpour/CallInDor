@@ -106,6 +106,9 @@ namespace Domain.Migrations
                     b.Property<DateTime>("CreateDate")
                         .HasColumnType("datetime2");
 
+                    b.Property<string>("CultureName")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<int>("CurentRequestId")
                         .HasColumnType("int");
 
@@ -298,6 +301,9 @@ namespace Domain.Migrations
                     b.Property<int>("ServiceType")
                         .HasColumnType("int");
 
+                    b.Property<string>("ServiceTypes")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<int>("StarCount")
                         .HasColumnType("int");
 
@@ -423,6 +429,9 @@ namespace Domain.Migrations
                         .HasColumnType("bit");
 
                     b.Property<bool>("IsSubCategory")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsSupplier")
                         .HasColumnType("bit");
 
                     b.Property<int?>("ParentId")
@@ -1501,6 +1510,41 @@ namespace Domain.Migrations
                     b.ToTable("Transaction");
                 });
 
+            modelBuilder.Entity("Domain.Entities.UserWithdrawlRequestTBL", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<double>("Amount")
+                        .HasColumnType("float");
+
+                    b.Property<int?>("CardItId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("CreateDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("RejectOrConfirmTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("ResonOfReject")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("UserName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("WithdrawlRequestStatus")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CardItId");
+
+                    b.ToTable("UserWithdrawlRequest");
+                });
+
             modelBuilder.Entity("Domain.Entities.User_TopTenPackageTBL", b =>
                 {
                     b.Property<int>("Id")
@@ -1932,7 +1976,7 @@ namespace Domain.Migrations
                         .HasForeignKey("BaseMyServiceId");
 
                     b.HasOne("Domain.Entities.CardTBL", "CardTBL")
-                        .WithMany()
+                        .WithMany("TransactionTBLs")
                         .HasForeignKey("CardId");
 
                     b.HasOne("Domain.Entities.CheckDiscountTBL", "CheckDiscountTBL")
@@ -1942,6 +1986,13 @@ namespace Domain.Migrations
                     b.HasOne("Domain.Entities.User_TopTenPackageTBL", "User_TopTenPackageTBL")
                         .WithOne("TransactionTBL")
                         .HasForeignKey("Domain.Entities.TransactionTBL", "User_TopTenPackageId");
+                });
+
+            modelBuilder.Entity("Domain.Entities.UserWithdrawlRequestTBL", b =>
+                {
+                    b.HasOne("Domain.Entities.CardTBL", "CardTBL")
+                        .WithMany()
+                        .HasForeignKey("CardItId");
                 });
 
             modelBuilder.Entity("Domain.Entities.User_TopTenPackageTBL", b =>

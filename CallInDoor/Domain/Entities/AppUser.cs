@@ -11,6 +11,12 @@ namespace Domain.Entities
     public class AppUser : IdentityUser
     {
 
+
+        /// <summary>
+        /// زبان فعلی کاربر
+        /// </summary>
+        public string  CultureName { get; set; }
+        
         public string Name { get; set; }
         public string LastName { get; set; }
         public string Bio { get; set; }

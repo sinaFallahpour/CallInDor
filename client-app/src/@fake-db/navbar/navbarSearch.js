@@ -96,8 +96,17 @@ export const searchResult = [
         link: "/pages/Transactions",
         icon: "Circle",
       },
+
       {
         id: 14,
+        title: "User Withdrawl Request",
+        target: "User Withdrawl Request",
+        link: "/pages/userWithdrawlRequest",
+        icon: "Circle",
+      },
+
+      {
+        id: 15,
         title: "language manager",
         target: "language manager",
         link: "/pages/DataAnotation",

@@ -18,6 +18,14 @@
     <Compile Remove="Migrations\20210510042915_initNewDB.Designer.cs" />
     <Compile Remove="Migrations\20210519075100_adingSupplierToCartegory.cs" />
     <Compile Remove="Migrations\20210519075100_adingSupplierToCartegory.Designer.cs" />
+    <Compile Remove="Migrations\20210519075440_editCategory.cs" />
+    <Compile Remove="Migrations\20210519075440_editCategory.Designer.cs" />
+    <Compile Remove="Migrations\20210519080402_editcategory.cs" />
+    <Compile Remove="Migrations\20210519080402_editcategory.Designer.cs" />
+    <Compile Remove="Migrations\20210519081121_addNewIndex.cs" />
+    <Compile Remove="Migrations\20210519081121_addNewIndex.Designer.cs" />
+    <Compile Remove="Migrations\20210526063143_somechnagestoD.cs" />
+    <Compile Remove="Migrations\20210526063143_somechnagestoD.Designer.cs" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="8.0.1" />
@@ -122,6 +130,14 @@
     <EmbeddedResource Update="DTO\Tiket\AddChatMessageToTicketInUserDTO.fa-IR.resx">
       <Generator>PublicResXFileCodeGenerator</Generator>
     </EmbeddedResource>
+    <EmbeddedResource Update="DTO\UserWithdrawlRequest\AddWithdrawlRequestDTO2.en-US.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>AddWithdrawlRequestDTO2.en-US.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Update="DTO\UserWithdrawlRequest\AddWithdrawlRequestDTO2.fa-IR.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>AddWithdrawlRequestDTO2.fa-IR.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
     <EmbeddedResource Update="ShareResource.ar.resx">
       <Generator>PublicResXFileCodeGenerator</Generator>
       <LastGenOutput>ShareResource-ar.Designer.cs</LastGenOutput>
@@ -172,6 +188,16 @@
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
       <DependentUpon>AddCommentServiceDTO.fa-IR.resx</DependentUpon>
+    </Compile>
+    <Compile Update="DTO\UserWithdrawlRequest\AddWithdrawlRequestDTO2.fa-IR.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>AddWithdrawlRequestDTO2.fa-IR.resx</DependentUpon>
+    </Compile>
+    <Compile Update="DTO\UserWithdrawlRequest\AddWithdrawlRequestDTO2.en-US.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>AddWithdrawlRequestDTO2.en-US.resx</DependentUpon>
     </Compile>
     <Compile Update="ShareResource-ar.Designer.cs">
       <DesignTime>True</DesignTime>

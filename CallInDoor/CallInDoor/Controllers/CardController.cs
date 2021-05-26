@@ -18,6 +18,9 @@ using Service.Interfaces.Resource;
 
 namespace CallInDoor.Controllers
 {
+    /// <summary>
+    /// #Todo  :   it should be delete in future
+    /// </summary>
     //[Route("api/[controller]")]
     //[ApiController]
     public class CardController : BaseControlle
@@ -88,8 +91,6 @@ namespace CallInDoor.Controllers
 
             return Ok(_commonService.OkResponse(userFromDB.WalletBalance, false));
         }
-
-
 
 
 

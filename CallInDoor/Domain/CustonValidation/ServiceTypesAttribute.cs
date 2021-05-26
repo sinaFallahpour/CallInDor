@@ -16,6 +16,14 @@ namespace Domain.CustonValidation
             var strValue = value as string;
             var types = strValue.Split(",");
             var requiresServiceType = ServiceTypes.Split(",");
+            foreach (var item in types)
+            {
+                if (!ServiceTypes.Contains(item))
+                {
+                    return false;
+                }
+            }
+
             foreach (var item in requiresServiceType)
             {
                 isValid = IsValidItem(item, types);
@@ -36,16 +44,17 @@ namespace Domain.CustonValidation
             //var serviceTypesIntValue = serviceTypes;
             //var serviceTypesSrrtingValue = serviceTypesIntValue.ToString();
 
-            bool isExist = false;
+            //bool isExist = false;
             foreach (var item in value)
             {
                 int number;
                 bool success = Int32.TryParse(item, out number);
-                if (!success) {
+                if (!success)
+                {
                     isValid = false;
                     break;
                 }
-                
+
                 var IsInServiceType = Enum.IsDefined(typeof(ServiceType), number);
                 if (!IsInServiceType)
                 {
@@ -53,11 +62,12 @@ namespace Domain.CustonValidation
                     break;
                 }
 
-                if (item == serviceTypes.ToString())
-                    isExist = true;
+
+                //if (item == serviceTypes.ToString())
+                //    isExist = true;
             }
-            if (isExist == false)
-                isValid = false;
+            //if (isExist == false)
+            //    isValid = false;
 
             return isValid;
         }

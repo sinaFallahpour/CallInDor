@@ -657,6 +657,8 @@ class DataListConfig extends Component {
             );
           }
         } catch (ex) {
+          Swal.close()
+
           // let res = this.handleCatch2(ex)
           // Swal.showValidationMessage(
           //   `${res}`
@@ -700,13 +702,18 @@ class DataListConfig extends Component {
               data: this.state.data.map(el => (el.id === row.id ? Object.assign({}, el, { confirmedServiceType: 0 }) : el))
             });
             // this.handleSetNewData(row);
+            Swal.close()
+
             Swal.fire(
               "Successful accepting",
               "service successfully accepted",
               "success"
             );
+            
           }
         } catch (ex) {
+          Swal.close()
+
           // let res = this.handleCatch2(ex)
           // Swal.fire(
           //   `Error!`,

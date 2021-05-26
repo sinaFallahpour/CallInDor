@@ -115,7 +115,8 @@ namespace Service
                 IsEnabled = model.IsEnabled,
                 ParentId = model.ParentId,
                 IsForCourse = model.IsForCourse,
-                IsSubCategory = model.IsSubCategory
+                IsSubCategory = model.IsSubCategory,
+                IsSupplier = model.IsSupplier,
             };
             //upload immage
             if (model.Image != null && model.Image.Length > 0 && model.Image.IsImage())
@@ -163,6 +164,7 @@ namespace Service
                 categoryFromDB.ServiceId = model.ServiceId;
                 categoryFromDB.IsForCourse = model.IsForCourse;
                 categoryFromDB.IsSubCategory = model.IsSubCategory;
+                categoryFromDB.IsSupplier = model.IsSupplier;
 
 
                 if (model.Image != null && model.Image.Length > 0 && model.Image.IsImage())
@@ -476,7 +478,7 @@ namespace Service
                 return path + uniqueVideoFileName;
 
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 return null;
             }

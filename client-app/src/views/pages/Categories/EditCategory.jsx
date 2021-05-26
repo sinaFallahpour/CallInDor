@@ -53,6 +53,7 @@ class EditCategory extends Form {
     isEnabled: null,
     isForCourse: null,
     isSubCategory: null,
+    isSupplier: null,
     categories: [],
     services: [],
 
@@ -110,6 +111,7 @@ class EditCategory extends Form {
         isEnabled,
         isForCourse,
         isSubCategory,
+        isSupplier,
         serviceId,
         parentId,
         imageAddress
@@ -119,6 +121,7 @@ class EditCategory extends Form {
         isEnabled,
         isForCourse,
         isSubCategory,
+        isSupplier,
         imageAddress
       });
     } catch (ex) {
@@ -146,8 +149,8 @@ class EditCategory extends Form {
     const errorscustom = [];
     this.setState({ errorMessage, errorscustom });
     try {
-      const { isEnabled, isForCourse, isSubCategory } = this.state
-      const obj = { ...this.state.data, isEnabled, isForCourse, isSubCategory };
+      const { isEnabled, isForCourse, isSubCategory, isSupplier } = this.state
+      const obj = { ...this.state.data, isEnabled, isForCourse, isSubCategory, isSupplier };
 
 
       let form = new FormData();
@@ -290,6 +293,21 @@ class EditCategory extends Form {
                   className="ml-1"
                 />
                 <label className="ml-2" htmlFor="isSubCategory">Is this a sub category ?</label>
+              </div>
+
+              <div className="form-group _customCheckbox">
+                <input
+                  value={this.state.isSupplier}
+                  checked={this.state.isSupplier}
+                  onChange={(e) =>
+                    this.setState({ isSupplier: !this.state.isSupplier })
+                  }
+                  name="isSupplier"
+                  id="isSupplier"
+                  type="checkbox"
+                  className="ml-1"
+                />
+                <label className="ml-2" htmlFor="isSupplier">is for isSupplier ?</label>
               </div>
 
               {this.state.Loading ? (

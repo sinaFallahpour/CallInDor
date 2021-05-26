@@ -52,5 +52,22 @@ namespace Domain.Enums
         [Display(Name = "company delete the subset")]
         CompanyDeleteTheSubset,
 
+
+
+
+        /// <summary>
+        /// تایید درخواست  برداشت پول
+        /// </summary>
+        [Description("accept widthrawl request")]
+        [Display(Name = "accept widthrawl request")]
+        AcceptWidthrawlRequest,
+
+        /// <summary>
+        /// رد درخواست برداشت پول 
+        /// </summary>
+        [Description("reject widthrawl request")]
+        [Display(Name = "reject widthrawl request")]
+        RejectWidthrawlRequest
+
     }
 }

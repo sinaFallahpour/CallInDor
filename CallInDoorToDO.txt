@@ -1,0 +1,14 @@
+transactions:
+1- status request haye karbar
+2- sabegheye service haye anjam shode
+3- sabeghe payment haye karbar (1-wallet  2-bank transaction)
+
+az negah provider
+4- provider service  
+5- request haye widraw  baraye karbaran
+
+
+service ha dar calender
+
+
+trasnaction  payment  request  provider    

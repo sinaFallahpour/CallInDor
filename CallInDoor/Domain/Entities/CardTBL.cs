@@ -14,5 +14,7 @@ namespace Domain.Entities
         public string CardName { get; set; }
         public string CardNumber { get; set; }
         public bool IsDeleted { get; set; }
+
+        public ICollection<TransactionTBL> TransactionTBLs { get; set; }
     }
 }

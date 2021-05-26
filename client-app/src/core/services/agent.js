@@ -108,6 +108,39 @@ const ServiceTypes = {
   confirmComment: (id) => requests.get(`/ServiceType/ConfirmComment?id=${id}`),
 };
 
+
+const UserWithdrawlRequest = {
+  GetAllRequestForAdmin: (obj) => requests.post('/UserWithdrawlRequest/GetAllRequestForAdmin', obj),
+
+
+  // GetAll: () => requests.get("/ServiceType/GetAllServiceForAdmin"),
+  // details: (id) => requests.get(`/ServiceType/GetServiceByIdForAdmin?id=${id}`),
+  // create: (service) => requests.post("/ServiceType/CreateForAdmin", service),
+  // update: (activity) => requests.put("/ServiceType/UpdateServiceForAdmin", activity),
+  // // delete: (id) => requests.del(`/activities/${id}`)
+
+  // getAllProvideServicesInAdmin: (params) =>
+  //   requests.get(`/ServiceType/GetAllProvideServicesInAdmin?${params}`),
+
+  RejectUserWithdrawlRequestInAdmin: (obj) =>
+    requests.post("/UserWithdrawlRequest/RejectUserWithdrawlRequestInAdmin", obj),
+
+  AcceptRequestInAdmin: (requestId) =>
+    requests.get(
+      `/UserWithdrawlRequest/AcceptRequestInAdmin?requestId=${requestId}`
+    ),
+
+  // getChatServiceDetailsInAdmin: (id) =>
+  //   requests.get(`/ServiceType/GetChatServiceDetailsInAdmin?id=${id}`),
+  // getServiceServiceDetailsInAdmin: (id) =>
+  //   requests.get(`/ServiceType/GetServiceServiceDetailsInAdmin?id=${id}`),
+
+  // getServiceCommentsForAdmin: (id) =>
+  //   requests.get(`/ServiceType/GetServiceCommentsForAdmin?id=${id}`),
+  // confirmComment: (id) => requests.get(`/ServiceType/ConfirmComment?id=${id}`),
+};
+
+
 const User = {
   // current: () => requests.get("/user"),
   list: () => requests.get("/Account/admin/GetAllAdminInAdmin"),
@@ -273,6 +306,7 @@ export default {
   Permissions,
   Category,
   ServiceTypes,
+  UserWithdrawlRequest,
   Test,
   Areas,
   Settings,

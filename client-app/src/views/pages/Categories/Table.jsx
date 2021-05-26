@@ -159,6 +159,31 @@ class Table extends React.Component {
           );
         },
       },
+      {
+        headerName: "is For supplier ?",
+        field: "isSupplier",
+        filter: true,
+        cellRendererFramework: (params) => {
+          console.log(params);
+          return params.value === true ? (
+            <Checkbox
+              disabled
+              color="primary"
+              icon={<Check className="vx-icon" size={16} />}
+              label=""
+              defaultChecked={true}
+            />
+          ) : (
+            <Checkbox
+              disabled
+              color="primary"
+              icon={<Check className="vx-icon" size={16} />}
+              label=""
+              defaultChecked={false}
+            />
+          );
+        },
+      },
 
       {
         headerName: "",

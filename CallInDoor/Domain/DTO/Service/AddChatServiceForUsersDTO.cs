@@ -141,7 +141,7 @@ namespace Domain.DTO.Service
         /// vide or chat or seice or course ,...
         /// </summary>
         [Required(ErrorMessage = "{0} is  Required")]
-        [ServiceTypes(ErrorMessage = "inValidServiceType", ServiceTypes   ="0,1,2" )]
+        [ServiceTypes(ErrorMessage = "InValidServiceType", ServiceTypes   ="0,1,2" )]
         [Display(Name = "ServiceType")]
         public string ServiceTypes { get; set; }
 

@@ -107,6 +107,15 @@ namespace Domain.Utilities
 
 
 
+
+        public static bool IsCultureValid(string cultureName)
+        {
+            bool isValid = true;
+            if (cultureName != persianCultureName && cultureName != EngCultureName && cultureName != arabCultureName)
+                isValid = false;
+            return isValid;
+        }
+
     }
 
     public static class PubicMessages

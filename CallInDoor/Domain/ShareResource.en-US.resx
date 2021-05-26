@@ -156,6 +156,9 @@
   <data name="InvalidAttamp" xml:space="preserve">
     <value>invalid attamp</value>
   </data>
+  <data name="InvalidCultureName" xml:space="preserve">
+    <value>Invalid culture name</value>
+  </data>
   <data name="InvalidDiscointCode" xml:space="preserve">
     <value>invalid discount code</value>
   </data>

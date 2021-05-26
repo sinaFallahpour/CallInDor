@@ -34,9 +34,10 @@ class Create extends React.Component {
     isEnabled: true,
     isForCourse: true,
     isSubCategory: true,
+    isSupplier: true,
     serviceId: null,
     parentId: null,
-    image:null,
+    image: null,
     categories: [],
     services: [],
 
@@ -91,6 +92,7 @@ class Create extends React.Component {
         isEnabled,
         isForCourse,
         isSubCategory,
+        isSupplier,
         serviceId,
         parentId,
       } = this.state;
@@ -104,6 +106,7 @@ class Create extends React.Component {
         isEnabled,
         isForCourse,
         isSubCategory,
+        isSupplier,
         serviceId,
         parentId,
         serviceName,
@@ -117,6 +120,7 @@ class Create extends React.Component {
       form.append('isEnabled', isEnabled);
       form.append('isForCourse', isForCourse);
       form.append('isSubCategory', isSubCategory);
+      form.append('isSupplier', isSupplier);
       form.append('serviceId', serviceId);
       form.append('parentId', parentId);
       form.append('serviceName', serviceName);
@@ -320,7 +324,7 @@ class Create extends React.Component {
                     name="isForCourse"
                     defaultChecked
                   />
-                          Is this category for Course?
+                    Is this category for Course?
                           {/* {this.state.isEnabled ? "active" : "not active"} */}
                 </Label>
               </FormGroup>
@@ -344,6 +348,28 @@ class Create extends React.Component {
                           {/* {this.state.isEnabled ? "active" : "not active"} */}
                 </Label>
               </FormGroup>
+
+              <FormGroup className="ml-1 _customCheckbox">
+                <Label check>
+                  <Input
+                    type="checkbox"
+                    value={this.state.isSupplier}
+                    onChange={(e) =>
+                      // alert(e.target.value)
+                      this.setState({
+                        isSupplier:
+                          e.target.value == "on" ? true : false,
+                      })
+                    }
+                    name="isSupplier"
+                    defaultChecked
+                  />
+                    Is this for  supplier ?
+                          {/* {this.state.isEnabled ? "active" : "not active"} */}
+                </Label>
+              </FormGroup>
+
+
 
               {this.state.Loading ? (
                 <Button

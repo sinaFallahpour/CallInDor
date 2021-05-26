@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Domain.CustonValidation;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Text;
@@ -7,6 +8,15 @@ namespace Domain.DTO.Account
 {
     public class RegisterDTO
     {
+
+
+        [Required(ErrorMessage = "{0} is  Required")]
+        [CheckCultureIsValid(ErrorMessage = "InvalidCultureName")]
+        [Display(Name = "CultureName")]
+        public string  CultureName  { get; set; }
+        
+
+
         [Required(ErrorMessage = "{0} is  Required")]
         [MinLength(10, ErrorMessage = "The minimum {0} length is {1} characters")]
         [MaxLength(10, ErrorMessage = "The maximum {0} length is {1} characters")]

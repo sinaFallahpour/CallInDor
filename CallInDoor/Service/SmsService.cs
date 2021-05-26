@@ -145,5 +145,56 @@ namespace Service
 
 
 
+
+
+        /// <summary>
+        /// ارسال پیغام درخواست یرداشت شما توسط ادمین تایید شد
+        /// </summary>
+        /// <param name="code"></param>
+        /// <param name="phoneNumber"></param>
+        /// <returns></returns>
+        public async Task<(bool isSuccess, string error)> AcceptWidthrawlRequestByAdmin(string code, string phoneNumber)
+        {
+            try
+            {
+                await SendMessage(phoneNumber, JsonConvert.SerializeObject(new Dictionary<string, string>
+                {
+                    ["text"] = code,
+                }), "1p3xhnf8iw");
+                return (true, _resourceServices.GetErrorMessageByKey("SuccessMessage"));
+            }
+            catch
+            {
+                return (false, _resourceServices.GetErrorMessageByKey("InternalServerMessage"));
+            }
+        }
+
+
+
+
+        /// <summary>
+        /// ارسال پیغام درخواست یرداشت شما توسط ادمین رد شد
+        /// </summary>
+        /// <param name="code"></param>
+        /// <param name="phoneNumber"></param>
+        /// <returns></returns>
+        public async Task<(bool isSuccess, string error)> RejectWidthrawlRequestByAdmin(string code, string phoneNumber)
+        {
+            try
+            {
+                await SendMessage(phoneNumber, JsonConvert.SerializeObject(new Dictionary<string, string>
+                {
+                    ["text"] = code,
+                }), "1p3xhnf8iw");
+                return (true, _resourceServices.GetErrorMessageByKey("SuccessMessage"));
+            }
+            catch
+            {
+                return (false, _resourceServices.GetErrorMessageByKey("InternalServerMessage"));
+            }
+        }
+
+
+
     }
 }

@@ -224,6 +224,10 @@ const ProvidedServices = lazy(() =>
   import("./views/pages/ProvidedServices/_ProvidedServices")
 );
 
+const UserWithdrawlRequest = lazy(() =>
+  import("./views/pages/_UserWithdrawlRequest/_UserWithdrawlRequest")
+);
+
 
 const Transactions = lazy(() =>
   import("./views/pages/_Transactions/_Transactions")
@@ -710,6 +714,18 @@ class AppRouter extends React.Component {
               user={{ ...user }}
               component={Transactions}
             />
+
+
+            <RouteConfig
+              isLoggedIn={isLoggedIn}
+              title="transactions"
+              exact
+              path="/pages/userWithdrawlRequest"
+              role="admin"
+              user={{ ...user }}
+              component={UserWithdrawlRequest}
+            />
+
 
 
 

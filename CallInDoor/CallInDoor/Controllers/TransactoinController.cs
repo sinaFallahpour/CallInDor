@@ -250,7 +250,6 @@ namespace CallInDoor.Controllers
             {
                 List<string> erros = new List<string> {
                 _resourceServices.GetErrorMessageByKey("InvaliAmountForTransaction")
-
                 };
                 return BadRequest(new ApiBadRequestResponse(erros));
             }
@@ -279,13 +278,16 @@ namespace CallInDoor.Controllers
         }
 
 
+
+
+
+
         [HttpPost("NormalDeposit")]
         //[Authorize]
         [ClaimsAuthorize(IsAdmin = false)]
         public async Task<ActionResult> NormalDeposit([FromBody] AddDepositDTO model)
         {
             //validation
-
 
             var curretnUserName = _accountService.GetCurrentUserName();
             var userFromDB = await _userManager.FindByNameAsync(curretnUserName);

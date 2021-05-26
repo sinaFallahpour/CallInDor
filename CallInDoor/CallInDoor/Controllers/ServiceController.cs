@@ -800,8 +800,6 @@ namespace CallInDoor.Controllers
             await _context.SaveChangesAsync();
             //return Ok(_commonService.OkResponse(null, _locaLizer["SuccesfullAddServiceMessage"].Value.ToString()));
             return Ok(_commonService.OkResponse(null, false));
-
-
         }
 
 
@@ -988,7 +986,7 @@ namespace CallInDoor.Controllers
                 Id = c.Id,
                 Name = c.Name
             })
-              .FirstOrDefaultAsync();
+            .FirstOrDefaultAsync();
 
 
             var res = await _servicetypeService.ValidateServiceService(model, serviceFromDb);
@@ -1054,8 +1052,6 @@ namespace CallInDoor.Controllers
             await _context.SaveChangesAsync();
             //return Ok(_commonService.OkResponse(null, _locaLizer["SuccesfullAddServiceMessage"].Value.ToString()));
             return Ok(_commonService.OkResponse(null, false));
-
-
 
         }
 

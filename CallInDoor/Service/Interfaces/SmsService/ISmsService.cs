@@ -11,5 +11,9 @@ namespace Service.Interfaces.SmsService
         Task<(bool isSuccess, string error)> RegistrerCode(string code, string phoneNumber);
         Task<(bool isSuccess, string error)> RecoveryPassword(string code, string phoneNumber);
         Task<(bool isSuccess, string error)> ConfirmServiceByAdmin(string code, string phoneNumber);
+        Task<(bool isSuccess, string error)> AcceptWidthrawlRequestByAdmin(string code, string phoneNumber);
+        Task<(bool isSuccess, string error)> RejectWidthrawlRequestByAdmin(string code, string phoneNumber);
+
+
     }
 }

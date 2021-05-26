@@ -143,11 +143,18 @@ namespace CallInDoor.Controllers
 
 
             var baseServicveCount = await _context.BaseMyServiceTBL.CountAsync();
-            var ChatVoiceCount = await _context.BaseMyServiceTBL.Where(c => c.ServiceType == ServiceType.ChatVoice).CountAsync();
-            var VideoCalCount = await _context.BaseMyServiceTBL.Where(c => c.ServiceType == ServiceType.VideoCal).CountAsync();
-            var VoiceCallCount = await _context.BaseMyServiceTBL.Where(c => c.ServiceType == ServiceType.VoiceCall).CountAsync();
-            var ServiceCount = await _context.BaseMyServiceTBL.Where(c => c.ServiceType == ServiceType.Service).CountAsync();
-            var CourseCount = await _context.BaseMyServiceTBL.Where(c => c.ServiceType == ServiceType.Course).CountAsync();
+            //////var ChatVoiceCount = await _context.BaseMyServiceTBL.Where(c => c.ServiceType == ServiceType.ChatVoice).CountAsync();
+            //////var VideoCalCount = await _context.BaseMyServiceTBL.Where(c => c.ServiceType == ServiceType.VideoCal).CountAsync();
+            //////var VoiceCallCount = await _context.BaseMyServiceTBL.Where(c => c.ServiceType == ServiceType.VoiceCall).CountAsync();
+            //////var ServiceCount = await _context.BaseMyServiceTBL.Where(c => c.ServiceType == ServiceType.Service).CountAsync();
+            //////var CourseCount = await _context.BaseMyServiceTBL.Where(c => c.ServiceType == ServiceType.Course).CountAsync();
+
+
+            var ChatVoiceCount = await _context.BaseMyServiceTBL.Where(c => c.ServiceTypes.Contains("0")).CountAsync();
+            var VideoCalCount = await _context.BaseMyServiceTBL.Where(c => c.ServiceTypes.Contains("1")).CountAsync();
+            var VoiceCallCount = await _context.BaseMyServiceTBL.Where(c => c.ServiceTypes.Contains("2")).CountAsync();
+            var ServiceCount = await _context.BaseMyServiceTBL.Where(c => c.ServiceTypes.Contains("3")).CountAsync();
+            var CourseCount = await _context.BaseMyServiceTBL.Where(c => c.ServiceTypes.Contains("4")).CountAsync();
 
             var baseServiceAnalyst = new
             {
@@ -174,11 +181,10 @@ namespace CallInDoor.Controllers
 
 
 
-
-
             var acceptedProfile = await _context.BaseMyServiceTBL.Where(c => c.ProfileConfirmType == ProfileConfirmType.Confirmed).CountAsync();
             var penddingProfile = await _context.BaseMyServiceTBL.Where(c => c.ProfileConfirmType == ProfileConfirmType.Pending).CountAsync();
             var rejectedProfile = await _context.BaseMyServiceTBL.Where(c => c.ProfileConfirmType == ProfileConfirmType.Rejected).CountAsync();
+
 
 
             var profileStatus = new
@@ -190,11 +196,6 @@ namespace CallInDoor.Controllers
 
 
 
-
-
-
-
-
             var response = new
             {
                 UsersCount,
@@ -203,7 +204,6 @@ namespace CallInDoor.Controllers
                 BaseServiceAnalyst = baseServiceAnalyst,
                 ServiceStatus = serviceStatus,
                 ProfileStatus = profileStatus
-
             };
             //var ServicesCount = await _context.BaseMyServiceTBL
             //      .Where(c => c.ConfirmedServiceType == ConfirmedServiceType.Confirmed)
