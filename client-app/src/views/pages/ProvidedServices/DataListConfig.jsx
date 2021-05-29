@@ -80,19 +80,20 @@ const ActionsComponent = (props) => {
 
   return (
     <div className="data-list-action">
-
       <button
         onClick={() => {
-          if (props.row?.serviceType == 0 || props.row?.serviceType == 1 || props.row?.serviceType == 2) {
-
+          // // // if (props.row?.serviceType == 0 || props.row?.serviceType == 1 || props.row?.serviceType == 2) {
+          if (props.row?.serviceTypes?.includes("0") || props.row?.serviceTypes?.includes("1") || props.row?.serviceTypes.includes("2")) {
             props.getChatServiceDetails(props.row)
             return
           }
-          if (props.row?.serviceType == 3) {
+          // if (props.row?.serviceType == 3) {
+          if (props.row?.serviceTypes?.includes("3")) {
             props.getServiceServiceDetails(props.row)
             return
           }
-          if (props.row?.serviceType == 4) {
+          // if (props.row?.serviceType == 4) {
+          if (props.row?.serviceTypes?.includes("4")) {
             return
           }
         }}
@@ -143,7 +144,7 @@ const CustomHeader = (props) => {
         <UncontrolledDropdown className="data-list-rows-dropdown mr-1 d-md-block">
           <DropdownToggle color="" className="sort-dropdown">
             <span className="align-middle mx-50">
-              service :{props.returnServicetype(props.serviceType)}
+              service :{props.returnServicetype(props.serviceTypes)}
             </span>
             <ChevronDown size={15} />
           </DropdownToggle>
@@ -365,6 +366,7 @@ class DataListConfig extends Component {
     rowsPerPage: 10,
     createDate: null,
     serviceType: null,
+    serviceTypes: null,
     confirmedServiceType: null,
 
     modal: false,
@@ -415,15 +417,15 @@ class DataListConfig extends Component {
 
 
   returnServicetype = (serviceType) => {
-    if (serviceType == 0)
+    if (serviceType == 0 || serviceType?.toString()?.includes("0"))
       return "Chat-Voice"
-    if (serviceType == 1)
+    if (serviceType == 1 || serviceType?.toString()?.includes("1"))
       return "Video-Call"
-    if (serviceType == 2)
+    if (serviceType == 2 || serviceType?.toString().includes("2"))
       return "Voice-Call"
-    if (serviceType == 3)
+    if (serviceType == 3 || serviceType?.toString().includes("3"))
       return "Service"
-    if (serviceType == 4)
+    if (serviceType == 4 || serviceType?.toString().includes("4"))
       return "Course"
   }
 
@@ -476,8 +478,12 @@ class DataListConfig extends Component {
   // confirmedServiceType: null,
 
   handleServiceType = async (value) => {
-    await this.setState({ serviceType: value, currentPage: 0, loading: true });
+    console.clear()
+
+    console.log(this.state.serviceTypes)
+    await this.setState({ serviceType: value, serviceTypes: value, currentPage: 0, loading: true });
     this.populatingData();
+    console.log(this.state.serviceTypes)
   };
 
   handleCreateDate = async (value) => {
@@ -709,7 +715,7 @@ class DataListConfig extends Component {
               "service successfully accepted",
               "success"
             );
-            
+
           }
         } catch (ex) {
           Swal.close()
@@ -814,6 +820,7 @@ class DataListConfig extends Component {
       rowsPerPage,
       createDate,
       serviceType,
+      serviceTypes,
       confirmedServiceType,
       currentData,
       currentPage,
@@ -887,6 +894,7 @@ class DataListConfig extends Component {
 
                 createDate={createDate}
                 serviceType={serviceType}
+                serviceTypes={serviceTypes}
                 confirmedServiceType={confirmedServiceType}
                 rowsPerPage={rowsPerPage}
 

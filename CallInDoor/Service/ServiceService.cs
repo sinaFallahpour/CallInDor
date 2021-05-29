@@ -1101,13 +1101,17 @@ namespace Service
             if (createDate != null)
                 QueryAble = QueryAble.Where(c => c.CreateDate > createDate);
 
+            if (!string.IsNullOrEmpty(serviceTypes))
+                QueryAble = QueryAble.Where(c => c.ServiceTypes.Contains(serviceTypes));
+
+
             //if (serviceType != null)
             //    QueryAble = QueryAble.Where(c => c.ServiceType == serviceType);
             if (!string.IsNullOrEmpty(serviceTypes))
                 QueryAble = QueryAble.Where(c => c.ServiceTypes.Contains(serviceTypes));
 
-            if (confirmedServiceType != null)
-                QueryAble = QueryAble.Where(c => c.ConfirmedServiceType == confirmedServiceType);
+            //if (confirmedServiceType != null)
+            //    QueryAble = QueryAble.Where(c => c.ConfirmedServiceType == confirmedServiceType);
 
             var query = QueryAble.Select(c => new ProvideServicesDTO
             {
@@ -1180,10 +1184,15 @@ namespace Service
             ////////if (serviceType != null)
             ////////    QueryAble = QueryAble.Where(c => c.ServiceType == serviceType);
 
-            if (string.IsNullOrEmpty(serviceTypes))
 
-                if (confirmedServiceType != null)
-                    QueryAble = QueryAble.Where(c => c.ConfirmedServiceType == confirmedServiceType);
+            if (!string.IsNullOrEmpty(serviceTypes))
+            {
+                QueryAble = QueryAble.Where(c => c.ServiceTypes.Contains(serviceTypes));
+            }
+
+
+            if (confirmedServiceType != null)
+                QueryAble = QueryAble.Where(c => c.ConfirmedServiceType == confirmedServiceType);
 
 
             var query = QueryAble.Select(c => new ProvideServicesDTO

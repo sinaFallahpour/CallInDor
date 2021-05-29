@@ -124,13 +124,12 @@ namespace CallInDoor.Controllers
                  c.Id,
                  c.Amount,
                  c.UserName,
-                 c.CreateDate,
+                 CreateDate = c.CreateDate.ToString("MM/dd/yyyy h:mm tt"),
                  c.ResonOfReject,
                  c.WithdrawlRequestStatus,
 
                  c.CardTBL.CardName,
                  c.CardTBL.CardNumber,
-
              })
              .ToListAsync();
 
@@ -253,7 +252,7 @@ namespace CallInDoor.Controllers
                 CreateDate = DateTime.Now,
                 Description = $"واریز به کیف پول {requestFromDB.CardItId}  در تاریخ{requestFromDB.CreateDate} به مبلغ {requestFromDB.Amount}  یه کاربر {requestFromDB.UserName} واریز میشه توسط ادمین",
                 TransactionType = TransactionType.WhiteDrawl,
-                TransactionStatus = TransactionStatus.WidrawlByAdmin,
+                TransactionStatus = TransactionStatus.NormalTransaction,
                 TransactionConfirmedStatus = TransactionConfirmedStatus.Confirmed
             };
 
@@ -273,7 +272,7 @@ namespace CallInDoor.Controllers
 
             await _context.SaveChangesAsync();
             return Ok(_commonService.OkResponse(null, PubicMessages.SuccessMessage));
-        
+
         }
 
 

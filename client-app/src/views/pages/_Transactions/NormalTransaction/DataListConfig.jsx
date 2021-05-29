@@ -13,7 +13,7 @@ import classnames from "classnames";
 import Flatpickr from "react-flatpickr";
 
 import "flatpickr/dist/themes/light.css";
-import "../../../assets/scss/plugins/forms/flatpickr/flatpickr.scss";
+import "../../../../assets/scss/plugins/forms/flatpickr/flatpickr.scss";
 
 // import ChatDetailsModal from "./_ChatDetailsModal";
 
@@ -29,16 +29,17 @@ import {
 // import { connect } from "react-redux";
 
 // import Sidebar from "./DataListSidebar";
-// import Chip from "../../../components/@vuexy/chips/ChipComponent";
-import Checkbox from "../../../components/@vuexy/checkbox/CheckboxesVuexy";
+// import Chip from "../../../../components/@vuexy/chips/ChipComponent";
+import Checkbox from "../../../../components/@vuexy/checkbox/CheckboxesVuexy";
 
-import "../../../assets/scss/plugins/extensions/react-paginate.scss";
-import "../../../assets/scss/pages/data-list.scss";
+import "../../../../assets/scss/plugins/extensions/react-paginate.scss";
+import "../../../../assets/scss/pages/data-list.scss";
 
 import { toast } from "react-toastify";
-import agent from "../../../core/services/agent";
-import { combineDateAndTime2 } from "../../../core/main";
-// import Spinner from "../../../components/@vuexy/spinner/Loading-spinner";
+import agent from "../../../../core/services/agent";
+import { combineDateAndTime2 } from "../../../../core/main";
+// import Spinner from "../../../../components/@vuexy/spinner/Loading-spinner";
+import { Badge } from "reactstrap"
 
 import Swal from "sweetalert2";
 
@@ -95,8 +96,9 @@ const CustomHeader = (props) => {
     <div className="data-list-header d-flex justify-content-end flex-wrap">
 
 
+
       <div className="actions-right d-flex flex-wrap mt-sm-0 mt-2">
-        <UncontrolledDropdown className="data-list-rows-dropdown mr-1 d-md-block ">
+        {/* <UncontrolledDropdown className="data-list-rows-dropdown mr-1 d-md-block ">
           <DropdownToggle color="" className="sort-dropdown">
             <span className="align-middle mx-50">
               transaction status:{" "}
@@ -115,26 +117,23 @@ const CustomHeader = (props) => {
               onClick={() => props.handleTransactionStatus(0)}
             >
               {props.returnTransactionStatus(0)}
-              {/* Open */}
-            </DropdownItem>
+             </DropdownItem>
             <DropdownItem
               tag="a"
               onClick={() => props.handleTransactionStatus(1)}
             >
               {props.returnTransactionStatus(1)}
-              {/* Closed */}
-            </DropdownItem>
+             </DropdownItem>
 
             <DropdownItem
               tag="a"
               onClick={() => props.handleTransactionStatus(2)}
             >
               {props.returnTransactionStatus(2)}
-              {/* Closed */}
-            </DropdownItem>
+             </DropdownItem>
 
           </DropdownMenu>
-        </UncontrolledDropdown>
+        </UncontrolledDropdown> */}
 
         <UncontrolledDropdown className="data-list-rows-dropdown mr-1 d-md-block ">
           <DropdownToggle color="" className="sort-dropdown">
@@ -167,7 +166,7 @@ const CustomHeader = (props) => {
           </DropdownMenu>
         </UncontrolledDropdown>
 
-        <UncontrolledDropdown className="data-list-rows-dropdown mr-1 d-md-block ">
+        {/* <UncontrolledDropdown className="data-list-rows-dropdown mr-1 d-md-block ">
           <DropdownToggle color="" className="sort-dropdown">
             <span className="align-middle mx-50">
               service type :{" "}
@@ -186,13 +185,16 @@ const CustomHeader = (props) => {
               onClick={() => props.handleServiceTypeWithDetails(0)}
             >
               {props.returnServiceTypeWithDetails(0)}
+
             </DropdownItem>
             <DropdownItem
               tag="a"
               onClick={() => props.handleServiceTypeWithDetails(1)}
             >
               {props.returnServiceTypeWithDetails(1)}
+
             </DropdownItem>
+
             <DropdownItem
               tag="a"
               onClick={() => props.handleServiceTypeWithDetails(2)}
@@ -215,15 +217,15 @@ const CustomHeader = (props) => {
               {props.returnServiceTypeWithDetails(4)}
             </DropdownItem>
 
-
           </DropdownMenu>
-        </UncontrolledDropdown>
+        </UncontrolledDropdown> */}
 
         <UncontrolledDropdown className="data-list-rows-dropdown mr-1 d-md-block ">
           <DropdownToggle color="" className="sort-dropdown">
             <span className="align-middle mx-50">
               confirmed status :{" "}
               {props.returnTransactionConfirmedStatus(props.transactionConfirmedStatus)}
+ 
             </span>
             <ChevronDown size={15} />
           </DropdownToggle>
@@ -341,6 +343,9 @@ class DataListConfig extends Component {
     // c.CardTBL.CardName,
 
     columns: [
+
+
+
       {
         name: "Username",
         selector: "username",
@@ -373,7 +378,6 @@ class DataListConfig extends Component {
           </p>
         ),
       },
-
       {
         name: "transaction confirmed status ",
         selector: "transactionConfirmedStatus",
@@ -381,38 +385,55 @@ class DataListConfig extends Component {
         cell: (row) => {
           if (row.transactionConfirmedStatus == 0)
             return (
-              <div className="badge badge-pill badge-light-success">Confirmed</div>
+              <Badge className="badge-lg" color="dark"> Confirmed </Badge>
+
             );
           if (row.transactionConfirmedStatus == 1)
             return (
-              <div className="badge badge-pill badge-light-danger">Rejected</div>
+              <Badge className="badge-lg" color="danger">Rejected</Badge>
+
+              // <Badge  className="badge badge-pill badge-light-danger" color="dark"> Rejected </Badge>
+
+              // <div className="badge badge-pill badge-light-danger">Rejected</div>
             );
 
           if (row.transactionConfirmedStatus == 2)
             return (
-              <div className="badge badge-pill badge-light-primary">Pending</div>
+              <Badge className="badge-lg" color="primary">Pending</Badge>
             );
         },
       },
-      {
-        name: "transaction status",
-        selector: "transactionStatus",
-        sortable: true,
-        cell: (row) => {
-          if (row.transactionStatus == 0)
-            return (
-              <span className="badge badge-primary">CompleteProfileTransaction</span>
-            );
-          if (row.transactionStatus == 1)
-            return (
-              <span className="badge badge-success">NormalTransaction</span>
-            );
-          if (row.transactionStatus == 2)
-            return (
-              <span className="badge badge-light">service transaction</span>
-            );
-        },
-      },
+
+      // c.Id,
+      // c.Username,
+      // c.Amount,
+      // CreateDate = c.CreateDate.ToString("MM/dd/yyyy h:mm tt"),
+      // c.TransactionConfirmedStatus,
+      // c.TransactionType,
+      // c.ProviderUserName,
+      // c.TransactionStatus,
+
+
+
+      // {
+      //   name: "transaction status",
+      //   selector: "transactionStatus",
+      //   sortable: true,
+      //   cell: (row) => {
+      //     if (row.transactionStatus == 0)
+      //       return (
+      //         <span className="badge badge-primary">CompleteProfileTransaction</span>
+      //       );
+      //     if (row.transactionStatus == 1)
+      //       return (
+      //         <span className="badge badge-success">NormalTransaction</span>
+      //       );
+      //     if (row.transactionStatus == 2)
+      //       return (
+      //         <span className="badge badge-light">service transaction</span>
+      //       );
+      //   },
+      // },
       {
         name: "Transaction Type",
         selector: "transactionType",
@@ -420,68 +441,72 @@ class DataListConfig extends Component {
         cell: (row) => {
           if (row.transactionType == 0)
             return (
-              <div className="badge badge-pill badge-light-success">WhiteDrawl</div>
+              <Badge className="badge-lg" color="light-success">WhiteDrawl</Badge>
             );
           if (row.transactionType == 1)
             return (
-              <div className="badge badge-pill badge-light-warning">Deposit</div>
+              <Badge className="badge-lg" color="light-warning">Deposit</Badge>
             );
         },
       },
-      {
+      // {
+      //   name: "service Type",
+      //   selector: "serviceTypeWithDetails",
+      //   sortable: true,
+      //   minWidth: "200px",
+      //   cell: (row) => {
+      //     if (row.serviceTypeWithDetails == 0)
+      //       return (
+      //         <button type="button" className="btn btn-sm btn-primary">Chat-Voice(Free)</button>
 
-        name: "service Type",
-        selector: "serviceTypeWithDetails",
-        sortable: true,
-        minWidth: "200px",
-        cell: (row) => {
-          if (row.serviceTypeWithDetails?.includes("0"))
-            return (
-              <button type="button" className="btn btn-sm btn-primary">Chat-Voice </button>
-              // <button type="button" className="btn btn-sm btn-primary">Chat-Voice(Free)</button>
-            );
+      //         // <div className="badge badge-pill badge-light-success">Chat-Voice(Free)</div>
+      //       );
+      //     if (row.serviceTypeWithDetails == 1)
+      //       return (
+      //         <button type="button" className="btn  btn-sm btn-success">Chat-Voice(Duration)</button>
 
-          if (row.serviceTypeWithDetails?.includes("1"))
-            return (
-              <button type="button" className="btn  btn-sm btn-success"> Video-Call   </button>
-              // <button type="button" className="btn  btn-sm btn-success">Chat-Voice(Duration)</button>
-            );
+      //         // <div className="badge badge-pill badge-light-success">Chat-Voice(Duration)</div>
+      //       );
 
-          if (row.serviceTypeWithDetails?.includes("2"))
-            return (
-              <button type="button" className="btn  btn-sm btn-warning">Voice-Call</button>
-              // <button type="button" className="btn  btn-sm btn-warning">Video-Call</button>
-            );
-          if (row.serviceTypeWithDetails?.includes("3"))
-            return (
-              <button type="button" className="btn  btn-sm btn-danger">Service</button>
-            );
-          if (row.serviceTypeWithDetails?.includes("4"))
-            return (
-              <button type="button" className="btn  btn-sm btn-secondary">Course</button>
-            );
-        },
-      },
-      {
-        name: "Provider UserName",
-        selector: "providerUserName",
-        sortable: true,
-        minWidth: "150px",
-        cell: (row) => (
-          // <div className="badge badge-pill badge-light-warning" > {row.providerUserName ? row.providerUserName : "_"}</div>
-          <>{row.providerUserName ? row.providerUserName : "_"} </>
-        )
-      },
-      {
-        name: "Client UserName",
-        selector: "clientUserName",
-        sortable: true,
-        minWidth: "150px",
-        cell: (row) => (
-          // <div className="badge badge-pill badge-light-success" > {row.clientUserName ? row.clientUserName : "_"}</div>
-          <> {row.clientUserName ? row.clientUserName : "_"}</>
-        )
-      },
+      //     if (row.serviceTypeWithDetails == 2)
+      //       return (
+      //         <button type="button" className="btn  btn-sm btn-warning">Video-Call</button>
+
+      //         // <div className="badge badge-pill badge-light-success">Video-Call</div>
+      //       );
+      //     if (row.serviceTypeWithDetails == 3)
+      //       return (
+      //         <button type="button" className="btn  btn-sm btn-danger">Service</button>
+      //         // <div className="badge badge-pill badge-light-success">Service</div>
+      //       );
+      //     if (row.serviceTypeWithDetails == 4)
+      //       return (
+      //         <button type="button" className="btn  btn-sm btn-secondary">Course</button>
+
+      //         // <div className="badge badge-pill badge-light-success">Course</div>
+      //       );
+      //   },
+      // },
+      // {
+      //   name: "Provider UserName",
+      //   selector: "providerUserName",
+      //   sortable: true,
+      //   minWidth: "150px",
+      //   cell: (row) => (
+      //     // <div className="badge badge-pill badge-light-warning" > {row.providerUserName ? row.providerUserName : "_"}</div>
+      //     <>{row.providerUserName ? row.providerUserName : "_"} </>
+      //   )
+      // },
+      // {
+      //   name: "Client UserName",
+      //   selector: "clientUserName",
+      //   sortable: true,
+      //   minWidth: "150px",
+      //   cell: (row) => (
+      //     // <div className="badge badge-pill badge-light-success" > {row.clientUserName ? row.clientUserName : "_"}</div>
+      //     <> {row.clientUserName ? row.clientUserName : "_"}</>
+      //   )
+      // },
 
       // {
       //   name: "Actions",
@@ -512,11 +537,7 @@ class DataListConfig extends Component {
     serviceTypeWithDetails: null,
     transactionConfirmedStatus: null,
 
-
-
-
     modal: false,
-
 
     sidebar: false,
     currentData: null,
@@ -537,7 +558,7 @@ class DataListConfig extends Component {
     this.setState({ loading: true });
     var params = this.axiosParams();
     // // console.log(params);
-    const { data } = await agent.Transactions.GetAllTransactionInAdmin(params);
+    const { data } = await agent.Transactions.GetAllNormalTransactionInAdmin(params);
     await this.setState({
       data: data.result.data.transactions,
       allData: data.result.data.transactions,
@@ -579,12 +600,6 @@ class DataListConfig extends Component {
       createDate
 
     }
-
-    // amount,
-    // transactionStatus:,
-    // transactionType,
-    // serviceTypeWithDetails,
-    // transactionConfirmedStatus,
 
     if (transactionStatus || transactionStatus == 0)
       obj.transactionStatus = transactionStatus
@@ -668,7 +683,6 @@ class DataListConfig extends Component {
   };
 
   handleServiceTypeWithDetails = async (value) => {
-    console.log(this.state)
     await this.setState({
       // tiketStatus: value,
       serviceTypeWithDetails: value,
@@ -676,8 +690,6 @@ class DataListConfig extends Component {
       loading: true,
     });
     this.populatingData();
-
-    console.log(this.state)
   };
 
 
@@ -711,18 +723,11 @@ class DataListConfig extends Component {
 
 
   returnServiceTypeWithDetails = (TherEnum) => {
-    if (TherEnum == 0) return "Chat-Voice";
-    if (TherEnum == 1) return "Voice-Call";
+    if (TherEnum == 0) return "Chat-Voice(Free)";
+    if (TherEnum == 1) return "Chat-Voice(Duration)";
     if (TherEnum == 2) return "Video-Call";
     if (TherEnum == 3) return "Service";
     if (TherEnum == 4) return "Course";
-
-    // if (TherEnum == 0) return "Chat-Voice(Free)";
-    // if (TherEnum == 1) return "Chat-Voice(Duration)";
-    // if (TherEnum == 2) return "Video-Call";
-    // if (TherEnum == 3) return "Service";
-    // if (TherEnum == 4) return "Course";
-
   };
 
 
@@ -1062,7 +1067,6 @@ class DataListConfig extends Component {
                 transactionType={transactionType}
                 serviceTypeWithDetails={serviceTypeWithDetails}
                 transactionStatus={transactionStatus}
-
                 amount={amount}
 
 

@@ -17,6 +17,7 @@ using Microsoft.Extensions.Localization;
 using Service.Interfaces.Account;
 using Service.Interfaces.Common;
 using Service.Interfaces.Resource;
+using Service.Interfaces.Transaction;
 
 namespace CallInDoor.Controllers
 {
@@ -32,6 +33,8 @@ namespace CallInDoor.Controllers
 
         private readonly IAccountService _accountService;
         private readonly ICommonService _commonService;
+        private readonly ITransactionService _transactionService;
+
 
         //private IStringLocalizer<TransactoinController> _localizer;
         //private IStringLocalizer<ShareResource> _localizerShared;
@@ -42,8 +45,9 @@ namespace CallInDoor.Controllers
             DataContext context,
                    IAccountService accountService,
                    ICommonService commonService,
-               IStringLocalizer<TransactoinController> localizer,
-                IStringLocalizer<ShareResource> localizerShared,
+                   ITransactionService transactionService,
+                //IStringLocalizer<TransactoinController> localizer,
+                // IStringLocalizer<ShareResource> localizerShared,
                 IResourceServices resourceServices
             )
         {
@@ -51,6 +55,7 @@ namespace CallInDoor.Controllers
             _userManager = userManager;
             _accountService = accountService;
             _commonService = commonService;
+            _transactionService = transactionService;
             //_localizer = localizer;
             //_localizerShared = localizerShared;
             _resourceServices = resourceServices;
@@ -63,19 +68,7 @@ namespace CallInDoor.Controllers
 
 
 
-        [HttpGet("GetWalteBalance")]
-        //[Authorize]
-        [ClaimsAuthorize(IsAdmin = false)]
-        public async Task<ActionResult> GetWalteBalance()
-        {
-            var currentusername = _accountService.GetCurrentUserName();
-
-            var userWaletBalance = await _context.Users.Where(c => c.UserName.ToLower() == currentusername.ToLower())
-                  .Select(c => c.WalletBalance).FirstOrDefaultAsync();
-
-            return Ok(_commonService.OkResponse(Math.Round(userWaletBalance.Value, 3), false));
-        }
-
+        #region Admin
 
 
 
@@ -90,48 +83,69 @@ namespace CallInDoor.Controllers
         [ClaimsAuthorize(IsAdmin = true)]
         public async Task<ActionResult> GetAllTransactionInAdmin([FromBody] GetAllTransactionInAdmin model)
         {
-
             var QueryAble = _context.TransactionTBL
                                          .AsNoTracking()
                                            .AsQueryable();
 
-            if (!string.IsNullOrEmpty(model.SearchedWord))
-            {
-                QueryAble = QueryAble.Where(c =>
-                           c.Username.ToLower().StartsWith(model.SearchedWord.ToLower())
-                           || c.Username.ToLower().Contains(model.SearchedWord.ToLower()));
-            }
-
-            if (model.CreateDate != null)
-            {
-                QueryAble = QueryAble
-                  .Where(c => c.CreateDate > model.CreateDate);
-            }
+            QueryAble = QueryAble = _transactionService.Filter(model, QueryAble);
 
 
-            if (model.TransactionStatus != null)
-            {
-                QueryAble = QueryAble
-                  .Where(c => c.TransactionStatus == model.TransactionStatus);
-            }
+            model.Page = model.Page ?? 0;
+            model.PerPage = model.PerPage ?? 10;
 
-            if (model.TransactionType != null)
-            {
-                QueryAble = QueryAble
-                 .Where(c => c.TransactionType == model.TransactionType);
-            }
 
-            if (model.ServiceTypeWithDetails != null)
-            {
-                QueryAble = QueryAble
-                 .Where(c => c.ServiceTypeWithDetails == model.ServiceTypeWithDetails);
-            }
+            var count = QueryAble.Count();
+            double len = (double)count / (double)model.PerPage;
+            var totalPages = Math.Ceiling((double)len);
 
-            if (model.TransactionConfirmedStatus != null)
+            var transactions = await QueryAble.Skip((int)model.Page * (int)model.PerPage)
+                  .Take((int)model.PerPage)
+                  .OrderByDescending(c => c.CreateDate)
+                  .Select(c => new
+                  {
+                      c.Id,
+                      c.Username,
+                      c.Amount,
+                      CreateDate = c.CreateDate.ToString("MM/dd/yyyy h:mm tt"),
+                      c.TransactionConfirmedStatus,
+                      c.TransactionType,
+                      c.ServiceTypeWithDetails,
+                      c.ProviderUserName,
+                      c.TransactionStatus,
+                      c.ClientUserName,
+                      c.BaseMyServiceTBL.ServiceName,
+                      //c.CardTBL.CardName,
+                  })
+                  .ToListAsync();
+
+            var data = new
             {
-                QueryAble = QueryAble
-                 .Where(c => c.TransactionConfirmedStatus == model.TransactionConfirmedStatus);
-            }
+                transactions,
+                TotalPages = totalPages
+            };
+
+            return Ok(_commonService.OkResponse(data, true));
+        }
+
+
+
+
+        /// <summary>
+        ///گرفتن لیست تراکنش هایی که حاصل حاصل درخواست بین کاربران با  هم هستند        
+        /// </summary>
+        /// <param name=""></param>
+        /// <returns></returns>
+        [HttpPost("GetAllServiceTransactionInAdmin")]
+        //[Authorize]
+        [ClaimsAuthorize(IsAdmin = true)]
+        public async Task<ActionResult> GetAllServiceTransactionInAdmin([FromBody] GetAllTransactionInAdmin model)
+        {
+
+            var QueryAble = _context.TransactionTBL.Where(C => C.TransactionStatus == TransactionStatus.ServiceTransaction)
+                                         .AsNoTracking()
+                                           .AsQueryable();
+
+            QueryAble = _transactionService.Filter(model, QueryAble);
 
             model.Page = model.Page ?? 0;
             model.PerPage = model.PerPage ?? 10;
@@ -174,6 +188,183 @@ namespace CallInDoor.Controllers
 
 
 
+        /// <summary>
+        ///گرفتن لیست تراکنش هایی که حاصل برداشت از کیف پول خود یا اضافه کردن به کیف پول        
+        /// </summary>
+        /// <param name=""></param>
+        /// <returns></returns>
+        [HttpPost("GetAllNormalTransactionInAdmin")]
+        //[Authorize]
+        [ClaimsAuthorize(IsAdmin = true)]
+        public async Task<ActionResult> GetAllNormalTransactionInAdmin([FromBody] GetAllTransactionInAdmin model)
+        {
+
+            var QueryAble = _context.TransactionTBL.Where(C => C.TransactionStatus == TransactionStatus.NormalTransaction)
+                                         .AsNoTracking()
+                                           .AsQueryable();
+
+            QueryAble = _transactionService.Filter(model, QueryAble);
+
+            model.Page = model.Page ?? 0;
+            model.PerPage = model.PerPage ?? 10;
+
+
+            var count = QueryAble.Count();
+            double len = (double)count / (double)model.PerPage;
+            var totalPages = Math.Ceiling((double)len);
+
+            var transactions = await QueryAble.Skip((int)model.Page * (int)model.PerPage)
+                  .Take((int)model.PerPage)
+                  .OrderByDescending(c => c.CreateDate)
+                  .Select(c => new
+                  {
+                      c.Id,
+                      c.Username,
+                      c.Amount,
+                      CreateDate = c.CreateDate.ToString("MM/dd/yyyy h:mm tt"),
+                      c.TransactionConfirmedStatus,
+                      c.TransactionType,
+                      //c.ServiceTypeWithDetails,
+                      c.ProviderUserName,
+                      c.TransactionStatus,
+                      //c.ClientUserName,
+                      //c.BaseMyServiceTBL.ServiceName,
+                      //c.CardTBL.CardName,
+                  })
+                  .ToListAsync();
+
+            var data = new
+            {
+                transactions,
+                TotalPages = totalPages
+            };
+
+            return Ok(_commonService.OkResponse(data, true));
+        }
+
+
+
+        /// <summary>
+        ///گرفتن لیست تراکنش هایی که حاصل برداشت از کیف پول خود یا اضافه کردن به کیف پول        
+        /// </summary>
+        /// <param name=""></param>
+        /// <returns></returns>
+        [HttpPost("GetAllTopTenTransactionInAdmin")]
+        //[Authorize]
+        [ClaimsAuthorize(IsAdmin = true)]
+        public async Task<ActionResult> GetAllTopTenTransactionInAdmin([FromBody] GetAllTransactionInAdmin model)
+        {
+
+            var QueryAble = _context.TransactionTBL.Where(C => C.TransactionStatus == TransactionStatus.TopTenPackage)
+                                         .AsNoTracking()
+                                           .AsQueryable();
+
+            QueryAble = _transactionService.Filter(model, QueryAble);
+
+            model.Page = model.Page ?? 0;
+            model.PerPage = model.PerPage ?? 10;
+
+
+            var count = QueryAble.Count();
+            double len = (double)count / (double)model.PerPage;
+            var totalPages = Math.Ceiling((double)len);
+
+            var transactions = await QueryAble.Skip((int)model.Page * (int)model.PerPage)
+                  .Take((int)model.PerPage)
+                  .OrderByDescending(c => c.CreateDate)
+                  .Select(c => new
+                  {
+                      c.Id,
+                      c.Username,
+                      c.Amount,
+                      CreateDate = c.CreateDate.ToString("MM/dd/yyyy h:mm tt"),
+                      c.TransactionConfirmedStatus,
+                      c.TransactionType,
+                      //c.ServiceTypeWithDetails,
+                      c.ProviderUserName,
+                      c.TransactionStatus,
+                      //c.ClientUserName,
+                      //c.BaseMyServiceTBL.ServiceName,
+                      //c.CardTBL.CardName,
+                  })
+                  .ToListAsync();
+
+            var data = new
+            {
+                transactions,
+                TotalPages = totalPages
+            };
+
+            return Ok(_commonService.OkResponse(data, true));
+        }
+
+
+
+
+
+
+        /// <summary>
+        ///گرفتن لیست تراکنش هایی که حاصل کمیسیون یا کارمزد کاربران است        
+        /// </summary>
+        /// <param name=""></param>
+        /// <returns></returns>
+        [HttpPost("GetAllCommissionTransactionInAdmin")]
+        //[Authorize]
+        [ClaimsAuthorize(IsAdmin = true)]
+        public async Task<ActionResult> GetAllCommissionTransactionInAdmin([FromBody] GetAllTransactionInAdmin model)
+        {
+
+            var QueryAble = _context.TransactionTBL.Where(C => C.TransactionStatus == TransactionStatus.Commission)
+                                         .AsNoTracking()
+                                           .AsQueryable();
+
+            QueryAble = _transactionService.Filter(model, QueryAble);
+
+            model.Page = model.Page ?? 0;
+            model.PerPage = model.PerPage ?? 10;
+
+
+            var count = QueryAble.Count();
+            double len = (double)count / (double)model.PerPage;
+            var totalPages = Math.Ceiling((double)len);
+
+            var transactions = await QueryAble.Skip((int)model.Page * (int)model.PerPage)
+                  .Take((int)model.PerPage)
+                  .OrderByDescending(c => c.CreateDate)
+                  .Select(c => new
+                  {
+                      c.Id,
+                      c.Username,
+                      c.Amount,
+                      CreateDate = c.CreateDate.ToString("MM/dd/yyyy h:mm tt"),
+                      c.TransactionConfirmedStatus,
+                      c.TransactionType,
+                      c.ServiceTypeWithDetails,
+                      c.ProviderUserName,
+                      c.TransactionStatus,
+                      c.ClientUserName,
+                      c.BaseMyServiceTBL.ServiceName,
+                      //c.CardTBL.CardName,
+                  })
+                  .ToListAsync();
+
+            var data = new
+            {
+                transactions,
+                TotalPages = totalPages
+            };
+
+            return Ok(_commonService.OkResponse(data, true));
+        }
+
+
+
+        #endregion
+
+
+
+        #region User side
+
         [HttpGet("GetAlltransactions")]
         //[Authorize]
         [ClaimsAuthorize(IsAdmin = false)]
@@ -200,7 +391,8 @@ namespace CallInDoor.Controllers
                                          t.TransactionType,
 
                                          m.ServiceName,
-                                         m.ServiceType,
+                                         ServiceType = m.ServiceTypes,
+                                         //m.ServiceType,
 
                                          //bs.ServiceName,
                                          //bs.ServiceType,
@@ -213,6 +405,7 @@ namespace CallInDoor.Controllers
 
             return Ok(_commonService.OkResponse(transaction, false));
         }
+
 
 
         /// <summary>
@@ -267,6 +460,10 @@ namespace CallInDoor.Controllers
                 BaseMyServiceId = null,
                 CardId = model.CardId,
                 ProviderUserName = null,
+                ServiceTypeWithDetails = null,
+                User_TopTenPackageTBL=null,
+                CheckDiscountTBL=null,
+                
             };
 
 
@@ -314,6 +511,9 @@ namespace CallInDoor.Controllers
                 BaseMyServiceId = null,
                 CardId = null,
                 ProviderUserName = null,
+                ServiceTypeWithDetails = null,
+                User_TopTenPackageTBL = null,
+                CheckDiscountTBL = null,
             };
 
 
@@ -328,6 +528,22 @@ namespace CallInDoor.Controllers
 
 
 
+
+        [HttpGet("GetWalteBalance")]
+        //[Authorize]
+        [ClaimsAuthorize(IsAdmin = false)]
+        public async Task<ActionResult> GetWalteBalance()
+        {
+            var currentusername = _accountService.GetCurrentUserName();
+            var userWaletBalance = await _context.Users.Where(c => c.UserName.ToLower() == currentusername.ToLower())
+                  .Select(c => c.WalletBalance).FirstOrDefaultAsync();
+
+            return Ok(_commonService.OkResponse(Math.Round(userWaletBalance.Value, 3), false));
+        }
+
+
+
+        #endregion
 
 
     }

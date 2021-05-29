@@ -101,7 +101,8 @@ namespace CallInDoor.Controllers
                                   {
                                       c.Id,
                                       c.BaseMyServiceTBL.ServiceName,
-                                      c.ServiceType,
+                                      ////c.ServiceType,
+                                      ServiceType = c.ServiceTypes,
                                       c.PackageType,
                                       c.CreateDate,
                                       c.BaseServiceId,
@@ -145,7 +146,8 @@ namespace CallInDoor.Controllers
                                   {
                                       c.Id,
                                       c.BaseMyServiceTBL.ServiceName,
-                                      c.ServiceType,
+                                      //c.ServiceType,
+                                      ServiceTypes = c.ServiceTypes,
                                       c.PackageType,
                                       c.CreateDate,
                                       c.BaseServiceId,
@@ -182,7 +184,9 @@ namespace CallInDoor.Controllers
             var myClientservices = _context.ServiceRequestTBL
                                 .Where(c =>
                              c.ServiceRequestStatus == ServiceRequestStatus.Confirmed &&
-                             c.ServiceType == ServiceType.ChatVoice
+                             ////////c.ServiceType == ServiceType.ChatVoice
+                             c.ServiceTypes.Contains("0")
+                                //////== ServiceType.ChatVoice
                                 && c.ClienUserName == currentUsername)
                                 .Include(c => c.ChatServiceMessagesTBL)
                                 .Include(c => c.ChatForLimitedServiceMessagesTBL)
@@ -191,7 +195,8 @@ namespace CallInDoor.Controllers
             var myProviderservices = _context.ServiceRequestTBL
                                 .Where(c =>
                                     c.ServiceRequestStatus == ServiceRequestStatus.Confirmed &&
-                                   c.ServiceType == ServiceType.ChatVoice &&
+                                   //////c.ServiceType == ServiceType.ChatVoice &&
+                                   c.ServiceTypes.Contains("0") &&
                                     c.ProvideUserName == currentUsername)
                                 .Include(c => c.ChatServiceMessagesTBL)
                                 .Include(c => c.ChatForLimitedServiceMessagesTBL)
@@ -305,7 +310,8 @@ namespace CallInDoor.Controllers
                                      &&
                                   c.BaseServiceId == model.BaseServiceId &&
                                     c.ClienUserName == currentUsername &&
-                                            c.ServiceType == ServiceType.ChatVoice &&
+                                            ////////c.ServiceType == ServiceType.ChatVoice &&
+                                            c.ServiceTypes.Contains("0") &&
                                             (c.PackageType == PackageType.Free));
 
 
@@ -322,7 +328,8 @@ namespace CallInDoor.Controllers
                 FreeMessageCount = baseServiceFromDB.MyChatsService?.FreeMessageCount,
                 FreeUsageMessageCount = 0,
                 BaseServiceId = model.BaseServiceId,
-                ServiceType = baseServiceFromDB.ServiceType,
+                //////ServiceType = baseServiceFromDB.ServiceType,
+                ServiceTypes = baseServiceFromDB.ServiceTypes,
                 CreateDate = DateTime.Now,
                 WhenTheRequestShouldBeAnswered = DateTime.Now.AddHours(8),
                 ClienUserName = currentUsername,
@@ -1128,7 +1135,8 @@ namespace CallInDoor.Controllers
                     ClientUserName = requestfromDB.ClienUserName,
                     CreateDate = DateTime.Now,
                     BaseMyServiceId = requestfromDB.BaseServiceId,
-                    ServiceTypeWithDetails = ServiceTypeWithDetails.ChatVoiceFree,
+                    //ServiceTypeWithDetails = ServiceTypeWithDetails.ChatVoiceFree,
+                    ServiceTypeWithDetails = requestfromDB.ServiceTypes,
                     TransactionType = TransactionType.WhiteDrawl,
                     TransactionStatus = TransactionStatus.ServiceTransaction,
                     TransactionConfirmedStatus = TransactionConfirmedStatus.Confirmed,
@@ -1144,7 +1152,8 @@ namespace CallInDoor.Controllers
                     ClientUserName = requestfromDB.ClienUserName,
                     CreateDate = DateTime.Now,
                     BaseMyServiceId = requestfromDB.BaseServiceId,
-                    ServiceTypeWithDetails = ServiceTypeWithDetails.ChatVoiceFree,
+                    //ServiceTypeWithDetails = ServiceTypeWithDetails.ChatVoiceFree,
+                    ServiceTypeWithDetails = requestfromDB.ServiceTypes,
                     TransactionType = TransactionType.Deposit,
                     TransactionStatus = TransactionStatus.ServiceTransaction,
                     TransactionConfirmedStatus = TransactionConfirmedStatus.Confirmed,
@@ -1267,7 +1276,8 @@ namespace CallInDoor.Controllers
                                              &&
                                              c.BaseServiceId == model.BaseServiceId &&
                                          c.ClienUserName == currentUsername &&
-                                           c.ServiceType == ServiceType.ChatVoice &&
+                                           ////////c.ServiceType == ServiceType.ChatVoice &&
+                                           c.ServiceTypes.Contains("0") &&
                                              (c.PackageType == PackageType.limited)
                                         )
                                 ||
@@ -1277,7 +1287,8 @@ namespace CallInDoor.Controllers
                                          /*c.ServiceRequestStatus == ServiceRequestStatus.Pending &&*/
                                          c.BaseServiceId == model.BaseServiceId &&
                                          c.ClienUserName == currentUsername &&
-                                           c.ServiceType == ServiceType.ChatVoice &&
+                                           //////c.ServiceType == ServiceType.ChatVoice &&
+                                           c.ServiceTypes.Contains("0") &&
                                              (c.PackageType == PackageType.limited));
 
             //validation
@@ -1298,7 +1309,8 @@ namespace CallInDoor.Controllers
                 //IsExpired_LimitedChatVoice = true,
                 ExpireTime_LimitedChatVoice = DateTime.Now.AddYears(120),
                 BaseServiceId = model.BaseServiceId,
-                ServiceType = baseServiceFromDB.ServiceType,
+                ////ServiceType = baseServiceFromDB.ServiceType,
+                ServiceTypes = baseServiceFromDB.ServiceTypes,
                 CreateDate = DateTime.Now,
                 WhenTheRequestShouldBeAnswered = DateTime.Now.AddHours(8),
                 ClienUserName = currentUsername,

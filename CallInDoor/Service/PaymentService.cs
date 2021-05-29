@@ -66,12 +66,40 @@ namespace Service
                 Errors.Add(err);
             }
 
-            if (model.ServiceType == ServiceType.Service || model.ServiceType == ServiceType.Course)
+
+
+            /////////اگراز نوع وویس کال یا ویدیو کال بود دگه زمان باید بررسی شود
+            ////////////////if (serviceFromDB.ServiceType == ServiceType.VideoCal || serviceFromDB.ServiceType == ServiceType.VoiceCall)
+            //////if (serviceFromDB.ServiceTypes.Contains("1") || serviceFromDB.ServiceTypes.Contains("2"))
+            //////{
+            //////    if (serviceFromDB.MyChatsService.PackageType == PackageType.limited)
+            //////        //ما دیگه توی  ویدیو کال یا وویس کال   فری نداریم
+            //////        if (model.Duration == null || model.Duration == 0)
+            //////        {
+            //////            if (model.FreeMessageCount == null || model.FreeMessageCount == 0)
+            //////            {
+            //////                IsValid = false;
+            //////                Errors.Add(_resourceServices.GetErrorMessageByKey("DurationIsRequired"));
+            //////            }
+            //////        }
+            //////}
+
+
+
+            if (model.ServiceTypes.Contains("3") || model.ServiceTypes.Contains("4"))
             {
                 string err = _resourceServices.GetErrorMessageByKey("InvalidAttamp");
                 IsValid = false;
                 Errors.Add(err);
             }
+
+
+            //if (model. ServiceType == ServiceType.Service || model.ServiceType == ServiceType.Course)
+            //{
+            //    string err = _resourceServices.GetErrorMessageByKey("InvalidAttamp");
+            //    IsValid = false;
+            //    Errors.Add(err);
+            //}
 
             if (model.PackageType == PackageType.Free)
             {
@@ -230,7 +258,14 @@ namespace Service
                 Errors.Add(err);
             }
 
-            if (model.requestFromDB.ServiceType == ServiceType.Service || model.requestFromDB.ServiceType == ServiceType.Course)
+            //if (model.requestFromDB.ServiceType == ServiceType.Service || model.requestFromDB.ServiceType == ServiceType.Course)
+            //{
+            //    string err = _resourceServices.GetErrorMessageByKey("InvalidAttamp");
+            //    IsValid = false;
+            //    Errors.Add(err);
+            //}
+
+            if (model.requestFromDB.ServiceTypes.Contains("3") || model.requestFromDB.ServiceTypes.Contains("4"))
             {
                 string err = _resourceServices.GetErrorMessageByKey("InvalidAttamp");
                 IsValid = false;
@@ -254,14 +289,14 @@ namespace Service
 
             if (model.requestFromDB.HasPlan_LimitedChatVoice && (model.requestFromDB.ExpireTime_LimitedChatVoice < DateTime.Now /*!model.IsExpired_LimitedChatVoice*/ && model.requestFromDB.AllMessageCount_LimitedChat - model.requestFromDB.UsedMessageCount_LimitedChat != 0))
             {
-                string err = _resourceServices.GetErrorMessageByKey("YouCurrentlyHaveAnActivePackage")   ;
+                string err = _resourceServices.GetErrorMessageByKey("YouCurrentlyHaveAnActivePackage");
                 IsValid = false;
                 Errors.Add(err);
             }
 
             if (model.requestFromDB.HasPlan_LimitedChatVoice && (model.requestFromDB.ExpireTime_LimitedChatVoice < DateTime.Now /*!model.IsExpired_LimitedChatVoice*/ && model.requestFromDB.AllMessageCount_LimitedChat - model.requestFromDB.UsedMessageCount_LimitedChat != 0))
             {
-                string err = _resourceServices.GetErrorMessageByKey("YouCurrentlyHaveAnActivePackage")  ;
+                string err = _resourceServices.GetErrorMessageByKey("YouCurrentlyHaveAnActivePackage");
                 IsValid = false;
                 Errors.Add(err);
             }

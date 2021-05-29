@@ -30,9 +30,18 @@ namespace Domain.Entities
         /// چه کسی پیام را فرستاد
         //public SendetMesageType SendetMesageType { get; set; }
 
-        /// این ریکوست به چه نوع سرویسی زده شود
-        /// مثلا چته یا وویسه یا ویدیوعه یا کورسه یا سرویسی
-        public ServiceType ServiceType { get; set; }
+        ///// این ریکوست به چه نوع سرویسی زده شود
+        ///// مثلا چته یا وویسه یا ویدیوعه یا کورسه یا سرویسی
+        //public ServiceType ServiceType { get; set; }
+
+
+        /// <summary>
+        /// video or voice  or chat or course or service  shayad ham  karpardaz
+        //value should be 0,1,2,3,4,5
+        /// </summary>
+        public string ServiceTypes { get; set; }
+
+
         public ServiceRequestStatus ServiceRequestStatus { get; set; }
         /// تاریخ درخواست سرویس
         public DateTime CreateDate { get; set; }

@@ -339,8 +339,6 @@ namespace CallInDoor.Controllers
 
 
 
-
-
         /// <summary>
         ///// خرید بسته برای یک درخواست از یک سرویس با رفتن به درگاه پرداخت
         /// </summary>
@@ -841,7 +839,8 @@ namespace CallInDoor.Controllers
                 ClientUserName = serviceRequest.ClienUserName,
                 CreateDate = DateTime.Now,
                 BaseMyServiceId = serviceRequest.BaseServiceId,
-                ServiceTypeWithDetails = ServiceTypeWithDetails.ChatVoiceLimited,
+                //////ServiceTypeWithDetails = ServiceTypeWithDetails.ChatVoiceLimited,
+                ServiceTypeWithDetails = serviceRequest.ServiceTypes,
                 TransactionType = TransactionType.WhiteDrawl,
                 TransactionStatus = TransactionStatus.ServiceTransaction,
                 TransactionConfirmedStatus = TransactionConfirmedStatus.Confirmed,
@@ -858,7 +857,8 @@ namespace CallInDoor.Controllers
                 ClientUserName = serviceRequest.ClienUserName,
                 CreateDate = DateTime.Now,
                 BaseMyServiceId = serviceRequest.BaseServiceId,
-                ServiceTypeWithDetails = ServiceTypeWithDetails.ChatVoiceLimited,
+                //////ServiceTypeWithDetails = ServiceTypeWithDetails.ChatVoiceLimited,
+                ServiceTypeWithDetails = serviceRequest.ServiceTypes,
                 TransactionType = TransactionType.Deposit,
                 TransactionStatus = TransactionStatus.ServiceTransaction,
                 TransactionConfirmedStatus = TransactionConfirmedStatus.Confirmed,
@@ -882,7 +882,8 @@ namespace CallInDoor.Controllers
                 ClientUserName = serviceRequest.ClienUserName,
                 CreateDate = DateTime.Now,
                 BaseMyServiceId = serviceRequest.BaseServiceId,
-                ServiceTypeWithDetails = ServiceTypeWithDetails.ChatVoiceLimited,
+                //////ServiceTypeWithDetails = ServiceTypeWithDetails.ChatVoiceLimited,
+                ServiceTypeWithDetails = serviceRequest.ServiceTypes,
                 TransactionType = TransactionType.WhiteDrawl,
                 TransactionStatus = TransactionStatus.ServiceTransaction,
                 TransactionConfirmedStatus = TransactionConfirmedStatus.Confirmed,
@@ -899,7 +900,8 @@ namespace CallInDoor.Controllers
                 ClientUserName = serviceRequest.ClienUserName,
                 CreateDate = DateTime.Now,
                 BaseMyServiceId = serviceRequest.BaseServiceId,
-                ServiceTypeWithDetails = ServiceTypeWithDetails.ChatVoiceLimited,
+                //////ServiceTypeWithDetails = ServiceTypeWithDetails.ChatVoiceLimited,
+                ServiceTypeWithDetails = serviceRequest.ServiceTypes,
                 TransactionType = TransactionType.Deposit,
                 TransactionStatus = TransactionStatus.ServiceTransaction,
                 TransactionConfirmedStatus = TransactionConfirmedStatus.Confirmed,

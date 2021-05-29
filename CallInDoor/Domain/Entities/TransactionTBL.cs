@@ -40,10 +40,15 @@ namespace Domain.Entities
         public TransactionType TransactionType { get; set; }
 
 
+        ///// <summary>
+        ///// اگر این تارکنش سرویسی بود حالا از کدام نوع سرویسی است
+        ///// </summary>
+        //public ServiceTypeWithDetails? ServiceTypeWithDetails { get; set; }
+
         /// <summary>
         /// اگر این تارکنش سرویسی بود حالا از کدام نوع سرویسی است
         /// </summary>
-        public ServiceTypeWithDetails? ServiceTypeWithDetails { get; set; }
+        public string ServiceTypeWithDetails { get; set; }
 
 
 

@@ -96,9 +96,40 @@ export const searchResult = [
         link: "/pages/Transactions",
         icon: "Circle",
       },
-
+      
       {
         id: 14,
+        title: "NormalTransaction",
+        target: "NormalTransaction",
+        link: "/pages/NormalTransaction",
+        icon: "Circle",
+      },
+      {
+        id: 15,
+        title: "Service Transaction",
+        target: "Service Transaction",
+        link: "/pages/ServiceTransaction",
+        icon: "Circle",
+      },
+
+      {
+        id: 16,
+        title: "BuyTopTenPackageTransaction",
+        target: "BuyTopTenPackageTransaction",
+        link: "/pages/BuyTopTenPackageTransaction",
+        icon: "Circle",
+      },
+      
+      {
+        id: 16,
+        title: "CommissionTransactions",
+        target: "CommissionTransactions",
+        link: "/pages/CommissionTransactions",
+        icon: "Circle",
+      },
+
+      {
+        id: 17,
         title: "User Withdrawl Request",
         target: "User Withdrawl Request",
         link: "/pages/userWithdrawlRequest",
@@ -106,7 +137,7 @@ export const searchResult = [
       },
 
       {
-        id: 15,
+        id: 18,
         title: "language manager",
         target: "language manager",
         link: "/pages/DataAnotation",

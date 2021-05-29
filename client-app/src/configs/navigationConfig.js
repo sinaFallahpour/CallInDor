@@ -157,15 +157,115 @@ const navigationConfig = [
     // parentOf: ["/pages/test"],
   },
   {
-    id: "Transaction",
+    id: "Transactions",
     title: "Transactions",
-    type: "item",
+    type: "collapse",
+    icon: <Icon.Database size={20} />,
     role: "Admin",
-    // permissions: [Permission.getAllProvidedService],
-    icon: <Icon.Tablet size={20} />,
-    navLink: "/pages/Transactions",
-    // parentOf: ["/pages/test"],
+    // //permissions: [permission.userGetAll, permission.notShow],
+
+
+    // // // // // // {
+    // // // // // //   id: "Transaction",
+    // // // // // //   title: "Transactions",
+    // // // // // //   type: "item",
+    // // // // // //   role: "Admin",
+    // // // // // //   // permissions: [Permission.getAllProvidedService],
+    // // // // // //   icon: <Icon.Tablet size={20} />,
+    // // // // // //   navLink: "/pages/Transactions",
+    // // // // // //   // parentOf: ["/pages/test"],
+    // // // // // // },
+
+
+
+
+    children: [
+      {
+        id: "All Transaction",
+        title: "All Transaction",
+        type: "item",
+        role: "Admin",
+        // permissions: [Permission.getAllProvidedService],
+        icon: <Icon.Circle size={12} />,
+        navLink: "/pages/Transactions",
+        // parentOf: ["/pages/test"],
+      },
+      {
+        id: "Service Transaction",
+        title: "Service ",
+        type: "item",
+        role: "Admin",
+        // permissions: [Permission.getAllProvidedService],
+        icon: <Icon.Circle size={12} />,
+        navLink: "/pages/ServiceTransaction",
+        // parentOf: ["/pages/test"],
+      },
+
+      {
+        id: "Normal Transaction",
+        title: "Normal  ",
+        type: "item",
+        role: "Admin",
+        // permissions: [Permission.getAllProvidedService],
+        icon: <Icon.Circle size={12} />,
+        navLink: "/pages/NormalTransaction",
+        // parentOf: ["/pages/test"],
+      },
+      {
+        id: "Buy Top 10 Package Transactoin",
+        title: "Buy Top 10 Package  ",
+        type: "item",
+        role: "Admin",
+        // permissions: [Permission.getAllProvidedService],
+        icon: <Icon.Circle size={12} />,
+        navLink: "/pages/BuyTopTenPackageTransaction",
+        // parentOf: ["/pages/test"],
+      },
+
+      {
+        id: "Commission Transactions",
+        title: "Commission ",
+        type: "item",
+        role: "Admin",
+        // permissions: [Permission.getAllProvidedService],
+        icon: <Icon.Circle size={12} />,
+        navLink: "/pages/CommissionTransactions",
+        // parentOf: ["/pages/test"],
+      },
+
+
+
+      // {
+      //   id: "Normal Transaction",
+      //   title: " Categories",
+      //   type: "item",
+      //   role: "Admin",
+      //   // permissions: [permission.userGetAll, permission.notShow],
+      //   icon: <Icon.Circle size={12} />,
+      //   // permissions: ["admin", "editor"],
+      //   navLink: "/pages/categories",
+      //   parentOf: ["/pages/categories", "/pages/category/:id"],
+      // },
+      // {
+      //   id: "Buy Top 10 Package Transactoin",
+      //   title: "Areas",
+      //   type: "item",
+      //   icon: <Icon.Circle size={12} />,
+      //   role: "Admin",
+      //   // permissions: [permission.userGetAll, permission.notShow],
+      //   navLink: "/pages/areas",
+      //   parentOf: [
+      //     "/pages/areas",
+      //     // "/pages/areas/:id"
+      //   ],
+      // },
+    ],
   },
+
+
+
+
+
   {
     id: "Questions",
     title: "Questions",

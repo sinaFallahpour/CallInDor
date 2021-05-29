@@ -13,8 +13,8 @@ namespace Domain.DTO.Transaction
         //public double? Amount { get; set; }
         public TransactionStatus? TransactionStatus { get; set; }
         public TransactionType? TransactionType { get; set; }
-        public ServiceTypeWithDetails? ServiceTypeWithDetails { get; set; }
+        //public ServiceTypeWithDetails? ServiceTypeWithDetails { get; set; }
+        public string ServiceTypeWithDetails { get; set; }
         public TransactionConfirmedStatus? TransactionConfirmedStatus { get; set; }
-
     }
 }

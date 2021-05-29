@@ -228,10 +228,13 @@ export const Tikets = {
 };
 
 const Transactions = {
-  GetAllTransactionInAdmin: (model) => {
-    console.log(model);
-    return requests.post("/Transactoin/GetAllTransactionInAdmin", model);
-  },
+  GetAllTransactionInAdmin: (model) => requests.post("/Transactoin/GetAllTransactionInAdmin", model),
+  GetAllServiceTransactionInAdmin: (model) => requests.post("/Transactoin/GetAllServiceTransactionInAdmin", model),
+  GetAllNormalTransactionInAdmin: (model) => requests.post("/Transactoin/GetAllNormalTransactionInAdmin", model),
+  GetAllTopTenTransactionInAdmin: (model) => requests.post("/Transactoin/GetAllTopTenTransactionInAdmin", model),
+  GetAllCommissionTransactionInAdmin: (model) => requests.post("/Transactoin/GetAllCommissionTransactionInAdmin", model)
+
+
 
   //   GetTiketsDetails: (id) =>
   //   requests.get(`/Tiket/GetTiketsDetailsInAdmin?tiketId=${id}`),

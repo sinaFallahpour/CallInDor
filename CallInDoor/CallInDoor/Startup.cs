@@ -43,6 +43,7 @@ using Service.Interfaces.SmsService;
 using Domain.DTO.Resource;
 using Service.Interfaces.UserWithdrawlRequest;
 using Service.Interfaces.Notification;
+using Service.Interfaces.Transaction;
 
 namespace CallInDoor
 {
@@ -199,6 +200,7 @@ namespace CallInDoor
             services.AddTransient<IResourceServices, ResourceServices>();
             services.AddTransient<IUserWithdrawlRequestService, UserWithdrawlRequestService>();
             services.AddTransient<INotificationService, NotificationService>();
+            services.AddTransient<ITransactionService, TransactionService>();
             services.AddSingleton<IAuthorizationPolicyProvider, AuthorizationPolicyProvider>();
             services.AddScoped<DataAnotationAndErrorMessageDTO>();
 

@@ -229,9 +229,12 @@ const UserWithdrawlRequest = lazy(() =>
 );
 
 
-const Transactions = lazy(() =>
-  import("./views/pages/_Transactions/_Transactions")
-);
+const Transactions = lazy(() => import("./views/pages/_Transactions/_Transactions"));
+const NormalTransactions = lazy(() => import("./views/pages/_Transactions/NormalTransaction/Index"));
+const ServiceTransaction = lazy(() => import("./views/pages/_Transactions/ServiceTransaction/Index"));
+const BuyTopTenPackageTransaction = lazy(() => import("./views/pages/_Transactions/BuyTopTenPackageTransaction/Index"));
+const CommissionTransactions = lazy(() => import("./views/pages/_Transactions/CommissionTransactions/Index"));
+
 
 const Tikets = lazy(() => import("./views/pages/_Tiket/_Tikets"));
 
@@ -715,10 +718,51 @@ class AppRouter extends React.Component {
               component={Transactions}
             />
 
+            <RouteConfig
+              isLoggedIn={isLoggedIn}
+              title="Normal Transactions"
+              exact
+              path="/pages/NormalTransaction"
+              role="admin"
+              user={{ ...user }}
+              component={NormalTransactions}
+            />
 
             <RouteConfig
               isLoggedIn={isLoggedIn}
-              title="transactions"
+              title="Normal Transactions"
+              exact
+              path="/pages/ServiceTransaction"
+              role="admin"
+              user={{ ...user }}
+              component={ServiceTransaction}
+            />
+
+            <RouteConfig
+              isLoggedIn={isLoggedIn}
+              title="Buy Top Ten Package Transaction"
+              exact
+              path="/pages/BuyTopTenPackageTransaction"
+              role="admin"
+              user={{ ...user }}
+              component={BuyTopTenPackageTransaction}
+            />
+
+            <RouteConfig
+              isLoggedIn={isLoggedIn}
+              title="Commission Transactions"
+              exact
+              path="/pages/CommissionTransactions"
+              role="admin"
+              user={{ ...user }}
+              component={CommissionTransactions}
+            />
+
+
+
+            <RouteConfig
+              isLoggedIn={isLoggedIn}
+              title="user Withdrawl Request"
               exact
               path="/pages/userWithdrawlRequest"
               role="admin"
@@ -738,12 +782,6 @@ class AppRouter extends React.Component {
               permission={[Permissoin.getAllUsersList, Permissoin.editUser]}
               component={Test}
             />
-
-
-
-
-
-
 
 
 

@@ -1,6 +1,6 @@
 import React from "react";
 import { Row, Col } from "reactstrap";
-import Breadcrumbs from "../../../components/@vuexy/breadCrumbs/BreadCrumb";
+import Breadcrumbs from "../../../../components/@vuexy/breadCrumbs/BreadCrumb";
 import ListViewConfig from "./DataListConfig";
 import queryString from "query-string";
 class Index extends React.Component {

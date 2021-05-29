@@ -26,6 +26,8 @@
     <Compile Remove="Migrations\20210519081121_addNewIndex.Designer.cs" />
     <Compile Remove="Migrations\20210526063143_somechnagestoD.cs" />
     <Compile Remove="Migrations\20210526063143_somechnagestoD.Designer.cs" />
+    <Compile Remove="Migrations\20210529062712_smechnages.cs" />
+    <Compile Remove="Migrations\20210529062712_smechnages.Designer.cs" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="8.0.1" />

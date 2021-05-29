@@ -13,7 +13,7 @@ import classnames from "classnames";
 import Flatpickr from "react-flatpickr";
 
 import "flatpickr/dist/themes/light.css";
-import "../../../assets/scss/plugins/forms/flatpickr/flatpickr.scss";
+import "../../../../assets/scss/plugins/forms/flatpickr/flatpickr.scss";
 
 // import ChatDetailsModal from "./_ChatDetailsModal";
 
@@ -30,15 +30,16 @@ import {
 
 // import Sidebar from "./DataListSidebar";
 // import Chip from "../../../components/@vuexy/chips/ChipComponent";
-import Checkbox from "../../../components/@vuexy/checkbox/CheckboxesVuexy";
+import Checkbox from "../../../../components/@vuexy/checkbox/CheckboxesVuexy";
 
-import "../../../assets/scss/plugins/extensions/react-paginate.scss";
-import "../../../assets/scss/pages/data-list.scss";
+import "../../../../assets/scss/plugins/extensions/react-paginate.scss";
+import "../../../../assets/scss/pages/data-list.scss";
 
 import { toast } from "react-toastify";
-import agent from "../../../core/services/agent";
-import { combineDateAndTime2 } from "../../../core/main";
+import agent from "../../../../core/services/agent";
+import { combineDateAndTime2 } from "../../../../core/main";
 // import Spinner from "../../../components/@vuexy/spinner/Loading-spinner";
+import { Badge } from "reactstrap"
 
 import Swal from "sweetalert2";
 
@@ -95,8 +96,9 @@ const CustomHeader = (props) => {
     <div className="data-list-header d-flex justify-content-end flex-wrap">
 
 
+
       <div className="actions-right d-flex flex-wrap mt-sm-0 mt-2">
-        <UncontrolledDropdown className="data-list-rows-dropdown mr-1 d-md-block ">
+        {/* <UncontrolledDropdown className="data-list-rows-dropdown mr-1 d-md-block ">
           <DropdownToggle color="" className="sort-dropdown">
             <span className="align-middle mx-50">
               transaction status:{" "}
@@ -115,26 +117,23 @@ const CustomHeader = (props) => {
               onClick={() => props.handleTransactionStatus(0)}
             >
               {props.returnTransactionStatus(0)}
-              {/* Open */}
-            </DropdownItem>
+             </DropdownItem>
             <DropdownItem
               tag="a"
               onClick={() => props.handleTransactionStatus(1)}
             >
               {props.returnTransactionStatus(1)}
-              {/* Closed */}
-            </DropdownItem>
+             </DropdownItem>
 
             <DropdownItem
               tag="a"
               onClick={() => props.handleTransactionStatus(2)}
             >
               {props.returnTransactionStatus(2)}
-              {/* Closed */}
-            </DropdownItem>
+             </DropdownItem>
 
           </DropdownMenu>
-        </UncontrolledDropdown>
+        </UncontrolledDropdown> */}
 
         <UncontrolledDropdown className="data-list-rows-dropdown mr-1 d-md-block ">
           <DropdownToggle color="" className="sort-dropdown">
@@ -186,13 +185,16 @@ const CustomHeader = (props) => {
               onClick={() => props.handleServiceTypeWithDetails(0)}
             >
               {props.returnServiceTypeWithDetails(0)}
+
             </DropdownItem>
             <DropdownItem
               tag="a"
               onClick={() => props.handleServiceTypeWithDetails(1)}
             >
               {props.returnServiceTypeWithDetails(1)}
+
             </DropdownItem>
+
             <DropdownItem
               tag="a"
               onClick={() => props.handleServiceTypeWithDetails(2)}
@@ -223,7 +225,7 @@ const CustomHeader = (props) => {
           <DropdownToggle color="" className="sort-dropdown">
             <span className="align-middle mx-50">
               confirmed status :{" "}
-              {props.returnTransactionConfirmedStatus(props.transactionConfirmedStatus)}
+              {props.returnTransactionConfirmedStatus(props.serviceTypeWithDetails)}
             </span>
             <ChevronDown size={15} />
           </DropdownToggle>
@@ -394,25 +396,25 @@ class DataListConfig extends Component {
             );
         },
       },
-      {
-        name: "transaction status",
-        selector: "transactionStatus",
-        sortable: true,
-        cell: (row) => {
-          if (row.transactionStatus == 0)
-            return (
-              <span className="badge badge-primary">CompleteProfileTransaction</span>
-            );
-          if (row.transactionStatus == 1)
-            return (
-              <span className="badge badge-success">NormalTransaction</span>
-            );
-          if (row.transactionStatus == 2)
-            return (
-              <span className="badge badge-light">service transaction</span>
-            );
-        },
-      },
+      // {
+      //   name: "transaction status",
+      //   selector: "transactionStatus",
+      //   sortable: true,
+      //   cell: (row) => {
+      //     if (row.transactionStatus == 0)
+      //       return (
+      //         <span className="badge badge-primary">CompleteProfileTransaction</span>
+      //       );
+      //     if (row.transactionStatus == 1)
+      //       return (
+      //         <span className="badge badge-success">NormalTransaction</span>
+      //       );
+      //     if (row.transactionStatus == 2)
+      //       return (
+      //         <span className="badge badge-light">service transaction</span>
+      //       );
+      //   },
+      // },
       {
         name: "Transaction Type",
         selector: "transactionType",
@@ -456,7 +458,7 @@ class DataListConfig extends Component {
             return (
               <button type="button" className="btn  btn-sm btn-danger">Service</button>
             );
-          if (row.serviceTypeWithDetails?.includes("4"))
+          if (row.serviceTypeWithDetails.includes("4"))
             return (
               <button type="button" className="btn  btn-sm btn-secondary">Course</button>
             );
@@ -537,7 +539,7 @@ class DataListConfig extends Component {
     this.setState({ loading: true });
     var params = this.axiosParams();
     // // console.log(params);
-    const { data } = await agent.Transactions.GetAllTransactionInAdmin(params);
+    const { data } = await agent.Transactions.GetAllServiceTransactionInAdmin(params);
     await this.setState({
       data: data.result.data.transactions,
       allData: data.result.data.transactions,
@@ -668,7 +670,6 @@ class DataListConfig extends Component {
   };
 
   handleServiceTypeWithDetails = async (value) => {
-    console.log(this.state)
     await this.setState({
       // tiketStatus: value,
       serviceTypeWithDetails: value,
@@ -676,8 +677,6 @@ class DataListConfig extends Component {
       loading: true,
     });
     this.populatingData();
-
-    console.log(this.state)
   };
 
 
@@ -711,18 +710,11 @@ class DataListConfig extends Component {
 
 
   returnServiceTypeWithDetails = (TherEnum) => {
-    if (TherEnum == 0) return "Chat-Voice";
-    if (TherEnum == 1) return "Voice-Call";
+    if (TherEnum == 0) return "Chat-Voice(Free)";
+    if (TherEnum == 1) return "Chat-Voice(Duration)";
     if (TherEnum == 2) return "Video-Call";
     if (TherEnum == 3) return "Service";
     if (TherEnum == 4) return "Course";
-
-    // if (TherEnum == 0) return "Chat-Voice(Free)";
-    // if (TherEnum == 1) return "Chat-Voice(Duration)";
-    // if (TherEnum == 2) return "Video-Call";
-    // if (TherEnum == 3) return "Service";
-    // if (TherEnum == 4) return "Course";
-
   };
 
 
@@ -1062,7 +1054,6 @@ class DataListConfig extends Component {
                 transactionType={transactionType}
                 serviceTypeWithDetails={serviceTypeWithDetails}
                 transactionStatus={transactionStatus}
-
                 amount={amount}
 
 
