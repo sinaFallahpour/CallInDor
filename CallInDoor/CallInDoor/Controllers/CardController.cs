@@ -6,6 +6,7 @@ using CallInDoor.Config.Attributes;
 using Domain;
 using Domain.DTO.Account;
 using Domain.DTO.Response;
+using Domain.DTO.Transaction;
 using Domain.Entities;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
@@ -116,6 +117,29 @@ namespace CallInDoor.Controllers
 
 
 
+        [HttpPost("GetUserCardsByUserNameInAdmin")]
+        //[Authorize]
+        [ClaimsAuthorize(IsAdmin = true)]
+        public async Task<ActionResult> GetUserCardsByUserNameInAdmin([FromBody] GetUserByUserName model)
+        {
+
+            var cardFromDB = await _context.CardTBL.Where(c => c.Username == model.Username).AsNoTracking()
+                .Select(c => new
+                {
+                    c.CardName,
+                    c.CardNumber,
+                    c.Username,
+                    CreateDate = c.CreateDate.ToString("MM/dd/yyyy h:mm :tt")
+                })
+                .ToListAsync();
+            return Ok(_commonService.OkResponse(cardFromDB, false));
+
+        }
+
+
+
+
+
 
         [HttpGet("GetCardById")]
         //[Authorize]
@@ -162,6 +186,7 @@ namespace CallInDoor.Controllers
                 Username = currentUsername,
                 CardName = model.CardName,
                 CardNumber = model.CardNumber,
+                CreateDate = DateTime.Now,
                 IsDeleted = false,
             };
 
@@ -220,21 +245,21 @@ namespace CallInDoor.Controllers
 
 
 
-        [HttpDelete("DeleteCard")]
-        //[Authorize]
-        [ClaimsAuthorize(IsAdmin = false)]
-        public async Task<ActionResult> DeleteCard(int id)
-        {
-            var currentUsername = _accountService.GetCurrentUserName();
-            var cardFromDB = await _context.CardTBL.Where(c => c.Id == id && c.IsDeleted == false).FirstOrDefaultAsync();
-            if (cardFromDB == null)
-                return NotFound(_commonService.NotFoundErrorReponse(false));
+        ////[HttpDelete("DeleteCard")]
+        //////[Authorize]
+        ////[ClaimsAuthorize(IsAdmin = false)]
+        ////public async Task<ActionResult> DeleteCard(int id)
+        ////{
+        ////    var currentUsername = _accountService.GetCurrentUserName();
+        ////    var cardFromDB = await _context.CardTBL.Where(c => c.Id == id && c.IsDeleted == false).FirstOrDefaultAsync();
+        ////    if (cardFromDB == null)
+        ////        return NotFound(_commonService.NotFoundErrorReponse(false));
 
-            cardFromDB.IsDeleted = true;
-            
-            await _context.SaveChangesAsync();
-            return Ok(_commonService.OkResponse(null, false));
-        }
+        ////    cardFromDB.IsDeleted = true;
+
+        ////    await _context.SaveChangesAsync();
+        ////    return Ok(_commonService.OkResponse(null, false));
+        ////}
 
 
 

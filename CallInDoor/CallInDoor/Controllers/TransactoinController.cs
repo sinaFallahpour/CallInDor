@@ -9,6 +9,7 @@ using Domain.DTO.Response;
 using Domain.DTO.Transaction;
 using Domain.Entities;
 using Domain.Enums;
+using Domain.Utilities;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -299,6 +300,38 @@ namespace CallInDoor.Controllers
         }
 
 
+        /// <summary>
+        ///گرفتن لیست تراکنش های یک کاربر        
+        /// </summary>
+        /// <param name=""></param>
+        /// <returns></returns>
+        [HttpPost("GetTarnsactonByUserNameInAdmin")]
+        //[Authorize]
+        [ClaimsAuthorize(IsAdmin = true)]
+        public async Task<ActionResult> GetTarnsactonByUserNameInAdmin([FromBody] GetUserByUserName model)
+        {
+            var transactions = await _context.TransactionTBL.Where(c => c.Username == model.Username)
+                  .OrderByDescending(c => c.CreateDate)
+                  .Select(c => new
+                  {
+                      c.Id,
+                      c.Username,
+                      c.Amount,
+                      CreateDate = c.CreateDate.ToString("MM/dd/yyyy h:mm tt"),
+                      c.TransactionConfirmedStatus,
+                      c.TransactionType,
+                      c.ServiceTypeWithDetails,
+                      c.ProviderUserName,
+                      c.TransactionStatus,
+                      c.ClientUserName,
+                      c.BaseMyServiceTBL.ServiceName,
+                      //c.CardTBL.CardName,
+                  })
+                  .ToListAsync();
+
+            return Ok(_commonService.OkResponse(transactions, PubicMessages.SuccessMessage));
+        }
+
 
 
 
@@ -461,9 +494,9 @@ namespace CallInDoor.Controllers
                 CardId = model.CardId,
                 ProviderUserName = null,
                 ServiceTypeWithDetails = null,
-                User_TopTenPackageTBL=null,
-                CheckDiscountTBL=null,
-                
+                User_TopTenPackageTBL = null,
+                CheckDiscountTBL = null,
+
             };
 
 

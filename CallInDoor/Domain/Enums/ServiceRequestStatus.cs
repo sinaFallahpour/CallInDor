@@ -18,7 +18,11 @@ namespace Domain.Enums
 
         [Description("درحال بررسی")]
         [Display(Name = "در حال بررسی")]
-        Pending
+        Pending,
+
+        [Description("انجام شده وبه پایان رسیده")]
+        [Display(Name = "انجام شده وبه پایان رسیده")]
+        Done,
 
     }
 }

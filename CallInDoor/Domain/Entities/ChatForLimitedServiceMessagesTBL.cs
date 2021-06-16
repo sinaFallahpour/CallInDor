@@ -1,4 +1,5 @@
-﻿using Domain.Enums;
+﻿using Domain.Entities.Requests;
+using Domain.Enums;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -76,10 +77,39 @@ namespace Domain.Entities
         #region  Relation 
 
 
-        public int? ServiceRequestId { get; set; }
+        //public int? ServiceRequestId { get; set; }
 
-        [ForeignKey("ServiceRequestId")]
-        public ServiceRequestTBL ServiceRequestTBL { get; set; }
+        //[ForeignKey("ServiceRequestId")]
+        //public ServiceRequestTBL ServiceRequestTBL { get; set; }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        #region   Rabete 3 Gani
+        public int? BaseServiceRequestId { get; set; }
+
+        [ForeignKey("BaseServiceRequestId")]
+        public BaseRequestServiceTBL BaseRequestServiceTBL { get; set; }
+
+
+        public int? ChatRequestId { get; set; }
+
+        [ForeignKey("ChatRequestId")]
+        public ChatRequestTBL ChatRequestTBL { get; set; }
+        #endregion
+
 
         #endregion
 

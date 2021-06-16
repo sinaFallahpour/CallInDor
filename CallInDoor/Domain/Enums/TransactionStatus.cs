@@ -9,6 +9,8 @@ namespace Domain.Enums
     public enum TransactionStatus
     {
 
+        //adminMAnual
+
         [Description("تکمیل پروفایل")]
         [Display(Name = "تکمیل پروفایل")]
         CompleteProfileTransaction,
@@ -36,8 +38,8 @@ namespace Domain.Enums
         [Description("تراکنش خرید پکیج تاپ تن")]
         [Display(Name = "تراکنش خرید پکیج تاپ تن")]
         TopTenPackage,
-        
-        
+
+
         /// <summary>
         /// مبلغ هایی که بابت کمسیون از تراکنش هایه کاربران کم مسشه
         /// </summary>

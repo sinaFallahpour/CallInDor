@@ -401,11 +401,11 @@ class DataListConfig extends Component {
         cell: (row) => {
           if (row.transactionStatus == 0)
             return (
-              <span className="badge badge-primary">CompleteProfileTransaction</span>
+              <span className="badge badge-primary">Complete Profile Transaction</span>
             );
           if (row.transactionStatus == 1)
             return (
-              <span className="badge badge-success">NormalTransaction</span>
+              <span className="badge badge-success">Normal Transaction</span>
             );
           if (row.transactionStatus == 2)
             return (

@@ -1,4 +1,5 @@
 ﻿using Domain.Entities;
+using Domain.Entities.Requests;
 using Helper.Models.Entities;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
@@ -28,6 +29,9 @@ namespace Domain
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);
+
+            builder.Entity<CardTBL>().HasQueryFilter(c => !c.IsDeleted);
+
 
 
 
@@ -80,13 +84,33 @@ namespace Domain
 
 
 
+        /// <summary>
+        /// جدول ریکوست های سرویس ها
+        /// </summary>
+        public DbSet<BaseRequestServiceTBL> BaseRequestServiceTBL { get; set; }
+
+
+        /// <summary>
+        ///  جدول اطلاعات اضافی یم ریکوست که مخصوص  کال هستند
+        /// </summary>
+        public DbSet<CallRequestTBL> CallRequestTBL { get; set; }
+
+        /// <summary>
+        ///  جدول اطلاعات اضافی یم ریکوست که مخصوص چت هستند
+        /// </summary>
+        public DbSet<ChatRequestTBL> ChatRequestTBL { get; set; }
+
+
+
+
+
 
         /// <summary>
         ///   در خواست های  کاربر برای برداشت از کیف پولش
         /// </summary>
         public DbSet<UserWithdrawlRequestTBL> UserWithdrawlRequestTBL { get; set; }
-        
-        
+
+
         /// <summary>
         /// جدول ذخیره کاربرانی که در یک  سرویس خاص عضو یک کمپانی هستند
         /// </summary>

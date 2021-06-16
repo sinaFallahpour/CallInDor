@@ -26,6 +26,7 @@ namespace CallInDoor.Config.Attributes
 
             var currentSerialNumber = context.HttpContext.User?.Claims?.FirstOrDefault(x => x.Type == PublicHelper.SerialNumberClaim)?.Value;
             var currentUserName = context.HttpContext.User?.Claims?.FirstOrDefault(x => x.Type == ClaimTypes.Name)?.Value;
+            var role = context.HttpContext.User?.Claims?.FirstOrDefault(x => x.Type == ClaimTypes.Role)?.Value;
 
             var IsExist = _context.Users.AsNoTracking()
                         .Any(x => x.SerialNumber == currentSerialNumber && x.UserName == currentUserName);
@@ -37,7 +38,7 @@ namespace CallInDoor.Config.Attributes
                 {
                     List<string> errors = new List<string> { _localizerShared["UnauthorizedMessage"].Value.ToString() };
                     context.Result = new UnauthorizedObjectResult(new ApiBadRequestResponse(errors, 401));
-                   
+
                     return;
                     //return Unauthorized(new ApiBadRequestResponse(erroses, 401));
                 }
@@ -46,6 +47,16 @@ namespace CallInDoor.Config.Attributes
                 context.Result = new UnauthorizedObjectResult(new ApiBadRequestResponse(errors2, 401));
                 //////context.Result = new UnauthorizedObjectResult(new ApiResponse(401, PubicMessages.UnAuthorizeMessage));
             }
+
+
+            if (IsAdmin && role != PublicHelper.ADMINROLE)
+            {
+                List<string> errors2 = new List<string> { PubicMessages.UnAuthorizeMessage };
+                context.Result = new UnauthorizedObjectResult(new ApiBadRequestResponse(errors2, 401));
+
+            }
+
+
         }
 
 

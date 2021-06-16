@@ -1,5 +1,6 @@
 import React from "react";
 import {
+  Row,
   Card,
   CardHeader,
   CardTitle,
@@ -46,6 +47,9 @@ import "react-block-ui/dist/style.css";
 
 // import ReactLoading from "react-loading";
 
+import Transactions from "./Components/Transactions"
+import Cards from "./Components/Cards"
+
 class _DetailsUser extends React.Component {
   state = {
     data: {
@@ -70,6 +74,14 @@ class _DetailsUser extends React.Component {
     errorMessage: "",
     Loading: false,
     pageLoading: false,
+
+
+
+    userTarnsactions: [],
+    loadingTransactions: true,
+
+    userCards: [],
+    loadingCards: true,
   };
 
   // schema = {
@@ -153,9 +165,20 @@ class _DetailsUser extends React.Component {
         fields,
       });
 
+      const res = await agent.Transactions.GetTarnsactonByUserNameInAdmin({ username });
+      const userTarnsactions = res.data.result.data
+      this.setState({ userTarnsactions, loadingTransactions: false })
+
+      const res2 = await agent.Cards.GetUserCardsByUserNameInAdmin({ username });
+      const userCards = res2.data.result.data
+      this.setState({ userCards, loadingCards: false })
+
+
       // console.log(this.state.groupingRequiredFile);
     } catch (ex) {
       console.log(ex);
+      console.log(ex?.response)
+      console.log(ex?.response?.status)
       if (ex?.response?.status == 404 || ex?.response?.status == 400) {
         return this.props.history.replace("/not-found");
       }
@@ -329,6 +352,16 @@ class _DetailsUser extends React.Component {
       requiredFiles,
       fields,
       data,
+
+      userTarnsactions,
+      loadingTransactions,
+
+      userCards,
+      loadingCards
+
+
+
+
     } = this.state;
 
     if (pageLoading) {
@@ -337,18 +370,18 @@ class _DetailsUser extends React.Component {
 
     return (
       <>
-        {console.log(this.state.groupingRequiredFile)}
-        <Col sm="10" className="mx-auto">
-          <Card>
-            <CardHeader>
-              <CardTitle className="w-100 text-center">
-                {" "}
+        <Row>
+          <Col sm="12" className="mx-auto">
+            <Card>
+              <CardHeader>
+                <CardTitle className="w-100 text-center">
+                  {" "}
                 User Information{" "}
-              </CardTitle>
-            </CardHeader>
+                </CardTitle>
+              </CardHeader>
 
-            <CardBody>
-              {/* {errorscustom &&
+              <CardBody>
+                {/* {errorscustom &&
                 errorscustom.map((err, index) => {
                   return (
                     <Alert key={index} className="text-center" color="danger ">
@@ -356,24 +389,24 @@ class _DetailsUser extends React.Component {
                     </Alert>
                   );
                 })} */}
-              <form>
-                <FormGroup row>
-                  <Col md="6" style={{ height: "252px" }}>
-                    <img
-                      style={{
-                        height: "100%",
-                        borderRadius: "12px !important",
-                      }}
-                      src={
-                        data.imageAddress != null
-                          ? baseUrl + data.imageAddress
-                          : profile
-                      }
-                      alt="CoverImg"
-                      className="img-fluid bg-cover w-100 rounded-0"
-                    />
+                <form>
+                  <FormGroup row>
+                    <Col md="6" style={{ height: "252px" }}>
+                      <img
+                        style={{
+                          height: "100%",
+                          borderRadius: "12px !important",
+                        }}
+                        src={
+                          data.imageAddress != null
+                            ? baseUrl + data.imageAddress
+                            : profile
+                        }
+                        alt="CoverImg"
+                        className="img-fluid bg-cover w-100 rounded-0"
+                      />
 
-                    {/* {data.imageAddress != null ?
+                      {/* {data.imageAddress != null ?
                       <img
                         style={{ height: "100%", borderRadius: "12px !important" }}
                         src={baseUrl + data.imageAddress}
@@ -389,196 +422,208 @@ class _DetailsUser extends React.Component {
                       />
 
                     } */}
-                  </Col>
-                  <Col md="6">
-                    {data.videoAddress != null ? (
-                      <iframe
-                        className="embed-responsive-item w-100 height-250 mb-1"
-                        src={baseUrl + data.videoAddress}
-                        allowFullScreen
-                        title="post"
-                        frameBorder="0"
+                    </Col>
+                    <Col md="6">
+                      {data.videoAddress != null ? (
+                        <iframe
+                          className="embed-responsive-item w-100 height-250 mb-1"
+                          src={baseUrl + data.videoAddress}
+                          allowFullScreen
+                          title="post"
+                          frameBorder="0"
+                        />
+                      ) : (
+                        <h3> there is no video for User</h3>
+                      )}
+                    </Col>
+                  </FormGroup>
+
+                  <FormGroup row>
+                    <Col md="6">
+                      <Input name="name" value={data.name} label={"Name"} />
+                    </Col>
+                    <Col md="6">
+                      <Input
+                        name="LastName"
+                        value={data.lastName}
+                        label={"Last Name"}
                       />
-                    ) : (
-                      <h3> there is no video for User</h3>
-                    )}
-                  </Col>
-                </FormGroup>
-
-                <FormGroup row>
-                  <Col md="6">
-                    <Input name="name" value={data.name} label={"Name"} />
-                  </Col>
-                  <Col md="6">
-                    <Input
-                      name="LastName"
-                      value={data.lastName}
-                      label={"Last Name"}
-                    />
-                  </Col>
-                </FormGroup>
-
-                <FormGroup row>
-                  <Col md="6">
-                    <Input
-                      name="username"
-                      value={data.userName}
-                      label={"Username"}
-                    />
-                  </Col>
-
-                  <Col md="6">
-                    <Input name="email" value={data.email} label={"Email"} />
-                  </Col>
-                </FormGroup>
-
-                <FormGroup row>
-                  <Col md="6">
-                    <label htmlFor={"bio"}>Bio</label>
-                    <textarea
-                      value={data.bio}
-                      readOnly
-                      name={"bio"}
-                      id={"bio"}
-                      className={`form-control `}
-                    />
-                  </Col>
-                </FormGroup>
-
-                <FormGroup row>
-                  <Col md="3">
-                    <Checkbox
-                      disabled
-                      color="primary"
-                      icon={<Check className="vx-icon" size={16} />}
-                      label="Profile editable  status"
-                      defaultChecked={data.isEditableProfile}
-                    />
-                  </Col>
-
-                  <Col md="3">
-                    <Checkbox
-                      disabled
-                      color="primary"
-                      icon={<Check className="vx-icon" size={16} />}
-                      label="Is it a company?"
-                      defaultChecked={data.isCompany}
-                    />
-                  </Col>
-
-                  <Col md="3">
-                    <Checkbox
-                      disabled
-                      color="primary"
-                      icon={<Check className="vx-icon" size={16} />}
-                      label="Lock status"
-                      defaultChecked={data.isLockOut}
-                    />
-                  </Col>
-                  <Col md="3">
-                    <Checkbox
-                      disabled
-                      color="primary"
-                      icon={<Check className="vx-icon" size={16} />}
-                      label="Phone number confirmation"
-                      defaultChecked={data.phoneNumberConfirmed}
-                    />
-                  </Col>
-                </FormGroup>
-
-                <hr></hr>
-                <h3> fileds </h3>
-                {this.state?.fields?.length === 0 ? (
-                  <h3 className="text-center"> there no filed for user </h3>
-                ) : (
-                  <FormGroup row>
-                    {this.state.fields?.map((field, index) => (
-                      <>
-                        <Col key={index} md="5" className="mt-2">
-                          <button
-                            type="button"
-                            key={index}
-                            className="text-center text-white form-control btn-warning"
-                          >
-                            {`${field.title}(${this.returnDegreeType(field.degreeType)})`}
-                            {/* {field.title}( {this.returnDegreeType(field.degreeType)}) */}
-                          </button>
-                        </Col>
-                      </>
-                    ))}
+                    </Col>
                   </FormGroup>
-                )}
 
-                <hr></hr>
-                <h3>required file for user </h3>
-                <hr></hr>
-                {requiredFiles?.length == 0 ? (
-                  <h3 className="text-center"> there no file for user </h3>
-                ) : (
                   <FormGroup row>
-                    {requiredFiles?.map((requireFIle, index) => (
-                      <>
-                        <Col key={index} md="12" className="mt-4">
-                          <hr />
-                          <p> {requireFIle.serviceName}
-                            {this.returnProfileConfirmType(requireFIle.profileConfirmType)}
-                          </p>
-                          {requireFIle?.files?.map((item) => {
-                            return (
-                              <>
-                                <div className="mb-1">
-                                  <input type="hidden" value={item?._id} />
-                                  <label></label>
-                                  <a
-                                    type="button"
-                                    href={baseUrl + item.fileAddress}
-                                    target="_blank"
-                                    className="text-center text-white form-control btn-success"
-                                  >
-                                    {item.serviceName}
-                                  </a>
+                    <Col md="6">
+                      <Input
+                        name="username"
+                        value={data.userName}
+                        label={"Username"}
+                      />
+                    </Col>
 
-                                </div>
-                              </>
-                            );
-                          })}
+                    <Col md="6">
+                      <Input name="email" value={data.email} label={"Email"} />
+                    </Col>
+                  </FormGroup>
+
+                  <FormGroup row>
+                    <Col md="6">
+                      <label htmlFor={"bio"}>Bio</label>
+                      <textarea
+                        value={data.bio}
+                        readOnly
+                        name={"bio"}
+                        id={"bio"}
+                        className={`form-control `}
+                      />
+                    </Col>
+                  </FormGroup>
+
+                  <FormGroup row>
+                    <Col md="3">
+                      <Checkbox
+                        disabled
+                        color="primary"
+                        icon={<Check className="vx-icon" size={16} />}
+                        label="Profile editable  status"
+                        defaultChecked={data.isEditableProfile}
+                      />
+                    </Col>
+
+                    <Col md="3">
+                      <Checkbox
+                        disabled
+                        color="primary"
+                        icon={<Check className="vx-icon" size={16} />}
+                        label="Is it a company?"
+                        defaultChecked={data.isCompany}
+                      />
+                    </Col>
+
+                    <Col md="3">
+                      <Checkbox
+                        disabled
+                        color="primary"
+                        icon={<Check className="vx-icon" size={16} />}
+                        label="Lock status"
+                        defaultChecked={data.isLockOut}
+                      />
+                    </Col>
+                    <Col md="3">
+                      <Checkbox
+                        disabled
+                        color="primary"
+                        icon={<Check className="vx-icon" size={16} />}
+                        label="Phone number confirmation"
+                        defaultChecked={data.phoneNumberConfirmed}
+                      />
+                    </Col>
+                  </FormGroup>
+
+                  <hr></hr>
+                  <h3> fileds </h3>
+                  {this.state?.fields?.length === 0 ? (
+                    <h3 className="text-center"> there no filed for user </h3>
+                  ) : (
+                    <FormGroup row>
+                      {this.state.fields?.map((field, index) => (
+                        <>
+                          <Col key={index} md="5" className="mt-2">
+                            <button
+                              type="button"
+                              key={index}
+                              className="text-center text-white form-control btn-warning"
+                            >
+                              {`${field.title}(${this.returnDegreeType(field.degreeType)})`}
+                              {/* {field.title}( {this.returnDegreeType(field.degreeType)}) */}
+                            </button>
+                          </Col>
+                        </>
+                      ))}
+                    </FormGroup>
+                  )}
+
+                  <hr></hr>
+                  <h3>required file for user </h3>
+                  <hr></hr>
+                  {requiredFiles?.length == 0 ? (
+                    <h3 className="text-center"> there no file for user </h3>
+                  ) : (
+                    <FormGroup row>
+                      {requiredFiles?.map((requireFIle, index) => (
+                        <>
+                          <Col key={index} md="12" className="mt-4">
+                            <hr />
+                            <p> {requireFIle.serviceName}
+                              {this.returnProfileConfirmType(requireFIle.profileConfirmType)}
+                            </p>
+                            {requireFIle?.files?.map((item) => {
+                              return (
+                                <>
+                                  <div className="mb-1">
+                                    <input type="hidden" value={item?._id} />
+                                    <label></label>
+                                    <a
+                                      type="button"
+                                      href={baseUrl + item.fileAddress}
+                                      target="_blank"
+                                      className="text-center text-white form-control btn-success"
+                                    >
+                                      {item.serviceName}
+                                    </a>
+
+                                  </div>
+                                </>
+                              );
+                            })}
 
 
-                          <button
-                            type="button"
-                            // disabled={this.returnConfirmType(requireFIle.profileConfirmType)}
-                            disabled={requireFIle.profileConfirmType == 0 ? true : false}
-                            className="mr-1 text-center btn btn-primary text-center "
-                            onClick={() => {
-                              this.handleAccept(requireFIle.serviceId)
-                            }}
-                          >
-                            confirm
+                            <button
+                              type="button"
+                              // disabled={this.returnConfirmType(requireFIle.profileConfirmType)}
+                              disabled={requireFIle.profileConfirmType == 0 ? true : false}
+                              className="mr-1 text-center btn btn-primary text-center "
+                              onClick={() => {
+                                this.handleAccept(requireFIle.serviceId)
+                              }}
+                            >
+                              confirm
                             </button>
 
-                          <button
-                            type="button"
-                            // disabled={this.returnRejectType(requireFIle.profileConfirmType)}
-                            disabled={requireFIle.profileConfirmType == 1 ? true : false}
+                            <button
+                              type="button"
+                              // disabled={this.returnRejectType(requireFIle.profileConfirmType)}
+                              disabled={requireFIle.profileConfirmType == 1 ? true : false}
 
-                            // disabled={!(requireFIle.profileConfirmType == 2 && requireFIle.profileConfirmType == 1)}
-                            className=" text-center btn btn-danger text-center "
-                            onClick={() => {
-                              this.handleReject(requireFIle.serviceId)
-                            }}
-                          >
-                            reject
+                              // disabled={!(requireFIle.profileConfirmType == 2 && requireFIle.profileConfirmType == 1)}
+                              className=" text-center btn btn-danger text-center "
+                              onClick={() => {
+                                this.handleReject(requireFIle.serviceId)
+                              }}
+                            >
+                              reject
                             </button>
-                        </Col>
-                      </>
-                    ))}
-                  </FormGroup>
-                )}
+                          </Col>
+                        </>
+                      ))}
+                    </FormGroup>
+                  )}
 
-              </form>
-            </CardBody>
-          </Card>
-        </Col>
+                </form>
+              </CardBody>
+            </Card>
+          </Col>
+
+
+          <Col lg="12" md="12">
+            <Transactions rowData={userTarnsactions} loading={loadingTransactions} />
+          </Col>
+
+          <Col lg="6" md="12">
+            <Cards rowData={userCards} loading={loadingCards} />
+          </Col>
+
+        </Row>
+
       </>
     );
   }

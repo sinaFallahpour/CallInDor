@@ -232,7 +232,9 @@ const Transactions = {
   GetAllServiceTransactionInAdmin: (model) => requests.post("/Transactoin/GetAllServiceTransactionInAdmin", model),
   GetAllNormalTransactionInAdmin: (model) => requests.post("/Transactoin/GetAllNormalTransactionInAdmin", model),
   GetAllTopTenTransactionInAdmin: (model) => requests.post("/Transactoin/GetAllTopTenTransactionInAdmin", model),
-  GetAllCommissionTransactionInAdmin: (model) => requests.post("/Transactoin/GetAllCommissionTransactionInAdmin", model)
+  GetAllCommissionTransactionInAdmin: (model) => requests.post("/Transactoin/GetAllCommissionTransactionInAdmin", model),
+  GetTarnsactonByUserNameInAdmin: (model) => requests.post(`/Transactoin/GetTarnsactonByUserNameInAdmin`, model)
+
 
 
 
@@ -245,6 +247,10 @@ const Transactions = {
   //   requests.post("/tiket/AddFileToTiketInAdmin", model),
   // addChatMessageToTiketInAdmin: (model) =>
   //   requests.post("/tiket/AddChatMessageToTiketInAdmin", model),
+};
+
+const Cards = {
+  GetUserCardsByUserNameInAdmin: (model) => requests.post(`/Card/GetUserCardsByUserNameInAdmin`, model)
 };
 
 
@@ -316,6 +322,7 @@ export default {
   Home,
   Tikets,
   Transactions,
+  Cards,
   Questions,
   CheckDiscount,
   Resources
