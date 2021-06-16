@@ -14,26 +14,6 @@
   <ItemGroup>
     <Compile Remove="Entities\DegreeTBL.cs" />
     <Compile Remove="Entities\UsedPeriodedChatTBL.cs" />
-    <Compile Remove="Migrations\20210510042915_initNewDB.cs" />
-    <Compile Remove="Migrations\20210510042915_initNewDB.Designer.cs" />
-    <Compile Remove="Migrations\20210519075100_adingSupplierToCartegory.cs" />
-    <Compile Remove="Migrations\20210519075100_adingSupplierToCartegory.Designer.cs" />
-    <Compile Remove="Migrations\20210519075440_editCategory.cs" />
-    <Compile Remove="Migrations\20210519075440_editCategory.Designer.cs" />
-    <Compile Remove="Migrations\20210519080402_editcategory.cs" />
-    <Compile Remove="Migrations\20210519080402_editcategory.Designer.cs" />
-    <Compile Remove="Migrations\20210519081121_addNewIndex.cs" />
-    <Compile Remove="Migrations\20210519081121_addNewIndex.Designer.cs" />
-    <Compile Remove="Migrations\20210526063143_somechnagestoD.cs" />
-    <Compile Remove="Migrations\20210526063143_somechnagestoD.Designer.cs" />
-    <Compile Remove="Migrations\20210529062712_smechnages.cs" />
-    <Compile Remove="Migrations\20210529062712_smechnages.Designer.cs" />
-    <Compile Remove="Migrations\20210616052340_addingBAserServicReqquest.cs" />
-    <Compile Remove="Migrations\20210616052340_addingBAserServicReqquest.Designer.cs" />
-    <Compile Remove="Migrations\20210616061209_testsina.cs" />
-    <Compile Remove="Migrations\20210616061209_testsina.Designer.cs" />
-    <Compile Remove="Migrations\20210616062542_StartOne.cs" />
-    <Compile Remove="Migrations\20210616062542_StartOne.Designer.cs" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="8.0.1" />

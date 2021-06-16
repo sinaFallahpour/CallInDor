@@ -1,7 +1,6 @@
 ﻿using AutoMapper;
 using Domain.Entities;
-using Domain.Migrations;
-using System;
+ using System;
 using System.Collections.Generic;
 using System.Text;
 

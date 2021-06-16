@@ -90,16 +90,16 @@ namespace Domain.Entities
 
         #region  rabete 3 gani
 
-        //public int? BaseServiceRequestId { get; set; }
+        public int? BaseServiceRequestId { get; set; }
 
-        //[ForeignKey("BaseServiceRequestId")]
-        //public BaseRequestServiceTBL BaseRequestServiceTBL { get; set; }
+        [ForeignKey("BaseServiceRequestId")]
+        public BaseRequestServiceTBL BaseRequestServiceTBL { get; set; }
 
 
-        //public int? ChatRequestId { get; set; }
+        public int? ChatRequestId { get; set; }
 
-        //[ForeignKey("ChatRequestId")]
-        //public ChatRequestTBL ChatRequestTBL { get; set; }
+        [ForeignKey("ChatRequestId")]
+        public ChatRequestTBL ChatRequestTBL { get; set; }
 
 
 
