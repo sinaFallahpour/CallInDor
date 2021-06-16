@@ -28,6 +28,12 @@
     <Compile Remove="Migrations\20210526063143_somechnagestoD.Designer.cs" />
     <Compile Remove="Migrations\20210529062712_smechnages.cs" />
     <Compile Remove="Migrations\20210529062712_smechnages.Designer.cs" />
+    <Compile Remove="Migrations\20210616052340_addingBAserServicReqquest.cs" />
+    <Compile Remove="Migrations\20210616052340_addingBAserServicReqquest.Designer.cs" />
+    <Compile Remove="Migrations\20210616061209_testsina.cs" />
+    <Compile Remove="Migrations\20210616061209_testsina.Designer.cs" />
+    <Compile Remove="Migrations\20210616062542_StartOne.cs" />
+    <Compile Remove="Migrations\20210616062542_StartOne.Designer.cs" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="8.0.1" />

@@ -225,8 +225,8 @@ namespace Domain.Entities.Requests
         public List<ChatForLimitedServiceMessagesTBL> ChatForLimitedServiceMessagesTBL { get; set; }
 
 
-        /// لیست پیام های پت (البته اگرا ازنوع چت باشد ) 
-        public List<ChatServiceMessagesTBL> ChatServiceMessagesTBL { get; set; }
+        ///// لیست پیام های پت (البته اگرا ازنوع چت باشد ) 
+        //public List<ChatServiceMessagesTBL> ChatServiceMessagesTBL { get; set; }
 
 
         /// <summary>

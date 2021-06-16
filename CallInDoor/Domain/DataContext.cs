@@ -182,10 +182,10 @@ namespace Domain
         public DbSet<ChatForLimitedServiceMessagesTBL> ChatForLimitedServiceMessagesTBL { get; set; }
 
 
-        /// <summary>
-        ///جدول کل چت هایه سرویس هایی که ازنوه چت وویس از نوع فیری هستند را ذخیره میکند
-        /// </summary>
-        public DbSet<ChatServiceMessagesTBL> ChatServiceMessagesTBL { get; set; }
+        /////////////////////////////////////////////////////// <summary>
+        ///////////////////////////////////////////////////////جدول کل چت هایه سرویس هایی که ازنوه چت وویس از نوع فیری هستند را ذخیره میکند
+        /////////////////////////////////////////////////////// </summary>
+        ////////////////////////////////////////////////////public DbSet<ChatServiceMessagesTBL> ChatServiceMessagesTBL { get; set; }
 
 
 
