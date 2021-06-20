@@ -46,6 +46,132 @@ namespace Service
 
         #endregion
 
+
+
+
+
+
+        /// <summary>
+        /// ولیدیت کردن ریکوست که به سرویس های وویس کال و ویدیو کال داده میشه بیابد
+        /// </summary>
+        /// <param name="baseServiceFromDB"></param>
+        /// <param name="hasReserveRequest"></param>
+        /// <returns></returns>
+        public async Task<(bool succsseded, List<string> result)> ValidateRequestToCall(BaseMyServiceTBL baseServiceFromDB, AppUser provider, AppUser currentUser, bool hasReserveRequest)
+        {
+            bool IsValid = true;
+            List<string> Errors = new List<string>();
+            string curentUSerName = _accountService.GetCurrentUserName();
+
+            if (baseServiceFromDB == null)
+            {
+                IsValid = false;
+                Errors.Add(_resourceServices.GetErrorMessageByKey("NotFound"));
+                return (IsValid, Errors);
+            }
+
+            if (baseServiceFromDB.UserName.ToLower() == curentUSerName)
+            {
+                IsValid = false;
+                Errors.Add(_resourceServices.GetErrorMessageByKey("YouCantRequestToYourSelf"));
+                return (IsValid, Errors);
+            }
+
+
+
+            ///provide is limited
+            if (provider.LimiteTimeOfRecieveRequest > DateTime.Now)
+            {
+                IsValid = false;
+                Errors.Add(_resourceServices.GetErrorMessageByKey("ProviderIsLimitForAFewMinutes"));
+                return (IsValid, Errors);
+            }
+
+
+
+            //سرویس باید از نوع چت باشد
+            //if (baseServiceFromDB.ServiceType != ServiceType.ChatVoice)
+            if (!baseServiceFromDB.ServiceTypes.Contains("1") && !baseServiceFromDB.ServiceTypes.Contains("2"))
+            {
+                IsValid = false;
+                Errors.Add(_resourceServices.GetErrorMessageByKey("InValidServiceType"));
+                return (IsValid, Errors);
+            }
+
+            if (baseServiceFromDB.ConfirmedServiceType != ConfirmedServiceType.Confirmed ||
+                baseServiceFromDB.ProfileConfirmType != ProfileConfirmType.Confirmed)
+            {
+                IsValid = false;
+                Errors.Add(_resourceServices.GetErrorMessageByKey("NotFound"));
+                return (IsValid, Errors);
+            }
+
+            if (hasReserveRequest)
+            {
+                IsValid = false;
+                Errors.Add(_resourceServices.GetErrorMessageByKey("HasReserveRequest"));
+                return (IsValid, Errors);
+
+            }
+
+
+
+
+            //checking wallet
+            if (currentUser.WalletBalance == 0 || currentUser.WalletBalance < (double)baseServiceFromDB.MyChatsService.PriceForNativeCustomer)
+            {
+                var errorMessage = _resourceServices.GetErrorMessageByKey("NotEnoughtBalance");
+                Errors.Add(errorMessage);
+                return (IsValid, Errors);
+            }
+
+
+            //check wallet
+            //checke package
+            //check provider online isonlie
+            if (!provider.IsOnline)
+            {
+                var errorMessage = _resourceServices.GetErrorMessageByKey("ProviderIsBussy");
+                Errors.Add(errorMessage);
+                return (IsValid, Errors);
+            }
+
+            if (!provider.IsFree)
+            {
+                var errorMessage = _resourceServices.GetErrorMessageByKey("ProviderIsOfline");
+                Errors.Add(errorMessage);
+                return (IsValid, Errors);
+            }
+
+
+
+
+
+            //check user is active or not
+            bool isonline = false;
+            if (!baseServiceFromDB.MyChatsService.IsServiceReverse)
+            {
+                isonline = await _context.Users.Where(c => c.UserName == baseServiceFromDB.UserName)
+                                                   .Select(c => c.IsOnline)
+                                                   .FirstOrDefaultAsync();
+
+                if (!isonline)
+                {
+                    IsValid = false;
+                    Errors.Add(_resourceServices.GetErrorMessageByKey("ProviderIsUnAvailableMessage"));
+                    return (IsValid, Errors);
+                }
+            }
+
+
+            return (IsValid, Errors);
+        }
+
+
+
+
+
+
         /// <summary>
         /// ولیدیت کردن ریکوست که به سرویس های فیری از نوع چت وویس بیابد
         /// </summary>
@@ -64,6 +190,9 @@ namespace Service
                 Errors.Add(_resourceServices.GetErrorMessageByKey("NotFound"));
                 return (IsValid, Errors);
             }
+
+
+
 
 
             //****************************  PackageType  Validate  ***************************************//

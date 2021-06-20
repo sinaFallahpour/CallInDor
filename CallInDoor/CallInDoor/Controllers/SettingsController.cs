@@ -71,9 +71,9 @@ namespace CallInDoor.Controllers
                 ServiceConfirmNotificationTextEnglish = settings.Where(c => c.Key == PublicHelper.ServiceConfimNotificationKeyName).SingleOrDefault()?.EnglishValue,
 
                 ServiceRejectNotificationText = settings.Where(c => c.Key == PublicHelper.ServiceRejectionKeyName).SingleOrDefault()?.Value,
-                ServiceRejectNotificationTextEnglish = settings.Where(c => c.Key == PublicHelper.ServiceRejectionKeyName).SingleOrDefault()?.EnglishValue
+                ServiceRejectNotificationTextEnglish = settings.Where(c => c.Key == PublicHelper.ServiceRejectionKeyName).SingleOrDefault()?.EnglishValue,
 
-
+                ProviderLimitTimeForRejectRequest = settings.Where(c => c.Key == PublicHelper.ProviderLimitTimeForRejectRequest).SingleOrDefault()?.EnglishValue
 
             };
             return Ok(_commonService.OkResponse(settingsFromDB, PubicMessages.SuccessMessage));
@@ -165,6 +165,14 @@ namespace CallInDoor.Controllers
                 ServcieRejectNotificationText.Value = model.ServiceRejectNotificationText;
                 ServcieRejectNotificationText.EnglishValue = model.ServiceRejectNotificationTextEnglish;
                 ServcieRejectNotificationText.UpdatedAt = DateTime.Now;
+            }
+
+            var providerLimitTimeForRejectRequest = settingsFromDB.SingleOrDefault(c => c.Key == PublicHelper.ProviderLimitTimeForRejectRequest);
+            if (providerLimitTimeForRejectRequest != null)
+            {
+                providerLimitTimeForRejectRequest.Value = model.ProviderLimitTimeForRejectRequest;
+                providerLimitTimeForRejectRequest.EnglishValue = model.ProviderLimitTimeForRejectRequest;
+                providerLimitTimeForRejectRequest.UpdatedAt = DateTime.Now;
             }
 
 

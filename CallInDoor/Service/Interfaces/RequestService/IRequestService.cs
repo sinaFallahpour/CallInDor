@@ -11,6 +11,10 @@ namespace Service.Interfaces.RequestService
 {
     public interface IRequestService
     {
+
+
+        Task<(bool succsseded, List<string> result)> ValidateRequestToCall(BaseMyServiceTBL baseServiceFromDB, AppUser provider, AppUser currentUser, bool hasReserveRequest);
+
         Task<(bool succsseded, List<string> result)> ValidateRequestToChatService(BaseMyServiceTBL baseServiceFromDB, bool hasReserveRequest);
 
 

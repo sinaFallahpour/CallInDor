@@ -13,9 +13,9 @@ namespace Domain.Entities
     public class UserWithdrawlRequestTBL : BaseEntity<int>
     {
 
-        public double  Amount { get; set; }
+        public double Amount { get; set; }
 
-        public DateTime  CreateDate { get; set; }
+        public DateTime CreateDate { get; set; }
 
 
         /// <summary>
@@ -27,7 +27,7 @@ namespace Domain.Entities
         /// <summary>
         /// علت رد درخواست
         /// </summary>
-        public string  ResonOfReject { get; set; }
+        public string ResonOfReject { get; set; }
 
 
 

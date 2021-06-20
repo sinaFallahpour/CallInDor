@@ -114,18 +114,15 @@ namespace Domain.DTO.Settings
         [MinLength(1, ErrorMessage = "The minimum {0} length is {1} characters")]
         [Display(Name = "Service Rejection Notification Text (English)")]
         public string ServiceRejectNotificationTextEnglish { get; set; }
-
-
-
-
-
-
-
-
- 
-     
-
-
+        
+        
+        
+        
+        
+        [Required(ErrorMessage = "{0} is  Required")]
+        [MinLength(1, ErrorMessage = "The minimum {0} length is {1} characters")]
+        [Display(Name = "provider limit time for reject request")]
+        public string ProviderLimitTimeForRejectRequest { get; set; }
 
 
 

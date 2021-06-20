@@ -54,8 +54,8 @@ class Settings extends Form {
             serviceConfirmNotificationText: "",
             serviceConfirmNotificationTextEnglish: "",
             serviceRejectNotificationText: "",
-            serviceRejectNotificationTextEnglish: ""
-
+            serviceRejectNotificationTextEnglish: "",
+            providerLimitTimeForRejectRequest: null,
 
             // profileRejectNotificationText: Joi.string().required().label("profile rejection notification text"),
             // profileRejectNotificationTextEnglish: Joi.string().required().label("profile rejection notification text (English)"),
@@ -98,7 +98,11 @@ class Settings extends Form {
         serviceConfirmNotificationTextEnglish: Joi.string().required().label("service confirmation notification text(English)"),
 
         serviceRejectNotificationText: Joi.string().required().label("service rejection notification text"),
-        serviceRejectNotificationTextEnglish: Joi.string().required().label("service rejection notification text(English)")
+        serviceRejectNotificationTextEnglish: Joi.string().required().label("service rejection notification text(English)"),
+
+        providerLimitTimeForRejectRequest: Joi.string().required().label("provider limit time for reject request")
+
+
 
 
     };
@@ -128,7 +132,8 @@ class Settings extends Form {
                 serviceConfirmNotificationTextEnglish: settings.serviceConfirmNotificationTextEnglish,
 
                 serviceRejectNotificationText: settings.serviceRejectNotificationText,
-                serviceRejectNotificationTextEnglish: settings.serviceRejectNotificationTextEnglish
+                serviceRejectNotificationTextEnglish: settings.serviceRejectNotificationTextEnglish,
+                providerLimitTimeForRejectRequest: settings.providerLimitTimeForRejectRequest
 
 
             },
@@ -205,7 +210,7 @@ class Settings extends Form {
                                 {this.renderInput("serviceConfirmNotificationTextEnglish", "service confirm notification text (English)", "text", "col-6")}
                                 {this.renderInput("serviceRejectNotificationText", "service reject notification text", "text", "col-6")}
                                 {this.renderInput("serviceRejectNotificationTextEnglish", "service reject notification text (English)", "text", "col-6")}
-
+                                {this.renderInput("providerLimitTimeForRejectRequest", "service reject notification text (English)", "number", "col-6")}
                             </Row>
                             {this.state.Loading ? (
                                 <Button disabled={true} color="primary" className="mb-1">

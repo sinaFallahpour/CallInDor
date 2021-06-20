@@ -1224,6 +1224,58 @@
           "Val": "you cant make a withdrawal request because you have a in progress request"
         }
       ]
+    },
+    {
+      "Key": "ProviderIsBussy",
+      "Languages": [
+        {
+          "Header": "fa-IR",
+          "Val": "شما یک درخواست در حال بررسی دارید. لطفا تا تایید این درخواست شکیبا باشید"
+        },
+        {
+          "Header": "en-US",
+          "Val": "you cant make a withdrawal request because you have a in progress request"
+        },
+        {
+          "Header": "ar",
+          "Val": "you cant make a withdrawal request because you have a in progress request"
+        }
+      ]
+    },
+    {
+      "Key": "ProviderIsOfline",
+      "Languages": [
+        {
+          "Header": "fa-IR",
+          "Val": "خدمت دهنده در دسترس نمی باشد"
+        },
+        {
+          "Header": "en-US",
+          "Val": "provider is of line"
+        },
+        {
+          "Header": "ar",
+          "Val": "provider is of line"
+        }
+      ]
+    },
+    {
+      "Key": "ProviderIsLimitForAFewMinutes",
+      "Languages": [
+        {
+          "Header": "fa-IR",
+          "Val": "در حال حاضر امکان درخواست به سرویس دهنده وجود ندارد"
+        },
+        {
+          "Header": "en-US",
+          "Val": "it is not possible to request a server at this time"
+        },
+        {
+          "Header": "ar",
+          "Val": "it is not possible to request a server at this time"
+        }
+      ]
     }
+
   ]
 }

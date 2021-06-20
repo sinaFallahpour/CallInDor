@@ -55,23 +55,6 @@ namespace Domain.Entities.Requests
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
         /// <summary>
         ///زمانی که آخرین پیام فرستاده شده
         /// </summary>
@@ -97,11 +80,21 @@ namespace Domain.Entities.Requests
         ///این زمان 8 ساعت بعد از ثبت سرویس است مه کاربرانت دی اکتیو باید یه ا  پاسخ دهند 
         public DateTime WhenTheRequestShouldBeAnswered { get; set; }//===================================================
 
-        /// قیمت برای کاربرا ن نان نیتیو
-        public double? PriceForNonNativeCustomer { get; set; }
+        ///////////////// قیمت برای کاربرا ن نان نیتیو
+        //////////////public double? PriceForNonNativeCustomer { get; set; }
 
-        /// قینت برای کاربران نیتیو
-        public double? PriceForNativeCustomer { get; set; }
+        ///////////////// قینت برای کاربران نیتیو
+        //////////////public double? PriceForNativeCustomer { get; set; }
+
+
+
+
+        /// <summary>
+        /// قینت      
+        /// </summary>
+        public double? Price { get; set; }
+
+
 
 
         ////تعداد کل پیام هایی که کلاینت فرستاد

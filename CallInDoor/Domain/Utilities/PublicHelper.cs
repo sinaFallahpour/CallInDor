@@ -44,6 +44,9 @@ namespace Domain.Utilities
         public const string ServiceRejectionKeyName = "ServiceRejection";
 
 
+        public const string ProviderLimitTimeForRejectRequest = "ProviderLimitTimeForRejectRequest";
+
+
 
 
 

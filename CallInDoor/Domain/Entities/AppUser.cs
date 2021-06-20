@@ -12,11 +12,26 @@ namespace Domain.Entities
     {
 
 
+
+        /// <summary>
+        /// تا زمانی که کاربر نمیتواند درخواست قبول کند بخاطر رد کردن درخواست دریگران موقع آنلاین بودن
+        /// </summary>
+        public DateTime LimiteTimeOfRecieveRequest { get; set; }
+
+
+
+        /// <summary>
+        /// آیا پروایدر  آزاد است
+        /// </summary>
+        public bool IsFree { get; set; }
+
+
+
         /// <summary>
         /// زبان فعلی کاربر
         /// </summary>
-        public string  CultureName { get; set; }
-        
+        public string CultureName { get; set; }
+
         public string Name { get; set; }
         public string LastName { get; set; }
         public string Bio { get; set; }

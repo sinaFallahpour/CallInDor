@@ -119,17 +119,11 @@ namespace Domain.Entities.Requests
         public int? BaseRequestId { get; set; }
 
 
-
-
-
-
-
         /// لیست پیام های پت (البته اگرا ازنوع  چت سشن یا پریودیک  باشد ) 
         public List<ChatForLimitedServiceMessagesTBL> ChatForLimitedServiceMessagesTBL { get; set; }
 
         /// لیست پیام های چت (البته اگرا ازنوع چت باشد ) 
         public List<ChatServiceMessagesTBL> ChatServiceMessagesTBL { get; set; }
-
 
 
         #endregion
