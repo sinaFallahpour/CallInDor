@@ -49,10 +49,10 @@ namespace Domain.Entities
 
 
 
-        /// <summary>
-        /// /حداقل فیمت برای برای  سرویس  تایپ هایی  از نوع سرویس
-        /// </summary>
-        public double MinPriceForService { get; set; }
+        ///// <summary>
+        ///// /حداقل فیمت برای برای  سرویس  تایپ هایی  از نوع سرویس
+        ///// </summary>
+        //public double MinPriceForService { get; set; }
 
 
 
@@ -63,15 +63,27 @@ namespace Domain.Entities
         public double MinSessionTime { get; set; }
 
 
-        /// <summary>
-        /// حداقل قیمت مجاز برای کاربران تیتیو برای سرویس های چت یا وویس یا ویدیو
-        /// </summary>
-        public double AcceptedMinPriceForNative { get; set; }
+        ///// <summary>
+        ///// حداقل قیمت مجاز برای کاربران تیتیو برای سرویس های چت یا وویس یا ویدیو
+        ///// </summary>
+        //public double AcceptedMinPriceForNative { get; set; }
+
+        ///// <summary>
+        ///// حداقل قیمت مجاز برای کاربران غیر تیتیو برای سرویس های چت یا وویس یا ویدیو
+        ///// </summary>
+        //public double AcceptedMinPriceForNonNative { get; set; }
+
+
 
         /// <summary>
-        /// حداقل قیمت مجاز برای کاربران غیر تیتیو برای سرویس های چت یا وویس یا ویدیو
+        /// حداقل قیمت مجاز برای کاربران     برای سرویس های چت یا وویس یا ویدیو
         /// </summary>
-        public double AcceptedMinPriceForNonNative { get; set; }
+        public double AcceptedMinPrice { get; set; }
+
+
+
+
+
 
         /// <summary>
         /// آیا فعال است

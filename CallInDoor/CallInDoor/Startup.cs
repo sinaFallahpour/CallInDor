@@ -44,6 +44,7 @@ using Domain.DTO.Resource;
 using Service.Interfaces.UserWithdrawlRequest;
 using Service.Interfaces.Notification;
 using Service.Interfaces.Transaction;
+using Service.Interfaces.Discount;
 
 namespace CallInDoor
 {
@@ -198,6 +199,7 @@ namespace CallInDoor
             services.AddScoped<ICompanyService, CompanyService>();
             services.AddScoped<ISmsService, SmsService>();
             services.AddTransient<IResourceServices, ResourceServices>();
+            services.AddTransient<IDiscountService, DiscountService>();
             services.AddTransient<IUserWithdrawlRequestService, UserWithdrawlRequestService>();
             services.AddTransient<INotificationService, NotificationService>();
             services.AddTransient<ITransactionService, TransactionService>();

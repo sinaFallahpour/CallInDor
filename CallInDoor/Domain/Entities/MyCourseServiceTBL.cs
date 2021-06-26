@@ -27,8 +27,8 @@ namespace Domain.Entities
         public string TotalLenght { get; set; }
 
 
-        [Range(0, double.MaxValue)]
-        public double? Price { get; set; }
+        //[Range(0, double.MaxValue)]
+        //public double? Price { get; set; }
 
 
         public int? DisCountPercent { get; set; }

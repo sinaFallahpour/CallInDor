@@ -26,6 +26,11 @@ namespace Domain.Entities
         public bool IsFree { get; set; }
 
 
+        /// <summary>
+        /// تعداد درخواست به سرویس هایی که رد کرده به عنوان پروایدر
+        /// </summary>
+        public int RejectServiceCount { get; set; }
+
 
         /// <summary>
         /// زبان فعلی کاربر

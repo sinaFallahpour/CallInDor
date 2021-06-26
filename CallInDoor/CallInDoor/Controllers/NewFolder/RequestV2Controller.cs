@@ -17,8 +17,10 @@ using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Localization;
 using Service.Interfaces.Account;
 using Service.Interfaces.Common;
+using Service.Interfaces.Discount;
 using Service.Interfaces.RequestService;
 using Service.Interfaces.Resource;
+using Service.Interfaces.Transaction;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -41,13 +43,14 @@ namespace CallInDoor.Controllers
 
         private readonly DataContext _context;
         private readonly IAccountService _accountService;
+        private readonly ITransactionService _transactionService;
         private readonly ICommonService _commonService;
         private readonly IRequestService _requestService;
+        private readonly IDiscountService _discountService;
 
 
         private IStringLocalizer<RequestV2Controller> _localizer;
         //private IStringLocalizer<ShareResource> _localizerShared;
-
         private readonly IResourceServices _resourceServices;
 
 
@@ -56,8 +59,10 @@ namespace CallInDoor.Controllers
             IHubContext<NotificationHub> hubContext,
             DataContext context,
                    IAccountService accountService,
+                   ITransactionService transactionService,
                    ICommonService commonService,
                    IRequestService requestService,
+                   IDiscountService discountService,
                IStringLocalizer<RequestV2Controller> localizer,
                 //IStringLocalizer<ShareResource> localizerShared,
                 IResourceServices resourceServices
@@ -69,8 +74,10 @@ namespace CallInDoor.Controllers
             _chatHubContext = chatHubContext;
             _context = context;
             _accountService = accountService;
+            _transactionService = transactionService;
             _commonService = commonService;
             _requestService = requestService;
+            _discountService = discountService;
             _localizer = localizer;
             //_localizerShared = localizerShared;
             _resourceServices = resourceServices;
@@ -81,6 +88,88 @@ namespace CallInDoor.Controllers
 
 
 
+        /// <summary>
+        ///گرفتن ریکوست هایی که pending هستند      
+        ///تمام ریکوست هایی که به من داده  شده
+        /// </summary>
+        /// <param name="Id"></param>
+        /// <returns></returns>
+        [HttpGet("GetAllMyRequests")]
+        //[Authorize]
+        [ClaimsAuthorize(IsAdmin = false)]
+        public async Task<ActionResult> GetAllMyRequests()
+        {
+            var currentUsername = _accountService.GetCurrentUserName();
+            //var requests = await (from c in _context.ServiceRequestTBL.Where(c => c.ProvideUserName == currentUsername
+            var requests = await (from c in _context.BaseRequestServiceTBL.Where(c => c.ProvideUserName == currentUsername
+                                  && c.ServiceRequestStatus == ServiceRequestStatus.Pending)
+                                  join u in _context.Users
+                                  on c.ClienUserName.ToLower() equals u.UserName.ToLower()
+                                  select new
+                                  {
+                                      c.Id,
+                                      c.BaseMyServiceTBL.ServiceName,
+                                      ////c.ServiceType,
+                                      ServiceType = c.ServiceTypes,
+                                      c.PackageType,
+                                      c.CreateDate,
+                                      c.BaseServiceId,
+                                      c.ServiceRequestStatus,
+
+                                      u.ImageAddress,
+                                      u.Name,
+                                      u.LastName,
+                                  })
+                                  .AsQueryable()
+                                  .ToListAsync();
+
+            return Ok(_commonService.OkResponse(requests, false));
+        }
+
+
+
+
+        /// <summary>
+        ///تمام درخواست هایی که به دیگران دادم  
+        ///البته با فیلتر
+        /// </summary>
+        /// <param name="Id"></param>
+        /// <returns></returns>
+        [HttpGet("GetAllMyClientRequest")]
+        //[Authorize]
+        [ClaimsAuthorize(IsAdmin = false)]
+        public async Task<ActionResult> GetAllMyClientRequest(ServiceRequestStatus? serviceRequestStatus)
+        {
+            var currentUsername = _accountService.GetCurrentUserName();
+            //var queryAble = _context.ServiceRequestTBL.AsQueryable();
+            var queryAble = _context.BaseRequestServiceTBL.AsQueryable();
+
+            if (serviceRequestStatus != null)
+                queryAble = queryAble.Where(c => c.ServiceRequestStatus == serviceRequestStatus);
+
+            var requests = await (from c in queryAble.Where(c => c.ClienUserName == currentUsername)
+                                  join u in _context.Users
+                                  on c.ProvideUserName.ToLower() equals u.UserName.ToLower()
+                                  select new
+                                  {
+                                      c.Id,
+                                      c.BaseMyServiceTBL.ServiceName,
+                                      //c.ServiceType,
+                                      ServiceTypes = c.ServiceTypes,
+                                      c.PackageType,
+                                      c.CreateDate,
+                                      c.BaseServiceId,
+                                      c.ServiceRequestStatus,
+
+                                      u.ImageAddress,
+                                      u.Name,
+                                      u.LastName,
+                                  })
+                                  .AsQueryable()
+                                  .ToListAsync();
+
+            return Ok(_commonService.OkResponse(requests, false));
+        }
 
 
 
@@ -122,19 +211,27 @@ namespace CallInDoor.Controllers
             var provider = users.Where(c => c.UserName == baseServiceFromDB.UserName).FirstOrDefault();
             var currentUser = users.Where(c => c.UserName == currentUsername).FirstOrDefault();
 
-
-
-
             //#TODO :  agar darkhast rad dade bood ta masaln 5 daghighe natavanad darkhast begirad
             var res = await _requestService.ValidateRequestToCall(baseServiceFromDB, provider, currentUser, hasReserveRequest);
             if (!res.succsseded)
                 return BadRequest(new ApiBadRequestResponse(res.result));
 
+
+
+            //validate discount code
+            var discountFromDb = await _discountService.GetDiscountByCode(model.DiscountCode);
+
+            var res2 = await _discountService.ValidateDiscount(discountFromDb);
+            if (!res2.succsseded)
+                return BadRequest(new ApiBadRequestResponse(res2.result));
+
+
             var baseRequestServiceTBL = new BaseRequestServiceTBL()
             {
-                Price = baseServiceFromDB.MyChatsService.PriceForNativeCustomer,
+                //Price = baseServiceFromDB.MyChatsService.PriceForNativeCustomer,
+                CheckDiscountTBL = discountFromDb,
+                Price = baseServiceFromDB.Price,
                 BaseServiceId = model.BaseServiceId,
-
                 //////ServiceType = baseServiceFromDB.ServiceType,
                 ServiceTypes = baseServiceFromDB.ServiceTypes,
                 CreateDate = DateTime.Now,
@@ -228,21 +325,15 @@ namespace CallInDoor.Controllers
         }
 
 
-
-
-
-
-
-
         /// <summary>
         /// ******************* changed to new Api
         ///قبول کردن سرویس که برای همه نوع سرویس ها فقط همین کال میشود
         /// </summary>
         /// <param name="requestId"></param>
         /// <returns></returns>
-        [HttpGet("AcceptRequest")]
-        [Authorize]
-        public async Task<ActionResult> AcceptRequest(int requestId)
+        [HttpGet("AcceptCallRequest")]
+        [ClaimsAuthorize(IsAdmin = false)]
+        public async Task<ActionResult> AcceptCallRequest(int requestId)
         {
             var currentUserName = _accountService.GetCurrentUserName();
 
@@ -256,11 +347,21 @@ namespace CallInDoor.Controllers
                                     .Where(c => c.Id == requestId && c.ProvideUserName == currentUserName)
                                     .Include(c => c.CallRequestTBL)
                                     .Include(c => c.BaseMyServiceTBL)
+                                    .ThenInclude(c => c.ServiceTbl)
+                                    .Include(c => c.CheckDiscountTBL)
                                         .FirstOrDefaultAsync();
 
             if (requestFromDB == null)
             {
                 return BadRequest(_commonService.NotFoundErrorReponse(false));
+            }
+
+            if (requestFromDB.ServiceRequestStatus == ServiceRequestStatus.Confirmed)
+            {
+                List<string> erros = new List<string> {
+                    _resourceServices.GetErrorMessageByKey("ResquestWasAcceptedBefore")
+                };
+                return BadRequest(new ApiBadRequestResponse(erros, 400));
             }
 
             requestFromDB.ServiceRequestStatus = ServiceRequestStatus.Confirmed;
@@ -270,9 +371,27 @@ namespace CallInDoor.Controllers
             requestFromDB.CallRequestTBL.EndDate = DateTime.Now.AddMinutes((int)requestFromDB.BaseMyServiceTBL.MyChatsService.Duration);
             //requestFromDB.CallRequestTBL.RealEndTime = DateTime.Now.AddMinutes((int)requestFromDB.BaseMyServiceTBL.MyChatsService.Duration);
 
-            var userFromDB = await _context.Users.Where(c => c.UserName.ToLower() == requestFromDB.ClienUserName.ToLower())
-                            .Select(c => new { c.ConnectionId, c.UserName }).FirstOrDefaultAsync();
 
+            //StartDate = null,
+            //    RealEndTime = null,
+            //    EndDate = null,
+
+
+
+
+
+            var userFromDB = await _context.Users
+                   .Where(c => c.UserName == requestFromDB.ClienUserName || c.UserName == requestFromDB.ProvideUserName)
+                   .ToListAsync();
+
+            var clientFromDB = userFromDB.Where(c => c.UserName == requestFromDB.ClienUserName).FirstOrDefault();
+            var providerFromDB = userFromDB.Where(c => c.UserName == requestFromDB.ProvideUserName).FirstOrDefault();
+
+            var res = _transactionService.ValidateWallet(requestFromDB, clientFromDB);
+            if (!res.succsseded)
+                return BadRequest(new ApiBadRequestResponse(res.result));
+
+            await _transactionService.HandleCaLlTransaction(requestFromDB);
 
 
             var notification = new NotificationTBL()
@@ -288,39 +407,46 @@ namespace CallInDoor.Controllers
             bool isPersian = _commonService.IsPersianLanguage();
             string confirmMessage = isPersian ? notification.TextPersian : notification.EnglishText;
 
-            if (!string.IsNullOrEmpty(userFromDB?.ConnectionId))
-                await _hubContext.Clients.Client(userFromDB?.ConnectionId).SendAsync("Notifis", confirmMessage);
+            if (!string.IsNullOrEmpty(clientFromDB?.ConnectionId))
+                await _hubContext.Clients.Client(clientFromDB?.ConnectionId).SendAsync("Notifis", confirmMessage);
 
             await _context.SaveChangesAsync();
             return Ok(_commonService.OkResponse(null, false));
         }
 
 
-
         /// ******************* changed to new Api
-        [HttpGet("RejectRequest")]
-        [Authorize]
-        public async Task<ActionResult> RejectRequest(int requestId)
+        [HttpGet("RejectCallRequest")]
+        [ClaimsAuthorize(IsAdmin = false)]
+        public async Task<ActionResult> RejectCallRequest(int requestId)
         {
             var currentUserName = _accountService.GetCurrentUserName();
             var requestFromDB = await _context.BaseRequestServiceTBL
                                            .Where(c => c.Id == requestId && c.ProvideUserName == currentUserName)
                                                                                             //.AsNoTracking().Select(c => new { c.Id, c.ClienUserName })
                                                                                             .FirstOrDefaultAsync();
-
             if (requestFromDB == null)
             {
                 return BadRequest(_commonService.NotFoundErrorReponse(false));
             }
 
             requestFromDB.ServiceRequestStatus = ServiceRequestStatus.Rejected;
-            //#TODO  :   ta masalan 5 daghighe natavanad darakhst daryaft konad
 
+            //#TODO  :   ta masalan 5 daghighe natavanad darakhst daryaft konad
+            var setting = await _context.SettingsTBL.Where(c => c.Key == PublicHelper.ProviderLimitTimeForRejectRequest).FirstOrDefaultAsync();
+            var providerLimitTimeForRejectRequest = Convert.ToInt32(setting.EnglishValue);
 
             var userFromDB = await _context.Users.Where(c => c.UserName.ToLower() == requestFromDB.ClienUserName.ToLower())
-                            .AsNoTracking()
-                            .Select(c => new { c.ConnectionId, c.UserName }).FirstOrDefaultAsync();
+                            //.AsNoTracking()
+                            //.Select(c => new { c.Id, c.ConnectionId, c.UserName, c.LimiteTimeOfRecieveRequest })
+                            .FirstOrDefaultAsync();
 
+            userFromDB.LimiteTimeOfRecieveRequest = DateTime.Now.AddMinutes(providerLimitTimeForRejectRequest);
+            userFromDB.RejectServiceCount++;
+
+            //var appUser = new AppUser() { Id = userFromDB.Id, LimiteTimeOfRecieveRequest = DateTime.Now.AddMinutes(providerLimitTimeForRejectRequest) };
+            //_context.Users.Attach(appUser);
+            //_context.Entry(appUser).Property(x => new { x.LimiteTimeOfRecieveRequest, }).IsModified = true;
 
             var notification = new NotificationTBL()
             {
@@ -349,25 +475,57 @@ namespace CallInDoor.Controllers
 
 
 
+        /// <summary>
+        /// ******************* changed to new Api *******************
+        ///به اتمام رساندن درخواست 
+        /// </summary>
+        /// <param name="requestId"></param>
+        /// <returns></returns>
+        [HttpGet("FinishingTheRequest")]
+        [ClaimsAuthorize(IsAdmin = false)]
+        public async Task<ActionResult> FinishingTheRequest(int requestId)
+        {
+            var currentUserName = _accountService.GetCurrentUserName();
+            var requestFromDB = await _context.BaseRequestServiceTBL
+                                           .Where(c => c.Id == requestId && c.ProvideUserName == currentUserName)
+                                           .Include(c => c.CallRequestTBL)
+                                                    //.AsNoTracking().Select(c => new { c.Id, c.ClienUserName })
+                                                    .FirstOrDefaultAsync();
+            if (requestFromDB == null)
+                return BadRequest(_commonService.NotFoundErrorReponse(false));
+
+
+            requestFromDB.ServiceRequestStatus = ServiceRequestStatus.Done;
+            requestFromDB.CallRequestTBL.RealEndTime = DateTime.Now;
+
+            await _context.SaveChangesAsync();
+            return Ok(_commonService.OkResponse(null, false));
+        }
 
 
 
 
+        /// ******************* changed to new Api
+        [HttpGet("HaveEnoughBalance")]
+        [ClaimsAuthorize(IsAdmin = false)]
+        public async Task<ActionResult> HaveEnoughBalance(int baseServiceId)
+        {
+            var currentUsername = _accountService.GetCurrentUserName();
+            var userfromDB = await _context.Users.Where(c => c.UserName == currentUsername)
+                .Select(c => new { c.WalletBalance })
+                .FirstOrDefaultAsync();
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+            var baseServiceFromDB = await _context.BaseMyServiceTBL
+                                                     .Where(c => c.Id == baseServiceId && c.IsDeleted == false)
+                                                                     .Select(c => new { c.Price })
+                                                                     .FirstOrDefaultAsync();
+            var haveBalance = true;
+            if (userfromDB.WalletBalance < baseServiceFromDB.Price)
+            {
+                haveBalance = false;
+            }
+            return Ok(_commonService.OkResponse(haveBalance, false));
+        }
 
 
 
@@ -377,6 +535,7 @@ namespace CallInDoor.Controllers
 
 
         ///// <summary>
+        /// ******************* changed to new Api
         /////گرفتن ریکوست هایی که pending هستند      
         /////تمام ریکوست هایی که به من داده  شده
         ///// </summary>
@@ -583,7 +742,7 @@ namespace CallInDoor.Controllers
 
 
 
-         
+
 
 
 

@@ -48,15 +48,25 @@ namespace Domain.DTO.Service
         public double MinSessionTime { get; set; }
 
 
-        /// <summary>
-        /// حداقل قیمت مجاز برای کاربران تیتیو برای سرویس های چت یا وویس یا ویدیو
-        /// </summary>
-        public double AcceptedMinPriceForNative { get; set; }
+
 
         /// <summary>
-        /// حداقل قیمت مجاز برای کاربران غیر تیتیو برای سرویس های چت یا وویس یا ویدیو
+        /// حداقل قیمت مجاز برای کاربران سرویس های چت یا وویس یا ویدیو
         /// </summary>
-        public double AcceptedMinPriceForNonNative { get; set; }
+        public double AcceptedMinPrice { get; set; }
+
+
+
+
+        ///// <summary>
+        ///// حداقل قیمت مجاز برای کاربران تیتیو برای سرویس های چت یا وویس یا ویدیو
+        ///// </summary>
+        //public double AcceptedMinPriceForNative { get; set; }
+
+        ///// <summary>
+        ///// حداقل قیمت مجاز برای کاربران غیر تیتیو برای سرویس های چت یا وویس یا ویدیو
+        ///// </summary>
+        //public double AcceptedMinPriceForNonNative { get; set; }
 
 
 

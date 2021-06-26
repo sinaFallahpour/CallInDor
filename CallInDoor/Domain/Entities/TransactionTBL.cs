@@ -104,6 +104,13 @@ namespace Domain.Entities
         public int? User_TopTenPackageId { get; set; }
 
 
+        /// <summary>
+        ///  اگر ترکنش از جنس رفتن به درگاه شارژه کیف پول بود این مقدار میگیره
+        /// </summary>
+        [ForeignKey("PaymentId")]
+        public PaymentTBL PaymentTBL { get; set; }
+        public int? PaymentId { get; set; }
+
 
 
 

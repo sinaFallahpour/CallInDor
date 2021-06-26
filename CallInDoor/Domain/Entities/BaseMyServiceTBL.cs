@@ -137,6 +137,12 @@ namespace Domain.Entities
 
 
 
+        /// <summary>
+        /// قیمت برای کاربران 
+        /// </summary>
+        [Range(0, double.MaxValue)]
+        public double? Price { get; set; }
+
 
 
         #region  Relation

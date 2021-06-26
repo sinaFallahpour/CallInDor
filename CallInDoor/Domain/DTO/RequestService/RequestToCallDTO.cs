@@ -13,9 +13,11 @@ namespace Domain.DTO.RequestService
         [Display(Name = "First Message")]
         public string FirstMessage { get; set; }
 
+        [Display(Name = "DiscountCode")]
+        public string DiscountCode { get; set; }
+
 
         #region
-
         public int? BaseServiceId { get; set; }
 
         #endregion

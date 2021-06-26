@@ -437,7 +437,6 @@ namespace CallInDoor.Controllers
                     Token = await _jwtGenerator.CreateToken(user),
                     UserName = user.UserName,
                 };
-
                 return Ok(_commonService.OkResponse(userInfo, PubicMessages.SuccessMessage));
 
             }

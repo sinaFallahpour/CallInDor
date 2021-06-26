@@ -111,14 +111,15 @@ namespace Service
                 IsValid = false;
                 Errors.Add(_resourceServices.GetErrorMessageByKey("HasReserveRequest"));
                 return (IsValid, Errors);
-
             }
 
 
 
 
+
             //checking wallet
-            if (currentUser.WalletBalance == 0 || currentUser.WalletBalance < (double)baseServiceFromDB.MyChatsService.PriceForNativeCustomer)
+            //if (currentUser.WalletBalance == 0 || currentUser.WalletBalance < (double)baseServiceFromDB.MyChatsService.PriceForNativeCustomer)
+            if (currentUser.WalletBalance == 0 || currentUser.WalletBalance < (double)baseServiceFromDB.Price)
             {
                 var errorMessage = _resourceServices.GetErrorMessageByKey("NotEnoughtBalance");
                 Errors.Add(errorMessage);
@@ -144,6 +145,10 @@ namespace Service
             }
 
 
+
+
+
+            ////////_context.SettingsTBL.Where(c=>c.Key == PublicHelper.ProviderLimitTimeForRejectRequest).FirstOrDefaultAsync(c=>c.)
 
 
 

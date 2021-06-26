@@ -158,13 +158,15 @@ namespace CallInDoor.Controllers
 
 
             var isExist = await _context.CheckDiscountTBL.AnyAsync(c =>
-                   c.PersianTitle.ToLower() == model.PersianTitle.ToLower() ||
-                   c.PersianTitle.ToLower() == model.PersianTitle.ToLower());
+                                            c.Code.ToLower() == model.Code.ToLower());
+
+            //c.PersianTitle.ToLower() == model.PersianTitle.ToLower() ||
+            //c.PersianTitle.ToLower() == model.PersianTitle.ToLower());
 
             if (isExist)
             {
                 var err = new List<string>();
-                err.Add($"discount with this persian title(or english title) already exist ");
+                err.Add($"discount with this code already exist ");
                 return BadRequest(new ApiBadRequestResponse(err));
             }
 

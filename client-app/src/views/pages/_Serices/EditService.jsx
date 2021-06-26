@@ -28,7 +28,7 @@ import Form from "../../../components/common/form";
 // import { Formik, Field, Form  } from "formik";
 // import * as Yup from "yup";
 
-import agent,{baseUrl} from "../../../core/services/agent";
+import agent, { baseUrl } from "../../../core/services/agent";
 
 import "react-block-ui/dist/style.css";
 import BlockUi from "react-block-ui";
@@ -42,12 +42,11 @@ class EditService extends Form {
       name: "",
       persianName: "",
       color: "",
-      minPriceForService: "",
+      acceptedMinPrice: "",
+      // minPriceForService: "",
       minSessionTime: "",
-      acceptedMinPriceForNative: "",
-      acceptedMinPriceForNonNative: "",
-
-
+      // acceptedMinPriceForNative: "",
+      // acceptedMinPriceForNonNative: "",
 
       sitePercent: "",
       topTenPackagePrice: "",
@@ -80,7 +79,14 @@ class EditService extends Form {
 
     color: Joi.string().required().label("color"),
 
-    minPriceForService: Joi.number()
+    // minPriceForService: Joi.number()
+    //   .required()
+    //   .min(1)
+    //   .max(10000000000000)
+    //   .label("minimum Price"),
+
+
+    acceptedMinPrice: Joi.number()
       .required()
       .min(1)
       .max(10000000000000)
@@ -92,17 +98,17 @@ class EditService extends Form {
       .max(10000000)
       .label("minimum Session Time"),
 
-    acceptedMinPriceForNative: Joi.number()
-      .required()
-      .min(1)
-      .max(10000000000000)
-      .label("minimum Price For Native User"),
+    // acceptedMinPriceForNative: Joi.number()
+    //   .required()
+    //   .min(1)
+    //   .max(10000000000000)
+    //   .label("minimum Price For Native User"),
 
-    acceptedMinPriceForNonNative: Joi.number()
-      .required()
-      .min(1)
-      .max(10000000000000)
-      .label("minimum Price For Non Native User"),
+    // acceptedMinPriceForNonNative: Joi.number()
+    //   .required()
+    //   .min(1)
+    //   .max(10000000000000)
+    //   .label("minimum Price For Non Native User"),
 
 
 
@@ -163,10 +169,11 @@ class EditService extends Form {
         isEnabled,
         tags,
         persinaTags,
-        minPriceForService,
+        acceptedMinPrice,
+        // minPriceForService,
         minSessionTime,
-        acceptedMinPriceForNative,
-        acceptedMinPriceForNonNative,
+        // acceptedMinPriceForNative,
+        // acceptedMinPriceForNonNative,
         imageAddress,
         sitePercent,
         topTenPackagePrice,
@@ -183,10 +190,12 @@ class EditService extends Form {
           name,
           persianName,
           color,
-          minPriceForService,
+          acceptedMinPrice,
+          // minPriceForService,
           minSessionTime,
-          acceptedMinPriceForNative,
-          acceptedMinPriceForNonNative,
+          // acceptedMinPriceForNative,
+          // acceptedMinPriceForNonNative,
+
           sitePercent,
           topTenPackagePrice,
           usersCount,
@@ -359,10 +368,10 @@ class EditService extends Form {
               {this.renderInput("sitePercent", "Site percent(%)", "number")}
 
               {this.renderInput(
-                "minPriceForService",
-                "Minimm Price (For Service)$"
+                "acceptedMinPrice",
+                "Minimm Price (For User)"
               )}
-
+              {/* 
               {this.renderInput(
                 "acceptedMinPriceForNative",
                 "Minimm Price For Native User (For Chat,Voice,video)$"
@@ -370,7 +379,11 @@ class EditService extends Form {
               {this.renderInput(
                 "acceptedMinPriceForNonNative",
                 "Minimm Price For Non Native User  (For Chat,Voice,video)$"
-              )}
+              )} */}
+
+
+
+
               {this.renderInput(
                 "minSessionTime",
                 "Min Session Time (minutes) (For Chat,Voice,video)$"
@@ -379,7 +392,7 @@ class EditService extends Form {
 
               {this.renderInput(
                 "topTenPackagePrice",
-                "TopTenPackagePrice"
+                "top ten package price"
               )}
 
               {this.renderInput(
@@ -389,7 +402,7 @@ class EditService extends Form {
 
               {this.renderInput(
                 "dayCount",
-                "day Count eitch a person can be yop  count of top  people can buy this package"
+                "day Count witch a person can be top  "
               )}
 
               {this.renderInput(
@@ -402,10 +415,6 @@ class EditService extends Form {
                 "image",
                 "file"
               )}
-
-
-
-
 
 
               {this.renderReactSelect(

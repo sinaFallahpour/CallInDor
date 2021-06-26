@@ -11,10 +11,12 @@ using Domain.DTO.Response;
 using Domain.DTO.TopTen;
 using Domain.Entities;
 using Domain.Enums;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Localization;
+using Parbad;
 using Service.Interfaces.Account;
 using Service.Interfaces.Common;
 using Service.Interfaces.Payment;
@@ -27,9 +29,9 @@ namespace CallInDoor.Controllers
     public class PaymentController : BaseControlle
     {
         #region ctor
-
         private readonly DataContext _context;
         private readonly IPaymentService _paymentService;
+        private readonly IOnlinePayment _onlinePayment;
 
         private readonly IAccountService _accountService;
 
@@ -40,6 +42,7 @@ namespace CallInDoor.Controllers
         public PaymentController(
             DataContext context,
             IPaymentService paymentService,
+            IOnlinePayment onlinePayment,
               IAccountService accountService,
               ICommonService commonService,
              IStringLocalizer<ShareResource> localizerShared,
@@ -48,6 +51,7 @@ namespace CallInDoor.Controllers
         {
             _context = context;
             _paymentService = paymentService;
+            _onlinePayment = onlinePayment;
             _commonService = commonService;
             _accountService = accountService;
             _localizerShared = localizerShared;
@@ -55,6 +59,202 @@ namespace CallInDoor.Controllers
         }
 
         #endregion
+
+
+
+
+
+        [HttpPost("Payment")]
+        [ClaimsAuthorize(IsAdmin = false)]
+        //[ClaimsAuthorize]
+        //[Authorize(Roles = PublicHelper.EmployeeRole + "," + PublicHelper.EmployerRole)]
+        public async Task<IActionResult> Pay([FromBody] PayDTO model)
+        {
+            //model.DiscountCode = "";
+            //chech giftcart
+            var errors = new List<string>();
+            var currentUsername = _accountService.GetCurrentUserName();
+            #region validattion
+
+            //var discountFromDB = await _context.CheckDiscountTBL.FirstOrDefaultAsync(c => c.Code == model.DiscountCode);
+            //if (discountFromDB == null)
+            //{
+            //    errors.Add(_resourceServices.GetErrorMessageByKey("InvalidDiscountCode"));
+            //    return BadRequest(new ApiBadRequestResponse(errors));
+            //}
+
+            //if (discountFromDB.ExpireTime < DateTime.Now)
+            //{
+            //    errors.Add(_resourceServices.GetErrorMessageByKey("InvalidDiscountCode"));
+            //    return BadRequest(new ApiBadRequestResponse(errors));
+            //}
+
+            //var isUsedDiscount = await _context.DiscountUsedByUserTBL.AnyAsync(c => c.UserName == currentUsername && c.CheckDiscountId == discountFromDB.Id);
+            //if (isUsedDiscount)
+            //{
+            //    errors.Add(_resourceServices.GetErrorMessageByKey("YouUsedDiscountCode"));
+            //    return BadRequest(new ApiBadRequestResponse(errors));
+            //}
+            #endregion
+
+            var callbackUrl = Url.Action("Verify", "Payment", new { }, Request.Scheme);
+
+
+            var price1 = model.Amount;
+            double mainAmount = model.Amount;
+            //if (discountFromDB != null)
+            //{
+            //    var discountPrice = price1 * Convert.ToDouble(discountFromDB.Percent) / 100;
+            //    mainAmount = price1 - discountPrice;
+            //}
+
+            var payment = new PaymentTBL
+            {
+                Amount = mainAmount,
+                //DiscountPercent = discountFromDB.Percent,
+                Date = DateTime.Now,
+                UserName = currentUsername,
+                //CheckDiscountTBL = discountFromDB,
+            };
+
+
+            await _context.PaymentTBL.AddAsync(payment);
+
+            //if (mainAmount < 1)
+            //{
+            //    var url = "https://katinojob.ir/employer/payment/success?trackingnumber=00000";
+            //    var paymentType = (payment.Amount == 0) ? PaymnetType.Gift : PaymnetType.Pay;
+
+            //    await NewMethod(error, payment, payment.Amount, paymentType, user, url);
+
+            //    var response = new
+            //    {
+            //        url = url,
+            //    };
+            //    return Ok(new ResponseResult(Domain.DTO.Response.StatusCode.ok, error, true, response));
+            //}
+
+            var result = await _onlinePayment.RequestAsync(invoice =>
+            {
+                invoice
+                    .SetTrackingNumber(DateTime.Now.Ticks)
+                    .SetAmount(decimal.Parse(mainAmount.ToString()))
+                    .SetCallbackUrl(callbackUrl)
+                    .SetGateway(Gateways.Parsian.ToString());
+            });
+
+            // save result in db
+            payment.TrackingNumber = result.TrackingNumber.ToString();
+
+            if (result.IsSucceed)
+            {
+                payment.ErrorDescription = result.Message;
+                await _context.PaymentTBL.AddAsync(payment);
+                await _context.SaveChangesAsync();
+                return Ok(_commonService.OkResponse(result.GatewayTransporter, false));
+            }
+            else
+            {
+                payment.ErrorDescription = result.Message;
+                await _context.PaymentTBL.AddAsync(payment);
+                await _context.SaveChangesAsync();
+
+                List<string> erros = new List<string> {
+                _resourceServices.GetErrorMessageByKey("ErrorConnectingToBankingGateway")
+                };
+                return BadRequest(new ApiBadRequestResponse(erros));
+
+            }
+
+
+        }
+
+
+        [AllowAnonymous]
+        public async Task<IActionResult> Verify()
+        {
+            var error = new List<string>();
+            try
+            {
+                var invoice = await _onlinePayment.FetchAsync();
+
+
+                var result = await _onlinePayment.VerifyAsync(invoice);
+                var payment = _context.PaymentTBL.FirstOrDefault(x => x.TrackingNumber == result.TrackingNumber.ToString());
+                var user = await _context.Users.FirstOrDefaultAsync(x => x.Id == payment.UserName);
+
+                if (user == null)
+                {
+                    payment.IsSucceed = false;
+                    payment.TransactionCode = result.TransactionCode;
+                    payment.ErrorDescription = result.Message;
+                    await _context.SaveChangesAsync();
+                    error.Add(payment.ErrorDescription);
+                    var url = "http://App.callInDoor.ir/payment/success?trackingnumber=" + payment.TrackingNumber;
+                    return Redirect(url);
+                }
+
+                if (result.Amount == payment.Amount && result.IsSucceed == true)
+                {
+                    user.WalletBalance += result.Amount;
+                    payment.IsSucceed = true;
+                    payment.TransactionCode = result.TransactionCode;
+                    payment.ErrorDescription = result.Message;
+
+                    var transaction = new TransactionTBL()
+                    {
+                        CreateDate = DateTime.Now,
+                        Description = $"deposit its transactionStatus=[${TransactionStatus.NormalTransaction}]",
+                        Amount = payment.Amount,
+                        PaymentId = payment.Id,
+                        TransactionStatus = TransactionStatus.NormalTransaction,
+                        TransactionType = TransactionType.Deposit,
+                        TransactionConfirmedStatus = TransactionConfirmedStatus.Confirmed,
+                        PaymentTBL = payment,
+                        Username = user.UserName,
+                        //CheckDiscountId = payment.CheckDiscountID,
+                        ServiceTypeWithDetails = "",
+                    };
+                    await _context.TransactionTBL.AddAsync(transaction);
+                    await _context.SaveChangesAsync();
+
+                    var url = "http://App.callInDoor.ir/payment/success?trackingnumber=" + payment.TrackingNumber;
+                    return Redirect(url);
+                }
+                else
+                {
+                    payment.IsSucceed = false;
+                    payment.TransactionCode = result.TransactionCode;
+                    payment.ErrorDescription = result.Message;
+                    await _context.SaveChangesAsync();
+
+                    error.Add(payment.ErrorDescription);
+                    return Redirect("http://App.callInDoor.ir/payment/failure?trackingnumber=" + payment.TrackingNumber);
+                }
+            }
+            catch
+            {
+                return NotFound(_commonService.NotFoundErrorReponse(false));
+            }
+
+        }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
         /// <summary>
@@ -84,7 +284,7 @@ namespace CallInDoor.Controllers
                        })
                         .FirstOrDefaultAsync();
 
-            #region wsome validation
+            #region some validation
             if (query == null)
             {
                 //List<string> erros = new List<string> { _localizerShared["NotFound"].Value.ToString() };
@@ -521,8 +721,12 @@ namespace CallInDoor.Controllers
 
                            IsDeleted_baseService = c.BaseMyServiceTBL.IsDeleted,
                            MessageCount_baseService = c.BaseMyServiceTBL.MyChatsService.MessageCount,
-                           PriceForNativeCustomer_baseService = c.BaseMyServiceTBL.MyChatsService.PriceForNativeCustomer,
-                           PriceForNonNativeCustomer_baseService = c.BaseMyServiceTBL.MyChatsService.PriceForNonNativeCustomer,
+                           //PriceForNativeCustomer_baseService = c.BaseMyServiceTBL.MyChatsService.PriceForNativeCustomer,
+                           //PriceForNonNativeCustomer_baseService = c.BaseMyServiceTBL.MyChatsService.PriceForNonNativeCustomer,
+
+                           PriceForNativeCustomer_baseService = c.BaseMyServiceTBL.Price,
+                           PriceForNonNativeCustomer_baseService = c.BaseMyServiceTBL.Price,
+
                        })
                         .FirstOrDefaultAsync();
 
@@ -654,8 +858,13 @@ namespace CallInDoor.Controllers
 
                            IsDeleted_baseService = c.BaseMyServiceTBL.IsDeleted,
                            MessageCount_baseService = c.BaseMyServiceTBL.MyChatsService.MessageCount,
-                           PriceForNativeCustomer_baseService = c.BaseMyServiceTBL.MyChatsService.PriceForNativeCustomer,
-                           PriceForNonNativeCustomer_baseService = c.BaseMyServiceTBL.MyChatsService.PriceForNonNativeCustomer,
+                           PriceForNativeCustomer_baseService = c.BaseMyServiceTBL.Price,
+                           PriceForNonNativeCustomer_baseService = c.BaseMyServiceTBL.Price,
+
+
+                           //PriceForNativeCustomer_baseService = c.BaseMyServiceTBL.MyChatsService.PriceForNativeCustomer,
+                           //PriceForNonNativeCustomer_baseService = c.BaseMyServiceTBL.MyChatsService.PriceForNonNativeCustomer,
+
                        })
                         .FirstOrDefaultAsync();
             #region some validation

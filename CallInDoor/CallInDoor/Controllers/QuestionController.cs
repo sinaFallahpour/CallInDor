@@ -79,9 +79,7 @@ namespace CallInDoor.Controllers
                    }).ToListAsync();
 
                 return Ok(_commonService.OkResponse(questions, false));
-
             }
-
             catch
             {
                 return Ok();
@@ -143,10 +141,10 @@ namespace CallInDoor.Controllers
 
                     Text = _commonService.GetNameByCulture(c),
 
-                    
-                    
-                    
-                    
+
+
+
+
                     //c.IsEnabled,
                     c.Key,
 

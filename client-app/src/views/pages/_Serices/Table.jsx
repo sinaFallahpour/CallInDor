@@ -56,25 +56,29 @@ class Table extends React.Component {
         filter: true,
       },
       {
-        headerName: "Minimm Price For Service($)",
-        field: "minPriceForService",
+        headerName: "Minimm Price For user($)",
+        field: "acceptedMinPrice",
         filter: true,
       },
+      
       {
         headerName: "Minimm Session Time(minutes)",
         field: "minSessionTime",
         filter: true,
       },
-      {
-        headerName: "Minimm Price For Native User (For Chat,Voice,video)$ ",
-        field: "acceptedMinPriceForNative",
-        filter: true,
-      },
-      {
-        headerName: "Minimm Price For Non Native User (For Chat,Voice,video)$",
-        field: "acceptedMinPriceForNonNative",
-        filter: true,
-      },
+
+      // {
+      //   headerName: "Minimm Price For Native User (For Chat,Voice,video)$ ",
+      //   field: "acceptedMinPriceForNative",
+      //   filter: true,
+      // },
+      // {
+      //   headerName: "Minimm Price For Non Native User (For Chat,Voice,video)$",
+      //   field: "acceptedMinPriceForNonNative",
+      //   filter: true,
+      // },
+      
+      
       {
         headerName: "Color",
         field: "color",

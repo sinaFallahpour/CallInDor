@@ -101,10 +101,10 @@ namespace CallInDoor.Controllers
                    c.ImageAddress,
                    c.SitePercent,
                    c.IsEnabled,
-                   c.MinPriceForService,
+                   c.AcceptedMinPrice,
                    c.MinSessionTime,
-                   c.AcceptedMinPriceForNative,
-                   c.AcceptedMinPriceForNonNative,
+                   //c.AcceptedMinPriceForNative,
+                   //c.AcceptedMinPriceForNonNative,
 
                    topTenPackagePrice = c.TopTenPackageTBL.FirstOrDefault().Price,
                    usersCount = c.TopTenPackageTBL.FirstOrDefault().Count,
@@ -157,11 +157,14 @@ namespace CallInDoor.Controllers
                       c.SitePercent,
                       c.Color,
                       RoleName = c.AppRole.Name,
-                      c.AcceptedMinPriceForNative,
-                      c.AcceptedMinPriceForNonNative,
+                      c.AcceptedMinPrice,
+                      //c.AcceptedMinPriceForNative,
+                      //c.AcceptedMinPriceForNonNative,
+
                       c.IsProfileOptional,
                       c.MinSessionTime,
-                      c.MinPriceForService
+
+                      //c.MinPriceForService
                   }).ToListAsync();
             return Ok(_commonService.OkResponse(AllServices, PubicMessages.SuccessMessage));
         }
@@ -227,9 +230,10 @@ namespace CallInDoor.Controllers
                 .Where(c => c.Id == Id)
                 .Select(c => new
                 {
-                    c.AcceptedMinPriceForNative,
-                    c.AcceptedMinPriceForNonNative,
-                    c.MinPriceForService,
+                    c.AcceptedMinPrice,
+                    //c.AcceptedMinPriceForNative,
+                    //c.AcceptedMinPriceForNonNative,
+                    //c.MinPriceForService,
                     c.MinSessionTime,
                 }).ToListAsync();
             return Ok(_commonService.OkResponse(serviceTimsandProice, false));
@@ -252,9 +256,11 @@ namespace CallInDoor.Controllers
             var serviceTimsandProice = await _context.ServiceTBL.AsNoTracking()
                 .Select(c => new
                 {
-                    c.AcceptedMinPriceForNative,
-                    c.AcceptedMinPriceForNonNative,
-                    c.MinPriceForService,
+                    //c.AcceptedMinPriceForNative,
+                    //c.AcceptedMinPriceForNonNative,
+                    //c.MinPriceForService,
+
+                    c.AcceptedMinPrice,
                     c.MinSessionTime
                 }).ToListAsync();
 
@@ -573,8 +579,9 @@ namespace CallInDoor.Controllers
                     c.MyChatsService.FreeMessageCount,
                     c.MyChatsService.Duration,
                     c.MyChatsService.IsServiceReverse,
-                    c.MyChatsService.PriceForNativeCustomer,
-                    c.MyChatsService.PriceForNonNativeCustomer,
+                    c.Price,
+                    //c.MyChatsService.PriceForNativeCustomer,
+                    //c.MyChatsService.PriceForNonNativeCustomer,
                     c.Id,
                     c.CatId,
                     c.SubCatId,
@@ -649,7 +656,7 @@ namespace CallInDoor.Controllers
                 return BadRequest(new ApiBadRequestResponse(erros, 401));
             }
             //////if (serviceFromDB.ServiceType == ServiceType.Service || serviceFromDB.ServiceType == ServiceType.Course)
-             if (serviceFromDB.ServiceTypes.Contains("3") || serviceFromDB.ServiceTypes.Contains("4") )
+            if (serviceFromDB.ServiceTypes.Contains("3") || serviceFromDB.ServiceTypes.Contains("4"))
             {
                 List<string> erros = new List<string> { _resourceServices.GetErrorMessageByKey("InValidServiceType") };
                 return BadRequest(new ApiBadRequestResponse(erros));
@@ -665,8 +672,9 @@ namespace CallInDoor.Controllers
                 serviceFromDB.MyChatsService.PackageType,
                 serviceFromDB.MyChatsService.BeTranslate,
                 serviceFromDB.MyChatsService.IsServiceReverse,
-                serviceFromDB.MyChatsService.PriceForNativeCustomer,
-                serviceFromDB.MyChatsService.PriceForNonNativeCustomer,
+                serviceFromDB.Price,
+                //serviceFromDB.MyChatsService.PriceForNativeCustomer,
+                //serviceFromDB.MyChatsService.PriceForNonNativeCustomer,
 
                 serviceFromDB.MyChatsService.FreeMessageCount,
                 serviceFromDB.MyChatsService.Duration,
@@ -707,8 +715,10 @@ namespace CallInDoor.Controllers
             {
                 IsProfileOptional = c.IsProfileOptional,
                 Id = c.Id,
-                AcceptedMinPriceForNative = c.AcceptedMinPriceForNative,
-                AcceptedMinPriceForNonNative = c.AcceptedMinPriceForNonNative,
+                AcceptedMinPrice = c.AcceptedMinPrice,
+                //AcceptedMinPriceForNative = c.AcceptedMinPriceForNative,
+                //AcceptedMinPriceForNonNative = c.AcceptedMinPriceForNonNative,
+
                 Name = c.Name
             })
               .FirstOrDefaultAsync();
@@ -774,6 +784,8 @@ namespace CallInDoor.Controllers
                 IsDeleted = false,
                 IsDisabledByCompany = false,
                 ProfileConfirmType = profileStatus ? ProfileConfirmType.Pending : res1 == true ? ProfileConfirmType.Confirmed : ProfileConfirmType.Rejected,
+
+                Price = (double)model.Price,
                 //IsActive = false
             };
 
@@ -784,8 +796,9 @@ namespace CallInDoor.Controllers
                 BeTranslate = model.BeTranslate,
                 //FreeMessageCount = (int)model.FreeMessageCount,
                 IsServiceReverse = model.IsServiceReverse,
-                PriceForNativeCustomer = (double)model.PriceForNativeCustomer,
-                PriceForNonNativeCustomer = (double)model.PriceForNonNativeCustomer,
+                ////////PriceForNativeCustomer = (double)model.PriceForNativeCustomer,
+                ////////PriceForNonNativeCustomer = (double)model.PriceForNonNativeCustomer,
+
                 BaseMyChatTBL = BaseMyService,
                 FreeMessageCount = model.FreeMessageCount,
                 MessageCount = model.MessageCount,
@@ -878,6 +891,8 @@ namespace CallInDoor.Controllers
 
 
             serviceFromDB.ServiceName = model.ServiceName;
+            serviceFromDB.Price = (double)model.Price;
+
             //////////////serviceFromDB.Latitude = model.Latitude;
             //////////////serviceFromDB.Longitude = model.Longitude;
 
@@ -895,8 +910,10 @@ namespace CallInDoor.Controllers
             serviceFromDB.MyChatsService.BeTranslate = model.BeTranslate;
 
             serviceFromDB.MyChatsService.IsServiceReverse = model.IsServiceReverse;
-            serviceFromDB.MyChatsService.PriceForNativeCustomer = (double)model.PriceForNativeCustomer;
-            serviceFromDB.MyChatsService.PriceForNonNativeCustomer = (double)model.PriceForNonNativeCustomer;
+
+
+            //serviceFromDB.MyChatsService.PriceForNativeCustomer = (double)model.PriceForNativeCustomer;
+            //serviceFromDB.MyChatsService.PriceForNonNativeCustomer = (double)model.PriceForNonNativeCustomer;
 
 
             await _context.SaveChangesAsync();
@@ -982,7 +999,9 @@ namespace CallInDoor.Controllers
             .Select(c => new ServiceTBLVM
             {
                 IsProfileOptional = c.IsProfileOptional,
-                MinPriceForService = c.MinPriceForService,
+                AcceptedMinPrice = c.AcceptedMinPrice,
+                //MinPriceForService = c.AcceptedMinPrice,
+                //MinPriceForService =c.AcceptedMinPrice ,
                 Id = c.Id,
                 Name = c.Name
             })
@@ -1023,6 +1042,7 @@ namespace CallInDoor.Controllers
                 IsDeleted = false,
                 IsDisabledByCompany = false,
                 ProfileConfirmType = profileStatus ? ProfileConfirmType.Pending : res1 == true ? ProfileConfirmType.Confirmed : ProfileConfirmType.Rejected,
+                Price = (double)model.Price,
 
                 //IsActive = false
             };
@@ -1038,7 +1058,7 @@ namespace CallInDoor.Controllers
                 FileDescription = model.FileDescription,
                 HowWorkConducts = model.HowWorkConducts,
                 BeTranslate = model.BeTranslate,
-                Price = (double)model.Price,
+                //Price = (double)model.Price,
                 WorkDeliveryTimeEstimation = model.WorkDeliveryTimeEstimation,
                 Tags = tags,
                 AreaId = model.AreaId,
@@ -1080,7 +1100,8 @@ namespace CallInDoor.Controllers
                    c.MyServicesService.BeTranslate,
                    c.MyServicesService.FileNeeded,
                    c.MyServicesService.FileDescription,
-                   c.MyServicesService.Price,
+                   c.Price,
+                   //c.MyServicesService.Price,
                    c.MyServicesService.WorkDeliveryTimeEstimation,
                    c.MyServicesService.HowWorkConducts,
                    c.MyServicesService.DeliveryItems,
@@ -1143,7 +1164,7 @@ namespace CallInDoor.Controllers
           .Select(c => new ServiceTBLVM
           {
               IsProfileOptional = c.IsProfileOptional,
-              MinPriceForService = c.MinPriceForService,
+              AcceptedMinPrice = c.AcceptedMinPrice,
               Id = c.Id,
               Name = c.Name
           })
@@ -1194,7 +1215,8 @@ namespace CallInDoor.Controllers
             serviceFromDB.MyServicesService.BeTranslate = model.BeTranslate;
             serviceFromDB.MyServicesService.FileNeeded = model.FileNeeded;
             serviceFromDB.MyServicesService.FileDescription = model.FileDescription;
-            serviceFromDB.MyServicesService.Price = (double)model.Price;
+            //serviceFromDB.MyServicesService.Price = (double)model.Price;
+            serviceFromDB.Price = (double)model.Price;
             serviceFromDB.MyServicesService.WorkDeliveryTimeEstimation = model.WorkDeliveryTimeEstimation;
             serviceFromDB.MyServicesService.HowWorkConducts = model.HowWorkConducts;
             serviceFromDB.MyServicesService.DeliveryItems = model.DeliveryItems;
@@ -1282,7 +1304,8 @@ namespace CallInDoor.Controllers
              {
                  IsProfileOptional = c.IsProfileOptional,
                  Id = c.Id,
-                 MinPriceForService = c.MinPriceForService,
+                 AcceptedMinPrice = c.AcceptedMinPrice,
+                 //MinPriceForService = c.MinPriceForService,
                  Name = c.Name
              })
              .FirstOrDefaultAsync();
@@ -1335,7 +1358,7 @@ namespace CallInDoor.Controllers
                 IsDeleted = false,
                 //ProfileConfirmType = ProfileConfirmType.Pending
                 ProfileConfirmType = profileStatus ? ProfileConfirmType.Pending : res1 == true ? ProfileConfirmType.Confirmed : ProfileConfirmType.Rejected,
-
+                Price = (double)model.Price
                 //IsConfirmByAdmin = false,
             };
 
@@ -1346,7 +1369,7 @@ namespace CallInDoor.Controllers
                 TotalLenght = model.TotalLenght,
                 DisCountPercent = model.DisCountPercent,
                 NewCategory = model.NewCategory,
-                Price = (double)model.Price,
+                //Price = (double)model.Price,
                 ////////////////TopicsTBLs  
                 PreviewVideoAddress = previewFilreAddress,
 
@@ -1383,7 +1406,7 @@ namespace CallInDoor.Controllers
              {
                  IsProfileOptional = c.IsProfileOptional,
                  Id = c.Id,
-                 MinPriceForService = c.MinPriceForService,
+                 AcceptedMinPrice = c.AcceptedMinPrice,
                  Name = c.Name
              })
              .FirstOrDefaultAsync();
@@ -1425,6 +1448,8 @@ namespace CallInDoor.Controllers
             //    return BadRequest(new ApiBadRequestResponse(errors));
             //}
 
+
+
             serviceFromDB.BaseMyChatTBL.ServiceName = model.ServiceName;
             serviceFromDB.BaseMyChatTBL.CatId = model.CatId;
             //////////////serviceFromDB.BaseMyChatTBL.Latitude = model.Latitude;
@@ -1432,7 +1457,7 @@ namespace CallInDoor.Controllers
 
             serviceFromDB.Description = model.Description;
             serviceFromDB.NewCategory = model.NewCategory;
-            serviceFromDB.Price = (double)model.Price;
+            serviceFromDB.BaseMyChatTBL.Price = (double)model.Price;
             serviceFromDB.TotalLenght = model.TotalLenght;
             serviceFromDB.DisCountPercent = model.DisCountPercent;
             ////PreviewVideoAddress  
@@ -1493,7 +1518,8 @@ namespace CallInDoor.Controllers
                     ChatService = new
                     {
                         PackageType = c.MyChatsService != null ? c.MyChatsService.PackageType : null,
-                        Price = c.MyChatsService != null ? c.MyChatsService.PriceForNativeCustomer : null,
+                        //Price = c.MyChatsService != null ? c.MyChatsService.PriceForNativeCustomer : null,
+                        Price = c.MyChatsService != null ? c.Price : null,
                         //PriceForNonNativeCustomer = c.MyChatsService != null ? c.MyChatsService?.PriceForNonNativeCustomer : null,
                         Duration = c.MyChatsService != null ? c.MyChatsService.Duration : null,
                         FreeMessageCount = c.MyChatsService != null ? c.MyChatsService.FreeMessageCount : null,
@@ -1501,12 +1527,13 @@ namespace CallInDoor.Controllers
 
                     ServiceService = new
                     {
-                        Price = c.MyServicesService != null ? c.MyServicesService.Price : null,
+                        Price = c.MyServicesService != null ? c.Price : null,
                     },
 
                     CourseService = new
                     {
-                        Price = c.MyCourseService != null ? c.MyCourseService.Price : null,
+                        //Price = c.MyCourseService != null ? c.MyCourseService.Price : null,
+                        Price = c.MyCourseService != null ? c.Price : null,
                     },
                 }).ToListAsync();
 
@@ -1573,7 +1600,8 @@ namespace CallInDoor.Controllers
                         {
                             PackageType = c.MyChatsService != null ? c.MyChatsService.PackageType : null,
                             //Price = c.MyChatsService != null ? c.MyChatsService.PriceForNativeCustomer : null,
-                            PriceForNativeCustomer = c.MyChatsService != null ? c.MyChatsService.PriceForNativeCustomer : null,
+                            //PriceForNativeCustomer = c.MyChatsService != null ? c.MyChatsService.PriceForNativeCustomer : null,
+                            PriceForNativeCustomer = c.MyChatsService != null ? c.Price : null,
                             //PriceForNonNativeCustomer = c.MyChatsService != null ? c.MyChatsService.PriceForNonNativeCustomer : null,
                             Duration = c.MyChatsService != null ? c.MyChatsService.Duration : null,
                             FreeMessageCount = c.MyChatsService != null ? c.MyChatsService.FreeMessageCount : null,
@@ -1584,7 +1612,8 @@ namespace CallInDoor.Controllers
 
                     ServiceService = c.MyServicesService == null ? null : new
                     {
-                        Price = c.MyServicesService != null ? c.MyServicesService.Price : null,
+                        //Price = c.MyServicesService != null ? c.MyServicesService.Price : null,
+                        Price = c.MyServicesService != null ? c.Price : null,
                         WorkDeliveryTimeEstimation = c.MyServicesService != null ? c.MyServicesService.WorkDeliveryTimeEstimation : null,
                         Tags = c.MyServicesService != null ? c.MyServicesService.Tags : null,
                         HowWorkConducts = c.MyServicesService != null ? c.MyServicesService.HowWorkConducts : null,
@@ -1597,7 +1626,8 @@ namespace CallInDoor.Controllers
 
                     CourseService = c.MyCourseService == null ? null : new
                     {
-                        Price = c.MyCourseService != null ? c.MyCourseService.Price : null,
+                        //Price = c.MyCourseService != null ? c.MyCourseService.Price : null,
+                        Price = c.MyCourseService != null ? c.Price : null,
                         Description = c.MyCourseService != null ? c.MyCourseService.Description : null,
                         TotalLenght = c.MyCourseService != null ? c.MyCourseService.TotalLenght : null,
                         DisCountPercent = c.MyCourseService != null ? c.MyCourseService.DisCountPercent : null,
@@ -1668,7 +1698,8 @@ namespace CallInDoor.Controllers
                         {
                             PackageType = c.MyChatsService != null ? c.MyChatsService.PackageType : null,
                             //Price = c.MyChatsService != null ? c.MyChatsService.PriceForNativeCustomer : null,
-                            PriceForNativeCustomer = c.MyChatsService != null ? c.MyChatsService.PriceForNativeCustomer : null,
+                            //PriceForNativeCustomer = c.MyChatsService != null ? c.MyChatsService.PriceForNativeCustomer : null,
+                            PriceForNativeCustomer = c.MyChatsService != null ? c.Price : null,
                             //PriceForNonNativeCustomer = c.MyChatsService != null ? c.MyChatsService.PriceForNonNativeCustomer : null,
                             Duration = c.MyChatsService != null ? c.MyChatsService.Duration : null,
                             FreeMessageCount = c.MyChatsService != null ? c.MyChatsService.FreeMessageCount : null,
@@ -1679,7 +1710,8 @@ namespace CallInDoor.Controllers
 
                     ServiceService = c.MyServicesService == null ? null : new
                     {
-                        Price = c.MyServicesService != null ? c.MyServicesService.Price : null,
+                        //Price = c.MyServicesService != null ? c.MyServicesService.Price : null,
+                        Price = c.MyServicesService != null ? c.Price : null,
                         WorkDeliveryTimeEstimation = c.MyServicesService != null ? c.MyServicesService.WorkDeliveryTimeEstimation : null,
                         Tags = c.MyServicesService != null ? c.MyServicesService.Tags : null,
                         HowWorkConducts = c.MyServicesService != null ? c.MyServicesService.HowWorkConducts : null,
@@ -1692,7 +1724,8 @@ namespace CallInDoor.Controllers
 
                     CourseService = c.MyCourseService == null ? null : new
                     {
-                        Price = c.MyCourseService != null ? c.MyCourseService.Price : null,
+                        //Price = c.MyCourseService != null ? c.MyCourseService.Price : null,
+                        Price = c.MyCourseService != null ? c.Price : null,
                         Description = c.MyCourseService != null ? c.MyCourseService.Description : null,
                         TotalLenght = c.MyCourseService != null ? c.MyCourseService.TotalLenght : null,
                         DisCountPercent = c.MyCourseService != null ? c.MyCourseService.DisCountPercent : null,
@@ -2371,8 +2404,10 @@ namespace CallInDoor.Controllers
                     c.MyChatsService.BeTranslate,
                     c.MyChatsService.FreeMessageCount,
                     c.MyChatsService.IsServiceReverse,
-                    c.MyChatsService.PriceForNativeCustomer,
-                    c.MyChatsService.PriceForNonNativeCustomer,
+                    c.Price,
+                    //c.MyChatsService.PriceForNativeCustomer,
+                    //c.MyChatsService.PriceForNonNativeCustomer,
+
                     c.RejectReason,
                     c.CreateDate,
                     c.Id,
@@ -2441,7 +2476,8 @@ namespace CallInDoor.Controllers
                               c.MyServicesService.BeTranslate,
                               c.MyServicesService.FileNeeded,
                               c.MyServicesService.FileDescription,
-                              c.MyServicesService.Price,
+                              //c.MyServicesService.Price,
+                              c.Price,
                               c.MyServicesService.WorkDeliveryTimeEstimation,
                               c.MyServicesService.HowWorkConducts,
                               c.MyServicesService.DeliveryItems,

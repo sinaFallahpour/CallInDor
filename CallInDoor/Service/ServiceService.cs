@@ -107,9 +107,13 @@ namespace Service
                     RoleName = c.AppRole.Name,
                     SitePercent = c.SitePercent,
                     IsProfileOptional = c.IsProfileOptional,
-                    AcceptedMinPriceForNative = c.AcceptedMinPriceForNative,
-                    AcceptedMinPriceForNonNative = c.AcceptedMinPriceForNonNative,
-                    MinPriceForService = c.MinPriceForService,
+                    AcceptedMinPrice = c.AcceptedMinPrice,
+
+                    //AcceptedMinPriceForNative = c.AcceptedMinPrice,
+                    //AcceptedMinPriceForNonNative = c.AcceptedMinPriceForNonNative,
+
+                    //MinPriceForService = c.MinPriceForService,
+                    MinPriceForService = c.AcceptedMinPrice,
                     MinSessionTime = c.MinSessionTime,
                 }).ToListAsync();
         }
@@ -134,10 +138,12 @@ namespace Service
                 IsEnabled = model.IsEnabled,
                 PersianName = model.PersianName,
                 RoleId = model.RoleId,
-                MinPriceForService = model.MinPriceForService,
+                AcceptedMinPrice = model.AcceptedMinPrice,
+
+                //MinPriceForService = model.MinPriceForService,
                 MinSessionTime = (double)model.MinSessionTime,
-                AcceptedMinPriceForNative = (double)model.AcceptedMinPriceForNative,
-                AcceptedMinPriceForNonNative = (double)model.AcceptedMinPriceForNonNative,
+                //AcceptedMinPriceForNative = (double)model.AcceptedMinPriceForNative,
+                //AcceptedMinPriceForNonNative = (double)model.AcceptedMinPriceForNonNative,
                 SitePercent = (int)model.SitePercent,
             };
 
@@ -251,10 +257,14 @@ namespace Service
                 serviceFromDB.IsEnabled = model.IsEnabled;
                 serviceFromDB.SitePercent = (int)model.SitePercent;
                 serviceFromDB.Color = model.Color;
-                serviceFromDB.MinPriceForService = (double)model.MinPriceForService;
+                serviceFromDB.AcceptedMinPrice = (double)model.AcceptedMinPrice;
+                //serviceFromDB.MinPriceForService = (double)model.MinPriceForService;
                 serviceFromDB.MinSessionTime = (double)model.MinSessionTime;
-                serviceFromDB.AcceptedMinPriceForNative = (double)model.AcceptedMinPriceForNative;
-                serviceFromDB.AcceptedMinPriceForNonNative = (double)model.AcceptedMinPriceForNonNative;
+
+                //serviceFromDB.AcceptedMinPrice = (double)model.AcceptedMinPriceForNative
+                //serviceFromDB.AcceptedMinPriceForNative = (double)model.AcceptedMinPriceForNative;
+                //serviceFromDB.AcceptedMinPriceForNonNative = (double)model.AcceptedMinPriceForNonNative;
+
                 serviceFromDB.RoleId = model.RoleId;
 
 
@@ -498,28 +508,29 @@ namespace Service
                 Errors.Add(_resourceServices.GetErrorMessageByKey("ServiceNotExist"));
             }
 
-            else if (model.PriceForNativeCustomer < serviceFromDb.AcceptedMinPriceForNative)
+            else if (model.Price < serviceFromDb.AcceptedMinPrice)
             {
                 string err = "";
                 if (IsPersianLanguage())
-                    err = $"قیمت برای کاربران بومی باید بیشتر از {serviceFromDb.AcceptedMinPriceForNative} باشد";
+                    err = $"قیمت برای کاربران بومی باید بیشتر از {serviceFromDb.AcceptedMinPrice} باشد";
                 else
-                    err = string.Format($"Price For Native Customer must be more than {serviceFromDb.AcceptedMinPriceForNative}");
+                    err = string.Format($"Price For Native Customer must be more than {serviceFromDb.AcceptedMinPrice}");
                 IsValid = false;
                 Errors.Add(err);
             }
-            if (serviceFromDb != null)
-                if (model.PriceForNonNativeCustomer < serviceFromDb.AcceptedMinPriceForNonNative)
-                {
-                    string err = "";
-                    if (IsPersianLanguage())
-                        err = $"قیمت برای کاربران غیر بومی باید بیشتر از {serviceFromDb.AcceptedMinPriceForNonNative} باشد";
-                    else
-                        err = string.Format($"Price For Non Native Customer must be more than {serviceFromDb.AcceptedMinPriceForNonNative}");
-                    //err = _localizer[string.Format("{0} must be more than {1}", "Price For Non Native Customer", serviceFromDb.AcceptedMinPriceForNonNative)].Value.ToString();
-                    IsValid = false;
-                    Errors.Add(err);
-                }
+
+
+            if (model.Price < serviceFromDb.AcceptedMinPrice)
+            {
+                string err = "";
+                if (IsPersianLanguage())
+                    err = $"قیمت برای کاربران باید بیشتر از {serviceFromDb.AcceptedMinPrice  } باشد";
+                else
+                    err = string.Format($"Price For Non Native Customer must be more than {serviceFromDb.AcceptedMinPrice}");
+                //err = _localizer[string.Format("{0} must be more than {1}", "Price For Non Native Customer", serviceFromDb.AcceptedMinPriceForNonNative)].Value.ToString();
+                IsValid = false;
+                Errors.Add(err);
+            }
 
 
             if (model.CatId != null)
@@ -627,7 +638,7 @@ namespace Service
             var serviceCategory = await _context
             .ServiceTBL
             .Where(c => c.Id == serviceFromDB.ServiceId)
-            .Select(c => new { c.Id, c.AcceptedMinPriceForNative, c.AcceptedMinPriceForNonNative, c.Name })
+            .Select(c => new { c.Id, c.AcceptedMinPrice,/* c.AcceptedMinPriceForNative, c.AcceptedMinPriceForNonNative, */c.Name })
             .FirstOrDefaultAsync();
 
             if (serviceCategory == null)
@@ -636,28 +647,39 @@ namespace Service
                 Errors.Add(_resourceServices.GetErrorMessageByKey("ServiceNotExist"));
             }
 
-            else if (model.PriceForNativeCustomer < serviceCategory.AcceptedMinPriceForNative)
+            else if (model.Price < serviceCategory.AcceptedMinPrice /*.AcceptedMinPriceForNative*/)
             {
                 string err = "";
                 if (IsPersianLanguage())
-                    err = $"قیمت برای کاربران بومی باید بیشتر از {serviceCategory.AcceptedMinPriceForNative} باشد";
+                    err = $"قیمت باید بیشتر از {serviceCategory.AcceptedMinPrice  } باشد";
                 else
-                    err = string.Format($"Price For Native Customer must be more than {serviceCategory.AcceptedMinPriceForNative}");
+                    err = string.Format($"Price For Native Customer must be more than {serviceCategory.AcceptedMinPrice}");
                 IsValid = false;
                 Errors.Add(err);
             }
-            if (serviceCategory != null)
-                if (model.PriceForNonNativeCustomer < serviceCategory.AcceptedMinPriceForNonNative)
-                {
-                    string err = "";
-                    if (IsPersianLanguage())
-                        err = $"قیمت برای کاربران غیر بومی باید بیشتر از {serviceCategory.AcceptedMinPriceForNonNative} باشد";
-                    else
-                        err = string.Format($"Price For Non Native Customer must be more than {serviceCategory.AcceptedMinPriceForNonNative}");
-                    //err = _localizer[string.Format("{0} must be more than {1}", "Price For Non Native Customer", serviceFromDb.AcceptedMinPriceForNonNative)].Value.ToString();
-                    IsValid = false;
-                    Errors.Add(err);
-                }
+
+
+            else if (model.Price < serviceCategory.AcceptedMinPrice)
+            {
+                string err = "";
+                if (IsPersianLanguage())
+                    err = $"قیمت برای کاربران بومی باید بیشتر از {serviceCategory.AcceptedMinPrice} باشد";
+                else
+                    err = string.Format($"Price For Native Customer must be more than {serviceCategory.AcceptedMinPrice}");
+                IsValid = false;
+                Errors.Add(err);
+            }
+            if (model.Price < serviceCategory.AcceptedMinPrice)
+            {
+                string err = "";
+                if (IsPersianLanguage())
+                    err = $"قیمت برای کاربران باید بیشتر از {serviceCategory.AcceptedMinPrice  } باشد";
+                else
+                    err = string.Format($"Price For Non Native Customer must be more than {serviceCategory.AcceptedMinPrice  }");
+                //err = _localizer[string.Format("{0} must be more than {1}", "Price For Customers", serviceFromDb.AcceptedMinPriceForNonNative)].Value.ToString();
+                IsValid = false;
+                Errors.Add(err);
+            }
 
 
             //if (model.CatId != null)
@@ -741,13 +763,13 @@ namespace Service
                 IsValid = false;
                 Errors.Add(_resourceServices.GetErrorMessageByKey("ServiceNotExist"));
             }
-            else if (model.Price < serviceFromDb.MinPriceForService)
+            else if (model.Price < serviceFromDb.AcceptedMinPrice)
             {
                 string err = "";
                 if (IsPersianLanguage())
-                    err = $"قیمت باید بیشتر از {serviceFromDb.MinPriceForService} باشد";
+                    err = $"قیمت باید بیشتر از {serviceFromDb.AcceptedMinPrice} باشد";
                 else
-                    err = string.Format($"Price must be more than {serviceFromDb.MinPriceForService}");
+                    err = string.Format($"Price must be more than {serviceFromDb.AcceptedMinPrice}");
                 IsValid = false;
                 Errors.Add(err);
             }
@@ -918,6 +940,20 @@ namespace Service
                 IsValid = false;
                 Errors.Add(_resourceServices.GetErrorMessageByKey("ServiceNotExist"));
             }
+
+            if (model.Price < serviceFromDb.AcceptedMinPrice)
+            {
+                string err = "";
+                if (IsPersianLanguage())
+                    err = $"قیمت برای کاربران باید بیشتر از {serviceFromDb.AcceptedMinPrice } باشد";
+                else
+                    err = string.Format($"Price Customer must be more than {serviceFromDb.AcceptedMinPrice }");
+                //err = _localizer[string.Format("{0} must be more than {1}", "Price For Customers", serviceFromDb.AcceptedMinPriceForNonNative)].Value.ToString();
+                IsValid = false;
+                Errors.Add(err);
+            }
+
+
             if (model.Price < 0)
             {
                 string err = "";
@@ -1313,92 +1349,62 @@ namespace Service
 
             if (model.MinPrice != null)
             {
-                //////if (model.ServiceType != null)
-                if (!string.IsNullOrEmpty(model.ServiceTypes))
-                {
-                    ////if (model.ServiceType == ServiceType.VoiceCall || model.ServiceType == ServiceType.ChatVoice || model.ServiceType == ServiceType.VoiceCall)
-                    if (model.ServiceTypes.Contains("0") || model.ServiceTypes.Contains("1") || model.ServiceTypes.Contains("2"))
-                    {
-                        //QueryAble = QueryAble.Include(c => c.MyChatsService)
-                        //    .Where(c => c.MyChatsService.PriceForNativeCustomer >= model.MinPrice);
-                        QueryAble = QueryAble
-                          .Where(c => c.MyChatsService.PriceForNativeCustomer >= model.MinPrice);
+                QueryAble = QueryAble
+                          .Where(c => c.Price >= model.MinPrice);
 
-                        //////////if (model.IsPriceDesc)
-                        //////////    QueryAble = QueryAble.OrderByDescending(c => c.MyChatsService.PriceForNativeCustomer);
-                    }
-                    ////////if (model.ServiceType == ServiceType.Service)
-                    if (model.ServiceTypes.Contains("3"))
-                    {
-                        //QueryAble = QueryAble.Include(c => c.MyServicesService)
-                        //       .Where(c => c.MyServicesService.Price >= model.MinPrice);
-                        QueryAble = QueryAble
-                               .Where(c => c.MyServicesService.Price >= model.MinPrice);
-
-
-                        ////////if (model.IsPriceDesc)
-                        ////////    QueryAble = QueryAble.OrderByDescending(c => c.MyServicesService.Price);
-                    }
-                    ////////if (model.ServiceType == ServiceType.Course)
-                    if (model.ServiceTypes.Contains("4"))
-                    {
-                        //    QueryAble = QueryAble.Include(c => c.MyCourseService)
-                        //           .Where(c => c.MyCourseService.Price >= model.MinPrice);
-
-
-                        QueryAble = QueryAble.Include(c => c.MyCourseService)
-                               .Where(c => c.MyCourseService.Price >= model.MinPrice);
-
-                        //////////if (model.IsPriceDesc)
-                        //////////    QueryAble = QueryAble.OrderByDescending(c => c.MyCourseService.Price);
-                    }
-                }
+                //if (!string.IsNullOrEmpty(model.ServiceTypes))
+                //{
+                //    if (model.ServiceTypes.Contains("0") || model.ServiceTypes.Contains("1") || model.ServiceTypes.Contains("2"))
+                //    {
+                //        QueryAble = QueryAble
+                //          .Where(c => c.MyChatsService.PriceForNativeCustomer >= model.MinPrice);
+                //    }
+                //    if (model.ServiceTypes.Contains("3"))
+                //    {
+                //        QueryAble = QueryAble
+                //               .Where(c => c.MyServicesService.Price >= model.MinPrice);
+                //    }
+                //    if (model.ServiceTypes.Contains("4"))
+                //    {
+                //        QueryAble = QueryAble.Include(c => c.MyCourseService)
+                //               .Where(c => c.MyCourseService.Price >= model.MinPrice);
+                //    }
+                //}
             }
 
 
             if (model.MaxPrice != null)
             {
-                //////if(model.ServiceType != null)
-                if (!string.IsNullOrEmpty(model.ServiceTypes))
-                {
-                    //if (model.ServiceType != ServiceType.Course || model.ServiceType != ServiceType.Service)
-                    if (model.ServiceTypes.Contains("0") || model.ServiceTypes.Contains("1") || model.ServiceTypes.Contains("2"))
-                    {
-                        //QueryAble = QueryAble.Include(c => c.MyChatsService)
-                        //    .Where(c => c.MyChatsService.PriceForNativeCustomer <= model.MaxPrice);
-                        QueryAble = QueryAble
-                           .Where(c => c.MyChatsService.PriceForNativeCustomer <= model.MaxPrice);
-                        //if (model.IsPriceDesc)
-                        //    QueryAble = QueryAble.OrderByDescending(c => c.MyChatsService.PriceForNativeCustomer);
-                    }
 
-                    ////////if (model.ServiceType == ServiceType.Service)
-                    if (model.ServiceTypes.Contains("3"))
-                    {
-                        //QueryAble = QueryAble.Include(c => c.MyServicesService)
-                        //       .Where(c => c.MyServicesService.Price <= model.MaxPrice);
+                //QueryAble = QueryAble
+                //  .Where(c => c.MyChatsService.PriceForNativeCustomer <= model.MaxPrice);
+                QueryAble = QueryAble
+                   .Where(c => c.Price <= model.MaxPrice);
 
-                        QueryAble = QueryAble
-                              .Where(c => c.MyServicesService.Price <= model.MaxPrice);
 
-                        //if (model.IsPriceDesc)
-                        //    QueryAble = QueryAble.OrderByDescending(c => c.MyServicesService.Price);
-                    }
-                    //if (model.ServiceType == ServiceType.Course)
-                    if (model.ServiceTypes.Contains("4"))
 
-                    {
-                        //QueryAble = QueryAble.Include(c => c.MyCourseService)
-                        //       .Where(c => c.MyCourseService.Price <= model.MaxPrice);
 
-                        QueryAble = QueryAble
-                          .Where(c => c.MyCourseService.Price <= model.MaxPrice);
 
-                        //if (model.IsPriceDesc)
-                        //   QueryAble = QueryAble.OrderByDescending(c => c.MyCourseService.Price);
+                //if (!string.IsNullOrEmpty(model.ServiceTypes))
+                //{
+                //if (model.ServiceType != ServiceType.Course || model.ServiceType != ServiceType.Service)
+                //if (model.ServiceTypes.Contains("0") || model.ServiceTypes.Contains("1") || model.ServiceTypes.Contains("2"))
+                //{
+                //    QueryAble = QueryAble
+                //       .Where(c => c.MyChatsService.PriceForNativeCustomer <= model.MaxPrice);
+                //}
+                //if (model.ServiceTypes.Contains("3"))
+                //{
+                //    QueryAble = QueryAble
+                //          .Where(c => c.MyServicesService.Price <= model.MaxPrice);
+                //}
+                //if (model.ServiceTypes.Contains("4"))
 
-                    }
-                }
+                //{
+                //    QueryAble = QueryAble
+                //      .Where(c => c.MyCourseService.Price <= model.MaxPrice);
+                //}
+                //}
             }
 
 

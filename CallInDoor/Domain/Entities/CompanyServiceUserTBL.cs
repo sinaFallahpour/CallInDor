@@ -14,7 +14,6 @@ namespace Domain.Entities
     public class CompanyServiceUserTBL : BaseEntity<int>
     {
 
-
         public DateTimeOffset CreateDate { get; set; }
 
 

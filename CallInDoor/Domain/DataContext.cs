@@ -69,10 +69,8 @@ namespace Domain
 
 
 
-            builder.Entity<MyChatServiceTBL>()
-              .HasIndex(x => new { x.PriceForNativeCustomer, x.PriceForNonNativeCustomer });
-
-
+            //builder.Entity<MyChatServiceTBL>()
+            //  .HasIndex(x => new { x.PriceForNativeCustomer, x.PriceForNonNativeCustomer });
 
 
             #endregion
@@ -81,6 +79,20 @@ namespace Domain
         }
 
 
+
+
+
+        /// <summary>
+        /// جدول ریپورت های کاربر که دام درخواست هایی که داده برا سرویس رو ریپورت کرده است
+        /// </summary>
+        public DbSet<ReportTBL> ReportTBL { get; set; }
+        
+
+
+        /// <summary>
+        /// جدول پرداخت هایه بانکی
+        /// </summary>
+        public DbSet<PaymentTBL> PaymentTBL { get; set; }
 
 
 
@@ -149,6 +161,12 @@ namespace Domain
         //که برای سرویس هایی که میخواد یخره لحاظ میشه
         /// </summary>
         public DbSet<CheckDiscountTBL> CheckDiscountTBL { get; set; }
+
+
+        /// <summary>
+        /// جدول واسط بین بین کاربر و کد تخفیف هایی که تا حالا استفاده کرده است
+        /// </summary>
+        public DbSet<DiscountUsedByUserTBL> DiscountUsedByUserTBL { get; set; }
 
 
 

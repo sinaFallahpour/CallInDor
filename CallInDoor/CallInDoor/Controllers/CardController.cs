@@ -177,7 +177,7 @@ namespace CallInDoor.Controllers
             {
                 var errors = new List<string>();
                 //errors.Add(_localizerShared["card name already exist"].Value.ToString());
-                errors.Add(_resourceServices.GetErrorMessageByKey("card name already exist"));
+                errors.Add(_resourceServices.GetErrorMessageByKey("cardNameAlreadyExist"));
                 return BadRequest(new ApiBadRequestResponse(errors));
             }
 

@@ -4,14 +4,16 @@ using Domain;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace Domain.Migrations
 {
     [DbContext(typeof(DataContext))]
-    partial class DataContextModelSnapshot : ModelSnapshot
+    [Migration("20210621093334_nigChnagesInDqatbase")]
+    partial class nigChnagesInDqatbase
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -663,30 +665,6 @@ namespace Domain.Migrations
                     b.ToTable("CompanyServiceUser");
                 });
 
-            modelBuilder.Entity("Domain.Entities.DiscountUsedByUserTBL", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<int?>("CheckDiscountId")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime>("CreateDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("UserName")
-                        .HasColumnType("nvarchar(100)")
-                        .HasMaxLength(100);
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("CheckDiscountId");
-
-                    b.ToTable("DiscountUsedByUser");
-                });
-
             modelBuilder.Entity("Domain.Entities.FieldTBL", b =>
                 {
                     b.Property<int>("Id")
@@ -979,51 +957,6 @@ namespace Domain.Migrations
                     b.ToTable("NotificationTBL");
                 });
 
-            modelBuilder.Entity("Domain.Entities.PaymentTBL", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<double>("Amount")
-                        .HasColumnType("float");
-
-                    b.Property<DateTime>("Date")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("ErrorCode")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("ErrorDescription")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("InvoiceKey")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<bool>("IsSucceed")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("TrackingNumber")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("TransactionCode")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int?>("TransactionId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("UserName")
-                        .HasColumnType("nvarchar(120)")
-                        .HasMaxLength(120);
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("TransactionId");
-
-                    b.ToTable("Payment");
-                });
-
             modelBuilder.Entity("Domain.Entities.Permissions", b =>
                 {
                     b.Property<int>("Id")
@@ -1103,29 +1036,6 @@ namespace Domain.Migrations
                     b.ToTable("QuestionPull");
                 });
 
-            modelBuilder.Entity("Domain.Entities.ReportTBL", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<int?>("BaseRequestServiceId")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime>("CreateDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("UserName")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("BaseRequestServiceId");
-
-                    b.ToTable("ReportTBL");
-                });
-
             modelBuilder.Entity("Domain.Entities.Requests.BaseRequestServiceTBL", b =>
                 {
                     b.Property<int>("Id")
@@ -1134,9 +1044,6 @@ namespace Domain.Migrations
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
                     b.Property<int?>("BaseServiceId")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("CheckDiscountId")
                         .HasColumnType("int");
 
                     b.Property<string>("ClienUserName")
@@ -1169,8 +1076,6 @@ namespace Domain.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("BaseServiceId");
-
-                    b.HasIndex("CheckDiscountId");
 
                     b.ToTable("BaseServiceRequest");
                 });
@@ -1718,9 +1623,6 @@ namespace Domain.Migrations
                         .HasColumnType("nvarchar(500)")
                         .HasMaxLength(500);
 
-                    b.Property<int?>("PaymentId")
-                        .HasColumnType("int");
-
                     b.Property<string>("ProviderUserName")
                         .HasColumnType("nvarchar(max)");
 
@@ -1749,8 +1651,6 @@ namespace Domain.Migrations
                     b.HasIndex("CardId");
 
                     b.HasIndex("CheckDiscountId");
-
-                    b.HasIndex("PaymentId");
 
                     b.HasIndex("User_TopTenPackageId")
                         .IsUnique()
@@ -2065,13 +1965,6 @@ namespace Domain.Migrations
                         .HasForeignKey("ServiceId");
                 });
 
-            modelBuilder.Entity("Domain.Entities.DiscountUsedByUserTBL", b =>
-                {
-                    b.HasOne("Domain.Entities.CheckDiscountTBL", "CheckDiscountTBL")
-                        .WithMany("DiscountUsedByUserTBL")
-                        .HasForeignKey("CheckDiscountId");
-                });
-
             modelBuilder.Entity("Domain.Entities.FieldTBL", b =>
                 {
                     b.HasOne("Domain.Entities.AppUser", "User")
@@ -2137,13 +2030,6 @@ namespace Domain.Migrations
                         .HasForeignKey("SpecialityId");
                 });
 
-            modelBuilder.Entity("Domain.Entities.PaymentTBL", b =>
-                {
-                    b.HasOne("Domain.Entities.TransactionTBL", "TransactionTBL")
-                        .WithMany()
-                        .HasForeignKey("TransactionId");
-                });
-
             modelBuilder.Entity("Domain.Entities.ProfileCertificateTBL", b =>
                 {
                     b.HasOne("Domain.Entities.ServidceTypeRequiredCertificatesTBL", "ServidceTypeRequiredCertificatesTBL")
@@ -2162,22 +2048,11 @@ namespace Domain.Migrations
                         .HasForeignKey("ServiceId");
                 });
 
-            modelBuilder.Entity("Domain.Entities.ReportTBL", b =>
-                {
-                    b.HasOne("Domain.Entities.Requests.BaseRequestServiceTBL", "BaseRequestServiceTBL")
-                        .WithMany()
-                        .HasForeignKey("BaseRequestServiceId");
-                });
-
             modelBuilder.Entity("Domain.Entities.Requests.BaseRequestServiceTBL", b =>
                 {
                     b.HasOne("Domain.Entities.BaseMyServiceTBL", "BaseMyServiceTBL")
                         .WithMany()
                         .HasForeignKey("BaseServiceId");
-
-                    b.HasOne("Domain.Entities.CheckDiscountTBL", "CheckDiscountTBL")
-                        .WithMany("BaseRequestServiceTBLs")
-                        .HasForeignKey("CheckDiscountId");
                 });
 
             modelBuilder.Entity("Domain.Entities.Requests.CallRequestTBL", b =>
@@ -2297,10 +2172,6 @@ namespace Domain.Migrations
                     b.HasOne("Domain.Entities.CheckDiscountTBL", "CheckDiscountTBL")
                         .WithMany("Transactions")
                         .HasForeignKey("CheckDiscountId");
-
-                    b.HasOne("Domain.Entities.PaymentTBL", "PaymentTBL")
-                        .WithMany()
-                        .HasForeignKey("PaymentId");
 
                     b.HasOne("Domain.Entities.User_TopTenPackageTBL", "User_TopTenPackageTBL")
                         .WithOne("TransactionTBL")

@@ -129,6 +129,9 @@
   <data name="PackageType" xml:space="preserve">
     <value>Package Type</value>
   </data>
+  <data name="Price" xml:space="preserve">
+    <value>Price</value>
+  </data>
   <data name="PriceForNativeCustomer" xml:space="preserve">
     <value>Price For Native Customer</value>
   </data>

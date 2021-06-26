@@ -44,6 +44,8 @@ namespace Domain.Entities.Requests
 
 
         public ServiceRequestStatus ServiceRequestStatus { get; set; }
+
+
         /// تاریخ درخواست سرویس
         public DateTime CreateDate { get; set; }
 
@@ -234,6 +236,13 @@ namespace Domain.Entities.Requests
         public CallRequestTBL CallRequestTBL { get; set; }
 
 
+
+        /// <summary>
+        ///  کد تخفیف  که کلاینت برای این درخواست استفاده میکند
+        /// </summary>
+        [ForeignKey("CheckDiscountId")]
+        public CheckDiscountTBL CheckDiscountTBL { get; set; }
+        public int? CheckDiscountId { get; set; }
 
 
 

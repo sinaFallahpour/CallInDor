@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Domain.Entities.Requests;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -6,7 +7,6 @@ using System.Text;
 
 namespace Domain.Entities
 {
-
     //جدول کد تخیف های ما
     //که برای سرویس هایی که میخواد یخره لحاظ میشه
     [Table("CheckDiscount")]
@@ -47,8 +47,6 @@ namespace Domain.Entities
 
 
 
-
-
         /// <summary>
         /// تعداد روز
         /// </summary>
@@ -80,6 +78,16 @@ namespace Domain.Entities
         public List<BuyiedPackageTBL> BuyiedPackageTBLs { get; set; }
 
 
+        /// <summary>
+        /// جدول واسط بین بین کاربر و کد تخفیف هایی که تا حالا استفاده کرده است
+        /// </summary>
+        public ICollection<DiscountUsedByUserTBL> DiscountUsedByUserTBL { get; set; }
+
+
+        /// <summary>
+        ///  این کدتخفیف در چه جداولی اسنفاده میشود
+        /// </summary>
+        public ICollection<BaseRequestServiceTBL> BaseRequestServiceTBLs { get; set; }
         #endregion
 
     }

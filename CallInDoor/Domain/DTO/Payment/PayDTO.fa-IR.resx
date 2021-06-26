@@ -117,49 +117,19 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="Duration" xml:space="preserve">
-    <value>Duration</value>
+  <data name="Amount" xml:space="preserve">
+    <value>مبلغ</value>
   </data>
-  <data name="FreeMessageCount" xml:space="preserve">
-    <value>Free Message Count</value>
-  </data>
-  <data name="MessageCount" xml:space="preserve">
-    <value>message count</value>
-  </data>
-  <data name="PackageType" xml:space="preserve">
-    <value>Package Type</value>
-  </data>
-  <data name="Price" xml:space="preserve">
-    <value>Price</value>
-  </data>
-  <data name="PriceForNativeCustomer" xml:space="preserve">
-    <value>Price For Native Customer</value>
-  </data>
-  <data name="PriceForNonNativeCustomer" xml:space="preserve">
-    <value>Price For Non Native Customer</value>
-  </data>
-  <data name="Service" xml:space="preserve">
-    <value>Service</value>
-  </data>
-  <data name="ServiceName" xml:space="preserve">
-    <value>Service Name</value>
-  </data>
-  <data name="ServiceType" xml:space="preserve">
-    <value>Service Type</value>
+  <data name="DiscountCode" xml:space="preserve">
+    <value>کد تخفیف</value>
   </data>
   <data name="The maximum {0} length is {1} characters" xml:space="preserve">
-    <value>The maximum {0} length is {1} characters</value>
+    <value> حدا کثر تعداد کاراکتر برای {0} {1} میباشد</value>
   </data>
   <data name="The minimum {0} length is {1} characters" xml:space="preserve">
-    <value>The minimum {0} length is {1} characters</value>
-  </data>
-  <data name="The {0} should be between {1} and {2}" xml:space="preserve">
-    <value>The {0} should be between {1} and {2}</value>
-  </data>
-  <data name="UserName" xml:space="preserve">
-    <value>User Name</value>
+    <value>حداقل تعداد کاراکتر برای {0} {1} میباشد</value>
   </data>
   <data name="{0} is  Required" xml:space="preserve">
-    <value>{0} is  Required</value>
+    <value>{0} الزامیست</value>
   </data>
 </root>

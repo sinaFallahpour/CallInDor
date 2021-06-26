@@ -135,7 +135,6 @@ class Settings extends Form {
                 serviceRejectNotificationTextEnglish: settings.serviceRejectNotificationTextEnglish,
                 providerLimitTimeForRejectRequest: settings.providerLimitTimeForRejectRequest
 
-
             },
             loadingData: false
         });
@@ -210,7 +209,7 @@ class Settings extends Form {
                                 {this.renderInput("serviceConfirmNotificationTextEnglish", "service confirm notification text (English)", "text", "col-6")}
                                 {this.renderInput("serviceRejectNotificationText", "service reject notification text", "text", "col-6")}
                                 {this.renderInput("serviceRejectNotificationTextEnglish", "service reject notification text (English)", "text", "col-6")}
-                                {this.renderInput("providerLimitTimeForRejectRequest", "service reject notification text (English)", "number", "col-6")}
+                                {this.renderInput("providerLimitTimeForRejectRequest", "provider limit time for reject request", "number", "col-6")}
                             </Row>
                             {this.state.Loading ? (
                                 <Button disabled={true} color="primary" className="mb-1">

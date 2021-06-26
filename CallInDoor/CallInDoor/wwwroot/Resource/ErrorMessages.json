@@ -371,7 +371,7 @@
         },
         {
           "Header": "ar",
-          "Val": "arabic"
+          "Val": "your wallet balance is not enough"
         }
       ]
     },
@@ -1273,6 +1273,91 @@
         {
           "Header": "ar",
           "Val": "it is not possible to request a server at this time"
+        }
+      ]
+    },
+    {
+      "Key": "InvalidDiscountCode",
+      "Languages": [
+        {
+          "Header": "fa-IR",
+          "Val": "کد تخفیف نامعتبراست"
+        },
+        {
+          "Header": "en-US",
+          "Val": "invalid discountCode"
+        },
+        {
+          "Header": "ar",
+          "Val": "invalid discountCode"
+        }
+      ]
+    },
+    {
+      "Key": "YouUsedDiscountCode",
+      "Languages": [
+        {
+          "Header": "fa-IR",
+          "Val": "کد تخفیف قبلا استفاده شده است"
+        },
+        {
+          "Header": "en-US",
+          "Val": "the discount code has already been used"
+        },
+        {
+          "Header": "ar",
+          "Val": "the discount code has already been used"
+        }
+      ]
+    },
+    {
+      "Key": "ErrorConnectingToBankingGateway",
+      "Languages": [
+        {
+          "Header": "fa-IR",
+          "Val": "خطا در اتصال به درگاه"
+        },
+        {
+          "Header": "en-US",
+          "Val": "error connecting to banking gateway"
+        },
+        {
+          "Header": "ar",
+          "Val": "error connecting to banking gateway"
+        }
+      ]
+    },
+    {
+      "Key": "ResquestWasAcceptedBefore",
+      "Languages": [
+        {
+          "Header": "fa-IR",
+          "Val": "درخواست شمار از قبل تایید شده بود"
+        },
+        {
+          "Header": "en-US",
+          "Val": "your request was accepted before"
+        },
+        {
+          "Header": "ar",
+          "Val": "your request was accepted before"
+        }
+      ]
+    },
+    {
+      "Key": "YouReportThisRequestBefore",
+      "Languages": [
+        {
+          "Header": "fa-IR",
+          "Val": "شما قبلا برای این درخواست گزارش تخلف ثبت کردید"
+        },
+        {
+          "Header": "en-US",
+          "Val": "You have already filed a report for this request"
+        },
+        {
+          "Header": "ar",
+          "Val": "You have already filed a report for this request"
         }
       ]
     }

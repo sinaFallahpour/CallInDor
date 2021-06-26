@@ -41,10 +41,15 @@ class ModalForm extends Form {
       name: "",
       persianName: "",
       color: "",
-      minPriceForService: "",
+
+      acceptedMinPrice: "",
+
+
+      // minPriceForService: "",
       minSessionTime: "",
-      acceptedMinPriceForNative: "",
-      acceptedMinPriceForNonNative: "",
+      // acceptedMinPriceForNative: "",
+      // acceptedMinPriceForNonNative: "",
+
       sitePercent: "",
       usersCount: "",
       hourCount: "",
@@ -73,11 +78,18 @@ class ModalForm extends Form {
 
     color: Joi.string().required().label("color"),
 
-    minPriceForService: Joi.number()
+    // minPriceForService: Joi.number()
+    //   .required()
+    //   .min(1)
+    //   .max(10000000000000)
+    //   .label("minimum Price"),
+    
+    acceptedMinPrice: Joi.number()
       .required()
       .min(1)
       .max(10000000000000)
       .label("minimum Price"),
+
 
     minSessionTime: Joi.number()
       .required()
@@ -85,17 +97,17 @@ class ModalForm extends Form {
       .max(10000000)
       .label("minimum Session Time"),
 
-    acceptedMinPriceForNative: Joi.number()
-      .required()
-      .min(1)
-      .max(10000000000000)
-      .label("minimum Price For Native User"),
+    // acceptedMinPriceForNative: Joi.number()
+    //   .required()
+    //   .min(1)
+    //   .max(10000000000000)
+    //   .label("minimum Price For Native User"),
 
-    acceptedMinPriceForNonNative: Joi.number()
-      .required()
-      .min(1)
-      .max(10000000000000)
-      .label("minimum Price For Non Native User"),
+    // acceptedMinPriceForNonNative: Joi.number()
+    //   .required()
+    //   .min(1)
+    //   .max(10000000000000)
+    //   .label("minimum Price For Non Native User"),
 
 
 
@@ -266,12 +278,18 @@ class ModalForm extends Form {
                 {this.renderInput("color", "Color")}
                 {this.renderInput("sitePercent", "Site percent(%)", "number")}
 
-                {this.renderInput(
+                {/* {this.renderInput(
                   "minPriceForService",
                   "Minimm Price (For Service)$",
                   "number"
-                )}
+                )} */}
 
+                {this.renderInput(
+                  "acceptedMinPrice",
+                  "Minimm Price (For User)$",
+                  "number"
+                )}
+{/* 
                 {this.renderInput(
                   "acceptedMinPriceForNative",
                   "Minimm Price For Native User (For Chat,Voice,video)$",
@@ -282,7 +300,8 @@ class ModalForm extends Form {
                   "acceptedMinPriceForNonNative",
                   "Minimm Price For Non Native User  (For Chat,Voice,video)$",
                   "number"
-                )}
+                )} */}
+
                 {this.renderInput(
                   "minSessionTime",
                   "Min Session Time (minutes) (For Chat,Voice,video)$"
@@ -313,7 +332,6 @@ class ModalForm extends Form {
                   "image",
                   "file"
                 )}
-
 
 
                 {this.renderReactSelect(

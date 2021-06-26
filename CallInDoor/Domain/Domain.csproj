@@ -16,6 +16,8 @@
     <Compile Remove="Entities\UsedPeriodedChatTBL.cs" />
     <Compile Remove="Migrations\20210619063610_init1.cs" />
     <Compile Remove="Migrations\20210619063610_init1.Designer.cs" />
+    <Compile Remove="Migrations\20210620092110_somecsa.cs" />
+    <Compile Remove="Migrations\20210620092110_somecsa.Designer.cs" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="8.0.1" />
@@ -74,6 +76,12 @@
       <Generator>PublicResXFileCodeGenerator</Generator>
     </EmbeddedResource>
     <EmbeddedResource Update="DTO\fuck\UpdateFirmProfileDTO.fa-IR.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+    </EmbeddedResource>
+    <EmbeddedResource Update="DTO\Payment\PayDTO.en-US.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+    </EmbeddedResource>
+    <EmbeddedResource Update="DTO\Payment\PayDTO.fa-IR.resx">
       <Generator>PublicResXFileCodeGenerator</Generator>
     </EmbeddedResource>
     <EmbeddedResource Update="DTO\Service\EditChatServiceForUsersDTO.en-US.resx">

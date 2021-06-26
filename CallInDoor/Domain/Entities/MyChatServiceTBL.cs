@@ -63,19 +63,19 @@ namespace Domain.Entities
         public bool IsServiceReverse { get; set; }
 
 
-        /// <summary>
-        /// قیمت برای کاربران محلی یا هم کشور
-        /// </summary>
-        /// 
-        [Range(0, double.MaxValue)]
-        public double? PriceForNativeCustomer { get; set; }
+        ///////////// <summary>
+        ///////////// قیمت برای کاربران محلی یا هم کشور
+        ///////////// </summary>
+        ///////////// 
+        //////////[Range(0, double.MaxValue)]
+        //////////public double? PriceForNativeCustomer { get; set; }
 
 
-        /// <summary>
-        /// قیمت برای کاربران غیر محلی یاغیر  هم کشور
-        /// </summary>
-        [Range(0, double.MaxValue)]
-        public double? PriceForNonNativeCustomer { get; set; }
+        ///////////// <summary>
+        ///////////// قیمت برای کاربران غیر محلی یاغیر  هم کشور
+        ///////////// </summary>
+        //////////[Range(0, double.MaxValue)]
+        //////////public double? PriceForNonNativeCustomer { get; set; }
 
 
 

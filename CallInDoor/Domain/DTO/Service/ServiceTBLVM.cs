@@ -10,13 +10,13 @@ namespace Domain.DTO.Service
 
         public bool IsProfileOptional { get; set; }
         
-        public double AcceptedMinPriceForNative { get; set; }
+        //public double AcceptedMinPriceForNative { get; set; }
 
-        public double AcceptedMinPriceForNonNative { get; set; }
+        //public double AcceptedMinPriceForNonNative { get; set; }
 
         public string Name { get; set; }
 
 
-        public double  MinPriceForService { get; set; }
+        public double AcceptedMinPrice { get; set; }
     }
 }

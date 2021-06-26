@@ -106,13 +106,23 @@ namespace Domain.DTO.Service
         public bool IsServiceReverse { get; set; }
 
 
-        ///// <summary>
-        ///// قیمت برای کاربران محلی یا هم کشور
-        ///// </summary>
-        //[Required(ErrorMessage = "{0} is  Required")]
-        [Range(0, double.MaxValue, ErrorMessage = "The  {0} should be between {1} and {2}")]
-        [Display(Name = "PriceForNativeCustomer")]
-        public double? PriceForNativeCustomer { get; set; }
+        /////// <summary>
+        /////// قیمت برای کاربران محلی یا هم کشور
+        /////// </summary>
+        ////[Required(ErrorMessage = "{0} is  Required")]
+        //[Range(0, double.MaxValue, ErrorMessage = "The  {0} should be between {1} and {2}")]
+        //[Display(Name = "PriceForNativeCustomer")]
+        //public double? PriceForNativeCustomer { get; set; }
+
+
+        /////// <summary>
+        /////// قیمت برای کاربران غیر محلی یاغیر  هم کشور
+        /////// </summary>
+        ////[Required(ErrorMessage = "{0} is  Required")]
+        //////[Range(0, double.MaxValue, ErrorMessage = "The  {0} should be between {1} and {2}")]
+        //[Range(0, double.MaxValue, ErrorMessage = "The {0} should be between {1} and {2}")]
+        //[Display(Name = "PriceForNonNativeCustomer")]
+        //public double? PriceForNonNativeCustomer { get; set; }
 
 
         ///// <summary>
@@ -121,8 +131,8 @@ namespace Domain.DTO.Service
         //[Required(ErrorMessage = "{0} is  Required")]
         ////[Range(0, double.MaxValue, ErrorMessage = "The  {0} should be between {1} and {2}")]
         [Range(0, double.MaxValue, ErrorMessage = "The {0} should be between {1} and {2}")]
-        [Display(Name = "PriceForNonNativeCustomer")]
-        public double? PriceForNonNativeCustomer { get; set; }
+        [Display(Name = "Price")]
+        public double? Price { get; set; }
 
 
 
@@ -142,7 +152,7 @@ namespace Domain.DTO.Service
 
 
 
-       
+
         #endregion
 
 

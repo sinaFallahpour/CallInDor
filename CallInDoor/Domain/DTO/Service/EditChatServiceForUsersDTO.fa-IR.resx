@@ -129,6 +129,9 @@
   <data name="PackageType" xml:space="preserve">
     <value>نوع پکیج</value>
   </data>
+  <data name="Price" xml:space="preserve">
+    <value>قیمت</value>
+  </data>
   <data name="PriceForNativeCustomer" xml:space="preserve">
     <value>قیمت برای کاربران بومی</value>
   </data>
