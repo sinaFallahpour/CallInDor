@@ -20,10 +20,10 @@ namespace Domain.Entities
 
 
 
-        /// <summary>
-        /// نحوه پرداخت شدن این پکیج
-        /// </summary>
-        public BuyiedPackageStatus BuyiedPackageStatus { get; set; }
+        /////// <summary>
+        /////// نحوه پرداخت شدن این پکیج
+        /////// </summary>
+        ////public BuyiedPackageStatus BuyiedPackageStatus { get; set; }
 
 
         /// <summary>
@@ -35,15 +35,16 @@ namespace Domain.Entities
         /// <summary>
         /// قیمت نهایی
         /// قیمت این بسته که برای یک درخواست از یک سرویس خواست است
-        /// ثبمت نهایی مه پرداخت شده برای پگیج
+        /// ثبمت نهایی که پرداخت شده برای پکیج
         /// </summary>
         public double? FinalPrice { get; set; }
+
+
 
 
         /// <summary>
         /// درصدی که سایت برای خودش گرفت در
         /// درصدی پروایدر این پکیج به سایت میدهد   
-        ///      
         /// </summary>
         public int SitePercent { get; set; }
 

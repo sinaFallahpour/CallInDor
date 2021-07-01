@@ -171,6 +171,7 @@ namespace CallInDoor.Controllers
 
 
         [AllowAnonymous]
+        [HttpPost("Verify")]
         public async Task<IActionResult> Verify()
         {
             var error = new List<string>();
@@ -1019,7 +1020,7 @@ namespace CallInDoor.Controllers
                 IsRenewPackage = isRenew,
                 CreateDate = DateTime.Now,
                 ExpireTime = expireTime,
-                BuyiedPackageStatus = buyiedPackageStatus,
+                //////////BuyiedPackageStatus = buyiedPackageStatus,
                 //Price = price,
                 MainPrice = mainPrice,
                 FinalPrice = finalPrice,
@@ -1031,7 +1032,7 @@ namespace CallInDoor.Controllers
                 CheckDiscountId = discountId,
 
             };
-            await _context.BuyiedPackageTBL.AddAsync(buyiedPackageTBL);
+            //await _context.BuyiedPackageTBL.AddAsync(buyiedPackageTBL);
         }
 
 

@@ -24,7 +24,8 @@ namespace Service.Interfaces.RequestService
         /// <summary>
         /// ولیدیت کردن ریکوست که به سرویس های سشن وپریوریک از نوع چت وویس بیابد
         /// </summary>
-        Task<(bool succsseded, List<string> result)> ValidateRequestToPeriodedOrSessionChatService(BaseMyServiceTBL baseServiceFromDB, bool hasReserveRequest);
+        //Task<(bool succsseded, List<string> result)> ValidateRequestToPeriodedOrSessionChatService(BaseMyServiceTBL baseServiceFromDB, bool hasReserveRequest);
+        Task<(bool succsseded, List<string> result)> ValidateRequestToPeriodedOrSessionChatService(BaseMyServiceTBL baseServiceFromDB, AppUser provider, AppUser currentUser, bool hasReserveRequest);
 
         (bool succsseded, List<string> result) ValidateSendChatToLimitedChatService(ServiceRequestTBL requestfromDB);
         (bool succsseded, List<string> result) ValidateRedisSendChatVoiceDuration(RedisValueForDurationChatVoice chatVoiceValueFromRedis);

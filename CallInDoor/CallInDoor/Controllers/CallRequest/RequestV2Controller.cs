@@ -127,8 +127,6 @@ namespace CallInDoor.Controllers
         }
 
 
-
-
         /// <summary>
         ///تمام درخواست هایی که به دیگران دادم  
         ///البته با فیلتر
@@ -172,10 +170,7 @@ namespace CallInDoor.Controllers
         }
 
 
-
-
         /// <summary>
-        /// 
         /// ***************************************  version2 ***********************************************************
         /// درخواست به سرویسی که از جنس وویس کال یا ویدیو کال است    
         /// </summary>
@@ -221,10 +216,12 @@ namespace CallInDoor.Controllers
             //validate discount code
             var discountFromDb = await _discountService.GetDiscountByCode(model.DiscountCode);
 
-            var res2 = await _discountService.ValidateDiscount(discountFromDb);
-            if (!res2.succsseded)
-                return BadRequest(new ApiBadRequestResponse(res2.result));
-
+            if (discountFromDb != null)
+            {
+                var res2 = await _discountService.ValidateDiscount(discountFromDb);
+                if (!res2.succsseded)
+                    return BadRequest(new ApiBadRequestResponse(res2.result));
+            }
 
             var baseRequestServiceTBL = new BaseRequestServiceTBL()
             {
@@ -256,64 +253,8 @@ namespace CallInDoor.Controllers
             // ta 8 Saat bayad TaEd konad jarime shavads
 
 
-
-
-
-
-
-
-
-
-            //var request = new ServiceRequestTBL()
-            //{
-            //    IsLimitedChat = false,
-
-            //    FreeMessageCount = baseServiceFromDB.MyChatsService?.FreeMessageCount,
-            //    FreeUsageMessageCount = 0,
-            //    BaseServiceId = model.BaseServiceId,
-            //    //////ServiceType = baseServiceFromDB.ServiceType,
-            //    ServiceTypes = baseServiceFromDB.ServiceTypes,
-            //    CreateDate = DateTime.Now,
-            //    WhenTheRequestShouldBeAnswered = DateTime.Now.AddHours(8),
-            //    ClienUserName = currentUsername,
-            //    ProvideUserName = baseServiceFromDB.UserName,
-            //    ServiceRequestStatus = ServiceRequestStatus.Pending,
-            //    PackageType = (PackageType)baseServiceFromDB.MyChatsService.PackageType,
-            //    PriceForNativeCustomer = baseServiceFromDB.MyChatsService.PriceForNativeCustomer,
-            //    PriceForNonNativeCustomer = baseServiceFromDB.MyChatsService.PriceForNonNativeCustomer,
-            //    //PackageType=baseServiceFromDB.p
-            //};
-
-            //request.ChatServiceMessagesTBL = new List<ChatServiceMessagesTBL>() {
-            //    new ChatServiceMessagesTBL()
-            //        {
-            //            SenderUserName= currentUsername,
-            //            IsSeen=false,
-            //            ChatMessageType = ChatMessageType.Text,
-            //            IsProviderSend = false,
-            //            SendetMesageType = SendetMesageType.Client,
-            //            ClientUserName = currentUsername,
-            //            CreateDate = DateTime.Now,
-            //            ProviderUserName = baseServiceFromDB.UserName,
-            //            Text = model.FirstMessage,
-            //         }
-            //};
-
-
-
-
             #region send notification
-            var persianConfirmMessage = _context.SettingsTBL.Where(c => c.Key == PublicHelper.ServiceConfimNotificationKeyName).SingleOrDefault()?.Value;
-            var englishConfirmMessage = _context.SettingsTBL.Where(c => c.Key == PublicHelper.ServiceConfimNotificationKeyName).SingleOrDefault()?.EnglishValue;
-
-            var userFromDB = await _context.Users.Where(c => c.UserName == baseServiceFromDB.UserName)
-                .Select(c => new { c.ConnectionId, c.UserName }).FirstOrDefaultAsync();
-            bool isPersian = _commonService.IsPersianLanguage();
-
-            string confirmMessage = isPersian ? persianConfirmMessage : englishConfirmMessage;
-
-            if (!string.IsNullOrEmpty(userFromDB?.ConnectionId))
-                await _hubContext.Clients.Client(userFromDB?.ConnectionId).SendAsync("Notifis", confirmMessage);
+            //#TODO Sms to provider to for new request
             #endregion
 
 
@@ -391,9 +332,13 @@ namespace CallInDoor.Controllers
             if (!res.succsseded)
                 return BadRequest(new ApiBadRequestResponse(res.result));
 
-            await _transactionService.HandleCaLlTransaction(requestFromDB);
+            var transaction = await _transactionService.HandleCaLlTransaction(requestFromDB);
 
 
+            clientFromDB.WalletBalance += transaction.ClientShouldPay;
+            providerFromDB.WalletBalance += transaction.ProviderShouldGet;
+
+            
             var notification = new NotificationTBL()
             {
                 CreateDate = DateTime.UtcNow,
@@ -471,10 +416,6 @@ namespace CallInDoor.Controllers
         }
 
 
-
-
-
-
         /// <summary>
         /// ******************* changed to new Api *******************
         ///به اتمام رساندن درخواست 
@@ -505,7 +446,12 @@ namespace CallInDoor.Controllers
 
 
 
+        /// <summary>
         /// ******************* changed to new Api
+        /// aya pol dar valetesh darad?
+        /// </summary>
+        /// <param name="baseServiceId"></param>
+        /// <returns></returns>
         [HttpGet("HaveEnoughBalance")]
         [ClaimsAuthorize(IsAdmin = false)]
         public async Task<ActionResult> HaveEnoughBalance(int baseServiceId)
@@ -526,6 +472,31 @@ namespace CallInDoor.Controllers
             }
             return Ok(_commonService.OkResponse(haveBalance, false));
         }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -2309,11 +2280,6 @@ namespace CallInDoor.Controllers
 
 
         //#endregion
-
-
-
-
-
 
     }
 }

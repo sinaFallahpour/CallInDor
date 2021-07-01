@@ -13,31 +13,27 @@ namespace Domain.Entities.Requests
     public class ChatRequestTBL : BaseEntity<int>
     {
 
+
+        /// <summary>
+        /// زمانی که پروایدر اکسپت کرد
+        /// </summary>
+        public DateTime AcceptDate { get; set; }
+
+
+
         #region Chat-Voice(Free(unlimited))
 
+
+        /// <summary>
         /// تعداد پیامهای رایگان که تا حالا استفاده کردیم
+        /// </summary>
         public int? FreeUsageMessageCount { get; set; }
+
+
+        /// <summary>
         /// تعداد پیامهای رایگان که تا میتوانیم استفاده کردیم
+        /// </summary>
         public int? FreeMessageCount { get; set; }
-        /// قیمت کلی برای کل پیام هایی که داده شد   
-        /// این تا حالا اتصلا استفاده نشد
-        //public double TotalPrice { get; set; } 
-        /// این پراپرتی فقط برای سرویس هایی از نوع چت یا وویس یا کال جواب میده
-
-        public PackageType PackageType { get; set; }
-        ///این زمان 8 ساعت بعد از ثبت سرویس است مه کاربرانت دی اکتیو باید یه ا  پاسخ دهند 
-        public DateTime WhenTheRequestShouldBeAnswered { get; set; }
-
-        /// قیمت برای کاربرا ن نان نیتیو
-        public double? PriceForNonNativeCustomer { get; set; }
-
-        /// قینت برای کاربران نیتیو
-        public double? PriceForNativeCustomer { get; set; }
-
-
-        //تعداد کل پیام هایی که کلاینت فرستاد
-        //public int ClientMessageCount_FreeeChatVoice  { get; set; }
-
 
 
 
@@ -46,24 +42,6 @@ namespace Domain.Entities.Requests
 
 
         #region Chat-Voice(Session or prioded)
-
-
-
-        //if (chatVoiceValueFromRedis == null)
-        //    if (chatVoiceValueFromRedis.RequestStatusForRedis == RequestStatusForRedis.BadPlan)
-
-        //if (chatVoiceValueFromRedis.EndTime == null && DateTime.Now <= chatVoiceValueFromRedis.EndTime)
-
-
-        ///// <summary>
-        ///// زمان شروع آخرین چت ممکن
-        ///// </summary>
-        //public DateTime StartTime_PeriodedChatVoice { get; set; }//---------------------------------------------------------------
-
-        ///// <summary>
-        ///// زمان پایان آخرین چت ممکن
-        ///// </summary>
-        //public DateTime EndTime_PeriodedChatVoice { get; set; }//---------------------------------------------------------------
 
 
 
@@ -85,10 +63,10 @@ namespace Domain.Entities.Requests
         public bool IsLimitedChat { get; set; }
 
 
-        /// <summary>
-        /// ایا کاربر پلن خریده یا نه
-        /// </summary>
-        public bool HasPlan_LimitedChatVoice { get; set; }
+        ///////// <summary>
+        ///////// ایا کاربر پلن خریده یا نه
+        ///////// </summary>
+        //////public bool HasPlan_LimitedChatVoice { get; set; }
 
 
 
@@ -98,11 +76,10 @@ namespace Domain.Entities.Requests
         public DateTime ExpireTime_LimitedChatVoice { get; set; }
 
 
-        //packageId
-        public int? BuyiedPackageId { get; set; }
+        //public int? BuyiedPackageId { get; set; }
 
-        [ForeignKey("BuyiedPackageId")]
-        public BuyiedPackageTBL BuyiedPackageTBL { get; set; }
+        //[ForeignKey("BuyiedPackageId")]
+        //public BuyiedPackageTBL BuyiedPackageTBL { get; set; }
 
 
 
@@ -110,6 +87,22 @@ namespace Domain.Entities.Requests
         ////public List<UsedPeriodedChatTBL> UsedPeriodedChatTBLs { get; set; }
 
 
+
+
+
+
+
+
+        #endregion
+
+
+
+
+
+
+
+
+        #region relation   
 
 
         // relation With BaseRequestServiceTBL
@@ -131,6 +124,6 @@ namespace Domain.Entities.Requests
 
 
 
-
     }
+
 }

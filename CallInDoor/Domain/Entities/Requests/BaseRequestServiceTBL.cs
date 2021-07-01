@@ -80,7 +80,7 @@ namespace Domain.Entities.Requests
         /// این پراپرتی فقط برای سرویس هایی از نوع چت یا وویس یا کال جواب میده
         public PackageType PackageType { get; set; }//==== 
         ///این زمان 8 ساعت بعد از ثبت سرویس است مه کاربرانت دی اکتیو باید یه ا  پاسخ دهند 
-        public DateTime WhenTheRequestShouldBeAnswered { get; set; }//===================================================
+        public DateTime WhenTheRequestShouldBeAnswered { get; set; } 
 
         ///////////////// قیمت برای کاربرا ن نان نیتیو
         //////////////public double? PriceForNonNativeCustomer { get; set; }

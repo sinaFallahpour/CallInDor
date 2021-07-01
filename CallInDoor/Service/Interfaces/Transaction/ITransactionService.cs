@@ -18,7 +18,7 @@ namespace Service.Interfaces.Transaction
         /// تراکنش های مربوط به کال
         /// </summary>
         /// <returns></returns>
-        Task<bool> HandleCaLlTransaction(BaseRequestServiceTBL model);
+        Task<ClientProviderShoulPayVM> HandleCaLlTransaction(BaseRequestServiceTBL model);
 
 
         public (bool succsseded, List<string> result) ValidateWallet(BaseRequestServiceTBL model, AppUser clientFromDB);

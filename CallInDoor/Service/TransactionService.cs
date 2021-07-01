@@ -81,7 +81,7 @@ namespace Service
             return QueryAble;
         }
 
-        public async Task<bool> HandleCaLlTransaction(BaseRequestServiceTBL model)
+        public async Task<ClientProviderShoulPayVM> HandleCaLlTransaction(BaseRequestServiceTBL model)
         {
             try
             {
@@ -156,11 +156,19 @@ namespace Service
               commissiontTransaction,
             };
                 await _context.TransactionTBL.AddRangeAsync(transactions);
-                return true;
+
+                var clientProviderShoulPayVM = new ClientProviderShoulPayVM()
+                {
+                    ClientShouldPay = clientShouldPay,
+                    ProviderShouldGet = providerShouldPay,
+                };
+                return clientProviderShoulPayVM;
+
+
             }
             catch
             {
-                return false;
+                return null;
             }
 
         }

@@ -16,7 +16,6 @@ namespace Domain.Entities.Requests
         /// </summary>
         public DateTime AcceptDate { get; set; }
 
-
         /// <summary>
         /// ساعت شروع سرویس
         /// </summary>
@@ -33,8 +32,6 @@ namespace Domain.Entities.Requests
         public DateTime? RealEndTime { get; set; }
 
 
-
-
         // relation With BaseRequestServiceTBL
         public BaseRequestServiceTBL BaseRequestServiceTBL { get; set; }
 
@@ -42,9 +39,6 @@ namespace Domain.Entities.Requests
 
         [ForeignKey("BaseRequestServiceTBL")]
         public int? BaseRequestId { get; set; }
-
-
-
 
     }
 }

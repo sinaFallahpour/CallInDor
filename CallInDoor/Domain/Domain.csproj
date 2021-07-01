@@ -84,6 +84,12 @@
     <EmbeddedResource Update="DTO\Payment\PayDTO.fa-IR.resx">
       <Generator>PublicResXFileCodeGenerator</Generator>
     </EmbeddedResource>
+    <EmbeddedResource Update="DTO\RequestService\RequestToChatssDTO.en-US.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+    </EmbeddedResource>
+    <EmbeddedResource Update="DTO\RequestService\RequestToChatssDTO.fa-IR.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+    </EmbeddedResource>
     <EmbeddedResource Update="DTO\Service\EditChatServiceForUsersDTO.en-US.resx">
       <Generator>PublicResXFileCodeGenerator</Generator>
     </EmbeddedResource>

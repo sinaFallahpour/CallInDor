@@ -1267,8 +1267,8 @@ namespace CallInDoor.Controllers
             }
 
 
-            List<string> erroses2 = new List<string> { PubicMessages.InternalServerMessage };
-            return StatusCode(StatusCodes.Status500InternalServerError, new ApiBadRequestResponse(erroses2, 500));
+            //List<string> erroses2 = new List<string> { PubicMessages.InternalServerMessage };
+            //return StatusCode(StatusCodes.Status500InternalServerError, new ApiBadRequestResponse(erroses2, 500));
 
 
 

@@ -86,7 +86,7 @@ namespace Domain
         /// جدول ریپورت های کاربر که دام درخواست هایی که داده برا سرویس رو ریپورت کرده است
         /// </summary>
         public DbSet<ReportTBL> ReportTBL { get; set; }
-        
+
 
 
         /// <summary>
@@ -186,10 +186,10 @@ namespace Domain
 
 
 
-        /// <summary>
-        /// بسته عایی که کاربر خریده برای درخواست به سرویس ها
-        /// </summary>
-        public DbSet<BuyiedPackageTBL> BuyiedPackageTBL { get; set; }
+        /////////// <summary>
+        /////////// بسته عایی که کاربر خریده برای درخواست به سرویس ها
+        /////////// </summary>
+        ////////public DbSet<BuyiedPackageTBL> BuyiedPackageTBL { get; set; }
 
 
 

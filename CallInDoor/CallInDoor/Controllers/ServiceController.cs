@@ -1515,26 +1515,26 @@ namespace CallInDoor.Controllers
                     SubCategoryName = _commonService.GetNameByCulture(c.SubCategoryTBL),
                     //SubCategoryPersianName = c.SubCategoryTBL.PersianTitle,
 
-                    ChatService = new
+                    serviceDetails = new
                     {
                         PackageType = c.MyChatsService != null ? c.MyChatsService.PackageType : null,
                         //Price = c.MyChatsService != null ? c.MyChatsService.PriceForNativeCustomer : null,
-                        Price = c.MyChatsService != null ? c.Price : null,
+                        Price = c.Price,
                         //PriceForNonNativeCustomer = c.MyChatsService != null ? c.MyChatsService?.PriceForNonNativeCustomer : null,
                         Duration = c.MyChatsService != null ? c.MyChatsService.Duration : null,
                         FreeMessageCount = c.MyChatsService != null ? c.MyChatsService.FreeMessageCount : null,
                     },
 
-                    ServiceService = new
-                    {
-                        Price = c.MyServicesService != null ? c.Price : null,
-                    },
+                    //ServiceService = new
+                    //{
+                    //    Price = c.MyServicesService != null ? c.Price : null,
+                    //},
 
-                    CourseService = new
-                    {
-                        //Price = c.MyCourseService != null ? c.MyCourseService.Price : null,
-                        Price = c.MyCourseService != null ? c.Price : null,
-                    },
+                    //CourseService = new
+                    //{
+                    //    //Price = c.MyCourseService != null ? c.MyCourseService.Price : null,
+                    //    Price = c.MyCourseService != null ? c.Price : null,
+                    //},
                 }).ToListAsync();
 
             //var profile = await _accountService.ProfileGet();
@@ -1950,7 +1950,6 @@ namespace CallInDoor.Controllers
         [ClaimsAuthorize(IsAdmin = true)]
         public async Task<ActionResult> GetServiceCommentsForAdmin(int Id)
         {
-
             var comments = await _context.ServiceCommentsTBL.Where(c => c.BaseMyServiceId == Id)
             .Select(c => new
             {
@@ -1988,16 +1987,12 @@ namespace CallInDoor.Controllers
                 return BadRequest(new ApiBadRequestResponse(erros, 404));
 
                 ////////////return NotFound(_commonService.NotFoundErrorReponse(true));
-
             }
-
-
 
             if (comment.IsConfirmed)
                 comment.IsConfirmed = false;
             else
                 comment.IsConfirmed = true;
-
             await _context.SaveChangesAsync();
             return Ok(_commonService.OkResponse(comment.IsConfirmed, true));
 

@@ -47,6 +47,120 @@ namespace Service
         #endregion
 
 
+        /// <summary>
+        /// ولیدیت کردن ریکوست که به سرویس های سشن وپریوریک از نوع چت وویس بیابد
+        /// </summary>
+        /// <param name="baseServiceFromDB"></param>
+        /// <param name="hasReserveRequest"></param>
+        /// <returns></returns>
+        public async Task<(bool succsseded, List<string> result)> ValidateRequestToPeriodedOrSessionChatService(BaseMyServiceTBL baseServiceFromDB, AppUser provider, AppUser currentUser, bool hasReserveRequest)
+        {
+            bool IsValid = true;
+            List<string> Errors = new List<string>();
+            string curentUSerName = _accountService.GetCurrentUserName();
+
+            if (baseServiceFromDB == null)
+            {
+                IsValid = false;
+                Errors.Add(_resourceServices.GetErrorMessageByKey("NotFound"));
+                return (IsValid, Errors);
+            }
+
+
+            //****************************  PackageType  Validate  ***************************************//
+            if (baseServiceFromDB.MyChatsService.PackageType != PackageType.limited)
+            {
+                IsValid = false;
+                Errors.Add(_resourceServices.GetErrorMessageByKey("InvalidPackageType"));
+                return (IsValid, Errors);
+            }
+            //****************************  End PackageType  Validate  ***************************************//
+
+
+
+            if (baseServiceFromDB.UserName.ToLower() == curentUSerName)
+            {
+                IsValid = false;
+                Errors.Add(_resourceServices.GetErrorMessageByKey("YouCantRequestToYourSelf"));
+                return (IsValid, Errors);
+            }
+
+            ///provide is limited
+            if (provider.LimiteTimeOfRecieveRequest > DateTime.Now)
+            {
+                IsValid = false;
+                Errors.Add(_resourceServices.GetErrorMessageByKey("ProviderIsLimitForAFewMinutes"));
+                return (IsValid, Errors);
+            }
+
+            //سرویس باید از نوع چت باشد
+            //if (baseServiceFromDB.ServiceType != ServiceType.ChatVoice)
+            if (!baseServiceFromDB.ServiceTypes.Contains("0"))
+            {
+                IsValid = false;
+                Errors.Add(_resourceServices.GetErrorMessageByKey("InValidServiceType"));
+                return (IsValid, Errors);
+            }
+
+
+            if (baseServiceFromDB.ConfirmedServiceType != ConfirmedServiceType.Confirmed ||
+                baseServiceFromDB.ProfileConfirmType != ProfileConfirmType.Confirmed)
+            {
+                IsValid = false;
+                Errors.Add(_resourceServices.GetErrorMessageByKey("NotFound"));
+                return (IsValid, Errors);
+            }
+
+            if (hasReserveRequest)
+            {
+                IsValid = false;
+                Errors.Add(_resourceServices.GetErrorMessageByKey("HasReserveRequest"));
+                return (IsValid, Errors);
+            }
+
+            double? allRequestPrices = GetAllRequestPrices(currentUser);
+
+            var validBalance = allRequestPrices + (double)baseServiceFromDB.Price;
+
+            //checking wallet
+            if (currentUser.WalletBalance == 0 || currentUser.WalletBalance < validBalance)
+            {
+                var errorMessage = _resourceServices.GetErrorMessageByKey("NotEnoughtBalance");
+                Errors.Add(errorMessage);
+                return (IsValid, Errors);
+            }
+
+
+
+            //check user is active or not
+            bool isonline = false;
+            if (!baseServiceFromDB.MyChatsService.IsServiceReverse)
+            {
+                isonline = await _context.Users.Where(c => c.UserName == baseServiceFromDB.UserName)
+                                                   .Select(c => c.IsOnline)
+                                                   .FirstOrDefaultAsync();
+                if (!isonline)
+                {
+                    IsValid = false;
+                    Errors.Add(_resourceServices.GetErrorMessageByKey("ProviderIsUnAvailableMessage"));
+                    return (IsValid, Errors);
+                }
+            }
+
+
+            return (IsValid, Errors);
+        }
+
+        private double? GetAllRequestPrices(AppUser currentUser)
+        {
+            var allRequestPrices = _context.BaseRequestServiceTBL
+                                    .Where(c => c.ClienUserName == currentUser.UserName && c.ServiceRequestStatus == ServiceRequestStatus.Pending).Sum(c => c.Price);
+            allRequestPrices = allRequestPrices != null ? allRequestPrices : 0;
+            return allRequestPrices;
+        }
+
+
+
 
 
 
@@ -89,9 +203,9 @@ namespace Service
 
 
 
-            //سرویس باید از نوع چت باشد
+            //سرویس باید از نوع کال باشد
             //if (baseServiceFromDB.ServiceType != ServiceType.ChatVoice)
-            if (!baseServiceFromDB.ServiceTypes.Contains("1") && !baseServiceFromDB.ServiceTypes.Contains("2"))
+            if (!baseServiceFromDB.ServiceTypes.Contains("1") || !baseServiceFromDB.ServiceTypes.Contains("2"))
             {
                 IsValid = false;
                 Errors.Add(_resourceServices.GetErrorMessageByKey("InValidServiceType"));
@@ -115,11 +229,12 @@ namespace Service
 
 
 
-
+            double? allRequestPrices = GetAllRequestPrices(currentUser);
+            var validBalance = allRequestPrices + (double)baseServiceFromDB.Price;
 
             //checking wallet
             //if (currentUser.WalletBalance == 0 || currentUser.WalletBalance < (double)baseServiceFromDB.MyChatsService.PriceForNativeCustomer)
-            if (currentUser.WalletBalance == 0 || currentUser.WalletBalance < (double)baseServiceFromDB.Price)
+            if (currentUser.WalletBalance == 0 || currentUser.WalletBalance < allRequestPrices)
             {
                 var errorMessage = _resourceServices.GetErrorMessageByKey("NotEnoughtBalance");
                 Errors.Add(errorMessage);
@@ -175,8 +290,6 @@ namespace Service
 
 
 
-
-
         /// <summary>
         /// ولیدیت کردن ریکوست که به سرویس های فیری از نوع چت وویس بیابد
         /// </summary>
@@ -195,9 +308,6 @@ namespace Service
                 Errors.Add(_resourceServices.GetErrorMessageByKey("NotFound"));
                 return (IsValid, Errors);
             }
-
-
-
 
 
             //****************************  PackageType  Validate  ***************************************//
@@ -221,14 +331,13 @@ namespace Service
 
 
             //سرویس باید از نوع چت باشد
-            if (baseServiceFromDB.ServiceType != ServiceType.ChatVoice)
+            //if (baseServiceFromDB.ServiceType != ServiceType.ChatVoice)
+            if (!baseServiceFromDB.ServiceTypes.Contains("0"))
             {
                 IsValid = false;
                 Errors.Add(_resourceServices.GetErrorMessageByKey("InValidServiceType"));
                 return (IsValid, Errors);
             }
-
-
 
             if (baseServiceFromDB.ConfirmedServiceType != ConfirmedServiceType.Confirmed ||
                 baseServiceFromDB.ProfileConfirmType != ProfileConfirmType.Confirmed)
@@ -253,6 +362,7 @@ namespace Service
                 isonline = await _context.Users.Where(c => c.UserName == baseServiceFromDB.UserName)
                                                    .Select(c => c.IsOnline)
                                                    .FirstOrDefaultAsync();
+
                 if (!isonline)
                 {
                     IsValid = false;
@@ -268,91 +378,91 @@ namespace Service
 
 
 
-        /// <summary>
-        /// ولیدیت کردن ریکوست که به سرویس های سشن وپریوریک از نوع چت وویس بیابد
-        /// </summary>
-        /// <param name="baseServiceFromDB"></param>
-        /// <param name="hasReserveRequest"></param>
-        /// <returns></returns>
-        public async Task<(bool succsseded, List<string> result)> ValidateRequestToPeriodedOrSessionChatService(BaseMyServiceTBL baseServiceFromDB,
-                                    bool hasReserveRequest)
-        {
-            bool IsValid = true;
-            List<string> Errors = new List<string>();
-            string curentUSerName = _accountService.GetCurrentUserName();
+        ///////////////////////////////// <summary>
+        ///////////////////////////////// ولیدیت کردن ریکوست که به سرویس های سشن وپریوریک از نوع چت وویس بیابد
+        ///////////////////////////////// </summary>
+        ///////////////////////////////// <param name="baseServiceFromDB"></param>
+        ///////////////////////////////// <param name="hasReserveRequest"></param>
+        ///////////////////////////////// <returns></returns>
+        //////////////////////////////public async Task<(bool succsseded, List<string> result)> ValidateRequestToPeriodedOrSessionChatService(BaseMyServiceTBL baseServiceFromDB,
+        //////////////////////////////                            bool hasReserveRequest)
+        //////////////////////////////{
+        //////////////////////////////    bool IsValid = true;
+        //////////////////////////////    List<string> Errors = new List<string>();
+        //////////////////////////////    string curentUSerName = _accountService.GetCurrentUserName();
 
-            if (baseServiceFromDB == null)
-            {
-                IsValid = false;
-                Errors.Add(_resourceServices.GetErrorMessageByKey("NotFound"));
-                return (IsValid, Errors);
-            }
-
-
-            //****************************  PackageType  Validate  ***************************************//
-            if (baseServiceFromDB.MyChatsService.PackageType != PackageType.limited)
-            {
-                IsValid = false;
-                Errors.Add(_resourceServices.GetErrorMessageByKey("InvalidPackageType"));
-                return (IsValid, Errors);
-            }
-            //****************************  End PackageType  Validate  ***************************************//
+        //////////////////////////////    if (baseServiceFromDB == null)
+        //////////////////////////////    {
+        //////////////////////////////        IsValid = false;
+        //////////////////////////////        Errors.Add(_resourceServices.GetErrorMessageByKey("NotFound"));
+        //////////////////////////////        return (IsValid, Errors);
+        //////////////////////////////    }
 
 
-
-            if (baseServiceFromDB.UserName.ToLower() == curentUSerName)
-            {
-                IsValid = false;
-                Errors.Add(_resourceServices.GetErrorMessageByKey("YouCantRequestToYourSelf"));
-                return (IsValid, Errors);
-            }
-
-
-            //سرویس باید از نوع چت باشد
-            if (baseServiceFromDB.ServiceType != ServiceType.ChatVoice)
-            {
-                IsValid = false;
-                Errors.Add(_resourceServices.GetErrorMessageByKey("InValidServiceType"));
-                return (IsValid, Errors);
-            }
+        //////////////////////////////    //****************************  PackageType  Validate  ***************************************//
+        //////////////////////////////    if (baseServiceFromDB.MyChatsService.PackageType != PackageType.limited)
+        //////////////////////////////    {
+        //////////////////////////////        IsValid = false;
+        //////////////////////////////        Errors.Add(_resourceServices.GetErrorMessageByKey("InvalidPackageType"));
+        //////////////////////////////        return (IsValid, Errors);
+        //////////////////////////////    }
+        //////////////////////////////    //****************************  End PackageType  Validate  ***************************************//
 
 
 
-            if (baseServiceFromDB.ConfirmedServiceType != ConfirmedServiceType.Confirmed ||
-                baseServiceFromDB.ProfileConfirmType != ProfileConfirmType.Confirmed)
-            {
-                IsValid = false;
-                Errors.Add(_resourceServices.GetErrorMessageByKey("NotFound"));
-                return (IsValid, Errors);
-            }
-
-            if (hasReserveRequest)
-            {
-                IsValid = false;
-                Errors.Add(_resourceServices.GetErrorMessageByKey("HasReserveRequest"));
-                return (IsValid, Errors);
-            }
+        //////////////////////////////    if (baseServiceFromDB.UserName.ToLower() == curentUSerName)
+        //////////////////////////////    {
+        //////////////////////////////        IsValid = false;
+        //////////////////////////////        Errors.Add(_resourceServices.GetErrorMessageByKey("YouCantRequestToYourSelf"));
+        //////////////////////////////        return (IsValid, Errors);
+        //////////////////////////////    }
 
 
-
-            //check user is active or not
-            bool isonline = false;
-            if (!baseServiceFromDB.MyChatsService.IsServiceReverse)
-            {
-                isonline = await _context.Users.Where(c => c.UserName == baseServiceFromDB.UserName)
-                                                   .Select(c => c.IsOnline)
-                                                   .FirstOrDefaultAsync();
-                if (!isonline)
-                {
-                    IsValid = false;
-                    Errors.Add(_resourceServices.GetErrorMessageByKey("ProviderIsUnAvailableMessage"));
-                    return (IsValid, Errors);
-                }
-            }
+        //////////////////////////////    //سرویس باید از نوع چت باشد
+        //////////////////////////////    if (baseServiceFromDB.ServiceType != ServiceType.ChatVoice)
+        //////////////////////////////    {
+        //////////////////////////////        IsValid = false;
+        //////////////////////////////        Errors.Add(_resourceServices.GetErrorMessageByKey("InValidServiceType"));
+        //////////////////////////////        return (IsValid, Errors);
+        //////////////////////////////    }
 
 
-            return (IsValid, Errors);
-        }
+
+        //////////////////////////////    if (baseServiceFromDB.ConfirmedServiceType != ConfirmedServiceType.Confirmed ||
+        //////////////////////////////        baseServiceFromDB.ProfileConfirmType != ProfileConfirmType.Confirmed)
+        //////////////////////////////    {
+        //////////////////////////////        IsValid = false;
+        //////////////////////////////        Errors.Add(_resourceServices.GetErrorMessageByKey("NotFound"));
+        //////////////////////////////        return (IsValid, Errors);
+        //////////////////////////////    }
+
+        //////////////////////////////    if (hasReserveRequest)
+        //////////////////////////////    {
+        //////////////////////////////        IsValid = false;
+        //////////////////////////////        Errors.Add(_resourceServices.GetErrorMessageByKey("HasReserveRequest"));
+        //////////////////////////////        return (IsValid, Errors);
+        //////////////////////////////    }
+
+
+
+        //////////////////////////////    //check user is active or not
+        //////////////////////////////    bool isonline = false;
+        //////////////////////////////    if (!baseServiceFromDB.MyChatsService.IsServiceReverse)
+        //////////////////////////////    {
+        //////////////////////////////        isonline = await _context.Users.Where(c => c.UserName == baseServiceFromDB.UserName)
+        //////////////////////////////                                           .Select(c => c.IsOnline)
+        //////////////////////////////                                           .FirstOrDefaultAsync();
+        //////////////////////////////        if (!isonline)
+        //////////////////////////////        {
+        //////////////////////////////            IsValid = false;
+        //////////////////////////////            Errors.Add(_resourceServices.GetErrorMessageByKey("ProviderIsUnAvailableMessage"));
+        //////////////////////////////            return (IsValid, Errors);
+        //////////////////////////////        }
+        //////////////////////////////    }
+
+
+        //////////////////////////////    return (IsValid, Errors);
+        //////////////////////////////}
 
 
 

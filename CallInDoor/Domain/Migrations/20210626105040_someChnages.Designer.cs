@@ -4,14 +4,16 @@ using Domain;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace Domain.Migrations
 {
     [DbContext(typeof(DataContext))]
-    partial class DataContextModelSnapshot : ModelSnapshot
+    [Migration("20210626105040_someChnages")]
+    partial class someChnages
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -354,6 +356,9 @@ namespace Domain.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<int>("BuyiedPackageStatus")
+                        .HasColumnType("int");
 
                     b.Property<int>("BuyiedPackageType")
                         .HasColumnType("int");
@@ -1213,13 +1218,13 @@ namespace Domain.Migrations
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<DateTime>("AcceptDate")
-                        .HasColumnType("datetime2");
-
                     b.Property<int>("AllMessageCount_LimitedChat")
                         .HasColumnType("int");
 
                     b.Property<int?>("BaseRequestId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("BuyiedPackageId")
                         .HasColumnType("int");
 
                     b.Property<DateTime>("ExpireTime_LimitedChatVoice")
@@ -1231,17 +1236,34 @@ namespace Domain.Migrations
                     b.Property<int?>("FreeUsageMessageCount")
                         .HasColumnType("int");
 
+                    b.Property<bool>("HasPlan_LimitedChatVoice")
+                        .HasColumnType("bit");
+
                     b.Property<bool>("IsLimitedChat")
                         .HasColumnType("bit");
 
+                    b.Property<int>("PackageType")
+                        .HasColumnType("int");
+
+                    b.Property<double?>("PriceForNativeCustomer")
+                        .HasColumnType("float");
+
+                    b.Property<double?>("PriceForNonNativeCustomer")
+                        .HasColumnType("float");
+
                     b.Property<int>("UsedMessageCount_LimitedChat")
                         .HasColumnType("int");
+
+                    b.Property<DateTime>("WhenTheRequestShouldBeAnswered")
+                        .HasColumnType("datetime2");
 
                     b.HasKey("Id");
 
                     b.HasIndex("BaseRequestId")
                         .IsUnique()
                         .HasFilter("[BaseRequestId] IS NOT NULL");
+
+                    b.HasIndex("BuyiedPackageId");
 
                     b.ToTable("ChatRequest");
                 });
@@ -2175,6 +2197,10 @@ namespace Domain.Migrations
                     b.HasOne("Domain.Entities.Requests.BaseRequestServiceTBL", "BaseRequestServiceTBL")
                         .WithOne("ChatRequestTBL")
                         .HasForeignKey("Domain.Entities.Requests.ChatRequestTBL", "BaseRequestId");
+
+                    b.HasOne("Domain.Entities.BuyiedPackageTBL", "BuyiedPackageTBL")
+                        .WithMany()
+                        .HasForeignKey("BuyiedPackageId");
                 });
 
             modelBuilder.Entity("Domain.Entities.Role_Permission", b =>
