@@ -121,7 +121,7 @@ namespace Service
 
 
         /// <summary>
-        /// ارسال پیغام سرویس شما توسط ادمین تایید شد
+        ///     سرویس شما توسط ادمین تایید شد
         /// </summary>
         /// <param name="code"></param>
         /// <param name="phoneNumber"></param>
@@ -143,6 +143,83 @@ namespace Service
         }
 
 
+
+
+
+        /// <summary>
+        ///     سرویس شما توسط ادمین رد شد
+        /// </summary>
+        /// <param name="code"></param>
+        /// <param name="phoneNumber"></param>
+        /// <returns></returns>
+        public async Task<(bool isSuccess, string error)> RejectServiceByAdmin(string code, string phoneNumber)
+        {
+            try
+            {
+                await SendMessage(phoneNumber, JsonConvert.SerializeObject(new Dictionary<string, string>
+                {
+                    ["serviceName"] = code,
+                }), "4yyxhe6s54");
+                return (true, _resourceServices.GetErrorMessageByKey("SuccessMessage"));
+            }
+            catch
+            {
+                return (false, _resourceServices.GetErrorMessageByKey("InternalServerMessage"));
+            }
+        }
+
+
+
+
+
+        /// <summary>
+        /// ارسال پیغام درخواست شما توسط پروایدر تایید شد
+        /// </summary>
+        /// <param name="code"></param>
+        /// <param name="phoneNumber"></param>
+        /// <returns></returns>
+        public async Task<(bool isSuccess, string error)> ConfirmRequestByProvider(string code, string phoneNumber)
+        {
+            try
+            {
+                await SendMessage(phoneNumber, JsonConvert.SerializeObject(new Dictionary<string, string>
+                {
+                    ["serviceName"] = code,
+                }), "zvm4zggqum");
+                return (true, _resourceServices.GetErrorMessageByKey("SuccessMessage"));
+            }
+            catch
+            {
+                return (false, _resourceServices.GetErrorMessageByKey("InternalServerMessage"));
+            }
+        }
+
+
+
+
+
+
+        /// <summary>
+        /// ارسال پیغام درخواست شما توسط پروایدر رد شد
+        /// </summary>
+        /// <param name="code"></param>
+        /// <param name="phoneNumber"></param>
+        /// <returns></returns>
+        public async Task<(bool isSuccess, string error)> RejectRequestByProvider(string code, string phoneNumber)
+        {
+            try
+            {
+                await SendMessage(phoneNumber, JsonConvert.SerializeObject(new Dictionary<string, string>
+                {
+                    ["serviceName"] = code,
+                }), "yf48bi3ckg");
+                return (true, _resourceServices.GetErrorMessageByKey("SuccessMessage"));
+            }
+            catch
+            {
+                return (false, _resourceServices.GetErrorMessageByKey("InternalServerMessage"));
+            }
+        }
 
 
 
@@ -193,6 +270,8 @@ namespace Service
                 return (false, _resourceServices.GetErrorMessageByKey("InternalServerMessage"));
             }
         }
+
+
 
 
 

@@ -4,14 +4,16 @@ using Domain;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace Domain.Migrations
 {
     [DbContext(typeof(DataContext))]
-    partial class DataContextModelSnapshot : ModelSnapshot
+    [Migration("20210704074158_addingFck")]
+    partial class addingFck
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -349,38 +351,6 @@ namespace Domain.Migrations
                     b.HasIndex("ServiceName", "ServiceType");
 
                     b.ToTable("BaseMyService");
-                });
-
-            modelBuilder.Entity("Domain.Entities.BlockMonyTBL", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<int?>("BaseRequestId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("BlockMonyStatus")
-                        .HasColumnType("int");
-
-                    b.Property<string>("ClientUsername")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime>("CreayteDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<double>("Price")
-                        .HasColumnType("float");
-
-                    b.Property<string>("ProviderUsername")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("BaseRequestId");
-
-                    b.ToTable("BlockMony");
                 });
 
             modelBuilder.Entity("Domain.Entities.BuyiedPackageTBL", b =>
@@ -1171,9 +1141,6 @@ namespace Domain.Migrations
                     b.Property<int?>("BaseServiceId")
                         .HasColumnType("int");
 
-                    b.Property<int?>("BlockMonyId")
-                        .HasColumnType("int");
-
                     b.Property<int?>("CheckDiscountId")
                         .HasColumnType("int");
 
@@ -1207,8 +1174,6 @@ namespace Domain.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("BaseServiceId");
-
-                    b.HasIndex("BlockMonyId");
 
                     b.HasIndex("CheckDiscountId");
 
@@ -2022,13 +1987,6 @@ namespace Domain.Migrations
                         .HasForeignKey("SubCatId");
                 });
 
-            modelBuilder.Entity("Domain.Entities.BlockMonyTBL", b =>
-                {
-                    b.HasOne("Domain.Entities.Requests.BaseRequestServiceTBL", "BaseRequestServiceTBL")
-                        .WithMany()
-                        .HasForeignKey("BaseRequestId");
-                });
-
             modelBuilder.Entity("Domain.Entities.BuyiedPackageTBL", b =>
                 {
                     b.HasOne("Domain.Entities.CheckDiscountTBL", "CheckDiscountTBL")
@@ -2202,12 +2160,8 @@ namespace Domain.Migrations
             modelBuilder.Entity("Domain.Entities.Requests.BaseRequestServiceTBL", b =>
                 {
                     b.HasOne("Domain.Entities.BaseMyServiceTBL", "BaseMyServiceTBL")
-                        .WithMany("BaseRequestServiceTBLs")
-                        .HasForeignKey("BaseServiceId");
-
-                    b.HasOne("Domain.Entities.BlockMonyTBL", "BlockMonyTBL")
                         .WithMany()
-                        .HasForeignKey("BlockMonyId");
+                        .HasForeignKey("BaseServiceId");
 
                     b.HasOne("Domain.Entities.CheckDiscountTBL", "CheckDiscountTBL")
                         .WithMany("BaseRequestServiceTBLs")

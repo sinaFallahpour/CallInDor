@@ -31,6 +31,7 @@
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="3.1.4" />
     <PackageReference Include="Parbad" Version="3.5.1" />
     <PackageReference Include="Parbad.AspNetCore" Version="1.0.6" />
+    <PackageReference Include="Parbad.Gateway.ZarinPal" Version="1.0.5" />
     <PackageReference Include="Parbad.Storage.Cache" Version="1.0.3" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="5.5.1" />
     <PackageReference Include="System.Drawing.Common" Version="5.0.0" />

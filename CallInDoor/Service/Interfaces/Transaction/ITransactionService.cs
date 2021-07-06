@@ -20,6 +20,7 @@ namespace Service.Interfaces.Transaction
         /// <returns></returns>
         Task<ClientProviderShoulPayVM> HandleCaLlTransaction(BaseRequestServiceTBL model);
 
+        public Task<ClientShoulPayVM> HandleCallTransactionForClient(BaseRequestServiceTBL model, CheckDiscountTBL discountFromDb);
 
         public (bool succsseded, List<string> result) ValidateWallet(BaseRequestServiceTBL model, AppUser clientFromDB);
 

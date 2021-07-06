@@ -316,11 +316,11 @@
         },
         {
           "Header": "en-US",
-          "Val": "In valid ServiceType"
+          "Val": "in valid ServiceType"
         },
         {
           "Header": "ar",
-          "Val": "InValid ServiceType"
+          "Val": "inValid ServiceType"
         }
       ]
     },

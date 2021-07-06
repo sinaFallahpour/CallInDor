@@ -88,6 +88,8 @@ namespace Domain.Entities
         ///  این کدتخفیف در چه جداولی اسنفاده میشود
         /// </summary>
         public ICollection<BaseRequestServiceTBL> BaseRequestServiceTBLs { get; set; }
+        
+        //public ICollection<BlockMonyTBL> BlockMonyTBLs { get; set; }
         #endregion
 
     }

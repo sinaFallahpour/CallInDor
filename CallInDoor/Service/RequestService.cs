@@ -118,9 +118,11 @@ namespace Service
                 return (IsValid, Errors);
             }
 
-            double? allRequestPrices = GetAllRequestPrices(currentUser);
+            //double? allRequestPrices = await GellBlockeeMoney();
+            //var validBalance = allRequestPrices + (double)baseServiceFromDB.Price;
 
-            var validBalance = allRequestPrices + (double)baseServiceFromDB.Price;
+
+            double? validBalance = ClientShouldPay(baseServiceFromDB);
 
             //checking wallet
             if (currentUser.WalletBalance == 0 || currentUser.WalletBalance < validBalance)
@@ -151,14 +153,16 @@ namespace Service
             return (IsValid, Errors);
         }
 
-        private double? GetAllRequestPrices(AppUser currentUser)
-        {
-            var allRequestPrices = _context.BaseRequestServiceTBL
-                                    .Where(c => c.ClienUserName == currentUser.UserName && c.ServiceRequestStatus == ServiceRequestStatus.Pending).Sum(c => c.Price);
-            allRequestPrices = allRequestPrices != null ? allRequestPrices : 0;
-            return allRequestPrices;
-        }
+        //public async Task<double?> GellBlockeeMoney()
+        //{
+        //    string currentUsername = _accountService.GetCurrentUserName();
 
+        //    var myBlockyWallet = await _context.BlockMonyTBL
+        //                                .Where(c => c.ClientUsername == currentUsername && c.BlockMonyStatus == BlockMonyStatus.Blocked)
+        //                                 .SumAsync(c => c.FinalPrice);
+
+        //    return myBlockyWallet;
+        //}
 
 
 
@@ -171,7 +175,9 @@ namespace Service
         /// <param name="baseServiceFromDB"></param>
         /// <param name="hasReserveRequest"></param>
         /// <returns></returns>
-        public async Task<(bool succsseded, List<string> result)> ValidateRequestToCall(BaseMyServiceTBL baseServiceFromDB, AppUser provider, AppUser currentUser, bool hasReserveRequest)
+        public (bool succsseded, List<string> result) ValidateRequestToCall(BaseMyServiceTBL baseServiceFromDB, AppUser provider,
+                                                                            AppUser currentUser, bool hasReserveRequest, CheckDiscountTBL discountFromDb)
+
         {
             bool IsValid = true;
             List<string> Errors = new List<string>();
@@ -205,7 +211,7 @@ namespace Service
 
             //سرویس باید از نوع کال باشد
             //if (baseServiceFromDB.ServiceType != ServiceType.ChatVoice)
-            if (!baseServiceFromDB.ServiceTypes.Contains("1") || !baseServiceFromDB.ServiceTypes.Contains("2"))
+            if (!baseServiceFromDB.ServiceTypes.Contains("1") && !baseServiceFromDB.ServiceTypes.Contains("2"))
             {
                 IsValid = false;
                 Errors.Add(_resourceServices.GetErrorMessageByKey("InValidServiceType"));
@@ -229,13 +235,16 @@ namespace Service
 
 
 
-            double? allRequestPrices = GetAllRequestPrices(currentUser);
-            var validBalance = allRequestPrices + (double)baseServiceFromDB.Price;
+
+
+            //double? allRequestPrices = GetAllRequestPrices(currentUser);
+            double? validBalance = ClientShouldPay(baseServiceFromDB, discountFromDb);
 
             //checking wallet
             //if (currentUser.WalletBalance == 0 || currentUser.WalletBalance < (double)baseServiceFromDB.MyChatsService.PriceForNativeCustomer)
-            if (currentUser.WalletBalance == 0 || currentUser.WalletBalance < allRequestPrices)
+            if (currentUser.WalletBalance == 0 || currentUser.WalletBalance < validBalance)
             {
+                IsValid = false;
                 var errorMessage = _resourceServices.GetErrorMessageByKey("NotEnoughtBalance");
                 Errors.Add(errorMessage);
                 return (IsValid, Errors);
@@ -247,6 +256,7 @@ namespace Service
             //check provider online isonlie
             if (!provider.IsOnline)
             {
+                IsValid = false;
                 var errorMessage = _resourceServices.GetErrorMessageByKey("ProviderIsBussy");
                 Errors.Add(errorMessage);
                 return (IsValid, Errors);
@@ -254,6 +264,7 @@ namespace Service
 
             if (!provider.IsFree)
             {
+                IsValid = false;
                 var errorMessage = _resourceServices.GetErrorMessageByKey("ProviderIsOfline");
                 Errors.Add(errorMessage);
                 return (IsValid, Errors);
@@ -268,23 +279,45 @@ namespace Service
 
 
             //check user is active or not
-            bool isonline = false;
-            if (!baseServiceFromDB.MyChatsService.IsServiceReverse)
+            if (!baseServiceFromDB.MyChatsService.IsServiceReverse && !provider.IsOnline)
             {
-                isonline = await _context.Users.Where(c => c.UserName == baseServiceFromDB.UserName)
-                                                   .Select(c => c.IsOnline)
-                                                   .FirstOrDefaultAsync();
-
-                if (!isonline)
-                {
-                    IsValid = false;
-                    Errors.Add(_resourceServices.GetErrorMessageByKey("ProviderIsUnAvailableMessage"));
-                    return (IsValid, Errors);
-                }
+                IsValid = false;
+                Errors.Add(_resourceServices.GetErrorMessageByKey("ProviderIsUnAvailableMessage"));
+                return (IsValid, Errors);
             }
 
 
             return (IsValid, Errors);
+        }
+        
+
+
+
+        public double? ClientShouldPay(BaseMyServiceTBL baseServiceFromDB, CheckDiscountTBL discountFromDb = null)
+        {
+            //double? allRequestPrices = await GellBlockeeMoney();
+
+            var discountPercent = discountFromDb == null ? 0 : discountFromDb.Percent;
+            var clientShouldPay = (double)baseServiceFromDB.Price - (double)(baseServiceFromDB.Price * (discountPercent / 100));
+            //var validBalance = allRequestPrices + clientShouldPay;
+            return clientShouldPay;
+        }
+
+
+        /// <summary>
+        /// مبلغل
+        /// </summary>
+        /// <param name="price"></param>
+        /// <param name="discountFromDb"></param>
+        /// <returns></returns>
+        public double? ClientShouldPay(double price, CheckDiscountTBL discountFromDb = null)
+        {
+            //double? allRequestPrices = await GellBlockeeMoney();
+
+            var discountPercent = discountFromDb == null ? 0 : discountFromDb.Percent;
+            var clientShouldPay = (double)price - (double)(price * (discountPercent / 100));
+            //var validBalance = allRequestPrices + clientShouldPay;
+            return clientShouldPay;
         }
 
 
@@ -773,6 +806,7 @@ namespace Service
             return (IsValid, Errors);
 
         }
+
 
 
     }

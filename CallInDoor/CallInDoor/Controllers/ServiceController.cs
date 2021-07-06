@@ -28,6 +28,8 @@ using Service.Interfaces.Resource;
 
 namespace CallInDoor.Controllers
 {
+
+
     [Route("api/ServiceType")]
     //[ApiController]
     public class ServiceController : BaseControlle
@@ -43,7 +45,6 @@ namespace CallInDoor.Controllers
         private readonly ICommonService _commonService;
 
         private readonly IResourceServices _resourceServices;
-
 
         private readonly ISmsService _smsService;
 
@@ -77,6 +78,8 @@ namespace CallInDoor.Controllers
         }
 
         #endregion
+
+
         #region ServiceType
 
         /// <summary>
@@ -621,8 +624,6 @@ namespace CallInDoor.Controllers
 
 
 
-
-
         /// <summary>
         /// chat or voice or video گرفتن اطلاعات برای یک سرویس   
         /// </summary>
@@ -672,6 +673,7 @@ namespace CallInDoor.Controllers
                 serviceFromDB.MyChatsService.PackageType,
                 serviceFromDB.MyChatsService.BeTranslate,
                 serviceFromDB.MyChatsService.IsServiceReverse,
+
                 serviceFromDB.Price,
                 //serviceFromDB.MyChatsService.PriceForNativeCustomer,
                 //serviceFromDB.MyChatsService.PriceForNonNativeCustomer,
@@ -718,7 +720,6 @@ namespace CallInDoor.Controllers
                 AcceptedMinPrice = c.AcceptedMinPrice,
                 //AcceptedMinPriceForNative = c.AcceptedMinPriceForNative,
                 //AcceptedMinPriceForNonNative = c.AcceptedMinPriceForNonNative,
-
                 Name = c.Name
             })
               .FirstOrDefaultAsync();
@@ -757,7 +758,7 @@ namespace CallInDoor.Controllers
 
             var profileStatus = (res1 == false && res2 == false);
 
-            if (res2)
+            if (!serviceFromDb.IsProfileOptional && res2)
             {
                 var err = new List<string>();
                 err.Add(_resourceServices.GetErrorMessageByKey("ProfileRejectedMessage"));
@@ -798,6 +799,7 @@ namespace CallInDoor.Controllers
                 IsServiceReverse = model.IsServiceReverse,
                 ////////PriceForNativeCustomer = (double)model.PriceForNativeCustomer,
                 ////////PriceForNonNativeCustomer = (double)model.PriceForNonNativeCustomer,
+
 
                 BaseMyChatTBL = BaseMyService,
                 FreeMessageCount = model.FreeMessageCount,
@@ -979,6 +981,13 @@ namespace CallInDoor.Controllers
 
 
         #endregion
+
+
+
+
+
+
+
 
         #region ServiceService
 
@@ -2336,6 +2345,9 @@ namespace CallInDoor.Controllers
                 await _hubContext.Clients.Client(userFromDB?.ConnectionId).SendAsync("Notifis", rejectMessage);
 
             await _context.SaveChangesAsync();
+
+            //ارسال اس ام اس
+            await _smsService.RejectWidthrawlRequestByAdmin(serviceFromDB.ServiceName, serviceFromDB.UserName);
 
             return Ok(_commonService.OkResponse(null, PubicMessages.SuccessMessage));
         }

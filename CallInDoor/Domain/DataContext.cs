@@ -95,7 +95,14 @@ namespace Domain
         public DbSet<PaymentTBL> PaymentTBL { get; set; }
 
 
-
+        ///// <summary>
+        /////  پول هایی که برای در خواست هایی که به پروایدر ها میدهیم 
+        /////  از کیف پولمان کم میشود وتا زمانی که سرویس نگرفتیم به پروایدر اضافه نمیشود
+        /////  وممکن است پروایدر آن را برگرداند
+        ///// </summary>
+        //public DbSet<BlockMonyTBL> BlockMonyTBL { get; set; }
+        
+        
         /// <summary>
         /// جدول ریکوست های سرویس ها
         /// </summary>

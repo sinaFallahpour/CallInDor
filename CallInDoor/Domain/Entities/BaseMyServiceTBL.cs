@@ -1,4 +1,5 @@
-﻿using Domain.Enums;
+﻿using Domain.Entities.Requests;
+using Domain.Enums;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -198,7 +199,18 @@ namespace Domain.Entities
 
         public List<ServiceCommentsTBL> ServiceCommentsTBLs { get; set; }
 
+        
+         
+         
+
+
+        /// <summary>
+        /// این باید حذف شود
+        /// </summary>
         public List<ServiceRequestTBL> ServiceRequestTBLs { get; set; }
+        
+
+        public List<BaseRequestServiceTBL> BaseRequestServiceTBLs { get; set; }
 
 
         #endregion

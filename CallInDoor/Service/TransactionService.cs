@@ -176,6 +176,111 @@ namespace Service
 
 
 
+
+        /// <summary>
+        /// تراکنش برای کلاینت
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns></returns>
+        public async Task<ClientShoulPayVM> HandleCallTransactionForClient(BaseRequestServiceTBL model, CheckDiscountTBL discountFromDb)
+        {
+            try
+            {
+                var prices = model.Price;
+                //var sitePercent = model.BaseMyServiceTBL.ServiceTbl.SitePercent;
+                var discountPercent = discountFromDb == null ? 0 : discountFromDb.Percent;
+
+                double clientShouldPay = 0;
+                //double providerShouldPay = 0;
+                //double porsant = 0;
+
+                clientShouldPay = (double)model.Price - (double)(model.Price * (discountPercent / 100));
+                //providerShouldPay = (double)model.Price - (double)(model.Price * (sitePercent / 100));
+                //porsant = (double)model.Price * (sitePercent / 100);
+
+                var clientTransaction = new TransactionTBL()
+                {
+                    Amount = clientShouldPay,
+                    Username = model.ClienUserName,
+                    ProviderUserName = model.ProvideUserName,
+                    ClientUserName = model.ClienUserName,
+                    CreateDate = DateTime.Now,
+                    BaseMyServiceId = model.BaseServiceId,
+                    //////ServiceTypeWithDetails = ServiceTypeWithDetails.ChatVoiceLimited,
+                    ServiceTypeWithDetails = model.ServiceTypes,
+                    TransactionType = TransactionType.WhiteDrawl,
+                    TransactionStatus = TransactionStatus.ServiceTransaction,
+                    TransactionConfirmedStatus = TransactionConfirmedStatus.Confirmed,
+                    CardTBL = null,
+                    CheckDiscountId = model.CheckDiscountId,
+                    Description = $"widthrawl (as client of service) provider=[${model.ProvideUserName}] TransactionStatus=[${TransactionStatus.ServiceTransaction}]"
+                };
+
+
+
+                //var providerTransaction = new TransactionTBL()
+                //{
+                //    Amount = providerShouldPay,
+                //    Username = model.ProvideUserName,
+                //    ProviderUserName = model.ProvideUserName,
+                //    ClientUserName = model.ClienUserName,
+                //    CreateDate = DateTime.Now,
+                //    BaseMyServiceId = model.BaseServiceId,
+                //    //////ServiceTypeWithDetails = ServiceTypeWithDetails.ChatVoiceLimited,
+                //    ServiceTypeWithDetails = model.ServiceTypes,
+                //    TransactionType = TransactionType.Deposit,
+                //    TransactionStatus = TransactionStatus.ServiceTransaction,
+                //    TransactionConfirmedStatus = TransactionConfirmedStatus.Confirmed,
+                //    CardTBL = null,
+                //    CheckDiscountId = model.CheckDiscountId,
+                //    Description = $"deposit (as provider of service) provider=[${model.ProvideUserName}] TransactionStatus=[${TransactionStatus.ServiceTransaction}]"
+                //};
+
+
+                //var commissiontTransaction = new TransactionTBL()
+                //{
+                //    Amount = porsant,
+                //    Username = "Admin",
+                //    ProviderUserName = model.ProvideUserName,
+                //    ClientUserName = model.ClienUserName,
+                //    CreateDate = DateTime.Now,
+                //    BaseMyServiceId = model.BaseServiceId,
+                //    //////ServiceTypeWithDetails = ServiceTypeWithDetails.ChatVoiceLimited,
+                //    ServiceTypeWithDetails = model.ServiceTypes,
+                //    TransactionType = TransactionType.Deposit,
+                //    TransactionStatus = TransactionStatus.Commission,
+                //    TransactionConfirmedStatus = TransactionConfirmedStatus.Confirmed,
+                //    CardTBL = null,
+                //    CheckDiscountId = model.CheckDiscountId,
+                //    Description = $"this is commision witch site shoul get from Provider provider=[${model.ProvideUserName}] TransactionStatus=[${TransactionStatus.Commission}]"
+                //};
+
+
+                List<TransactionTBL> transactions = new List<TransactionTBL>() {
+              clientTransaction,
+              //providerTransaction,
+              //commissiontTransaction,
+            };
+                await _context.TransactionTBL.AddRangeAsync(transactions);
+
+                var clientShoulPayVM = new ClientShoulPayVM()
+                {
+                    ClientShouldPay = clientShouldPay,
+                    //ProviderShouldGet = providerShouldPay,
+                };
+                return clientShoulPayVM;
+            }
+            catch
+            {
+                return null;
+            }
+
+        }
+
+
+
+
+
         /// <summary>
         /// ولیدت کردن پول برای خرید پکیج هایه سرویسی مثل چت و...
         /// </summary>

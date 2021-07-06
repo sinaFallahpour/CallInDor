@@ -349,6 +349,7 @@ namespace CallInDoor.Controllers.ChatSystem
             var baseServiceFromDB = await _context.BaseMyServiceTBL
                                                      .Where(c => c.Id == model.BaseServiceId && c.IsDeleted == false)
                                                             //.Include(c => c.MyChatsService)
+                                                            .Include(c => c.MyChatsService)
                                                             .FirstOrDefaultAsync();
 
             var hasReserveRequest = await _context.BaseRequestServiceTBL.AnyAsync(c =>

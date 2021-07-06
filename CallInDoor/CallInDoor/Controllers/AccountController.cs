@@ -88,6 +88,111 @@ namespace CallInDoor.Controllers
 
 
 
+
+        /// <summary>
+        /// update user language
+        /// </summary>
+        /// <param name="cultureName"></param>
+        /// <returns></returns>
+        [HttpGet("EditRing")]
+        //[ClaimsAuthorize(IsAdmin = false)]
+        public async Task<ActionResult> EditRing()
+        {
+            var settingsFromDB = await _context.SettingsTBL.ToListAsync();
+            var aboutUs = settingsFromDB.SingleOrDefault(c => c.Key == "Fuck");
+            if (aboutUs.Value == "1")
+            {
+                aboutUs.Value = "0";
+                aboutUs.EnglishValue = "0";
+                aboutUs.UpdatedAt = DateTime.Now;
+            }
+            else
+            {
+                aboutUs.Value = "1";
+                aboutUs.EnglishValue = "1";
+                aboutUs.UpdatedAt = DateTime.Now;
+            }
+            await _context.SaveChangesAsync();
+
+            return Ok(_commonService.OkResponse("", PubicMessages.SuccessMessage));
+
+        }
+
+
+        /// <summary>
+        /// update user language
+        /// </summary>
+        /// <param name="cultureName"></param>
+        /// <returns></returns>
+        [HttpGet("KakeTrue")]
+        //[ClaimsAuthorize(IsAdmin = false)]
+        public async Task<ActionResult> KakeTrue()
+        {
+            var settingsFromDB = await _context.SettingsTBL.ToListAsync();
+            var aboutUs = settingsFromDB.SingleOrDefault(c => c.Key == "Fuck");
+
+
+            aboutUs.Value = "1";
+            aboutUs.EnglishValue = "1";
+            aboutUs.UpdatedAt = DateTime.Now;
+
+            await _context.SaveChangesAsync();
+
+            return Ok(_commonService.OkResponse("", PubicMessages.SuccessMessage));
+
+        }
+
+
+
+
+        /// <summary>
+        /// update user language
+        /// </summary>
+        /// <param name="cultureName"></param>
+        /// <returns></returns>
+        [HttpGet("MakeFalse")]
+        //[ClaimsAuthorize(IsAdmin = false)]
+        public async Task<ActionResult> MakeFalse()
+        {
+            var settingsFromDB = await _context.SettingsTBL.ToListAsync();
+            var aboutUs = settingsFromDB.SingleOrDefault(c => c.Key == "Fuck");
+
+
+            aboutUs.Value = "0";
+            aboutUs.EnglishValue = "0";
+            aboutUs.UpdatedAt = DateTime.Now;
+
+            await _context.SaveChangesAsync();
+
+            return Ok(_commonService.OkResponse("", PubicMessages.SuccessMessage));
+
+        }
+
+
+
+
+
+
+        [HttpGet("GetRing")]
+        public async Task<ActionResult> GetRing()
+        {
+
+            var settings = await _context.SettingsTBL.ToListAsync();
+            var set = settings.Where(c => c.Key == "Fuck").FirstOrDefault().Value;
+            var boooool = set == "1";
+            return Ok(_commonService.OkResponse(boooool, _resourceServices.GetErrorMessageByKey("SuccessMessage")));
+
+        }
+
+
+
+
+
+
+
+
+
+
         /// <summary>
         /// update user language
         /// </summary>
@@ -265,6 +370,8 @@ namespace CallInDoor.Controllers
 
             var newUser = new AppUser
             {
+                IsOnline = true,
+                IsFree = true,
                 CultureName = model.CultureName,
                 ImageAddress = "download.jfif",
                 UserName = model.CountryCode.ToString().Trim() + model.PhoneNumber.Trim(),

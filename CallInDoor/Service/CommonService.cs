@@ -230,6 +230,8 @@ namespace Service
         public string GetNameByCulture(object item)
         {
             string value = "";
+
+            (string value, bool succsseded) res;
             foreach (PropertyInfo propertyInfo in item.GetType().GetProperties())
             {
                 //CategoryTBL
@@ -241,7 +243,15 @@ namespace Service
                         English = "Title",
                         Arab = "ArabTitle",
                     };
-                    value = GetObjectValue(item, model, propertyInfo);
+                    //value 
+                    res = GetObjectValue(item, model, propertyInfo);
+                    if (res.succsseded)
+                    {
+                        value = res.value;
+                        break;
+                    }
+
+
                 }
 
 
@@ -254,7 +264,14 @@ namespace Service
                         English = "EnglishText",
                         Arab = "ArabText",
                     };
-                    value = GetObjectValue(item, model, propertyInfo);
+                    //value = GetObjectValue(item, model, propertyInfo);
+
+                    res = GetObjectValue(item, model, propertyInfo);
+                    if (res.succsseded)
+                    {
+                        value = res.value;
+                        break;
+                    }
                 }
 
                 //AreaTBL
@@ -266,7 +283,13 @@ namespace Service
                         English = "Title",
                         Arab = "ArabTitle",
                     };
-                    value = GetObjectValue(item, model, propertyInfo);
+                    //value = GetObjectValue(item, model, propertyInfo);
+                    res = GetObjectValue(item, model, propertyInfo);
+                    if (res.succsseded)
+                    {
+                        value = res.value;
+                        break;
+                    }
                 }
 
                 //CheckDiscountTBL
@@ -278,7 +301,14 @@ namespace Service
                         English = "EnglishTitle",
                         Arab = "ArabTitle",
                     };
-                    value = GetObjectValue(item, model, propertyInfo);
+                    //value = GetObjectValue(item, model, propertyInfo);
+
+                    res = GetObjectValue(item, model, propertyInfo);
+                    if (res.succsseded)
+                    {
+                        value = res.value;
+                        break;
+                    }
                 }
 
 
@@ -291,7 +321,14 @@ namespace Service
                         English = "EnglishText",
                         Arab = "ArabText",
                     };
-                    value = GetObjectValue(item, model, propertyInfo);
+                    //value = GetObjectValue(item, model, propertyInfo);
+
+                    res = GetObjectValue(item, model, propertyInfo);
+                    if (res.succsseded)
+                    {
+                        value = res.value;
+                        break;
+                    }
                 }
 
                 //QuestionPullTBL
@@ -303,7 +340,14 @@ namespace Service
                         English = "EnglishText",
                         Arab = "ArabText",
                     };
-                    value = GetObjectValue(item, model, propertyInfo);
+                    //value = GetObjectValue(item, model, propertyInfo);
+
+                    res = GetObjectValue(item, model, propertyInfo);
+                    if (res.succsseded)
+                    {
+                        value = res.value;
+                        break;
+                    }
                 }
 
 
@@ -316,7 +360,14 @@ namespace Service
                         English = "TagName",
                         Arab = "ArabTagName",
                     };
-                    value = GetObjectValue(item, model, propertyInfo);
+                    //value = GetObjectValue(item, model, propertyInfo);
+
+                    res = GetObjectValue(item, model, propertyInfo);
+                    if (res.succsseded)
+                    {
+                        value = res.value;
+                        break;
+                    }
                 }
 
 
@@ -329,7 +380,14 @@ namespace Service
                         English = "Name",
                         Arab = "ArabName",
                     };
-                    value = GetObjectValue(item, model, propertyInfo);
+                    //value = GetObjectValue(item, model, propertyInfo);
+
+                    res = GetObjectValue(item, model, propertyInfo);
+                    if (res.succsseded)
+                    {
+                        value = res.value;
+                        break;
+                    }
                 }
 
 
@@ -342,7 +400,15 @@ namespace Service
                         English = "FileName",
                         Arab = "ArabFileName",
                     };
-                    value = GetObjectValue(item, model, propertyInfo);
+                    //value = GetObjectValue(item, model, propertyInfo);
+
+
+                    res = GetObjectValue(item, model, propertyInfo);
+                    if (res.succsseded)
+                    {
+                        value = res.value;
+                        break;
+                    }
                 }
 
                 //SettingTBL
@@ -354,7 +420,13 @@ namespace Service
                         English = "EnglishValue",
                         Arab = "ArabValue",
                     };
-                    value = GetObjectValue(item, model, propertyInfo);
+                    //value = GetObjectValue(item, model, propertyInfo);
+                    res = GetObjectValue(item, model, propertyInfo);
+                    if (res.succsseded)
+                    {
+                        value = res.value;
+                        break;
+                    }
                 }
 
                 //SpecialityTBL
@@ -366,20 +438,33 @@ namespace Service
                         English = "EnglishName",
                         Arab = "ArabName",
                     };
-                    value = GetObjectValue(item, model, propertyInfo);
+                    //value = GetObjectValue(item, model, propertyInfo);
+
+                    res = GetObjectValue(item, model, propertyInfo);
+                    if (res.succsseded)
+                    {
+                        value = res.value;
+                        break;
+                    }
                 }
+
             }
+            //return value;
             return value;
         }
-        
-        private string GetObjectValue(object item, LanguageDTO model, PropertyInfo propertyInfo)
+
+        private (string value, bool succsseded) GetObjectValue(object item, LanguageDTO model, PropertyInfo propertyInfo)
         {
+
+            bool isSuccsseded = false;
             string value = "";
+
             var curentCulture = GetCurrentCulture();
             if (curentCulture == PublicHelper.persianCultureName)
             {
                 if (propertyInfo.Name == model.Persian)
                 {
+                    isSuccsseded = true;
                     value = propertyInfo.GetValue(item, null).ToString();
                 }
             }
@@ -387,6 +472,7 @@ namespace Service
             {
                 if (propertyInfo.Name == model.Arab)
                 {
+                    isSuccsseded = true;
                     value = propertyInfo.GetValue(item, null).ToString();
                 }
             }
@@ -394,15 +480,16 @@ namespace Service
             {
                 if (propertyInfo.Name == model.English)
                 {
+                    isSuccsseded = true;
                     value = propertyInfo.GetValue(item, null).ToString();
                 }
             }
-            return value;
+            return (value, isSuccsseded);
         }
-    
-    
-    
-    
-    
+
+
+
+
+
     }
 }

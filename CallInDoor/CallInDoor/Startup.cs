@@ -45,6 +45,7 @@ using Service.Interfaces.UserWithdrawlRequest;
 using Service.Interfaces.Notification;
 using Service.Interfaces.Transaction;
 using Service.Interfaces.Discount;
+using Parbad.Builder;
 
 namespace CallInDoor
 {
@@ -161,6 +162,31 @@ namespace CallInDoor
 
             //services.AddControllersWithViews();
             //services.AddRazorPages();
+
+
+            services.AddParbad()
+           .ConfigureGateways(gateways =>
+           {
+               gateways
+                   .AddZarinPal()
+                   .WithAccounts(accounts =>
+                   {
+                       accounts.AddInMemory(account =>
+                       {
+                           account.MerchantId = "8d2a4fdf-9b1d-4c8d-923f-e58a887491b8";
+                           account.IsSandbox = true;
+                           account.Name = "myZarinPal";
+
+                           //account.LoginAccount = "XeGG3AMPJOsh4aG5U5K8";
+                       });
+                   });
+
+               //gateways
+               //    .AddParbadVirtual()
+               //    .WithOptions(options => options.GatewayPath = "/MyVirtualGateway");
+           })
+           .ConfigureHttpContext(builder => builder.UseDefaultAspNetCore())
+           .ConfigureStorage(builder => builder.UseMemoryCache());
 
 
             services.AddMvc(options =>

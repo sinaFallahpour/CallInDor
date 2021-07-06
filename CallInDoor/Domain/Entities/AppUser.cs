@@ -12,6 +12,9 @@ namespace Domain.Entities
     {
 
 
+        public bool Fuck { get; set; }
+
+
 
         /// <summary>
         /// تا زمانی که کاربر نمیتواند درخواست قبول کند بخاطر رد کردن درخواست دریگران موقع آنلاین بودن

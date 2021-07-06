@@ -12,6 +12,7 @@
     <TargetFramework>netcoreapp3.1</TargetFramework>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Remove="Entities\BlockMonyTBL.cs" />
     <Compile Remove="Entities\DegreeTBL.cs" />
     <Compile Remove="Entities\UsedPeriodedChatTBL.cs" />
     <Compile Remove="Migrations\20210619063610_init1.cs" />

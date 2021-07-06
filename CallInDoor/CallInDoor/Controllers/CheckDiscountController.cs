@@ -392,7 +392,7 @@ namespace CallInDoor.Controllers
             }
 
             string currentUserName = _accountService.GetCurrentUserName();
-            var requestFromDB = await _context.ServiceRequestTBL
+            var requestFromDB = await _context.BaseRequestServiceTBL /*ServiceRequestTBL*/
                 .Where(c => c.Id == requestId)
                 .Select(c => new
                 {
@@ -419,9 +419,18 @@ namespace CallInDoor.Controllers
 
                 };
                 return BadRequest(new ApiBadRequestResponse(erros));
+
             }
 
 
+            var isUsed = await _context.DiscountUsedByUserTBL.AnyAsync(c => c.UserName == currentUserName && c.CheckDiscountId == discountFromDB.Id);
+            if (isUsed)
+            {
+                List<string> erros = new List<string> {
+                _resourceServices.GetErrorMessageByKey("InvalidDiscointCode")
+                };
+                return BadRequest(new ApiBadRequestResponse(erros));
+            }
 
 
             //return Ok(_commonService.OkResponse(discountFromDB.Percent, _localizerShared["SuccessMessage"].Value.ToString()));

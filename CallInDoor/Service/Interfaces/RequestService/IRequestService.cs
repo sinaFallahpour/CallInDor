@@ -13,7 +13,7 @@ namespace Service.Interfaces.RequestService
     {
 
 
-        Task<(bool succsseded, List<string> result)> ValidateRequestToCall(BaseMyServiceTBL baseServiceFromDB, AppUser provider, AppUser currentUser, bool hasReserveRequest);
+        (bool succsseded, List<string> result) ValidateRequestToCall(BaseMyServiceTBL baseServiceFromDB, AppUser provider, AppUser currentUser, bool hasReserveRequest, CheckDiscountTBL discountFromDb);
 
         Task<(bool succsseded, List<string> result)> ValidateRequestToChatService(BaseMyServiceTBL baseServiceFromDB, bool hasReserveRequest);
 
@@ -31,6 +31,12 @@ namespace Service.Interfaces.RequestService
         (bool succsseded, List<string> result) ValidateRedisSendChatVoiceDuration(RedisValueForDurationChatVoice chatVoiceValueFromRedis);
 
         (bool succsseded, List<string> result) ValidateSendChatToChatService(SendChatToChatServiceDTO model);
+
+
+        public double? ClientShouldPay(BaseMyServiceTBL baseServiceFromDB, CheckDiscountTBL discountFromDb = null);
+        public double? ClientShouldPay(double price, CheckDiscountTBL discountFromDb = null);
+        //public Task<double?> GellBlockeeMoney();
+
         bool IsInValidFile(IFormFile file);
 
         bool HasFreeMessage(int? FreeUsageMessageCount, int? FreeMessageCount);

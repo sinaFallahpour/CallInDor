@@ -20,6 +20,7 @@ using Service.Interfaces.Common;
 using Service.Interfaces.Discount;
 using Service.Interfaces.RequestService;
 using Service.Interfaces.Resource;
+using Service.Interfaces.SmsService;
 using Service.Interfaces.Transaction;
 using System;
 using System.Collections.Generic;
@@ -47,6 +48,7 @@ namespace CallInDoor.Controllers
         private readonly ICommonService _commonService;
         private readonly IRequestService _requestService;
         private readonly IDiscountService _discountService;
+        private readonly ISmsService _smsService;
 
 
         private IStringLocalizer<RequestV2Controller> _localizer;
@@ -65,7 +67,9 @@ namespace CallInDoor.Controllers
                    IDiscountService discountService,
                IStringLocalizer<RequestV2Controller> localizer,
                 //IStringLocalizer<ShareResource> localizerShared,
-                IResourceServices resourceServices
+                IResourceServices resourceServices,
+                  ISmsService smsService
+
             )
         {
 
@@ -81,6 +85,7 @@ namespace CallInDoor.Controllers
             _localizer = localizer;
             //_localizerShared = localizerShared;
             _resourceServices = resourceServices;
+            _smsService = smsService;
         }
 
         #endregion ctor
@@ -188,6 +193,7 @@ namespace CallInDoor.Controllers
             var baseServiceFromDB = await _context.BaseMyServiceTBL
                                                      .Where(c => c.Id == model.BaseServiceId && c.IsDeleted == false)
                                                             //.Include(c => c.MyChatsService)
+                                                            .Include(c => c.MyChatsService)
                                                             .FirstOrDefaultAsync();
 
             var hasReserveRequest = await _context.BaseRequestServiceTBL.AnyAsync(c =>
@@ -201,16 +207,6 @@ namespace CallInDoor.Controllers
                                             );
 
 
-            var users = await _context.Users.Where(c => c.UserName == currentUsername || c.UserName == baseServiceFromDB.UserName).ToListAsync();
-
-            var provider = users.Where(c => c.UserName == baseServiceFromDB.UserName).FirstOrDefault();
-            var currentUser = users.Where(c => c.UserName == currentUsername).FirstOrDefault();
-
-            //#TODO :  agar darkhast rad dade bood ta masaln 5 daghighe natavanad darkhast begirad
-            var res = await _requestService.ValidateRequestToCall(baseServiceFromDB, provider, currentUser, hasReserveRequest);
-            if (!res.succsseded)
-                return BadRequest(new ApiBadRequestResponse(res.result));
-
 
 
             //validate discount code
@@ -222,6 +218,16 @@ namespace CallInDoor.Controllers
                 if (!res2.succsseded)
                     return BadRequest(new ApiBadRequestResponse(res2.result));
             }
+
+            var users = await _context.Users.Where(c => c.UserName == currentUsername || c.UserName == baseServiceFromDB.UserName).ToListAsync();
+
+            var provider = users.Where(c => c.UserName == baseServiceFromDB.UserName).FirstOrDefault();
+            var currentUser = users.Where(c => c.UserName == currentUsername).FirstOrDefault();
+
+            //#TODO :  agar darkhast rad dade bood ta masaln 5 daghighe natavanad darkhast begirad
+            var res = _requestService.ValidateRequestToCall(baseServiceFromDB, provider, currentUser, hasReserveRequest, discountFromDb);
+            if (!res.succsseded)
+                return BadRequest(new ApiBadRequestResponse(res.result));
 
             var baseRequestServiceTBL = new BaseRequestServiceTBL()
             {
@@ -239,6 +245,7 @@ namespace CallInDoor.Controllers
                 PackageType = (PackageType)baseServiceFromDB.MyChatsService.PackageType,
                 //PriceForNativeCustomer = baseServiceFromDB.MyChatsService.PriceForNativeCustomer,
                 //PriceForNonNativeCustomer = baseServiceFromDB.MyChatsService.PriceForNonNativeCustomer,
+                //BlockMonyTBL = blockMonyTBL,
             };
 
             var callRequestTBL = new CallRequestTBL()
@@ -248,6 +255,25 @@ namespace CallInDoor.Controllers
                 EndDate = null,
                 BaseRequestServiceTBL = baseRequestServiceTBL,
             };
+
+            var transaction = await _transactionService.HandleCallTransactionForClient(baseRequestServiceTBL, discountFromDb);
+            currentUser.WalletBalance -= transaction.ClientShouldPay;
+
+
+            //var blockMonyTBL = new BlockMonyTBL()
+            //{
+            //    ClientUsername = currentUsername,
+            //    ProviderUsername = baseServiceFromDB.UserName,
+            //    CheckDiscountTBL = discountFromDb,
+            //    Price = (double)baseServiceFromDB.Price,
+            //    CreayteDate = DateTime.Now,
+            //    BlockMonyStatus = BlockMonyStatus.Blocked,
+            //    FinalPrice = transaction.ClientShouldPay,
+
+            //    BaseRequestServiceTBL = baseRequestServiceTBL
+            //};
+
+            //await _context.BlockMonyTBL.AddAsync(blockMonyTBL);
 
             //#todo 
             // ta 8 Saat bayad TaEd konad jarime shavads
@@ -308,8 +334,8 @@ namespace CallInDoor.Controllers
             requestFromDB.ServiceRequestStatus = ServiceRequestStatus.Confirmed;
 
             requestFromDB.CallRequestTBL.AcceptDate = DateTime.Now;
-            requestFromDB.CallRequestTBL.StartDate = DateTime.Now;
-            requestFromDB.CallRequestTBL.EndDate = DateTime.Now.AddMinutes((int)requestFromDB.BaseMyServiceTBL.MyChatsService.Duration);
+            //requestFromDB.CallRequestTBL.StartDate = DateTime.Now;
+            //requestFromDB.CallRequestTBL.EndDate = DateTime.Now.AddMinutes((int)requestFromDB.BaseMyServiceTBL.MyChatsService.Duration);
             //requestFromDB.CallRequestTBL.RealEndTime = DateTime.Now.AddMinutes((int)requestFromDB.BaseMyServiceTBL.MyChatsService.Duration);
 
 
@@ -328,17 +354,17 @@ namespace CallInDoor.Controllers
             var clientFromDB = userFromDB.Where(c => c.UserName == requestFromDB.ClienUserName).FirstOrDefault();
             var providerFromDB = userFromDB.Where(c => c.UserName == requestFromDB.ProvideUserName).FirstOrDefault();
 
-            var res = _transactionService.ValidateWallet(requestFromDB, clientFromDB);
-            if (!res.succsseded)
-                return BadRequest(new ApiBadRequestResponse(res.result));
+            //var res = _transactionService.ValidateWallet(requestFromDB, clientFromDB);
+            //if (!res.succsseded)
+            //    return BadRequest(new ApiBadRequestResponse(res.result));
 
-            var transaction = await _transactionService.HandleCaLlTransaction(requestFromDB);
+            //var transaction = await _transactionService.HandleCaLlTransaction(requestFromDB);
 
 
-            clientFromDB.WalletBalance += transaction.ClientShouldPay;
-            providerFromDB.WalletBalance += transaction.ProviderShouldGet;
+            //clientFromDB.WalletBalance -= transaction.ClientShouldPay;
+            //providerFromDB.WalletBalance += transaction.ProviderShouldGet;
 
-            
+
             var notification = new NotificationTBL()
             {
                 CreateDate = DateTime.UtcNow,
@@ -355,6 +381,7 @@ namespace CallInDoor.Controllers
             if (!string.IsNullOrEmpty(clientFromDB?.ConnectionId))
                 await _hubContext.Clients.Client(clientFromDB?.ConnectionId).SendAsync("Notifis", confirmMessage);
 
+            await _smsService.ConfirmRequestByProvider(requestFromDB.BaseMyServiceTBL.ServiceName, clientFromDB.UserName);
             await _context.SaveChangesAsync();
             return Ok(_commonService.OkResponse(null, false));
         }
@@ -377,7 +404,7 @@ namespace CallInDoor.Controllers
 
             requestFromDB.ServiceRequestStatus = ServiceRequestStatus.Rejected;
 
-            //#TODO  :   ta masalan 5 daghighe natavanad darakhst daryaft konad
+            //#TODO : ta masalan 5 daghighe natavanad darakhst daryaft konad
             var setting = await _context.SettingsTBL.Where(c => c.Key == PublicHelper.ProviderLimitTimeForRejectRequest).FirstOrDefaultAsync();
             var providerLimitTimeForRejectRequest = Convert.ToInt32(setting.EnglishValue);
 
@@ -411,9 +438,19 @@ namespace CallInDoor.Controllers
             if (!string.IsNullOrEmpty(userFromDB?.ConnectionId))
                 await _hubContext.Clients.Client(userFromDB?.ConnectionId).SendAsync("Notifis", confirmMessage);
 
+
+            await _smsService.RejectServiceByAdmin(requestFromDB.BaseMyServiceTBL.ServiceName, userFromDB.UserName);
+
+
             await _context.SaveChangesAsync();
             return Ok(_commonService.OkResponse(null, false));
         }
+
+
+
+
+
+
 
 
         /// <summary>
@@ -454,22 +491,50 @@ namespace CallInDoor.Controllers
         /// <returns></returns>
         [HttpGet("HaveEnoughBalance")]
         [ClaimsAuthorize(IsAdmin = false)]
-        public async Task<ActionResult> HaveEnoughBalance(int baseServiceId)
+        public async Task<ActionResult> HaveEnoughBalance(int requestId, string discountCode = "")
         {
             var currentUsername = _accountService.GetCurrentUserName();
             var userfromDB = await _context.Users.Where(c => c.UserName == currentUsername)
                 .Select(c => new { c.WalletBalance })
                 .FirstOrDefaultAsync();
 
-            var baseServiceFromDB = await _context.BaseMyServiceTBL
-                                                     .Where(c => c.Id == baseServiceId && c.IsDeleted == false)
+            //var baseServiceFromDB = await _context.BaseMyServiceTBL
+            //                                         .Where(c => c.Id == baseServiceId && c.IsDeleted == false)
+            //                                                         .Select(c => new { c.Price })
+            //                                                         .FirstOrDefaultAsync();
+
+            var baseRequest = await _context.BaseRequestServiceTBL
+                                                     .Where(c => c.Id == requestId)
                                                                      .Select(c => new { c.Price })
                                                                      .FirstOrDefaultAsync();
+
+            //validate discount code
+            var discountFromDb = await _discountService.GetDiscountByCode(discountCode);
+
+            if (discountFromDb != null)
+            {
+                var res2 = await _discountService.ValidateDiscount(discountFromDb);
+                if (!res2.succsseded)
+                    return BadRequest(new ApiBadRequestResponse(res2.result));
+            }
+
+
+
+
+            double? validBalance = _requestService.ClientShouldPay((double)baseRequest.Price, discountFromDb);
             var haveBalance = true;
-            if (userfromDB.WalletBalance < baseServiceFromDB.Price)
+            //checking wallet
+            //if (currentUser.WalletBalance == 0 || currentUser.WalletBalance < (double)baseServiceFromDB.MyChatsService.PriceForNativeCustomer)
+            if (userfromDB.WalletBalance == 0 || userfromDB.WalletBalance < validBalance)
             {
                 haveBalance = false;
             }
+
+            //if (userfromDB.WalletBalance < baseServiceFromDB.Price)
+            //{
+            //    haveBalance = false;
+            //}
+
             return Ok(_commonService.OkResponse(haveBalance, false));
         }
 
@@ -478,11 +543,42 @@ namespace CallInDoor.Controllers
 
 
 
+        /// <summary>
+        /// ******************* changed to new Api
+        /// poly ke karbar bayad be azye yek request khas ba tavajo be walletesh pardakht konad
+        /// </summary>
+        /// <param name="baseServiceId"></param>
+        /// <returns></returns>
+        [HttpGet("ClientShouldPay")]
+        [ClaimsAuthorize(IsAdmin = false)]
+        public async Task<ActionResult> ClientShouldPay(int requestId, string discountCode)
+        {
+            var currentUsername = _accountService.GetCurrentUserName();
+            var userfromDB = await _context.Users.Where(c => c.UserName == currentUsername)
+                .Select(c => new { c.WalletBalance })
+                .FirstOrDefaultAsync();
+
+            var baseRequest = await _context.BaseRequestServiceTBL
+                                                     .Where(c => c.Id == requestId)
+                                                                     .Select(c => new { c.Price })
+                                                                     .FirstOrDefaultAsync();
+
+            //validate discount code
+            var discountFromDb = await _discountService.GetDiscountByCode(discountCode);
+
+            if (discountFromDb != null)
+            {
+
+                var res2 = await _discountService.ValidateDiscount(discountFromDb);
+                if (!res2.succsseded)
+                    discountFromDb = null;
+            }
 
 
-
-
-
+            double? validBalance = _requestService.ClientShouldPay((double)baseRequest.Price, discountFromDb);
+            var clientShoudPay = validBalance - userfromDB.WalletBalance;
+            return Ok(_commonService.OkResponse(clientShoudPay, false));
+        }
 
 
 
