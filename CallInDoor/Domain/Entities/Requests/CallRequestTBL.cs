@@ -30,6 +30,14 @@ namespace Domain.Entities.Requests
         /// زمانی که واقعا سرویس به پایان میرسد
         /// </summary>
         public DateTime? RealEndTime { get; set; }
+        
+
+
+        /// <summary>
+        /// زمان جلسه
+        /// </summary>
+        public int? Duration { get; set; }
+        
 
 
         // relation With BaseRequestServiceTBL

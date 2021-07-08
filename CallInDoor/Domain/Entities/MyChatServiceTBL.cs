@@ -43,7 +43,7 @@ namespace Domain.Entities
 
         /// <summary>
         /// زمان جلسه
-        ///اگر آزاد نبود  این مقدار کیگیرد  
+        ///اگر آزاد نبود این مقدار کیگیرد  
         /// </summary>
         public int? Duration { get; set; }
 

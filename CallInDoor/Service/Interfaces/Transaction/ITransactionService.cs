@@ -14,15 +14,33 @@ namespace Service.Interfaces.Transaction
         IQueryable<TransactionTBL> Filter(GetAllTransactionInAdmin model, IQueryable<TransactionTBL> QueryAble);
 
 
-        /// <summary>
-        /// تراکنش های مربوط به کال
-        /// </summary>
-        /// <returns></returns>
-        Task<ClientProviderShoulPayVM> HandleCaLlTransaction(BaseRequestServiceTBL model);
+        ///// <summary>
+        ///// تراکنش های مربوط به کال
+        ///// </summary>
+        ///// <returns></returns>
+        //Task<ClientProviderShoulPayVM> HandleCaLlTransaction(BaseRequestServiceTBL model);
 
         public Task<ClientShoulPayVM> HandleCallTransactionForClient(BaseRequestServiceTBL model, CheckDiscountTBL discountFromDb);
 
+
+        /// <summary>
+        /// تراکنش برای پروایدر
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns></returns
+        public Task<ProviderShouldGetVM> HandleCallTransactionForProvider(BaseRequestServiceTBL model);
+
+
+
+
+
         public (bool succsseded, List<string> result) ValidateWallet(BaseRequestServiceTBL model, AppUser clientFromDB);
 
+         
+
+
     }
+
+
+
 }

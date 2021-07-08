@@ -26,6 +26,24 @@ namespace Domain.DTO.Transaction
         /// </summary>
         public double ClientShouldPay { get; set; }
 
+
+
     }
+
+
+    public class ProviderShouldGetVM
+    {
+         
+        /// <summary>
+        /// مبلغی که پروایدر باید بگیرد
+        /// </summary>
+        public double ProviderShouldGet { get; set; }
+
+
+
+    }
+
+
+
 
 }

@@ -23,10 +23,21 @@ namespace Domain.Entities
 
 
 
+        ///// <summary>
+        ///// آیا پروایدر  آزاد است
+        ///// </summary>
+        //public bool IsFree { get; set; }
+
+
+
         /// <summary>
-        /// آیا پروایدر  آزاد است
+        /// وضعیت کاربر(آزاد بودن یا نبودن)
         /// </summary>
-        public bool IsFree { get; set; }
+        public UserStatus UserStatus { get; set; }
+
+
+
+
 
 
         /// <summary>

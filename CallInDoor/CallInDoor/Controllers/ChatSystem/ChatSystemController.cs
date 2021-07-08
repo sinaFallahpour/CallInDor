@@ -386,7 +386,7 @@ namespace CallInDoor.Controllers.ChatSystem
 
             //#TODO :  agar darkhast rad dade bood ta masaln 5 daghighe natavanad darkhast begirad
             //////var res = await _requestService.ValidateRequestToChatService(baseServiceFromDB, provider, currentUser, hasReserveRequest);
-            var res = await _requestService.ValidateRequestToPeriodedOrSessionChatService(baseServiceFromDB, provider, currentUser, hasReserveRequest);
+            var res =  _requestService.ValidateRequestToPeriodedOrSessionChatService(baseServiceFromDB, provider, currentUser, hasReserveRequest);
             if (!res.succsseded)
                 return BadRequest(new ApiBadRequestResponse(res.result));
 
@@ -557,7 +557,8 @@ namespace CallInDoor.Controllers.ChatSystem
             if (!res.succsseded)
                 return BadRequest(new ApiBadRequestResponse(res.result));
 
-            await _transactionService.HandleCaLlTransaction(requestFromDB);
+            //await _transactionService.HandleCaLlTransaction(requestFromDB,);
+            await _transactionService.HandleCallTransactionForProvider(requestFromDB);
 
 
             var notification = new NotificationTBL()

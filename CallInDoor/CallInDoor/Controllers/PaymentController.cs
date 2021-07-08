@@ -62,6 +62,34 @@ namespace CallInDoor.Controllers
 
 
 
+        [HttpGet("GetAllMyPaymentById")]
+        [ClaimsAuthorize(IsAdmin = false)]
+        public async Task<IActionResult> GetAllMyPaymentById(int paymentId)
+        {
+            var currentUsername = _accountService.GetCurrentUserName();
+            var paymentFromDB = await _context.PaymentTBL
+                                        .Where(c => c.Id == paymentId && c.UserName == currentUsername)
+                                        .Select(c => new { c.UserName, c.Id, c.Amount, c.IsSucceed, c.TrackingNumber, c.TransactionCode, c.ErrorCode, c.ErrorDescription })
+                                        .FirstOrDefaultAsync();
+
+            return Ok(_commonService.OkResponse(paymentFromDB, false));
+        }
+
+
+
+        [HttpGet("GetAllMyPayment")]
+        [ClaimsAuthorize(IsAdmin = false)]
+        public async Task<IActionResult> GetAllMyPayment()
+        {
+            var currentUsername = _accountService.GetCurrentUserName();
+            var payments = await _context.PaymentTBL.Where(c => c.UserName == currentUsername)
+                .Select(c => new { c.UserName, c.Id, c.Amount, c.IsSucceed, c.TrackingNumber, c.TransactionCode, c.ErrorCode, c.ErrorDescription })
+                .ToListAsync();
+
+            return Ok(_commonService.OkResponse(payments, false));
+        }
+
+
 
 
         [HttpPost("Payment")]
@@ -171,6 +199,19 @@ namespace CallInDoor.Controllers
 
 
         }
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
         //[AllowAnonymous]

@@ -67,12 +67,7 @@ namespace CallInDoor.Controllers
 
 
 
-
-
         #region Admin
-
-
-
 
         /// <summary>
         ///گرفتن لیست تراکنش ها در ادمین    
@@ -398,10 +393,56 @@ namespace CallInDoor.Controllers
 
         #region User side
 
-        [HttpGet("GetAlltransactions")]
+        [HttpGet("GetTransactionsByIdForUser")]
         //[Authorize]
         [ClaimsAuthorize(IsAdmin = false)]
-        public async Task<ActionResult> GetAlltransactions()
+        public async Task<ActionResult> GetTransactionsByIdForUser(int transactionId)
+        {
+            var currentusername = _accountService.GetCurrentUserName();
+
+            var transaction = await (from t in _context.TransactionTBL.Where(c => c.Username == currentusername && c.Id == transactionId)
+                                     join bs in _context.BaseMyServiceTBL
+                                     on t.BaseMyServiceId equals bs.Id into Detqails
+                                     from m in Detqails.DefaultIfEmpty()
+
+                                     join u in _context.Users
+                                     on m.UserName equals u.UserName into users
+                                     from User in users.DefaultIfEmpty()
+
+                                     select new
+                                     {
+                                         t.Id,
+                                         t.Amount,
+                                         t.Description,
+                                         t.CreateDate,
+                                         t.TransactionStatus,
+                                         t.TransactionType,
+
+                                         m.ServiceName,
+                                         ServiceType = m.ServiceTypes,
+
+                                         //m.ServiceType,
+
+                                         //bs.ServiceName,
+                                         //bs.ServiceType,
+
+                                         User.Name,
+                                         User.LastName,
+                                         User.ImageAddress,
+
+                                     }).AsQueryable().OrderByDescending(c => c.CreateDate).ToListAsync();
+
+            return Ok(_commonService.OkResponse(transaction, false));
+        }
+
+
+
+
+
+        [HttpGet("GetAlltransactionsForUser")]
+        //[Authorize]
+        [ClaimsAuthorize(IsAdmin = false)]
+        public async Task<ActionResult> GetAlltransactionsForUser()
         {
             var currentusername = _accountService.GetCurrentUserName();
 
@@ -441,123 +482,127 @@ namespace CallInDoor.Controllers
 
 
 
-        /// <summary>
-        /// برداشت از کیف پول نه برای خرزید یا فروش سرویس
-        /// </summary>
-        /// <param name="model"></param>
-        /// <returns></returns>
-        [HttpPost("NormalWithDrawl")]
-        //[Authorize]
-        [ClaimsAuthorize(IsAdmin = false)]
-        public async Task<ActionResult> NormalWithDrawl([FromBody] AddTransactionDTO model)
-        {
 
-            //validation
+        ///////////////// /////////////////  fuckkkk ///////////////// ///////////////// 
+        ///////////////// <summary>
+        ///////////////// برداشت از کیف پول نه برای خرید یا فروش سرویس
+        ///////////////// </summary>
+        ///////////////// <param name="model"></param>
+        ///////////////// <returns></returns>
+        //////////////[HttpPost("NormalWithDrawl")]
+        ////////////////[Authorize]
+        //////////////[ClaimsAuthorize(IsAdmin = false)]
+        //////////////public async Task<ActionResult> NormalWithDrawl([FromBody] AddTransactionDTO model)
+        //////////////{
 
-            var cardExist = await _context.CardTBL.AnyAsync(c => c.Id == model.CardId);
-            if (!cardExist)
-                return BadRequest(_commonService.NotFoundErrorReponse(false));
+        //////////////    //validation
 
-
-            var allMyTransactions = await _context.TransactionTBL.Where(c =>
-                           c.TransactionConfirmedStatus == TransactionConfirmedStatus.Confirmed)
-                .SumAsync(c => c.Amount);
-
-            var curretnUserName = _accountService.GetCurrentUserName();
-            var userFromDB = await _userManager.FindByNameAsync(curretnUserName);
-
-            if (userFromDB == null)
-                return NotFound(_commonService.NotFoundErrorReponse(false));
+        //////////////    var cardExist = await _context.CardTBL.AnyAsync(c => c.Id == model.CardId);
+        //////////////    if (!cardExist)
+        //////////////        return BadRequest(_commonService.NotFoundErrorReponse(false));
 
 
-            var userAcceptedBalance = userFromDB.WalletBalance - allMyTransactions;
+        //////////////    var allMyTransactions = await _context.TransactionTBL.Where(c =>
+        //////////////                   c.TransactionConfirmedStatus == TransactionConfirmedStatus.Confirmed)
+        //////////////        .SumAsync(c => c.Amount);
 
-            if (userAcceptedBalance <= 0 || userAcceptedBalance - model.Amount <= 0)
-            {
-                List<string> erros = new List<string> {
-                _resourceServices.GetErrorMessageByKey("InvaliAmountForTransaction")
-                };
-                return BadRequest(new ApiBadRequestResponse(erros));
-            }
+        //////////////    var curretnUserName = _accountService.GetCurrentUserName();
+        //////////////    var userFromDB = await _userManager.FindByNameAsync(curretnUserName);
 
-            var transaction = new TransactionTBL()
-            {
-                Amount = (double)model.Amount,
-                CreateDate = DateTime.Now,
-                Description = $"The amount of ${model.Amount} was withdrawn from cardId {model.CardId}",
-                TransactionConfirmedStatus = TransactionConfirmedStatus.Pending,
-                Username = curretnUserName,
-                TransactionType = TransactionType.WhiteDrawl,
-                TransactionStatus = TransactionStatus.NormalTransaction,
-                BaseMyServiceTBL = null,
-                BaseMyServiceId = null,
-                CardId = model.CardId,
-                ProviderUserName = null,
-                ServiceTypeWithDetails = null,
-                User_TopTenPackageTBL = null,
-                CheckDiscountTBL = null,
-
-            };
+        //////////////    if (userFromDB == null)
+        //////////////        return NotFound(_commonService.NotFoundErrorReponse(false));
 
 
-            await _context.TransactionTBL.AddAsync(transaction);
-            await _context.SaveChangesAsync();
-            return Ok(_commonService.OkResponse(null, false));
+        //////////////    var userAcceptedBalance = userFromDB.WalletBalance - allMyTransactions;
+
+        //////////////    if (userAcceptedBalance <= 0 || userAcceptedBalance - model.Amount <= 0)
+        //////////////    {
+        //////////////        List<string> erros = new List<string> {
+        //////////////        _resourceServices.GetErrorMessageByKey("InvaliAmountForTransaction")
+        //////////////        };
+        //////////////        return BadRequest(new ApiBadRequestResponse(erros));
+        //////////////    }
+
+        //////////////    var transaction = new TransactionTBL()
+        //////////////    {
+        //////////////        Amount = (double)model.Amount,
+        //////////////        CreateDate = DateTime.Now,
+        //////////////        Description = $"The amount of ${model.Amount} was withdrawn from cardId {model.CardId}",
+        //////////////        TransactionConfirmedStatus = TransactionConfirmedStatus.Pending,
+        //////////////        Username = curretnUserName,
+        //////////////        TransactionType = TransactionType.WhiteDrawl,
+        //////////////        TransactionStatus = TransactionStatus.NormalTransaction,
+        //////////////        BaseMyServiceTBL = null,
+        //////////////        BaseMyServiceId = null,
+        //////////////        CardId = model.CardId,
+        //////////////        ProviderUserName = null,
+        //////////////        ServiceTypeWithDetails = null,
+        //////////////        User_TopTenPackageTBL = null,
+        //////////////        CheckDiscountTBL = null,
+
+        //////////////    };
 
 
-        }
+        //////////////    await _context.TransactionTBL.AddAsync(transaction);
+        //////////////    await _context.SaveChangesAsync();
+        //////////////    return Ok(_commonService.OkResponse(null, false));
 
 
-
-
-
-
-        [HttpPost("NormalDeposit")]
-        //[Authorize]
-        [ClaimsAuthorize(IsAdmin = false)]
-        public async Task<ActionResult> NormalDeposit([FromBody] AddDepositDTO model)
-        {
-            //validation
-
-            var curretnUserName = _accountService.GetCurrentUserName();
-            var userFromDB = await _userManager.FindByNameAsync(curretnUserName);
-
-            if (userFromDB == null)
-                return NotFound(_commonService.NotFoundErrorReponse(false));
+        //////////////}
 
 
 
-            //  *************************************  go to argah  *************************************
-            //**                                              
-            //*************************************  go to argah  *************************************
-
-            var transaction = new TransactionTBL()
-            {
-                Amount = (double)model.Amount,
-                CreateDate = DateTime.Now,
-                Description = $"The amount of ${model.Amount} was deposit ",
-                TransactionConfirmedStatus = TransactionConfirmedStatus.Confirmed,
-                Username = curretnUserName,
-                TransactionType = TransactionType.Deposit,
-                TransactionStatus = TransactionStatus.NormalTransaction,
-                BaseMyServiceTBL = null,
-                BaseMyServiceId = null,
-                CardId = null,
-                ProviderUserName = null,
-                ServiceTypeWithDetails = null,
-                User_TopTenPackageTBL = null,
-                CheckDiscountTBL = null,
-            };
 
 
 
-            var userfromDB = await _userManager.FindByNameAsync(curretnUserName);
-            userfromDB.WalletBalance += (double)model.Amount;
+        /////////////////  fuckkkk /////////////////
 
-            await _context.TransactionTBL.AddAsync(transaction);
-            await _context.SaveChangesAsync();
-            return Ok(_commonService.OkResponse(null, false));
-        }
+        ////////////////[HttpPost("NormalDeposit")]
+        //////////////////[Authorize]
+        ////////////////[ClaimsAuthorize(IsAdmin = false)]
+        ////////////////public async Task<ActionResult> NormalDeposit([FromBody] AddDepositDTO model)
+        ////////////////{
+        ////////////////    //validation
+
+        ////////////////    var curretnUserName = _accountService.GetCurrentUserName();
+        ////////////////    var userFromDB = await _userManager.FindByNameAsync(curretnUserName);
+
+        ////////////////    if (userFromDB == null)
+        ////////////////        return NotFound(_commonService.NotFoundErrorReponse(false));
+
+
+
+        ////////////////    //  *************************************  go to argah  *************************************
+        ////////////////    //**                                              
+        ////////////////    //*************************************  go to argah  *************************************
+
+        ////////////////    var transaction = new TransactionTBL()
+        ////////////////    {
+        ////////////////        Amount = (double)model.Amount,
+        ////////////////        CreateDate = DateTime.Now,
+        ////////////////        Description = $"The amount of ${model.Amount} was deposit ",
+        ////////////////        TransactionConfirmedStatus = TransactionConfirmedStatus.Confirmed,
+        ////////////////        Username = curretnUserName,
+        ////////////////        TransactionType = TransactionType.Deposit,
+        ////////////////        TransactionStatus = TransactionStatus.NormalTransaction,
+        ////////////////        BaseMyServiceTBL = null,
+        ////////////////        BaseMyServiceId = null,
+        ////////////////        CardId = null,
+        ////////////////        ProviderUserName = null,
+        ////////////////        ServiceTypeWithDetails = null,
+        ////////////////        User_TopTenPackageTBL = null,
+        ////////////////        CheckDiscountTBL = null,
+        ////////////////    };
+
+
+
+        ////////////////    var userfromDB = await _userManager.FindByNameAsync(curretnUserName);
+        ////////////////    userfromDB.WalletBalance += (double)model.Amount;
+
+        ////////////////    await _context.TransactionTBL.AddAsync(transaction);
+        ////////////////    await _context.SaveChangesAsync();
+        ////////////////    return Ok(_commonService.OkResponse(null, false));
+        ////////////////}
 
 
 

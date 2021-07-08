@@ -67,7 +67,17 @@ namespace Domain.Enums
         /// </summary>
         [Description("reject widthrawl request")]
         [Display(Name = "reject widthrawl request")]
-        RejectWidthrawlRequest
+        RejectWidthrawlRequest,
+
+
+
+        /// <summary>
+        ///  سرویس دهنده درحال تماس گرفتن می باشد  
+        /// </summary>
+        [Description("provider is calling")]
+        [Display(Name = "provider is calling")]
+        ProviderIsCalling
+
 
     }
 }

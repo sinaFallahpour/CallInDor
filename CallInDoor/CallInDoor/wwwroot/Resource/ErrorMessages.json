@@ -465,7 +465,7 @@
       "Languages": [
         {
           "Header": "fa-IR",
-          "Val": "سرویس دهنده در دسترس نمیباشد"
+          "Val": "خدمت دهنده در دسترس نمیباشد"
         },
         {
           "Header": "en-US",
@@ -1230,15 +1230,15 @@
       "Languages": [
         {
           "Header": "fa-IR",
-          "Val": "شما یک درخواست در حال بررسی دارید. لطفا تا تایید این درخواست شکیبا باشید"
+          "Val": "provider is bussy"
         },
         {
           "Header": "en-US",
-          "Val": "you cant make a withdrawal request because you have a in progress request"
+          "Val": "خدمت دهنده در حال تماس است"
         },
         {
           "Header": "ar",
-          "Val": "you cant make a withdrawal request because you have a in progress request"
+          "Val": "provider is bussy"
         }
       ]
     },
@@ -1264,7 +1264,7 @@
       "Languages": [
         {
           "Header": "fa-IR",
-          "Val": "در حال حاضر امکان درخواست به سرویس دهنده وجود ندارد"
+          "Val": "در حال حاضر امکان درخواست به خدمت دهنده وجود ندارد"
         },
         {
           "Header": "en-US",

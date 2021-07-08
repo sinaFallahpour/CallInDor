@@ -53,7 +53,7 @@ namespace Service
         /// <param name="baseServiceFromDB"></param>
         /// <param name="hasReserveRequest"></param>
         /// <returns></returns>
-        public async Task<(bool succsseded, List<string> result)> ValidateRequestToPeriodedOrSessionChatService(BaseMyServiceTBL baseServiceFromDB, AppUser provider, AppUser currentUser, bool hasReserveRequest)
+        public (bool succsseded, List<string> result) ValidateRequestToPeriodedOrSessionChatService(BaseMyServiceTBL baseServiceFromDB, AppUser provider, AppUser currentUser, bool hasReserveRequest)
         {
             bool IsValid = true;
             List<string> Errors = new List<string>();
@@ -134,20 +134,40 @@ namespace Service
 
 
 
-            //check user is active or not
-            bool isonline = false;
-            if (!baseServiceFromDB.MyChatsService.IsServiceReverse)
+            //check provider online isonlie
+            if (!provider.IsOnline)
             {
-                isonline = await _context.Users.Where(c => c.UserName == baseServiceFromDB.UserName)
-                                                   .Select(c => c.IsOnline)
-                                                   .FirstOrDefaultAsync();
-                if (!isonline)
-                {
-                    IsValid = false;
-                    Errors.Add(_resourceServices.GetErrorMessageByKey("ProviderIsUnAvailableMessage"));
-                    return (IsValid, Errors);
-                }
+                IsValid = false;
+                var errorMessage = _resourceServices.GetErrorMessageByKey("ProviderIsOfline");
+                Errors.Add(errorMessage);
+                return (IsValid, Errors);
             }
+
+            //if (provider.UserStatus != UserStatus.Free)
+            //{
+            //    IsValid = false;
+            //    var errorMessage = _resourceServices.GetErrorMessageByKey("ProviderIsBussy");
+            //    Errors.Add(errorMessage);
+            //    return (IsValid, Errors);
+            //}
+
+
+
+
+
+            ////////_context.SettingsTBL.Where(c=>c.Key == PublicHelper.ProviderLimitTimeForRejectRequest).FirstOrDefaultAsync(c=>c.)
+
+
+
+            //check user is active or not
+            if (!baseServiceFromDB.MyChatsService.IsServiceReverse && !provider.IsOnline)
+            {
+                IsValid = false;
+                Errors.Add(_resourceServices.GetErrorMessageByKey("ProviderIsUnAvailableMessage"));
+                return (IsValid, Errors);
+            }
+
+
 
 
             return (IsValid, Errors);
@@ -177,11 +197,10 @@ namespace Service
         /// <returns></returns>
         public (bool succsseded, List<string> result) ValidateRequestToCall(BaseMyServiceTBL baseServiceFromDB, AppUser provider,
                                                                             AppUser currentUser, bool hasReserveRequest, CheckDiscountTBL discountFromDb)
-
         {
             bool IsValid = true;
             List<string> Errors = new List<string>();
-            string curentUSerName = _accountService.GetCurrentUserName();
+            string curentUserName = _accountService.GetCurrentUserName();
 
             if (baseServiceFromDB == null)
             {
@@ -190,7 +209,7 @@ namespace Service
                 return (IsValid, Errors);
             }
 
-            if (baseServiceFromDB.UserName.ToLower() == curentUSerName)
+            if (baseServiceFromDB.UserName.ToLower() == curentUserName)
             {
                 IsValid = false;
                 Errors.Add(_resourceServices.GetErrorMessageByKey("YouCantRequestToYourSelf"));
@@ -234,13 +253,14 @@ namespace Service
             }
 
 
-
-
-
             //double? allRequestPrices = GetAllRequestPrices(currentUser);
             double? validBalance = ClientShouldPay(baseServiceFromDB, discountFromDb);
 
-            //checking wallet
+
+
+
+
+
             //if (currentUser.WalletBalance == 0 || currentUser.WalletBalance < (double)baseServiceFromDB.MyChatsService.PriceForNativeCustomer)
             if (currentUser.WalletBalance == 0 || currentUser.WalletBalance < validBalance)
             {
@@ -251,24 +271,22 @@ namespace Service
             }
 
 
-            //check wallet
-            //checke package
             //check provider online isonlie
             if (!provider.IsOnline)
-            {
-                IsValid = false;
-                var errorMessage = _resourceServices.GetErrorMessageByKey("ProviderIsBussy");
-                Errors.Add(errorMessage);
-                return (IsValid, Errors);
-            }
-
-            if (!provider.IsFree)
             {
                 IsValid = false;
                 var errorMessage = _resourceServices.GetErrorMessageByKey("ProviderIsOfline");
                 Errors.Add(errorMessage);
                 return (IsValid, Errors);
             }
+
+            //if (provider.UserStatus != UserStatus.Free)
+            //{
+            //    IsValid = false;
+            //    var errorMessage = _resourceServices.GetErrorMessageByKey("ProviderIsBussy");
+            //    Errors.Add(errorMessage);
+            //    return (IsValid, Errors);
+            //}
 
 
 
@@ -289,7 +307,7 @@ namespace Service
 
             return (IsValid, Errors);
         }
-        
+
 
 
 

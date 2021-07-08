@@ -371,7 +371,7 @@ namespace CallInDoor.Controllers
             var newUser = new AppUser
             {
                 IsOnline = true,
-                IsFree = true,
+                UserStatus = UserStatus.Free,
                 CultureName = model.CultureName,
                 ImageAddress = "download.jfif",
                 UserName = model.CountryCode.ToString().Trim() + model.PhoneNumber.Trim(),
